@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -47,42 +46,38 @@ const Index = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: "no-cors",
         body: JSON.stringify(payload),
       });
 
-      // Simular resposta para demonstração (já que no-cors não retorna dados)
-      setTimeout(() => {
-        const mockData: NutritionData = {
-          foodName: "Arroz com Feijão",
-          description: "Prato tradicional brasileiro com arroz branco e feijão carioca, rico em carboidratos e proteínas vegetais.",
-          nutrition: {
-            calories: 350,
-            carbohydrates: 65,
-            proteins: 12,
-            fats: 3,
-            fiber: 8,
-            sodium: 450
-          }
-        };
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        setNutritionData(mockData);
-        setIsAnalyzing(false);
+      const data = await response.json();
+      console.log("Resposta recebida do webhook:", data);
+
+      // Processar a resposta real do Make.com
+      if (data && data.foodName && data.nutrition) {
+        setNutritionData(data);
         
         toast({
           title: "Análise concluída!",
           description: "Os dados nutricionais foram identificados com sucesso.",
         });
-      }, 3000);
+      } else {
+        throw new Error("Resposta do webhook não contém dados válidos");
+      }
 
     } catch (error) {
-      console.error("Erro ao enviar imagem:", error);
-      setIsAnalyzing(false);
+      console.error("Erro ao processar imagem:", error);
+      
       toast({
         title: "Erro na análise",
-        description: "Não foi possível analisar a imagem. Tente novamente.",
+        description: "Não foi possível analisar a imagem. Verifique se o webhook está configurado corretamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
