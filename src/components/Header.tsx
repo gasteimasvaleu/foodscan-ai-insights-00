@@ -1,0 +1,39 @@
+
+import React from 'react';
+import { Sparkles } from 'lucide-react';
+
+export const Header = () => {
+  return (
+    <div className="text-center mb-12 animate-fade-in">
+      <div className="flex items-center justify-center mb-6">
+        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 shadow-lg animate-pulse-glow">
+          <Sparkles className="w-12 h-12 text-white" />
+        </div>
+      </div>
+      
+      <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+        Food<span className="text-white/80">Scan</span> AI
+      </h1>
+      
+      <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+        Descubra informações nutricionais completas de qualquer alimento 
+        através de uma simples foto com tecnologia de IA avançada
+      </p>
+      
+      <div className="flex items-center justify-center space-x-6 mt-8 text-white/70">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-success-400 rounded-full animate-pulse"></div>
+          <span className="text-sm">IA Avançada</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-success-400 rounded-full animate-pulse"></div>
+          <span className="text-sm">Análise Instantânea</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-success-400 rounded-full animate-pulse"></div>
+          <span className="text-sm">100% Precisão</span>
+        </div>
+      </div>
+    </div>
+  );
+};
