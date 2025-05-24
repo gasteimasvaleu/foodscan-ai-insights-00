@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -25,12 +26,14 @@ const Index = () => {
   const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
 
   const parseNutritionValue = (value: any): number => {
+    console.log("Parsing nutrition value:", value, "Type:", typeof value);
     if (typeof value === 'number') {
       return isNaN(value) ? 0 : value;
     }
     if (typeof value === 'string') {
       const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
       const numericValue = parseFloat(cleanValue);
+      console.log("Converted string to number:", cleanValue, "->", numericValue);
       return isNaN(numericValue) ? 0 : numericValue;
     }
     return 0;
@@ -86,7 +89,8 @@ const Index = () => {
 
       // Ler o response uma única vez
       const responseText = await response.text();
-      console.log("Response body:", responseText);
+      console.log("=== RESPONSE COMPLETO ===");
+      console.log("Response raw:", responseText);
 
       if (!response.ok) {
         console.error("=== ERRO HTTP ===");
@@ -115,7 +119,9 @@ const Index = () => {
       let data;
       try {
         data = JSON.parse(responseText);
-        console.log("JSON parsed com sucesso:", data);
+        console.log("=== DADOS PARSEADOS ===");
+        console.log("Data completo:", JSON.stringify(data, null, 2));
+        console.log("Chaves disponíveis:", Object.keys(data));
       } catch (parseError) {
         console.error("Erro ao fazer parse do JSON:", parseError);
         console.error("Response text era:", responseText);
@@ -129,28 +135,74 @@ const Index = () => {
         }
       }
 
-      // Processar dados de forma mais flexível
-      console.log("Tentando extrair dados nutricionais...");
+      // Analisar todos os possíveis caminhos para nutrientes
+      console.log("=== ANÁLISE DE ESTRUTURA ===");
+      console.log("data.nutrientes:", data.nutrientes);
+      console.log("data.nutrition:", data.nutrition);
+      console.log("data.informacoes_nutricionais:", data.informacoes_nutricionais);
+      console.log("data.valores_nutricionais:", data.valores_nutricionais);
       
-      // Extrair nutrientes do objeto correto
-      const nutrientes = data.nutrientes || {};
-      console.log("Nutrientes encontrados:", nutrientes);
+      // Extrair nutrientes de forma mais flexível
+      const nutrientes = data.nutrientes || 
+                        data.nutrition || 
+                        data.informacoes_nutricionais || 
+                        data.valores_nutricionais || 
+                        {};
+      
+      console.log("=== NUTRIENTES EXTRAÍDOS ===");
+      console.log("Nutrientes selecionados:", JSON.stringify(nutrientes, null, 2));
       
       const processedData: NutritionData = {
-        foodName: data.alimento || data.foodName || data.food || data.nome || "Alimento identificado",
-        description: data.descricao || data.description || data.message || "Informações nutricionais do alimento analisado.",
+        foodName: data.alimento || data.foodName || data.food || data.nome || data.comida || "Alimento identificado",
+        description: data.descricao || data.description || data.message || data.analise || "Informações nutricionais do alimento analisado.",
         nutrition: {
-          calories: parseNutritionValue(nutrientes.calorias || nutrientes.calories || 0),
-          carbohydrates: parseNutritionValue(nutrientes.carboidratos || nutrientes.carbohydrates || 0),
-          proteins: parseNutritionValue(nutrientes.proteinas || nutrientes.proteins || 0),
-          fats: parseNutritionValue(nutrientes.gorduras || nutrientes.fats || 0),
-          fiber: parseNutritionValue(nutrientes.fibras || nutrientes.fiber || 0),
-          sodium: parseNutritionValue(nutrientes.sodio || nutrientes.sodium || 0)
+          calories: parseNutritionValue(
+            nutrientes.calorias || 
+            nutrientes.calories || 
+            data.calorias || 
+            data.calories || 
+            0
+          ),
+          carbohydrates: parseNutritionValue(
+            nutrientes.carboidratos || 
+            nutrientes.carbohydrates || 
+            data.carboidratos || 
+            data.carbohydrates || 
+            0
+          ),
+          proteins: parseNutritionValue(
+            nutrientes.proteinas || 
+            nutrientes.proteins || 
+            data.proteinas || 
+            data.proteins || 
+            0
+          ),
+          fats: parseNutritionValue(
+            nutrientes.gorduras || 
+            nutrientes.fats || 
+            data.gorduras || 
+            data.fats || 
+            0
+          ),
+          fiber: parseNutritionValue(
+            nutrientes.fibras || 
+            nutrientes.fiber || 
+            data.fibras || 
+            data.fiber || 
+            0
+          ),
+          sodium: parseNutritionValue(
+            nutrientes.sodio || 
+            nutrientes.sodium || 
+            data.sodio || 
+            data.sodium || 
+            0
+          )
         }
       };
 
-      console.log("=== DADOS PROCESSADOS ===");
-      console.log("Dados finais:", processedData);
+      console.log("=== DADOS FINAIS PROCESSADOS ===");
+      console.log("Dados finais:", JSON.stringify(processedData, null, 2));
 
       setNutritionData(processedData);
       
