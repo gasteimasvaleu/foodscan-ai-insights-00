@@ -30,7 +30,6 @@ const Index = () => {
       return isNaN(value) ? 0 : value;
     }
     if (typeof value === 'string') {
-      // Remove unidades como "kcal", "g", "mg" e converte para número
       const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
       const numericValue = parseFloat(cleanValue);
       return isNaN(numericValue) ? 0 : numericValue;
@@ -40,12 +39,21 @@ const Index = () => {
 
   const handleImageAnalysis = async (imageFile: File) => {
     setIsAnalyzing(true);
-    console.log("Iniciando análise da imagem:", imageFile.name);
+    console.log("=== INICIANDO ANÁLISE ===");
+    console.log("Nome do arquivo:", imageFile.name);
+    console.log("Tamanho do arquivo:", imageFile.size, "bytes");
+    console.log("Tipo do arquivo:", imageFile.type);
 
     try {
-      // Convert image to base64
+      // Validar arquivo antes de enviar
+      if (imageFile.size > 10 * 1024 * 1024) { // 10MB
+        throw new Error("Arquivo muito grande (máximo 10MB)");
+      }
+
+      console.log("Convertendo imagem para base64...");
       const base64Image = await convertToBase64(imageFile);
-      
+      console.log("Base64 gerado, tamanho:", base64Image.length);
+
       const payload = {
         image_data: base64Image,
         image_name: imageFile.name,
@@ -53,82 +61,114 @@ const Index = () => {
         user_id: "user_" + Date.now()
       };
 
-      console.log("Enviando dados para webhook:", webhookUrl);
-      console.log("Payload preparado, tamanho:", JSON.stringify(payload).length);
+      console.log("=== ENVIANDO PARA WEBHOOK ===");
+      console.log("URL:", webhookUrl);
+      console.log("Payload criado:");
+      console.log("- image_name:", payload.image_name);
+      console.log("- timestamp:", payload.timestamp);
+      console.log("- user_id:", payload.user_id);
+      console.log("- image_data length:", payload.image_data.length);
 
-      const response = await fetch(webhookUrl, {
+      const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      });
+      };
 
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
+      console.log("Fazendo requisição...");
+      const response = await fetch(webhookUrl, requestOptions);
+
+      console.log("=== RESPOSTA RECEBIDA ===");
+      console.log("Status:", response.status);
+      console.log("Status text:", response.statusText);
+      console.log("Headers:", Object.fromEntries(response.headers.entries()));
+
+      // Ler o response uma única vez
+      const responseText = await response.text();
+      console.log("Response body:", responseText);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Erro HTTP:", response.status, errorText);
-        throw new Error(`Erro do servidor (${response.status}): ${errorText}`);
+        console.error("=== ERRO HTTP ===");
+        console.error("Status:", response.status);
+        console.error("Response:", responseText);
+        
+        let errorMessage = `Erro ${response.status}`;
+        if (responseText) {
+          errorMessage += `: ${responseText}`;
+        }
+        
+        // Mensagens específicas para erros comuns
+        if (response.status === 500) {
+          errorMessage = "Erro interno do servidor Make.com. Verifique se o cenário está configurado corretamente.";
+        } else if (response.status === 404) {
+          errorMessage = "Webhook não encontrado. Verifique a URL do Make.com.";
+        } else if (response.status === 413) {
+          errorMessage = "Imagem muito grande. Tente com uma imagem menor.";
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      const responseText = await response.text();
-      console.log("Response recebida:", responseText);
-
+      console.log("=== PROCESSANDO RESPOSTA ===");
+      
       let data;
       try {
         data = JSON.parse(responseText);
-        console.log("JSON parsed:", data);
+        console.log("JSON parsed com sucesso:", data);
       } catch (parseError) {
         console.error("Erro ao fazer parse do JSON:", parseError);
-        console.error("Response text:", responseText);
-        throw new Error("Resposta inválida do servidor");
-      }
-
-      // Simplificar o processamento dos dados
-      let processedData: NutritionData | null = null;
-
-      if (data && typeof data === 'object') {
-        console.log("Processando dados recebidos...");
+        console.error("Response text era:", responseText);
         
-        // Criar dados padrão com fallbacks seguros
-        processedData = {
-          foodName: data.alimento || data.foodName || data.food || data.name || "Alimento identificado",
-          description: data.descricao || data.description || "Informações nutricionais do alimento identificado.",
-          nutrition: {
-            calories: parseNutritionValue(data.calorias || data.calories || data.nutrientes?.calorias || 0),
-            carbohydrates: parseNutritionValue(data.carboidratos || data.carbohydrates || data.nutrientes?.carboidratos || 0),
-            proteins: parseNutritionValue(data.proteinas || data.proteins || data.nutrientes?.proteinas || 0),
-            fats: parseNutritionValue(data.gorduras || data.fats || data.nutrientes?.gorduras || 0),
-            fiber: parseNutritionValue(data.fibras || data.fiber || data.nutrientes?.fibras || 0),
-            sodium: parseNutritionValue(data.sodio || data.sodium || data.nutrientes?.sodio || 0)
-          }
-        };
-
-        console.log("Dados processados:", processedData);
+        // Se não conseguir fazer parse, vamos tentar usar a resposta como texto
+        if (responseText.trim()) {
+          console.log("Tentando processar como texto simples...");
+          data = { message: responseText };
+        } else {
+          throw new Error("Resposta vazia do servidor");
+        }
       }
 
-      if (processedData) {
-        setNutritionData(processedData);
-        
-        toast({
-          title: "Análise concluída!",
-          description: "Os dados nutricionais foram identificados com sucesso.",
-        });
-      } else {
-        console.error("Não foi possível processar os dados:", data);
-        throw new Error("Dados nutricionais não encontrados na resposta");
-      }
+      // Processar dados de forma mais flexível
+      console.log("Tentando extrair dados nutricionais...");
+      
+      const processedData: NutritionData = {
+        foodName: data.alimento || data.foodName || data.food || data.nome || "Alimento identificado",
+        description: data.descricao || data.description || data.message || "Informações nutricionais do alimento analisado.",
+        nutrition: {
+          calories: parseNutritionValue(data.calorias || data.calories || 0),
+          carbohydrates: parseNutritionValue(data.carboidratos || data.carbohydrates || 0),
+          proteins: parseNutritionValue(data.proteinas || data.proteins || 0),
+          fats: parseNutritionValue(data.gorduras || data.fats || 0),
+          fiber: parseNutritionValue(data.fibras || data.fiber || 0),
+          sodium: parseNutritionValue(data.sodio || data.sodium || 0)
+        }
+      };
+
+      console.log("=== DADOS PROCESSADOS ===");
+      console.log("Dados finais:", processedData);
+
+      setNutritionData(processedData);
+      
+      toast({
+        title: "Análise concluída!",
+        description: "Os dados nutricionais foram identificados com sucesso.",
+      });
 
     } catch (error) {
-      console.error("Erro completo:", error);
+      console.error("=== ERRO COMPLETO ===");
+      console.error("Tipo do erro:", typeof error);
+      console.error("Erro:", error);
       
       let errorMessage = "Erro desconhecido na análise da imagem.";
       
       if (error instanceof Error) {
         errorMessage = error.message;
+        console.error("Stack trace:", error.stack);
       }
+      
+      console.error("Mensagem final do erro:", errorMessage);
       
       toast({
         title: "Erro na análise",
@@ -136,26 +176,37 @@ const Index = () => {
         variant: "destructive",
       });
     } finally {
+      console.log("=== FINALIZANDO ANÁLISE ===");
       setIsAnalyzing(false);
     }
   };
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
+      console.log("Iniciando conversão para base64...");
       const reader = new FileReader();
-      reader.readAsDataURL(file);
+      
       reader.onload = () => {
         if (reader.result) {
+          console.log("Conversão base64 concluída com sucesso");
           resolve(reader.result as string);
         } else {
-          reject(new Error("Erro ao converter imagem"));
+          console.error("Resultado da conversão é null");
+          reject(new Error("Erro ao converter imagem para base64"));
         }
       };
-      reader.onerror = () => reject(new Error("Erro ao ler arquivo"));
+      
+      reader.onerror = (error) => {
+        console.error("Erro no FileReader:", error);
+        reject(new Error("Erro ao ler arquivo de imagem"));
+      };
+      
+      reader.readAsDataURL(file);
     });
   };
 
   const handleReset = () => {
+    console.log("Resetando aplicação...");
     setNutritionData(null);
     setIsAnalyzing(false);
   };
