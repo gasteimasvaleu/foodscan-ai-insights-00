@@ -23,18 +23,9 @@ export interface NutritionData {
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const [webhookUrl, setWebhookUrl] = useState('');
+  const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
 
   const handleImageAnalysis = async (imageFile: File) => {
-    if (!webhookUrl.trim()) {
-      toast({
-        title: "Webhook URL necessária",
-        description: "Por favor, configure a URL do webhook do Make.com",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsAnalyzing(true);
     console.log("Iniciando análise da imagem:", imageFile.name);
 
@@ -115,21 +106,6 @@ const Index = () => {
         <Header />
         
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Webhook Configuration */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Configuração do Webhook</h3>
-            <input
-              type="url"
-              placeholder="Cole aqui a URL do webhook do Make.com"
-              value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-            />
-            <p className="text-sm text-gray-600 mt-2">
-              Configure o webhook no Make.com para processar as imagens e retornar dados nutricionais.
-            </p>
-          </div>
-
           {/* Main Content */}
           {isAnalyzing ? (
             <LoadingState />
