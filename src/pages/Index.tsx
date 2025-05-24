@@ -24,6 +24,12 @@ const Index = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
 
+  const parseNutritionValue = (value: string): number => {
+    // Remove unidades como "kcal", "g", "mg" e converte para número
+    const numericValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+    return parseFloat(numericValue) || 0;
+  };
+
   const handleImageAnalysis = async (imageFile: File) => {
     setIsAnalyzing(true);
     console.log("Iniciando análise da imagem:", imageFile.name);
@@ -56,15 +62,29 @@ const Index = () => {
       const data = await response.json();
       console.log("Resposta recebida do webhook:", data);
 
-      // Processar a resposta real do Make.com
-      if (data && data.foodName && data.nutrition) {
-        setNutritionData(data);
+      // Processar a resposta do Make.com que vem no formato específico
+      if (data && data.status === "sucesso" && data.alimento && data.nutrientes) {
+        const processedData: NutritionData = {
+          foodName: data.alimento,
+          description: data.descricao || "Informações nutricionais do alimento identificado.",
+          nutrition: {
+            calories: parseNutritionValue(data.nutrientes.calorias || "0"),
+            carbohydrates: parseNutritionValue(data.nutrientes.carboidratos || "0"),
+            proteins: parseNutritionValue(data.nutrientes.proteinas || "0"),
+            fats: parseNutritionValue(data.nutrientes.gorduras || "0"),
+            fiber: parseNutritionValue(data.nutrientes.fibras || "0"),
+            sodium: parseNutritionValue(data.nutrientes.sodio || "0")
+          }
+        };
+
+        setNutritionData(processedData);
         
         toast({
           title: "Análise concluída!",
           description: "Os dados nutricionais foram identificados com sucesso.",
         });
       } else {
+        console.error("Formato de resposta inesperado:", data);
         throw new Error("Resposta do webhook não contém dados válidos");
       }
 
