@@ -26,11 +26,14 @@ const Index = () => {
   const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
 
   const parseNutritionValue = (value: any): number => {
-    if (typeof value === 'number') return value;
+    if (typeof value === 'number') {
+      return isNaN(value) ? 0 : value;
+    }
     if (typeof value === 'string') {
       // Remove unidades como "kcal", "g", "mg" e converte para número
-      const numericValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
-      return parseFloat(numericValue) || 0;
+      const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+      const numericValue = parseFloat(cleanValue);
+      return isNaN(numericValue) ? 0 : numericValue;
     }
     return 0;
   };
@@ -51,7 +54,7 @@ const Index = () => {
       };
 
       console.log("Enviando dados para webhook:", webhookUrl);
-      console.log("Payload size:", JSON.stringify(payload).length);
+      console.log("Payload preparado, tamanho:", JSON.stringify(payload).length);
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -62,69 +65,51 @@ const Index = () => {
       });
 
       console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log("Response ok:", response.ok);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Erro HTTP:", response.status, errorText);
+        throw new Error(`Erro do servidor (${response.status}): ${errorText}`);
       }
 
       const responseText = await response.text();
-      console.log("Response raw text:", responseText);
+      console.log("Response recebida:", responseText);
 
       let data;
       try {
         data = JSON.parse(responseText);
+        console.log("JSON parsed:", data);
       } catch (parseError) {
         console.error("Erro ao fazer parse do JSON:", parseError);
-        throw new Error("Resposta não é um JSON válido");
+        console.error("Response text:", responseText);
+        throw new Error("Resposta inválida do servidor");
       }
 
-      console.log("Resposta parsed:", data);
-
-      // Tentar diferentes formatos de resposta
+      // Simplificar o processamento dos dados
       let processedData: NutritionData | null = null;
 
-      // Formato 1: Resposta direta do Make.com
-      if (data && data.status === "sucesso" && data.alimento && data.nutrientes) {
-        console.log("Processando formato 1 - Make.com direto");
+      if (data && typeof data === 'object') {
+        console.log("Processando dados recebidos...");
+        
+        // Criar dados padrão com fallbacks seguros
         processedData = {
-          foodName: data.alimento,
-          description: data.descricao || "Informações nutricionais do alimento identificado.",
+          foodName: data.alimento || data.foodName || data.food || data.name || "Alimento identificado",
+          description: data.descricao || data.description || "Informações nutricionais do alimento identificado.",
           nutrition: {
-            calories: parseNutritionValue(data.nutrientes.calorias),
-            carbohydrates: parseNutritionValue(data.nutrientes.carboidratos),
-            proteins: parseNutritionValue(data.nutrientes.proteinas),
-            fats: parseNutritionValue(data.nutrientes.gorduras),
-            fiber: parseNutritionValue(data.nutrientes.fibras),
-            sodium: parseNutritionValue(data.nutrientes.sodio)
+            calories: parseNutritionValue(data.calorias || data.calories || data.nutrientes?.calorias || 0),
+            carbohydrates: parseNutritionValue(data.carboidratos || data.carbohydrates || data.nutrientes?.carboidratos || 0),
+            proteins: parseNutritionValue(data.proteinas || data.proteins || data.nutrientes?.proteinas || 0),
+            fats: parseNutritionValue(data.gorduras || data.fats || data.nutrientes?.gorduras || 0),
+            fiber: parseNutritionValue(data.fibras || data.fiber || data.nutrientes?.fibras || 0),
+            sodium: parseNutritionValue(data.sodio || data.sodium || data.nutrientes?.sodio || 0)
           }
         };
-      }
-      // Formato 2: Resposta já no formato esperado
-      else if (data && data.foodName && data.nutrition) {
-        console.log("Processando formato 2 - Formato direto");
-        processedData = data;
-      }
-      // Formato 3: Resposta com outros campos possíveis
-      else if (data && (data.food || data.name || data.alimento)) {
-        console.log("Processando formato 3 - Campos alternativos");
-        const foodName = data.food || data.name || data.alimento || "Alimento não identificado";
-        processedData = {
-          foodName,
-          description: data.description || data.descricao || "Informações nutricionais identificadas.",
-          nutrition: {
-            calories: parseNutritionValue(data.calories || data.calorias || 0),
-            carbohydrates: parseNutritionValue(data.carbohydrates || data.carboidratos || 0),
-            proteins: parseNutritionValue(data.proteins || data.proteinas || 0),
-            fats: parseNutritionValue(data.fats || data.gorduras || 0),
-            fiber: parseNutritionValue(data.fiber || data.fibras || 0),
-            sodium: parseNutritionValue(data.sodium || data.sodio || 0)
-          }
-        };
+
+        console.log("Dados processados:", processedData);
       }
 
       if (processedData) {
-        console.log("Dados processados com sucesso:", processedData);
         setNutritionData(processedData);
         
         toast({
@@ -132,16 +117,22 @@ const Index = () => {
           description: "Os dados nutricionais foram identificados com sucesso.",
         });
       } else {
-        console.error("Nenhum formato de resposta reconhecido:", data);
-        throw new Error("Formato de resposta não reconhecido");
+        console.error("Não foi possível processar os dados:", data);
+        throw new Error("Dados nutricionais não encontrados na resposta");
       }
 
     } catch (error) {
-      console.error("Erro ao processar imagem:", error);
+      console.error("Erro completo:", error);
+      
+      let errorMessage = "Erro desconhecido na análise da imagem.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       
       toast({
         title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Erro desconhecido na análise da imagem.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -153,8 +144,14 @@ const Index = () => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onload = () => {
+        if (reader.result) {
+          resolve(reader.result as string);
+        } else {
+          reject(new Error("Erro ao converter imagem"));
+        }
+      };
+      reader.onerror = () => reject(new Error("Erro ao ler arquivo"));
     });
   };
 
