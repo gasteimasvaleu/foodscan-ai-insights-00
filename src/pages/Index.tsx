@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -24,10 +25,14 @@ const Index = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
 
-  const parseNutritionValue = (value: string): number => {
-    // Remove unidades como "kcal", "g", "mg" e converte para número
-    const numericValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
-    return parseFloat(numericValue) || 0;
+  const parseNutritionValue = (value: any): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      // Remove unidades como "kcal", "g", "mg" e converte para número
+      const numericValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+      return parseFloat(numericValue) || 0;
+    }
+    return 0;
   };
 
   const handleImageAnalysis = async (imageFile: File) => {
@@ -46,6 +51,7 @@ const Index = () => {
       };
 
       console.log("Enviando dados para webhook:", webhookUrl);
+      console.log("Payload size:", JSON.stringify(payload).length);
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -55,28 +61,70 @@ const Index = () => {
         body: JSON.stringify(payload),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log("Resposta recebida do webhook:", data);
+      const responseText = await response.text();
+      console.log("Response raw text:", responseText);
 
-      // Processar a resposta do Make.com que vem no formato específico
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Erro ao fazer parse do JSON:", parseError);
+        throw new Error("Resposta não é um JSON válido");
+      }
+
+      console.log("Resposta parsed:", data);
+
+      // Tentar diferentes formatos de resposta
+      let processedData: NutritionData | null = null;
+
+      // Formato 1: Resposta direta do Make.com
       if (data && data.status === "sucesso" && data.alimento && data.nutrientes) {
-        const processedData: NutritionData = {
+        console.log("Processando formato 1 - Make.com direto");
+        processedData = {
           foodName: data.alimento,
           description: data.descricao || "Informações nutricionais do alimento identificado.",
           nutrition: {
-            calories: parseNutritionValue(data.nutrientes.calorias || "0"),
-            carbohydrates: parseNutritionValue(data.nutrientes.carboidratos || "0"),
-            proteins: parseNutritionValue(data.nutrientes.proteinas || "0"),
-            fats: parseNutritionValue(data.nutrientes.gorduras || "0"),
-            fiber: parseNutritionValue(data.nutrientes.fibras || "0"),
-            sodium: parseNutritionValue(data.nutrientes.sodio || "0")
+            calories: parseNutritionValue(data.nutrientes.calorias),
+            carbohydrates: parseNutritionValue(data.nutrientes.carboidratos),
+            proteins: parseNutritionValue(data.nutrientes.proteinas),
+            fats: parseNutritionValue(data.nutrientes.gorduras),
+            fiber: parseNutritionValue(data.nutrientes.fibras),
+            sodium: parseNutritionValue(data.nutrientes.sodio)
           }
         };
+      }
+      // Formato 2: Resposta já no formato esperado
+      else if (data && data.foodName && data.nutrition) {
+        console.log("Processando formato 2 - Formato direto");
+        processedData = data;
+      }
+      // Formato 3: Resposta com outros campos possíveis
+      else if (data && (data.food || data.name || data.alimento)) {
+        console.log("Processando formato 3 - Campos alternativos");
+        const foodName = data.food || data.name || data.alimento || "Alimento não identificado";
+        processedData = {
+          foodName,
+          description: data.description || data.descricao || "Informações nutricionais identificadas.",
+          nutrition: {
+            calories: parseNutritionValue(data.calories || data.calorias || 0),
+            carbohydrates: parseNutritionValue(data.carbohydrates || data.carboidratos || 0),
+            proteins: parseNutritionValue(data.proteins || data.proteinas || 0),
+            fats: parseNutritionValue(data.fats || data.gorduras || 0),
+            fiber: parseNutritionValue(data.fiber || data.fibras || 0),
+            sodium: parseNutritionValue(data.sodium || data.sodio || 0)
+          }
+        };
+      }
 
+      if (processedData) {
+        console.log("Dados processados com sucesso:", processedData);
         setNutritionData(processedData);
         
         toast({
@@ -84,8 +132,8 @@ const Index = () => {
           description: "Os dados nutricionais foram identificados com sucesso.",
         });
       } else {
-        console.error("Formato de resposta inesperado:", data);
-        throw new Error("Resposta do webhook não contém dados válidos");
+        console.error("Nenhum formato de resposta reconhecido:", data);
+        throw new Error("Formato de resposta não reconhecido");
       }
 
     } catch (error) {
@@ -93,7 +141,7 @@ const Index = () => {
       
       toast({
         title: "Erro na análise",
-        description: "Não foi possível analisar a imagem. Verifique se o webhook está configurado corretamente.",
+        description: error instanceof Error ? error.message : "Erro desconhecido na análise da imagem.",
         variant: "destructive",
       });
     } finally {
