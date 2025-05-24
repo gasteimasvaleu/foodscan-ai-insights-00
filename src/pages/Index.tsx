@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -133,16 +132,20 @@ const Index = () => {
       // Processar dados de forma mais flexível
       console.log("Tentando extrair dados nutricionais...");
       
+      // Extrair nutrientes do objeto correto
+      const nutrientes = data.nutrientes || {};
+      console.log("Nutrientes encontrados:", nutrientes);
+      
       const processedData: NutritionData = {
         foodName: data.alimento || data.foodName || data.food || data.nome || "Alimento identificado",
         description: data.descricao || data.description || data.message || "Informações nutricionais do alimento analisado.",
         nutrition: {
-          calories: parseNutritionValue(data.calorias || data.calories || 0),
-          carbohydrates: parseNutritionValue(data.carboidratos || data.carbohydrates || 0),
-          proteins: parseNutritionValue(data.proteinas || data.proteins || 0),
-          fats: parseNutritionValue(data.gorduras || data.fats || 0),
-          fiber: parseNutritionValue(data.fibras || data.fiber || 0),
-          sodium: parseNutritionValue(data.sodio || data.sodium || 0)
+          calories: parseNutritionValue(nutrientes.calorias || nutrientes.calories || 0),
+          carbohydrates: parseNutritionValue(nutrientes.carboidratos || nutrientes.carbohydrates || 0),
+          proteins: parseNutritionValue(nutrientes.proteinas || nutrientes.proteins || 0),
+          fats: parseNutritionValue(nutrientes.gorduras || nutrientes.fats || 0),
+          fiber: parseNutritionValue(nutrientes.fibras || nutrientes.fiber || 0),
+          sodium: parseNutritionValue(nutrientes.sodio || nutrientes.sodium || 0)
         }
       };
 
