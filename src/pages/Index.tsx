@@ -290,7 +290,11 @@ const Index = () => {
       reader.onload = () => {
         if (reader.result) {
           console.log("Conversão base64 concluída com sucesso");
-          resolve(reader.result as string);
+          // Remove o prefixo "data:image/...;base64," para enviar apenas o base64 puro
+          const base64String = reader.result as string;
+          const base64Pure = base64String.split(',')[1];
+          console.log("Base64 puro extraído, tamanho:", base64Pure.length);
+          resolve(base64Pure);
         } else {
           console.error("Resultado da conversão é null");
           reject(new Error("Erro ao converter imagem para base64"));
