@@ -74,7 +74,7 @@ const Index = () => {
       console.log("Base64 gerado, tamanho:", base64Image.length);
 
       const payload = {
-        image_data: base64Image,
+        image_data: `data:${imageFile.type};base64,${base64Image}`,
         image_name: imageFile.name,
         timestamp: new Date().toISOString(),
         user_id: "user_" + Date.now()
@@ -86,7 +86,7 @@ const Index = () => {
       console.log("- image_name:", payload.image_name);
       console.log("- timestamp:", payload.timestamp);
       console.log("- user_id:", payload.user_id);
-      console.log("- image_data length:", payload.image_data.length);
+      console.log("- image_data prefix:", payload.image_data.substring(0, 50) + "...");
 
       const requestOptions = {
         method: "POST",
