@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -23,7 +22,7 @@ export interface NutritionData {
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const webhookUrl = 'https://hook.us2.make.com/wc5k9emyfv4xn9650bufvdwyi1drenof';
+  const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
 
   const parseNutritionValue = (value: any): number => {
     console.log("Parsing nutrition value:", value, "Type:", typeof value);
