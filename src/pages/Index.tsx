@@ -55,17 +55,20 @@ const Index = () => {
       // Manter o base64 completo com cabeçalho MIME para o Make.com
       console.log("Base64 completo:", base64Image.substring(0, 50) + "...");
       
-      // Gerar nome de arquivo genérico para não influenciar a análise da IA
+      // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
-      const genericFilename = `food_image_${timestamp}.jpg`;
+      const originalExtension = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const genericFilename = `food_image_${timestamp}.${originalExtension}`;
       
-      console.log("Usando nome genérico para análise:", genericFilename);
+      console.log("Usando nome genérico com extensão:", genericFilename);
+      console.log("Extensão detectada:", originalExtension);
       
       const payload = {
         image: base64Image,
-        filename: genericFilename, // Nome genérico para não influenciar a análise
+        filename: genericFilename, // Nome genérico mas com extensão correta
         type: imageFile.type,
         size: imageFile.size,
+        extension: originalExtension, // Adicionando extensão separadamente
         prompt: `Analise VISUALMENTE esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
 
 {
