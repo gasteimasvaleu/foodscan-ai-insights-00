@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -57,9 +58,7 @@ const Index = () => {
 
       console.log("Convertendo imagem para base64...");
       const base64Full = await convertToBase64(imageFile);
-      // Remover o cabeçalho MIME do base64 para enviar apenas o conteúdo
-      const base64Content = base64Full.split(',')[1];
-      console.log("Base64 sem cabeçalho MIME, tamanho:", base64Content.length);
+      console.log("Base64 com cabeçalho MIME:", base64Full.substring(0, 50) + "...");
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -69,13 +68,14 @@ const Index = () => {
       console.log("Usando nome genérico com extensão:", genericFilename);
       console.log("Extensão detectada:", originalExtension);
       
+      // Enviar o base64 completo (com cabeçalho MIME) para que o Make.com possa processar corretamente
       const payload = {
-        image: base64Content, // Enviando apenas o conteúdo base64 (sem cabeçalho MIME)
-        filename: genericFilename,
-        type: imageFile.type,
-        size: imageFile.size,
-        extension: originalExtension,
+        fileData: base64Full, // Base64 completo com cabeçalho MIME (data:image/jpeg;base64,...)
+        fileName: genericFilename,
         mimeType: imageFile.type,
+        fileSize: imageFile.size,
+        fileExtension: originalExtension,
+        purpose: "vision", // Especificar que é para análise visual
         prompt: `Você é um especialista em identificação de alimentos. Analise esta imagem com EXTREMO CUIDADO e PRECISÃO VISUAL.
 
 INSTRUÇÕES CRÍTICAS:
@@ -106,7 +106,7 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
       console.log("URL do webhook:", webhookUrl);
       console.log("Payload estruturado:", {
         ...payload,
-        image: payload.image.substring(0, 50) + "... (truncated)"
+        fileData: payload.fileData.substring(0, 50) + "... (truncated)"
       });
 
       const response = await fetch(webhookUrl, {
