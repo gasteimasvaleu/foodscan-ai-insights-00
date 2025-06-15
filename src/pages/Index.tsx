@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
 import { LoadingState } from '@/components/LoadingState';
@@ -7,6 +7,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export interface NutritionData {
   foodName: string;
@@ -27,8 +29,26 @@ const Index = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [imageDescription, setImageDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const openaiApiKey = 'sk-proj-4pFVfVOtEJSq1eTllrJKWFRFhVRMo3lRWWZLgdwOE15KpTWc6hnwzYmq_tT3BlbkFJh_h-IJ5JlUYhOZDUnUaQA';
+  const [openaiApiKey, setOpenaiApiKey] = useState('');
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
+
+  // Carregar chave do localStorage na inicialização
+  useEffect(() => {
+    const savedKey = localStorage.getItem('openai_api_key');
+    if (savedKey) {
+      setOpenaiApiKey(savedKey);
+    }
+  }, []);
+
+  // Salvar chave no localStorage quando alterada
+  const handleApiKeyChange = (value: string) => {
+    setOpenaiApiKey(value);
+    if (value.trim()) {
+      localStorage.setItem('openai_api_key', value);
+    } else {
+      localStorage.removeItem('openai_api_key');
+    }
+  };
 
   const parseNutritionValue = (value: any): number => {
     console.log("Parsing nutrition value:", value, "Type:", typeof value);
@@ -46,6 +66,15 @@ const Index = () => {
   const handleImageAnalysis = async (imageFile: File) => {
     setSelectedImage(URL.createObjectURL(imageFile));
     
+    if (!openaiApiKey.trim()) {
+      toast({
+        title: "API Key necessária",
+        description: "Por favor, insira sua chave da OpenAI primeiro.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsDescribing(true);
     console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
 
@@ -309,6 +338,22 @@ Todos os valores devem ser números reais baseados no alimento descrito.`
         <Header />
         
         <div className="max-w-4xl mx-auto space-y-8">
+          {/* Campo para API Key */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+            <Label htmlFor="apikey">Chave da OpenAI</Label>
+            <Input
+              id="apikey"
+              type="password"
+              placeholder="sk-proj-..."
+              value={openaiApiKey}
+              onChange={(e) => handleApiKeyChange(e.target.value)}
+              className="mt-2"
+            />
+            <p className="text-sm text-gray-600 mt-2">
+              Insira sua chave da OpenAI para análise das imagens. A chave será salva localmente no seu navegador.
+            </p>
+          </div>
+
           {isAnalyzing ? (
             <LoadingState />
           ) : nutritionData ? (
