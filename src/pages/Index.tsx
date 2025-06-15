@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 export interface NutritionData {
   foodName: string;
   description: string;
+  quantity: string; // Nova propriedade para informar a quantidade de referência
   nutrition: {
     calories: number;
     carbohydrates: number;
@@ -161,15 +162,22 @@ Retorne APENAS um JSON válido no formato:
 {
   "nome_alimento": "Nome específico do alimento",
   "descricao": "Descrição nutricional",
-  "calorias": número_por_100g,
-  "carboidratos": gramas_por_100g,
-  "proteinas": gramas_por_100g,
-  "gorduras": gramas_por_100g,
-  "fibras": gramas_por_100g,
-  "sodio": miligramas_por_100g
+  "quantidade_referencia": "Porção típica (ex: 100g, 1 fatia média, 1 xícara, 1 unidade média)",
+  "calorias": número_por_porção,
+  "carboidratos": gramas_por_porção,
+  "proteinas": gramas_por_porção,
+  "gorduras": gramas_por_porção,
+  "fibras": gramas_por_porção,
+  "sodio": miligramas_por_porção
 }
 
-Todos os valores devem ser números reais baseados no alimento descrito.`
+IMPORTANTE: Identifique uma porção típica realista do alimento (não apenas 100g) e calcule os valores nutricionais para essa porção específica. Por exemplo:
+- Pizza: 1 fatia média (120g)
+- Maçã: 1 unidade média (180g)
+- Arroz: 1 xícara cozida (150g)
+- Pão: 1 fatia (25g)
+
+Todos os valores devem ser números reais baseados na porção identificada.`
       };
 
       console.log("Enviando payload:", payload);
@@ -227,6 +235,7 @@ Todos os valores devem ser números reais baseados no alimento descrito.`
     const processedData: NutritionData = {
       foodName: extractFoodName(data, responseText),
       description: extractDescription(data, responseText),
+      quantity: extractQuantity(data, responseText), // Nova extração
       nutrition: {
         calories: extractNutritionValue(data, responseText, ['calories', 'calorias', 'kcal']),
         carbohydrates: extractNutritionValue(data, responseText, ['carbohydrates', 'carboidratos', 'carbs']),
@@ -276,6 +285,16 @@ Todos os valores devem ser números reais baseados no alimento descrito.`
     // Usar primeira linha como descrição se não encontrar
     const firstLine = text.split('\n')[0];
     return firstLine || "Informações nutricionais do alimento analisado.";
+  };
+
+  const extractQuantity = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.quantidade_referencia || data.quantity || data.porção || data.portion || "100g";
+    }
+    
+    // Tentar extrair do texto
+    const quantityMatch = text.match(/(?:quantidade|porção|portion):\s*([^\n]+)/i);
+    return quantityMatch ? quantityMatch[1].trim() : "100g";
   };
 
   const extractNutritionValue = (data: any, text: string, keys: string[]): number => {

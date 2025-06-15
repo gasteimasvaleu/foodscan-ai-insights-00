@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RotateCcw, Award, Info } from 'lucide-react';
+import { RotateCcw, Award, Info, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NutritionData } from '@/pages/Index';
 
@@ -51,6 +51,26 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
         </div>
       </div>
 
+      {/* Quantity Reference */}
+      <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6">
+        <div className="flex items-center justify-center space-x-3">
+          <div className="bg-blue-100 rounded-full p-3">
+            <Scale className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-blue-800">
+              Porção de Referência
+            </h4>
+            <p className="text-2xl font-bold text-blue-700">
+              {data.quantity}
+            </p>
+            <p className="text-sm text-blue-600">
+              Os valores nutricionais abaixo são referentes a esta porção
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Nutrition Table */}
       <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
         <h4 className="text-2xl font-bold text-gray-800 mb-6 text-center">
@@ -96,6 +116,9 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
                   <th className="px-6 py-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wide">
                     Unidade
                   </th>
+                  <th className="px-6 py-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wide">
+                    Porção ({data.quantity})
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -109,6 +132,9 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
                     </td>
                     <td className="px-6 py-4 text-center text-sm text-gray-600">
                       {item.unit}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-500">
+                      {data.quantity}
                     </td>
                   </tr>
                 ))}
