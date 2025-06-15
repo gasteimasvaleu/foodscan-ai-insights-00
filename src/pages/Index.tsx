@@ -58,7 +58,9 @@ const Index = () => {
 
       console.log("Convertendo imagem para base64...");
       const base64Full = await convertToBase64(imageFile);
-      console.log("Base64 com cabeçalho MIME:", base64Full.substring(0, 50) + "...");
+      // Separar o cabeçalho MIME do conteúdo base64
+      const base64Content = base64Full.split(',')[1];
+      console.log("Base64 puro (sem cabeçalho):", base64Content.substring(0, 50) + "...");
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -67,15 +69,17 @@ const Index = () => {
       
       console.log("Usando nome genérico com extensão:", genericFilename);
       console.log("Extensão detectada:", originalExtension);
+      console.log("MIME Type:", imageFile.type);
       
-      // Enviar o base64 completo (com cabeçalho MIME) para que o Make.com possa processar corretamente
+      // Enviar dados estruturados para o Make.com processar no "Upload a File"
       const payload = {
-        fileData: base64Full, // Base64 completo com cabeçalho MIME (data:image/jpeg;base64,...)
-        fileName: genericFilename,
-        mimeType: imageFile.type,
-        fileSize: imageFile.size,
-        fileExtension: originalExtension,
-        purpose: "vision", // Especificar que é para análise visual
+        // Para o módulo "Upload a File" da OpenAI
+        fileContent: base64Content,        // Base64 puro (sem data:image/jpeg;base64,)
+        fileName: genericFilename,         // Nome com extensão correta
+        mimeType: imageFile.type,         // MIME type correto (image/webp, image/jpeg, etc.)
+        purpose: "vision",                // Especificar que é para análise visual
+        
+        // Para o módulo "Create Chat Completion"
         prompt: `Você é um especialista em identificação de alimentos. Analise esta imagem com EXTREMO CUIDADO e PRECISÃO VISUAL.
 
 INSTRUÇÕES CRÍTICAS:
@@ -105,8 +109,11 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
       console.log("=== ENVIANDO PARA WEBHOOK ===");
       console.log("URL do webhook:", webhookUrl);
       console.log("Payload estruturado:", {
-        ...payload,
-        fileData: payload.fileData.substring(0, 50) + "... (truncated)"
+        fileContent: payload.fileContent.substring(0, 50) + "... (base64 truncated)",
+        fileName: payload.fileName,
+        mimeType: payload.mimeType,
+        purpose: payload.purpose,
+        prompt: payload.prompt.substring(0, 100) + "... (prompt truncated)"
       });
 
       const response = await fetch(webhookUrl, {
