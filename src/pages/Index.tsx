@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -53,16 +54,14 @@ const Index = () => {
       const base64Image = await convertToBase64(imageFile);
       console.log("Base64 gerado, tamanho:", base64Image.length);
 
+      // Enviando apenas como "value" único
       const payload = {
-        image_data: base64Image,
-        image_name: imageFile.name,
-        timestamp: new Date().toISOString(),
-        user_id: "user_" + Date.now()
+        value: base64Image
       };
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
       console.log("URL do webhook:", webhookUrl);
-      console.log("Payload keys:", Object.keys(payload));
+      console.log("Enviando apenas como 'value'");
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -75,14 +74,9 @@ const Index = () => {
       console.log("=== RESPOSTA RECEBIDA ===");
       console.log("Status:", response.status);
       console.log("Status OK:", response.ok);
-      console.log("Headers:", Object.fromEntries(response.headers.entries()));
 
       const responseText = await response.text();
       console.log("=== RESPONSE TEXT COMPLETO ===");
-      console.log("Tipo de resposta:", typeof responseText);
-      console.log("Tamanho da resposta:", responseText.length);
-      console.log("Primeiros 500 caracteres:", responseText.substring(0, 500));
-      console.log("Últimos 500 caracteres:", responseText.substring(Math.max(0, responseText.length - 500)));
       console.log("Resposta completa:", responseText);
 
       if (!response.ok) {
@@ -90,53 +84,14 @@ const Index = () => {
         throw new Error(`Erro ${response.status}: ${responseText}`);
       }
 
-      // Verificar se a resposta está vazia
       if (!responseText || responseText.trim() === '') {
         console.error("Resposta vazia do servidor");
         throw new Error("Resposta vazia do servidor");
       }
 
-      let data;
-      try {
-        console.log("=== TENTANDO FAZER PARSE DO JSON ===");
-        data = JSON.parse(responseText);
-        console.log("=== JSON PARSEADO COM SUCESSO ===");
-        console.log("Tipo de data:", typeof data);
-        console.log("Data é array:", Array.isArray(data));
-        console.log("Keys de data:", Object.keys(data));
-        console.log("Data completo:", JSON.stringify(data, null, 2));
-      } catch (parseError) {
-        console.error("=== ERRO AO FAZER PARSE DO JSON ===");
-        console.error("Erro de parse:", parseError);
-        console.error("Response text que causou o erro:", responseText);
-        throw new Error(`Resposta inválida do servidor - não é um JSON válido: ${parseError}`);
-      }
-
-      // Verificar se data é válido
-      if (!data || typeof data !== 'object') {
-        console.error("Data não é um objeto válido:", data);
-        throw new Error("Resposta do servidor não contém dados válidos");
-      }
-
-      // Processar os dados recebidos do webhook com logs detalhados
-      console.log("=== PROCESSANDO DADOS RECEBIDOS ===");
-      console.log("Procurando food_name em:", data.food_name);
-      console.log("Procurando foodName em:", data.foodName);
-      console.log("Procurando alimento em:", data.alimento);
-
-      const processedData: NutritionData = {
-        foodName: data.food_name || data.foodName || data.alimento || "Alimento identificado",
-        description: data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.",
-        nutrition: {
-          calories: parseNutritionValue(data.calories || data.calorias || 0),
-          carbohydrates: parseNutritionValue(data.carbohydrates || data.carboidratos || 0),
-          proteins: parseNutritionValue(data.proteins || data.proteinas || 0),
-          fats: parseNutritionValue(data.fats || data.gorduras || 0),
-          fiber: parseNutritionValue(data.fiber || data.fibras || 0),
-          sodium: parseNutritionValue(data.sodium || data.sodio || 0)
-        }
-      };
-
+      // Processar resposta da OpenAI
+      const processedData = processOpenAIResponse(responseText);
+      
       console.log("=== DADOS FINAIS PROCESSADOS ===");
       console.log("Dados finais:", JSON.stringify(processedData, null, 2));
 
@@ -150,7 +105,6 @@ const Index = () => {
     } catch (error) {
       console.error("=== ERRO COMPLETO ===");
       console.error("Erro:", error);
-      console.error("Stack trace:", error instanceof Error ? error.stack : 'N/A');
       
       toast({
         title: "Erro na análise",
@@ -160,6 +114,97 @@ const Index = () => {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const processOpenAIResponse = (responseText: string): NutritionData => {
+    console.log("=== PROCESSANDO RESPOSTA DA OPENAI ===");
+    
+    // Tentar fazer parse como JSON primeiro
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log("JSON parseado com sucesso:", data);
+    } catch (parseError) {
+      console.log("Não é JSON válido, processando como texto simples");
+      // Se não for JSON, processar como texto
+      data = parseTextResponse(responseText);
+    }
+
+    // Extrair informações nutricionais
+    const processedData: NutritionData = {
+      foodName: extractFoodName(data, responseText),
+      description: extractDescription(data, responseText),
+      nutrition: {
+        calories: extractNutritionValue(data, responseText, ['calories', 'calorias', 'kcal']),
+        carbohydrates: extractNutritionValue(data, responseText, ['carbohydrates', 'carboidratos', 'carbs']),
+        proteins: extractNutritionValue(data, responseText, ['proteins', 'proteinas', 'protein']),
+        fats: extractNutritionValue(data, responseText, ['fats', 'gorduras', 'fat', 'lipids']),
+        fiber: extractNutritionValue(data, responseText, ['fiber', 'fibras', 'fibre']),
+        sodium: extractNutritionValue(data, responseText, ['sodium', 'sodio', 'salt'])
+      }
+    };
+
+    return processedData;
+  };
+
+  const parseTextResponse = (text: string) => {
+    // Processar resposta como texto simples
+    const lines = text.split('\n');
+    const result: any = {};
+    
+    lines.forEach(line => {
+      // Procurar por padrões como "Calorias: 250" ou "Proteínas: 15g"
+      const match = line.match(/([^:]+):\s*(\d+(?:\.\d+)?)/i);
+      if (match) {
+        const key = match[1].trim().toLowerCase();
+        const value = parseFloat(match[2]);
+        result[key] = value;
+      }
+    });
+    
+    return result;
+  };
+
+  const extractFoodName = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.food_name || data.foodName || data.nome || data.alimento || "Alimento identificado";
+    }
+    
+    // Tentar extrair do texto
+    const foodMatch = text.match(/(?:alimento|food|nome):\s*([^\n]+)/i);
+    return foodMatch ? foodMatch[1].trim() : "Alimento identificado";
+  };
+
+  const extractDescription = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.";
+    }
+    
+    // Usar primeira linha como descrição se não encontrar
+    const firstLine = text.split('\n')[0];
+    return firstLine || "Informações nutricionais do alimento analisado.";
+  };
+
+  const extractNutritionValue = (data: any, text: string, keys: string[]): number => {
+    // Primeiro tentar encontrar no objeto JSON
+    if (data && typeof data === 'object') {
+      for (const key of keys) {
+        if (data[key] !== undefined) {
+          return parseNutritionValue(data[key]);
+        }
+      }
+    }
+    
+    // Tentar extrair do texto
+    for (const key of keys) {
+      const regex = new RegExp(`${key}[^\\d]*([\\d,\\.]+)`, 'i');
+      const match = text.match(regex);
+      if (match) {
+        return parseNutritionValue(match[1]);
+      }
+    }
+    
+    return 0;
   };
 
   const convertToBase64 = (file: File): Promise<string> => {
