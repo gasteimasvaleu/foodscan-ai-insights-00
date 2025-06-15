@@ -54,14 +54,35 @@ const Index = () => {
       const base64Image = await convertToBase64(imageFile);
       console.log("Base64 gerado, tamanho:", base64Image.length);
 
-      // Enviando apenas como "value" único
+      // Enviando apenas como "value" único com prompt melhorado
       const payload = {
-        value: base64Image
+        value: base64Image,
+        prompt: `Analise esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
+
+{
+  "nome_alimento": "Nome específico do alimento identificado",
+  "descricao": "Descrição detalhada do que você vê na imagem",
+  "calorias": número_de_calorias_por_100g,
+  "carboidratos": gramas_de_carboidratos_por_100g,
+  "proteinas": gramas_de_proteinas_por_100g,
+  "gorduras": gramas_de_gorduras_por_100g,
+  "fibras": gramas_de_fibras_por_100g,
+  "sodio": miligramas_de_sodio_por_100g
+}
+
+INSTRUÇÕES IMPORTANTES:
+- Identifique com PRECISÃO o alimento na imagem
+- Se for uma pizza, identifique os ingredientes visíveis (massa, queijo, calabresa, etc.)
+- Se for uma refeição completa, foque no item principal
+- Use valores nutricionais reais e precisos por 100g do alimento
+- Todos os valores devem ser números (sem texto adicional)
+- Não inclua explicações, apenas o JSON
+- Se houver múltiplos alimentos, identifique o principal/maior`
       };
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
       console.log("URL do webhook:", webhookUrl);
-      console.log("Enviando apenas como 'value'");
+      console.log("Enviando com prompt melhorado");
 
       const response = await fetch(webhookUrl, {
         method: "POST",
