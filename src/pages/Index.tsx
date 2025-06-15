@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -38,62 +37,6 @@ const Index = () => {
     return 0;
   };
 
-  const uploadImageToPublicUrl = async (imageFile: File): Promise<string> => {
-    console.log("Fazendo upload da imagem para obter URL pública...");
-    
-    try {
-      // Usando ImgBB como serviço de hospedagem temporária
-      const formData = new FormData();
-      formData.append('image', imageFile);
-      
-      // Chave pública do ImgBB (pode ser exposta no frontend)
-      const imgbbApiKey = '7f7e3e5c7c8f8b9a1d2e3f4g5h6i7j8k'; // Esta seria uma chave pública
-      
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-        method: 'POST',
-        body: formData
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao fazer upload da imagem');
-      }
-      
-      const data = await response.json();
-      const imageUrl = data.data.url;
-      
-      console.log("URL pública da imagem:", imageUrl);
-      return imageUrl;
-      
-    } catch (error) {
-      console.error("Erro no upload para ImgBB, tentando alternativa...");
-      
-      // Alternativa: usar um serviço gratuito como postimg.cc
-      try {
-        const formData = new FormData();
-        formData.append('upload', imageFile);
-        
-        const response = await fetch('https://postimg.cc/json', {
-          method: 'POST',
-          body: formData
-        });
-        
-        if (!response.ok) {
-          throw new Error('Erro ao fazer upload alternativo da imagem');
-        }
-        
-        const data = await response.json();
-        const imageUrl = data.url;
-        
-        console.log("URL pública da imagem (alternativa):", imageUrl);
-        return imageUrl;
-        
-      } catch (altError) {
-        console.error("Erro no upload alternativo:", altError);
-        throw new Error('Não foi possível fazer upload da imagem para obter URL pública');
-      }
-    }
-  };
-
   const handleImageAnalysis = async (imageFile: File) => {
     setIsAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE ===");
@@ -112,8 +55,9 @@ const Index = () => {
         throw new Error(`Formato não suportado. Use: JPG, PNG, GIF ou WebP. Formato atual: ${imageFile.type}`);
       }
 
-      // Fazer upload da imagem para obter URL pública
-      const imageUrl = await uploadImageToPublicUrl(imageFile);
+      console.log("Convertendo imagem para base64...");
+      const base64Image = await convertToBase64(imageFile);
+      console.log("Imagem convertida para base64, tamanho:", base64Image.length);
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -124,7 +68,7 @@ const Index = () => {
       console.log("Extensão detectada:", originalExtension);
       
       const payload = {
-        imageUrl: imageUrl, // Enviando URL pública em vez de base64
+        image: base64Image, // Enviando base64 completo com cabeçalho MIME
         filename: genericFilename,
         type: imageFile.type,
         size: imageFile.size,
@@ -158,7 +102,7 @@ INSTRUÇÕES CRÍTICAS:
       console.log("URL do webhook:", webhookUrl);
       console.log("Payload estruturado:", {
         ...payload,
-        imageUrl: payload.imageUrl.substring(0, 50) + "... (truncated)"
+        image: payload.image.substring(0, 50) + "... (truncated)"
       });
 
       const response = await fetch(webhookUrl, {
