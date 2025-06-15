@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -53,20 +52,14 @@ const Index = () => {
       console.log("Convertendo imagem para base64...");
       const base64Image = await convertToBase64(imageFile);
       
-      // Extrair apenas o base64 PURO (sem cabeçalho MIME)
-      const base64Pure = base64Image.split(',')[1];
-      console.log("Base64 puro extraído, tamanho:", base64Pure.length);
+      // Manter o base64 completo com cabeçalho MIME para o Make.com
+      console.log("Base64 completo:", base64Image.substring(0, 50) + "...");
       
-      // Determinar a extensão do arquivo
-      const fileExtension = imageFile.name.split('.').pop()?.toLowerCase() || 
-                           imageFile.type.split('/')[1] || 'jpg';
-      const imageFilename = `image.${fileExtension}`;
-      
-      console.log("Nome do arquivo para OpenAI:", imageFilename);
-
       const payload = {
-        value: base64Pure, // Enviando apenas base64 puro
-        imageFilename: imageFilename, // Nome do arquivo com extensão
+        image: base64Image, // Usando 'image' como chave
+        filename: imageFile.name,
+        type: imageFile.type,
+        size: imageFile.size,
         prompt: `Analise esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
 
 {
@@ -92,9 +85,10 @@ INSTRUÇÕES IMPORTANTES:
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
       console.log("URL do webhook:", webhookUrl);
-      console.log("Tipo MIME da imagem:", imageFile.type);
-      console.log("Nome do arquivo:", imageFilename);
-      console.log("Enviando base64 PURO (sem cabeçalho MIME)");
+      console.log("Payload estruturado:", {
+        ...payload,
+        image: payload.image.substring(0, 50) + "... (truncated)"
+      });
 
       const response = await fetch(webhookUrl, {
         method: "POST",
