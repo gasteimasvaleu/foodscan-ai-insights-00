@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -6,6 +5,10 @@ import { LoadingState } from '@/components/LoadingState';
 import { Header } from '@/components/Header';
 import { EmptyState } from '@/components/EmptyState';
 import { toast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export interface NutritionData {
   foodName: string;
@@ -22,7 +25,11 @@ export interface NutritionData {
 
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isDescribing, setIsDescribing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
+  const [imageDescription, setImageDescription] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [openaiApiKey, setOpenaiApiKey] = useState('');
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
 
   const parseNutritionValue = (value: any): number => {
@@ -39,60 +46,107 @@ const Index = () => {
   };
 
   const handleImageAnalysis = async (imageFile: File) => {
-    setIsAnalyzing(true);
-    console.log("=== INICIANDO ANÁLISE ===");
-    console.log("Nome do arquivo original:", imageFile.name);
-    console.log("Tamanho do arquivo:", imageFile.size, "bytes");
-    console.log("Tipo do arquivo:", imageFile.type);
+    setSelectedImage(URL.createObjectURL(imageFile));
+    
+    if (!openaiApiKey) {
+      toast({
+        title: "API Key necessária",
+        description: "Por favor, insira sua chave da OpenAI primeiro.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsDescribing(true);
+    console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
 
     try {
-      if (imageFile.size > 10 * 1024 * 1024) {
-        throw new Error("Arquivo muito grande (máximo 10MB)");
-      }
-
-      // Validar formato do arquivo
-      const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (!supportedFormats.includes(imageFile.type)) {
-        throw new Error(`Formato não suportado. Use: JPG, PNG, GIF ou WebP. Formato atual: ${imageFile.type}`);
-      }
-
-      console.log("Convertendo imagem para base64...");
+      // Converter imagem para base64
       const base64Full = await convertToBase64(imageFile);
-      // Separar o cabeçalho MIME do conteúdo base64
-      const base64Content = base64Full.split(',')[1];
-      console.log("Base64 puro (sem cabeçalho):", base64Content.substring(0, 50) + "...");
       
-      // Gerar nome de arquivo genérico mas com a extensão correta
-      const timestamp = Date.now();
-      const originalExtension = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const genericFilename = `food_image_${timestamp}.${originalExtension}`;
+      // Fazer análise direta com a OpenAI
+      const description = await analyzeImageWithOpenAI(base64Full);
+      setImageDescription(description);
       
-      console.log("Usando nome genérico com extensão:", genericFilename);
-      console.log("Extensão detectada:", originalExtension);
-      console.log("MIME Type:", imageFile.type);
-      
-      // Enviar dados estruturados para o Make.com processar no "Upload a File"
-      const payload = {
-        // Para o módulo "Upload a File" da OpenAI
-        fileContent: base64Content,        // Base64 puro (sem data:image/jpeg;base64,)
-        fileName: genericFilename,         // Nome com extensão correta
-        mimeType: imageFile.type,         // MIME type correto (image/webp, image/jpeg, etc.)
-        purpose: "vision",                // Especificar que é para análise visual
-        
-        // Para o módulo "Create Chat Completion"
-        prompt: `Você é um especialista em identificação de alimentos. Analise esta imagem com EXTREMO CUIDADO e PRECISÃO VISUAL.
+      toast({
+        title: "Descrição gerada!",
+        description: "Agora você pode enviar para análise nutricional.",
+      });
 
-INSTRUÇÕES CRÍTICAS:
-1. IGNORE COMPLETAMENTE o nome do arquivo - foque 100% na análise VISUAL da imagem
-2. Observe atentamente todos os detalhes visuais: cores, texturas, formas, ingredientes visíveis
-3. Se for uma pizza, identifique os ingredientes que você consegue VER (massa, queijo, calabresa, tomate, etc.)
-4. Se for frango, identifique se são nuggets, filé, coxa, etc.
-5. Se for uma refeição completa, identifique CADA componente visível
+    } catch (error) {
+      console.error("Erro na descrição:", error);
+      toast({
+        title: "Erro na descrição",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDescribing(false);
+    }
+  };
+
+  const analyzeImageWithOpenAI = async (base64Image: string): Promise<string> => {
+    console.log("Enviando para OpenAI...");
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Descreva detalhadamente este alimento. Identifique o que você vê: tipo de alimento, ingredientes visíveis, modo de preparo, características visuais. Seja muito específico e preciso."
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: base64Image
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 500
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro da OpenAI: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  };
+
+  const handleNutritionAnalysis = async () => {
+    if (!imageDescription.trim()) {
+      toast({
+        title: "Descrição necessária",
+        description: "Por favor, gere a descrição da imagem primeiro.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    console.log("=== ENVIANDO DESCRIÇÃO PARA MAKE ===");
+
+    try {
+      const payload = {
+        description: imageDescription,
+        prompt: `Baseado nesta descrição detalhada de um alimento: "${imageDescription}"
 
 Retorne APENAS um JSON válido no formato:
 {
-  "nome_alimento": "Nome ESPECÍFICO e PRECISO do alimento que você VÊ",
-  "descricao": "Descrição DETALHADA de tudo que você consegue observar na imagem",
+  "nome_alimento": "Nome específico do alimento",
+  "descricao": "Descrição nutricional",
   "calorias": número_por_100g,
   "carboidratos": gramas_por_100g,
   "proteinas": gramas_por_100g,
@@ -101,20 +155,10 @@ Retorne APENAS um JSON válido no formato:
   "sodio": miligramas_por_100g
 }
 
-EXEMPLO: Se você vê uma pizza com queijo e calabresa, retorne "Pizza de calabresa" não "Nuggets de frango".
-BASE SUA RESPOSTA 100% NO QUE VOCÊ VÊ NA IMAGEM, NÃO NO NOME DO ARQUIVO.
-Todos os valores nutricionais devem ser números reais baseados no alimento IDENTIFICADO VISUALMENTE.`
+Todos os valores devem ser números reais baseados no alimento descrito.`
       };
 
-      console.log("=== ENVIANDO PARA WEBHOOK ===");
-      console.log("URL do webhook:", webhookUrl);
-      console.log("Payload estruturado:", {
-        fileContent: payload.fileContent.substring(0, 50) + "... (base64 truncated)",
-        fileName: payload.fileName,
-        mimeType: payload.mimeType,
-        purpose: payload.purpose,
-        prompt: payload.prompt.substring(0, 100) + "... (prompt truncated)"
-      });
+      console.log("Enviando payload:", payload);
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -124,30 +168,14 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
         body: JSON.stringify(payload),
       });
 
-      console.log("=== RESPOSTA RECEBIDA ===");
-      console.log("Status:", response.status);
-      console.log("Status OK:", response.ok);
-
       const responseText = await response.text();
-      console.log("=== RESPONSE TEXT COMPLETO ===");
-      console.log("Resposta completa:", responseText);
+      console.log("Resposta:", responseText);
 
       if (!response.ok) {
-        console.error("Erro HTTP:", response.status, responseText);
         throw new Error(`Erro ${response.status}: ${responseText}`);
       }
 
-      if (!responseText || responseText.trim() === '') {
-        console.error("Resposta vazia do servidor");
-        throw new Error("Resposta vazia do servidor");
-      }
-
-      // Processar resposta da OpenAI
       const processedData = processOpenAIResponse(responseText);
-      
-      console.log("=== DADOS FINAIS PROCESSADOS ===");
-      console.log("Dados finais:", JSON.stringify(processedData, null, 2));
-
       setNutritionData(processedData);
       
       toast({
@@ -156,9 +184,7 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
       });
 
     } catch (error) {
-      console.error("=== ERRO COMPLETO ===");
       console.error("Erro:", error);
-      
       toast({
         title: "Erro na análise",
         description: error instanceof Error ? error.message : "Erro desconhecido",
@@ -266,16 +292,13 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
       
       reader.onload = () => {
         if (reader.result) {
-          // Retorna o base64 completo com cabeçalho MIME
-          const base64String = reader.result as string;
-          console.log("Base64 com cabeçalho MIME:", base64String.substring(0, 50) + "...");
-          resolve(base64String);
+          resolve(reader.result as string);
         } else {
           reject(new Error("Erro ao converter imagem para base64"));
         }
       };
       
-      reader.onerror = (error) => {
+      reader.onerror = () => {
         reject(new Error("Erro ao ler arquivo de imagem"));
       };
       
@@ -285,7 +308,10 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
 
   const handleReset = () => {
     setNutritionData(null);
+    setImageDescription('');
+    setSelectedImage(null);
     setIsAnalyzing(false);
+    setIsDescribing(false);
   };
 
   return (
@@ -294,6 +320,22 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
         <Header />
         
         <div className="max-w-4xl mx-auto space-y-8">
+          {/* Campo para API Key */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+            <Label htmlFor="apikey">Chave da OpenAI</Label>
+            <Input
+              id="apikey"
+              type="password"
+              placeholder="sk-..."
+              value={openaiApiKey}
+              onChange={(e) => setOpenaiApiKey(e.target.value)}
+              className="mt-2"
+            />
+            <p className="text-sm text-gray-600 mt-2">
+              Insira sua chave da OpenAI para análise das imagens
+            </p>
+          </div>
+
           {isAnalyzing ? (
             <LoadingState />
           ) : nutritionData ? (
@@ -302,6 +344,50 @@ Todos os valores nutricionais devem ser números reais baseados no alimento IDEN
             <div className="space-y-8">
               <EmptyState />
               <ImageUpload onImageSelect={handleImageAnalysis} />
+              
+              {/* Seção de Descrição */}
+              {(selectedImage || imageDescription) && (
+                <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Descrição da Imagem
+                  </h3>
+                  
+                  {selectedImage && (
+                    <div className="mb-4">
+                      <img
+                        src={selectedImage}
+                        alt="Imagem selecionada"
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                  
+                  {isDescribing ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+                      <span className="text-gray-600">Analisando imagem...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Textarea
+                        value={imageDescription}
+                        onChange={(e) => setImageDescription(e.target.value)}
+                        placeholder="A descrição da imagem aparecerá aqui..."
+                        className="min-h-[120px] mb-4"
+                      />
+                      
+                      {imageDescription && (
+                        <Button
+                          onClick={handleNutritionAnalysis}
+                          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
+                        >
+                          Analisar Nutrição
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
