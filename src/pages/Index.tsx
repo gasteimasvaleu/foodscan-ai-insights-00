@@ -7,8 +7,6 @@ import { EmptyState } from '@/components/EmptyState';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 export interface NutritionData {
   foodName: string;
@@ -29,7 +27,7 @@ const Index = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [imageDescription, setImageDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [openaiApiKey, setOpenaiApiKey] = useState('');
+  const openaiApiKey = 'sk-proj-4pFVfVOtEJSq1eTllrJKWFRFhVRMo3lRWWZLgdwOE15KpTWc6hnwzYmq_tT3BlbkFJh_h-IJ5JlUYhOZDUnUaQA';
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
 
   const parseNutritionValue = (value: any): number => {
@@ -48,15 +46,6 @@ const Index = () => {
   const handleImageAnalysis = async (imageFile: File) => {
     setSelectedImage(URL.createObjectURL(imageFile));
     
-    if (!openaiApiKey) {
-      toast({
-        title: "API Key necessária",
-        description: "Por favor, insira sua chave da OpenAI primeiro.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsDescribing(true);
     console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
 
@@ -320,22 +309,6 @@ Todos os valores devem ser números reais baseados no alimento descrito.`
         <Header />
         
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Campo para API Key */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-            <Label htmlFor="apikey">Chave da OpenAI</Label>
-            <Input
-              id="apikey"
-              type="password"
-              placeholder="sk-..."
-              value={openaiApiKey}
-              onChange={(e) => setOpenaiApiKey(e.target.value)}
-              className="mt-2"
-            />
-            <p className="text-sm text-gray-600 mt-2">
-              Insira sua chave da OpenAI para análise das imagens
-            </p>
-          </div>
-
           {isAnalyzing ? (
             <LoadingState />
           ) : nutritionData ? (
