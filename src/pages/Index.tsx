@@ -49,11 +49,18 @@ const Index = () => {
         throw new Error("Arquivo muito grande (máximo 10MB)");
       }
 
+      // Validar formato do arquivo
+      const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!supportedFormats.includes(imageFile.type)) {
+        throw new Error(`Formato não suportado. Use: JPG, PNG, GIF ou WebP. Formato atual: ${imageFile.type}`);
+      }
+
       console.log("Convertendo imagem para base64...");
       const base64Image = await convertToBase64(imageFile);
       
-      // Manter o base64 completo com cabeçalho MIME para o Make.com
-      console.log("Base64 completo:", base64Image.substring(0, 50) + "...");
+      // Remover o cabeçalho MIME do base64 para a OpenAI
+      const base64Content = base64Image.split(',')[1];
+      console.log("Base64 sem cabeçalho MIME:", base64Content.substring(0, 50) + "...");
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -64,11 +71,12 @@ const Index = () => {
       console.log("Extensão detectada:", originalExtension);
       
       const payload = {
-        image: base64Image,
-        filename: genericFilename, // Nome genérico mas com extensão correta
+        image: base64Content, // Apenas o conteúdo base64 sem cabeçalho MIME
+        filename: genericFilename,
         type: imageFile.type,
         size: imageFile.size,
-        extension: originalExtension, // Adicionando extensão separadamente
+        extension: originalExtension,
+        mimeType: imageFile.type, // Enviando o MIME type separadamente
         prompt: `Analise VISUALMENTE esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
 
 {
@@ -204,7 +212,7 @@ INSTRUÇÕES CRÍTICAS:
 
   const extractFoodName = (data: any, text: string): string => {
     if (data && typeof data === 'object') {
-      return data.food_name || data.foodName || data.nome || data.alimento || "Alimento identificado";
+      return data.food_name || data.foodName || data.nome || data.alimento || data.nome_alimento || "Alimento identificado";
     }
     
     // Tentar extrair do texto
@@ -250,7 +258,7 @@ INSTRUÇÕES CRÍTICAS:
       
       reader.onload = () => {
         if (reader.result) {
-          // Mantém o base64 completo com cabeçalho MIME (data:image/jpeg;base64,...)
+          // Retorna o base64 completo com cabeçalho MIME
           const base64String = reader.result as string;
           console.log("Base64 com cabeçalho MIME:", base64String.substring(0, 50) + "...");
           resolve(base64String);
