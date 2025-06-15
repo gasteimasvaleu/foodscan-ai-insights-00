@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -62,7 +61,8 @@ const Index = () => {
       };
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
-      console.log("Payload:", payload);
+      console.log("URL do webhook:", webhookUrl);
+      console.log("Payload keys:", Object.keys(payload));
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -74,25 +74,56 @@ const Index = () => {
 
       console.log("=== RESPOSTA RECEBIDA ===");
       console.log("Status:", response.status);
+      console.log("Status OK:", response.ok);
+      console.log("Headers:", Object.fromEntries(response.headers.entries()));
 
       const responseText = await response.text();
-      console.log("Response completo:", responseText);
+      console.log("=== RESPONSE TEXT COMPLETO ===");
+      console.log("Tipo de resposta:", typeof responseText);
+      console.log("Tamanho da resposta:", responseText.length);
+      console.log("Primeiros 500 caracteres:", responseText.substring(0, 500));
+      console.log("Últimos 500 caracteres:", responseText.substring(Math.max(0, responseText.length - 500)));
+      console.log("Resposta completa:", responseText);
 
       if (!response.ok) {
+        console.error("Erro HTTP:", response.status, responseText);
         throw new Error(`Erro ${response.status}: ${responseText}`);
+      }
+
+      // Verificar se a resposta está vazia
+      if (!responseText || responseText.trim() === '') {
+        console.error("Resposta vazia do servidor");
+        throw new Error("Resposta vazia do servidor");
       }
 
       let data;
       try {
+        console.log("=== TENTANDO FAZER PARSE DO JSON ===");
         data = JSON.parse(responseText);
-        console.log("=== DADOS PARSEADOS ===");
+        console.log("=== JSON PARSEADO COM SUCESSO ===");
+        console.log("Tipo de data:", typeof data);
+        console.log("Data é array:", Array.isArray(data));
+        console.log("Keys de data:", Object.keys(data));
         console.log("Data completo:", JSON.stringify(data, null, 2));
       } catch (parseError) {
-        console.error("Erro ao fazer parse do JSON:", parseError);
-        throw new Error("Resposta inválida do servidor");
+        console.error("=== ERRO AO FAZER PARSE DO JSON ===");
+        console.error("Erro de parse:", parseError);
+        console.error("Response text que causou o erro:", responseText);
+        throw new Error(`Resposta inválida do servidor - não é um JSON válido: ${parseError}`);
       }
 
-      // Processar os dados recebidos do webhook
+      // Verificar se data é válido
+      if (!data || typeof data !== 'object') {
+        console.error("Data não é um objeto válido:", data);
+        throw new Error("Resposta do servidor não contém dados válidos");
+      }
+
+      // Processar os dados recebidos do webhook com logs detalhados
+      console.log("=== PROCESSANDO DADOS RECEBIDOS ===");
+      console.log("Procurando food_name em:", data.food_name);
+      console.log("Procurando foodName em:", data.foodName);
+      console.log("Procurando alimento em:", data.alimento);
+
       const processedData: NutritionData = {
         foodName: data.food_name || data.foodName || data.alimento || "Alimento identificado",
         description: data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.",
@@ -119,6 +150,7 @@ const Index = () => {
     } catch (error) {
       console.error("=== ERRO COMPLETO ===");
       console.error("Erro:", error);
+      console.error("Stack trace:", error instanceof Error ? error.stack : 'N/A');
       
       toast({
         title: "Erro na análise",
