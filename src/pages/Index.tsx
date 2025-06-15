@@ -29,24 +29,20 @@ const Index = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [imageDescription, setImageDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [openaiApiKey, setOpenaiApiKey] = useState('');
+  const openaiApiKey = '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';
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
 
   // Carregar chave do localStorage na inicialização
   useEffect(() => {
     const savedKey = localStorage.getItem('openai_api_key');
     if (savedKey) {
-      setOpenaiApiKey(savedKey);
     }
   }, []);
 
   // Salvar chave no localStorage quando alterada
   const handleApiKeyChange = (value: string) => {
-    setOpenaiApiKey(value);
     if (value.trim()) {
-      localStorage.setItem('openai_api_key', value);
     } else {
-      localStorage.removeItem('openai_api_key');
     }
   };
 
@@ -338,22 +334,6 @@ Todos os valores devem ser números reais baseados no alimento descrito.`
         <Header />
         
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Campo para API Key */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-            <Label htmlFor="apikey">Chave da OpenAI</Label>
-            <Input
-              id="apikey"
-              type="password"
-              placeholder="sk-proj-..."
-              value={openaiApiKey}
-              onChange={(e) => handleApiKeyChange(e.target.value)}
-              className="mt-2"
-            />
-            <p className="text-sm text-gray-600 mt-2">
-              Insira sua chave da OpenAI para análise das imagens. A chave será salva localmente no seu navegador.
-            </p>
-          </div>
-
           {isAnalyzing ? (
             <LoadingState />
           ) : nutritionData ? (
