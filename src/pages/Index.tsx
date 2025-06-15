@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -52,9 +51,9 @@ const Index = () => {
 
       console.log("Convertendo imagem para base64...");
       const base64Image = await convertToBase64(imageFile);
-      console.log("Base64 gerado, tamanho:", base64Image.length);
+      console.log("Base64 gerado com cabeçalho MIME, tamanho:", base64Image.length);
 
-      // Enviando apenas como "value" único com prompt melhorado
+      // Enviando com base64 completo (incluindo cabeçalho MIME)
       const payload = {
         value: base64Image,
         prompt: `Analise esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
@@ -82,7 +81,8 @@ INSTRUÇÕES IMPORTANTES:
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
       console.log("URL do webhook:", webhookUrl);
-      console.log("Enviando com prompt melhorado");
+      console.log("Tipo MIME da imagem:", imageFile.type);
+      console.log("Enviando base64 completo com cabeçalho");
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -234,9 +234,10 @@ INSTRUÇÕES IMPORTANTES:
       
       reader.onload = () => {
         if (reader.result) {
+          // Mantém o base64 completo com cabeçalho MIME (data:image/jpeg;base64,...)
           const base64String = reader.result as string;
-          const base64Pure = base64String.split(',')[1];
-          resolve(base64Pure);
+          console.log("Base64 com cabeçalho MIME:", base64String.substring(0, 50) + "...");
+          resolve(base64String);
         } else {
           reject(new Error("Erro ao converter imagem para base64"));
         }
