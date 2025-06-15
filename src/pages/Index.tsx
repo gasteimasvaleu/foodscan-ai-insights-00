@@ -22,7 +22,7 @@ export interface NutritionData {
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
+  const webhookUrl = 'https://hook.us2.make.com/95hpy3dejq41n1e5t4k28q5fljan9qdh';
 
   const parseNutritionValue = (value: any): number => {
     console.log("Parsing nutrition value:", value, "Type:", typeof value);
