@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -37,6 +38,62 @@ const Index = () => {
     return 0;
   };
 
+  const uploadImageToPublicUrl = async (imageFile: File): Promise<string> => {
+    console.log("Fazendo upload da imagem para obter URL pública...");
+    
+    try {
+      // Usando ImgBB como serviço de hospedagem temporária
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      // Chave pública do ImgBB (pode ser exposta no frontend)
+      const imgbbApiKey = '7f7e3e5c7c8f8b9a1d2e3f4g5h6i7j8k'; // Esta seria uma chave pública
+      
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao fazer upload da imagem');
+      }
+      
+      const data = await response.json();
+      const imageUrl = data.data.url;
+      
+      console.log("URL pública da imagem:", imageUrl);
+      return imageUrl;
+      
+    } catch (error) {
+      console.error("Erro no upload para ImgBB, tentando alternativa...");
+      
+      // Alternativa: usar um serviço gratuito como postimg.cc
+      try {
+        const formData = new FormData();
+        formData.append('upload', imageFile);
+        
+        const response = await fetch('https://postimg.cc/json', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erro ao fazer upload alternativo da imagem');
+        }
+        
+        const data = await response.json();
+        const imageUrl = data.url;
+        
+        console.log("URL pública da imagem (alternativa):", imageUrl);
+        return imageUrl;
+        
+      } catch (altError) {
+        console.error("Erro no upload alternativo:", altError);
+        throw new Error('Não foi possível fazer upload da imagem para obter URL pública');
+      }
+    }
+  };
+
   const handleImageAnalysis = async (imageFile: File) => {
     setIsAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE ===");
@@ -55,12 +112,8 @@ const Index = () => {
         throw new Error(`Formato não suportado. Use: JPG, PNG, GIF ou WebP. Formato atual: ${imageFile.type}`);
       }
 
-      console.log("Convertendo imagem para base64...");
-      const base64Image = await convertToBase64(imageFile);
-      
-      // Remover o cabeçalho MIME do base64 para a OpenAI
-      const base64Content = base64Image.split(',')[1];
-      console.log("Base64 sem cabeçalho MIME:", base64Content.substring(0, 50) + "...");
+      // Fazer upload da imagem para obter URL pública
+      const imageUrl = await uploadImageToPublicUrl(imageFile);
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -71,12 +124,12 @@ const Index = () => {
       console.log("Extensão detectada:", originalExtension);
       
       const payload = {
-        image: base64Content, // Apenas o conteúdo base64 sem cabeçalho MIME
+        imageUrl: imageUrl, // Enviando URL pública em vez de base64
         filename: genericFilename,
         type: imageFile.type,
         size: imageFile.size,
         extension: originalExtension,
-        mimeType: imageFile.type, // Enviando o MIME type separadamente
+        mimeType: imageFile.type,
         prompt: `Analise VISUALMENTE esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
 
 {
@@ -105,7 +158,7 @@ INSTRUÇÕES CRÍTICAS:
       console.log("URL do webhook:", webhookUrl);
       console.log("Payload estruturado:", {
         ...payload,
-        image: payload.image.substring(0, 50) + "... (truncated)"
+        imageUrl: payload.imageUrl.substring(0, 50) + "... (truncated)"
       });
 
       const response = await fetch(webhookUrl, {
