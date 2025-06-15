@@ -56,8 +56,10 @@ const Index = () => {
       }
 
       console.log("Convertendo imagem para base64...");
-      const base64Image = await convertToBase64(imageFile);
-      console.log("Imagem convertida para base64, tamanho:", base64Image.length);
+      const base64Full = await convertToBase64(imageFile);
+      // Remover o cabeçalho MIME do base64 para enviar apenas o conteúdo
+      const base64Content = base64Full.split(',')[1];
+      console.log("Base64 sem cabeçalho MIME, tamanho:", base64Content.length);
       
       // Gerar nome de arquivo genérico mas com a extensão correta
       const timestamp = Date.now();
@@ -68,34 +70,36 @@ const Index = () => {
       console.log("Extensão detectada:", originalExtension);
       
       const payload = {
-        image: base64Image, // Enviando base64 completo com cabeçalho MIME
+        image: base64Content, // Enviando apenas o conteúdo base64 (sem cabeçalho MIME)
         filename: genericFilename,
         type: imageFile.type,
         size: imageFile.size,
         extension: originalExtension,
         mimeType: imageFile.type,
-        prompt: `Analise VISUALMENTE esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
-
-{
-  "nome_alimento": "Nome específico do alimento identificado PELA ANÁLISE VISUAL",
-  "descricao": "Descrição detalhada do que você VÊ na imagem",
-  "calorias": número_de_calorias_por_100g,
-  "carboidratos": gramas_de_carboidratos_por_100g,
-  "proteinas": gramas_de_proteinas_por_100g,
-  "gorduras": gramas_de_gorduras_por_100g,
-  "fibras": gramas_de_fibras_por_100g,
-  "sodio": miligramas_de_sodio_por_100g
-}
+        prompt: `Você é um especialista em identificação de alimentos. Analise esta imagem com EXTREMO CUIDADO e PRECISÃO VISUAL.
 
 INSTRUÇÕES CRÍTICAS:
-- IGNORE completamente o nome do arquivo - analise APENAS o conteúdo visual da imagem
-- Identifique com PRECISÃO o alimento que você VÊ na foto
-- Se for uma pizza, identifique os ingredientes VISÍVEIS (massa, queijo, calabresa, etc.)
-- Se for uma refeição completa, foque no item principal VISÍVEL
-- Use valores nutricionais reais e precisos por 100g do alimento IDENTIFICADO VISUALMENTE
-- Todos os valores devem ser números (sem texto adicional)
-- Não inclua explicações, apenas o JSON
-- Base sua análise 100% no que você VÊ na imagem, não no nome do arquivo`
+1. IGNORE COMPLETAMENTE o nome do arquivo - foque 100% na análise VISUAL da imagem
+2. Observe atentamente todos os detalhes visuais: cores, texturas, formas, ingredientes visíveis
+3. Se for uma pizza, identifique os ingredientes que você consegue VER (massa, queijo, calabresa, tomate, etc.)
+4. Se for frango, identifique se são nuggets, filé, coxa, etc.
+5. Se for uma refeição completa, identifique CADA componente visível
+
+Retorne APENAS um JSON válido no formato:
+{
+  "nome_alimento": "Nome ESPECÍFICO e PRECISO do alimento que você VÊ",
+  "descricao": "Descrição DETALHADA de tudo que você consegue observar na imagem",
+  "calorias": número_por_100g,
+  "carboidratos": gramas_por_100g,
+  "proteinas": gramas_por_100g,
+  "gorduras": gramas_por_100g,
+  "fibras": gramas_por_100g,
+  "sodio": miligramas_por_100g
+}
+
+EXEMPLO: Se você vê uma pizza com queijo e calabresa, retorne "Pizza de calabresa" não "Nuggets de frango".
+BASE SUA RESPOSTA 100% NO QUE VOCÊ VÊ NA IMAGEM, NÃO NO NOME DO ARQUIVO.
+Todos os valores nutricionais devem ser números reais baseados no alimento IDENTIFICADO VISUALMENTE.`
       };
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
