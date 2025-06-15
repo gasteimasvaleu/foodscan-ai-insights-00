@@ -40,7 +40,7 @@ const Index = () => {
   const handleImageAnalysis = async (imageFile: File) => {
     setIsAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE ===");
-    console.log("Nome do arquivo:", imageFile.name);
+    console.log("Nome do arquivo original:", imageFile.name);
     console.log("Tamanho do arquivo:", imageFile.size, "bytes");
     console.log("Tipo do arquivo:", imageFile.type);
 
@@ -55,16 +55,22 @@ const Index = () => {
       // Manter o base64 completo com cabeçalho MIME para o Make.com
       console.log("Base64 completo:", base64Image.substring(0, 50) + "...");
       
+      // Gerar nome de arquivo genérico para não influenciar a análise da IA
+      const timestamp = Date.now();
+      const genericFilename = `food_image_${timestamp}.jpg`;
+      
+      console.log("Usando nome genérico para análise:", genericFilename);
+      
       const payload = {
-        image: base64Image, // Usando 'image' como chave
-        filename: imageFile.name,
+        image: base64Image,
+        filename: genericFilename, // Nome genérico para não influenciar a análise
         type: imageFile.type,
         size: imageFile.size,
-        prompt: `Analise esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
+        prompt: `Analise VISUALMENTE esta imagem de alimento com precisão e retorne APENAS um JSON válido no seguinte formato:
 
 {
-  "nome_alimento": "Nome específico do alimento identificado",
-  "descricao": "Descrição detalhada do que você vê na imagem",
+  "nome_alimento": "Nome específico do alimento identificado PELA ANÁLISE VISUAL",
+  "descricao": "Descrição detalhada do que você VÊ na imagem",
   "calorias": número_de_calorias_por_100g,
   "carboidratos": gramas_de_carboidratos_por_100g,
   "proteinas": gramas_de_proteinas_por_100g,
@@ -73,14 +79,15 @@ const Index = () => {
   "sodio": miligramas_de_sodio_por_100g
 }
 
-INSTRUÇÕES IMPORTANTES:
-- Identifique com PRECISÃO o alimento na imagem
-- Se for uma pizza, identifique os ingredientes visíveis (massa, queijo, calabresa, etc.)
-- Se for uma refeição completa, foque no item principal
-- Use valores nutricionais reais e precisos por 100g do alimento
+INSTRUÇÕES CRÍTICAS:
+- IGNORE completamente o nome do arquivo - analise APENAS o conteúdo visual da imagem
+- Identifique com PRECISÃO o alimento que você VÊ na foto
+- Se for uma pizza, identifique os ingredientes VISÍVEIS (massa, queijo, calabresa, etc.)
+- Se for uma refeição completa, foque no item principal VISÍVEL
+- Use valores nutricionais reais e precisos por 100g do alimento IDENTIFICADO VISUALMENTE
 - Todos os valores devem ser números (sem texto adicional)
 - Não inclua explicações, apenas o JSON
-- Se houver múltiplos alimentos, identifique o principal/maior`
+- Base sua análise 100% no que você VÊ na imagem, não no nome do arquivo`
       };
 
       console.log("=== ENVIANDO PARA WEBHOOK ===");
