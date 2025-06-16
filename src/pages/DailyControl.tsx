@@ -10,7 +10,6 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -21,7 +20,6 @@ export interface DailyGoal {
   user_id?: string;
   created_at?: string;
 }
-
 export interface MealRecord {
   id?: string;
   food_name: string;
@@ -34,9 +32,11 @@ export interface MealRecord {
   user_id?: string;
   created_at?: string;
 }
-
 const DailyControl = () => {
-  const { user, loading: authLoading } = useAuth();
+  const {
+    user,
+    loading: authLoading
+  } = useAuth();
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
@@ -45,9 +45,7 @@ const DailyControl = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const analysisRef = useRef<HTMLDivElement>(null);
   const goalsFormRef = useRef<HTMLDivElement>(null);
-
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
-
   useEffect(() => {
     if (!authLoading && user) {
       loadUserData();
@@ -55,20 +53,16 @@ const DailyControl = () => {
       setIsLoading(false);
     }
   }, [user, authLoading]);
-
   const loadUserData = async () => {
     if (!user) return;
-
     try {
       // Carregar metas do usuário
-      const { data: goalsData, error: goalsError } = await supabase
-        .from('daily_goals')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
+      const {
+        data: goalsData,
+        error: goalsError
+      } = await supabase.from('daily_goals').select('*').eq('user_id', user.id).order('created_at', {
+        ascending: false
+      }).limit(1).maybeSingle();
       if (goalsError) {
         console.error('Erro ao carregar metas:', goalsError);
       } else if (goalsData) {
@@ -77,14 +71,12 @@ const DailyControl = () => {
 
       // Carregar refeições do dia
       const today = new Date().toISOString().split('T')[0];
-      const { data: mealsData, error: mealsError } = await supabase
-        .from('meal_records')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('created_at', `${today}T00:00:00.000Z`)
-        .lt('created_at', `${today}T23:59:59.999Z`)
-        .order('created_at', { ascending: false });
-
+      const {
+        data: mealsData,
+        error: mealsError
+      } = await supabase.from('meal_records').select('*').eq('user_id', user.id).gte('created_at', `${today}T00:00:00.000Z`).lt('created_at', `${today}T23:59:59.999Z`).order('created_at', {
+        ascending: false
+      });
       if (mealsError) {
         console.error('Erro ao carregar refeições:', mealsError);
       } else {
@@ -95,82 +87,78 @@ const DailyControl = () => {
       toast({
         title: "Erro",
         description: "Erro ao carregar dados do usuário",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-
   const handleSaveGoals = async (newGoals: Omit<DailyGoal, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) {
       toast({
         title: "Erro",
         description: "Usuário não autenticado",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     try {
-      const { data, error } = await supabase
-        .from('daily_goals')
-        .insert([{ ...newGoals, user_id: user.id }])
-        .select()
-        .single();
-
+      const {
+        data,
+        error
+      } = await supabase.from('daily_goals').insert([{
+        ...newGoals,
+        user_id: user.id
+      }]).select().single();
       if (error) throw error;
-
       setGoals(data);
       setShowGoalsForm(false);
       toast({
         title: "Sucesso",
-        description: "Metas diárias salvas com sucesso!",
+        description: "Metas diárias salvas com sucesso!"
       });
     } catch (error) {
       console.error('Erro ao salvar metas:', error);
       toast({
         title: "Erro",
         description: "Erro ao salvar metas diárias",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const handleEditGoals = () => {
     setShowGoalsForm(true);
     // Scroll suave até o formulário após um pequeno delay para garantir que ele seja renderizado
     setTimeout(() => {
-      goalsFormRef.current?.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
+      goalsFormRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
     }, 100);
   };
-
   const handleEndDay = async () => {
     if (!goals) {
       toast({
         title: "Erro",
         description: "Metas diárias não configuradas",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsAnalyzing(true);
 
     // Calcular totais consumidos
-    const consumed = meals.reduce(
-      (acc, meal) => ({
-        calories: acc.calories + meal.calories,
-        carbohydrates: acc.carbohydrates + meal.carbohydrates,
-        proteins: acc.proteins + meal.proteins,
-        fats: acc.fats + meal.fats,
-      }),
-      { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
-    );
-
+    const consumed = meals.reduce((acc, meal) => ({
+      calories: acc.calories + meal.calories,
+      carbohydrates: acc.carbohydrates + meal.carbohydrates,
+      proteins: acc.proteins + meal.proteins,
+      fats: acc.fats + meal.fats
+    }), {
+      calories: 0,
+      carbohydrates: 0,
+      proteins: 0,
+      fats: 0
+    });
     const payload = {
       date: new Date().toISOString().split('T')[0],
       goals: {
@@ -203,31 +191,28 @@ const DailyControl = () => {
         fat_difference: consumed.fats - goals.fats
       }
     };
-
     try {
       console.log('Enviando dados para Make:', payload);
-
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-
       if (response.ok) {
         const result = await response.text();
         setAnalysis(result);
         toast({
           title: "Sucesso",
-          description: "Análise do dia concluída!",
+          description: "Análise do dia concluída!"
         });
-        
+
         // Scroll suave até o card de análise
         setTimeout(() => {
-          analysisRef.current?.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
+          analysisRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
           });
         }, 100);
       } else {
@@ -238,57 +223,48 @@ const DailyControl = () => {
       toast({
         title: "Erro",
         description: "Erro ao analisar a dieta. Tente novamente.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsAnalyzing(false);
     }
   };
-
   const handleClearMeals = async () => {
     if (!user) {
       toast({
         title: "Erro",
         description: "Usuário não autenticado",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     try {
       // Deletar todas as refeições do dia atual do banco de dados
       const today = new Date().toISOString().split('T')[0];
-      const { error } = await supabase
-        .from('meal_records')
-        .delete()
-        .eq('user_id', user.id)
-        .gte('created_at', `${today}T00:00:00.000Z`)
-        .lt('created_at', `${today}T23:59:59.999Z`);
-
+      const {
+        error
+      } = await supabase.from('meal_records').delete().eq('user_id', user.id).gte('created_at', `${today}T00:00:00.000Z`).lt('created_at', `${today}T23:59:59.999Z`);
       if (error) {
         throw error;
       }
 
       // Limpar o estado local
       setMeals([]);
-      
       toast({
         title: "Sucesso",
-        description: "Refeições removidas permanentemente!",
+        description: "Refeições removidas permanentemente!"
       });
     } catch (error) {
       console.error('Erro ao limpar refeições:', error);
       toast({
         title: "Erro",
         description: "Erro ao remover refeições. Tente novamente.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   if (authLoading || isLoading) {
-    return (
-      <>
+    return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -298,13 +274,10 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-      </>
-    );
+      </>;
   }
-
   if (!user) {
-    return (
-      <>
+    return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -318,12 +291,9 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-      </>
-    );
+      </>;
   }
-
-  return (
-    <>
+  return <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto px-4 py-8">
@@ -331,71 +301,44 @@ const DailyControl = () => {
           
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              <h1 className="text-4xl font-bold mb-4 text-slate-50">
                 Controle Diário
               </h1>
-              <p className="text-gray-600">
+              <p className="text-slate-50">
                 Acompanhe suas metas nutricionais e registre suas refeições
               </p>
             </div>
 
-            {goals ? (
-              <DailyGoals 
-                goals={goals} 
-                meals={meals}
-                onEditGoals={handleEditGoals}
-              />
-            ) : (
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
+            {goals ? <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} /> : <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Configure suas Metas Diárias
                 </h3>
                 <p className="text-gray-600 mb-6">
                   Defina seus objetivos nutricionais para começar o controle
                 </p>
-                <button
-                  onClick={() => setShowGoalsForm(true)}
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
+                <button onClick={() => setShowGoalsForm(true)} className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                   Configurar Metas
                 </button>
-              </div>
-            )}
+              </div>}
 
-            {showGoalsForm && (
-              <div ref={goalsFormRef}>
-                <GoalsForm
-                  onSave={handleSaveGoals}
-                  onCancel={() => setShowGoalsForm(false)}
-                  initialGoals={goals}
-                />
-              </div>
-            )}
+            {showGoalsForm && <div ref={goalsFormRef}>
+                <GoalsForm onSave={handleSaveGoals} onCancel={() => setShowGoalsForm(false)} initialGoals={goals} />
+              </div>}
 
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
             {/* Botão Encerrar Dia */}
-            {goals && meals.length > 0 && (
-              <div className="text-center">
-                <Button
-                  onClick={handleEndDay}
-                  disabled={isAnalyzing}
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {isAnalyzing ? (
-                    <div className="flex items-center">
+            {goals && meals.length > 0 && <div className="text-center">
+                <Button onClick={handleEndDay} disabled={isAnalyzing} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                  {isAnalyzing ? <div className="flex items-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       Analisando...
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
+                    </div> : <div className="flex items-center">
                       <Calendar className="w-5 h-5 mr-2" />
                       Encerrar Dia
-                    </div>
-                  )}
+                    </div>}
                 </Button>
-              </div>
-            )}
+              </div>}
 
             {/* Componente de Análise */}
             <div ref={analysisRef}>
@@ -404,8 +347,6 @@ const DailyControl = () => {
           </div>
         </div>
       </div>
-    </>
-  );
+    </>;
 };
-
 export default DailyControl;
