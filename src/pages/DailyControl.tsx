@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface DailyGoal {
   id?: string;
@@ -18,6 +19,7 @@ export interface DailyGoal {
   fats: number;
   diet_objective: string;
   created_at?: string;
+  user_id?: string;
 }
 
 export interface MealRecord {
@@ -30,9 +32,11 @@ export interface MealRecord {
   portion: string;
   meal_time: string;
   created_at?: string;
+  user_id?: string;
 }
 
 const DailyControl = () => {
+  const { user, profile } = useAuth();
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
@@ -43,18 +47,23 @@ const DailyControl = () => {
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
 
   useEffect(() => {
-    loadUserData();
-  }, []);
+    if (user) {
+      loadUserData();
+    }
+  }, [user]);
 
   const loadUserData = async () => {
+    if (!user) return;
+
     try {
       // Carregar metas do usuário
       const { data: goalsData, error: goalsError } = await supabase
         .from('daily_goals')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (goalsError && goalsError.code !== 'PGRST116') {
         console.error('Erro ao carregar metas:', goalsError);
@@ -67,6 +76,7 @@ const DailyControl = () => {
       const { data: mealsData, error: mealsError } = await supabase
         .from('meal_records')
         .select('*')
+        .eq('user_id', user.id)
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`)
         .order('created_at', { ascending: false });
@@ -88,11 +98,13 @@ const DailyControl = () => {
     }
   };
 
-  const handleSaveGoals = async (newGoals: Omit<DailyGoal, 'id' | 'created_at'>) => {
+  const handleSaveGoals = async (newGoals: Omit<DailyGoal, 'id' | 'created_at' | 'user_id'>) => {
+    if (!user) return;
+
     try {
       const { data, error } = await supabase
         .from('daily_goals')
-        .insert([newGoals])
+        .insert([{ ...newGoals, user_id: user.id }])
         .select()
         .single();
 
@@ -139,6 +151,7 @@ const DailyControl = () => {
 
     const payload = {
       date: new Date().toISOString().split('T')[0],
+      user_name: profile?.name || 'Usuário',
       goals: {
         calories: goals.calories,
         carbohydrates: goals.carbohydrates,
@@ -232,6 +245,14 @@ const DailyControl = () => {
               <p className="text-gray-600">
                 Acompanhe suas metas nutricionais e registre suas refeições
               </p>
+              {profile && (
+                <div className="mt-4 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg inline-block">
+                  <p className="text-lg text-gray-700">
+                    Olá, <span className="font-semibold text-primary-600">{profile.name}</span>! 
+                    Como está sendo seu dia nutricional? 🍽️
+                  </p>
+                </div>
+              )}
             </div>
 
             {goals ? (

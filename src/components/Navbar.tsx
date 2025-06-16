@@ -1,14 +1,16 @@
 
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
+  const { user, profile, signOut } = useAuth();
 
   const menuItems = [
     { label: 'Início', href: '/' },
@@ -18,6 +20,11 @@ export const Navbar = () => {
 
   const isActiveRoute = (href: string) => {
     return location.pathname === href;
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -34,19 +41,49 @@ export const Navbar = () => {
           {/* Desktop Menu */}
           {!isMobile && (
             <div className="hidden md:flex items-center space-x-6">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`transition-colors duration-200 font-medium ${
-                    isActiveRoute(item.href)
-                      ? 'text-primary-600 border-b-2 border-primary-600 pb-1'
-                      : 'text-gray-700 hover:text-primary-600'
-                  }`}
-                >
-                  {item.label}
+              {user && (
+                <>
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className={`transition-colors duration-200 font-medium ${
+                        isActiveRoute(item.href)
+                          ? 'text-primary-600 border-b-2 border-primary-600 pb-1'
+                          : 'text-gray-700 hover:text-primary-600'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </>
+              )}
+              
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  {profile && (
+                    <div className="flex items-center space-x-2 text-gray-700">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm font-medium">{profile.name}</span>
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </Button>
+                </div>
+              ) : (
+                <Link to="/auth">
+                  <Button className="bg-primary-500 hover:bg-primary-600 rounded-xl">
+                    Entrar
+                  </Button>
                 </Link>
-              ))}
+              )}
             </div>
           )}
 
@@ -71,20 +108,45 @@ export const Navbar = () => {
         {isMobile && isMobileMenuOpen && (
           <div className="md:hidden border-t border-white/20 bg-white/90 backdrop-blur-md">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {menuItems.map((item) => (
+              {user ? (
+                <>
+                  {profile && (
+                    <div className="flex items-center space-x-2 px-3 py-2 text-gray-700">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm font-medium">Olá, {profile.name}!</span>
+                    </div>
+                  )}
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className={`block px-3 py-2 rounded-md transition-colors duration-200 font-medium ${
+                        isActiveRoute(item.href)
+                          ? 'text-primary-600 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-3 py-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50 font-medium"
+                  >
+                    <LogOut className="w-4 h-4 mr-2 inline" />
+                    Sair
+                  </button>
+                </>
+              ) : (
                 <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`block px-3 py-2 rounded-md transition-colors duration-200 font-medium ${
-                    isActiveRoute(item.href)
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-                  }`}
+                  to="/auth"
+                  className="block px-3 py-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50 font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {item.label}
+                  Entrar
                 </Link>
-              ))}
+              )}
             </div>
           </div>
         )}
