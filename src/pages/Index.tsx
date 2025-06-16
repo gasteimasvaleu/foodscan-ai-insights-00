@@ -400,7 +400,7 @@ Todos os valores devem ser números reais baseados na porção identificada.`
                           value={imageDescription}
                           onChange={(e) => setImageDescription(e.target.value)}
                           placeholder="A descrição da imagem aparecerá aqui..."
-                          className="min-h-[120px] mb-4"
+                          className="min-h-[200px] md:min-h-[250px] mb-4"
                         />
                         
                         {imageDescription && (
