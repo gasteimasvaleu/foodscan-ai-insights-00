@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Camera, Zap, BarChart3 } from 'lucide-react';
+import { Camera, Zap, BarChart3, Target } from 'lucide-react';
 
 export const EmptyState = () => {
   return (
     <div className="text-center space-y-8 animate-fade-in">
       {/* Steps */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
           <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Camera className="w-8 h-8 text-white" />
@@ -34,6 +34,16 @@ export const EmptyState = () => {
           <h3 className="text-lg font-semibold text-white mb-2">3. Veja Nutrição</h3>
           <p className="text-white/80 text-sm">
             Receba informações nutricionais detalhadas em segundos
+          </p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <Target className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-white mb-2">4. Avalie Sua Meta</h3>
+          <p className="text-white/80 text-sm">
+            Integre suas refeições a sua meta diária automáticamente
           </p>
         </div>
       </div>
