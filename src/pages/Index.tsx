@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -5,6 +6,7 @@ import { LoadingState } from '@/components/LoadingState';
 import { Header } from '@/components/Header';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
+import { AuthCard } from '@/components/AuthCard';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -354,6 +356,9 @@ Todos os valores devem ser números reais baseados na porção identificada.`
           <Header />
           
           <div className="max-w-4xl mx-auto space-y-8">
+            {/* Auth Card */}
+            <AuthCard />
+            
             {isAnalyzing ? (
               <LoadingState />
             ) : nutritionData ? (

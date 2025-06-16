@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
+import { WelcomeMessage } from '@/components/WelcomeMessage';
 import { DailyGoals } from '@/components/DailyGoals';
 import { MealsList } from '@/components/MealsList';
 import { GoalsForm } from '@/components/GoalsForm';
@@ -222,8 +222,10 @@ const DailyControl = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+      <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto px-4 py-8">
+          <WelcomeMessage />
+          
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
