@@ -1,12 +1,9 @@
-
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, FileText, Mail } from 'lucide-react';
-
 const About = () => {
-  return (
-    <div className="min-h-screen bg-gradient-primary">
+  return <div className="min-h-screen bg-gradient-primary">
       <Navbar />
       
       <div className="pt-20 pb-12 px-4">
@@ -115,12 +112,12 @@ const About = () => {
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <div className="bg-gray-50 rounded-lg p-4">
                       <h4 className="font-semibold text-primary-600 mb-2">Email</h4>
-                      <p className="text-gray-600">suporte@foodscanai.com</p>
+                      <p className="text-gray-600">direitaquevence@hotmail.com</p>
                     </div>
                     
                     <div className="bg-gray-50 rounded-lg p-4">
                       <h4 className="font-semibold text-primary-600 mb-2">WhatsApp</h4>
-                      <p className="text-gray-600">+55 (11) 99999-9999</p>
+                      <p className="text-gray-600">+55 (83) 999187322</p>
                     </div>
                   </div>
                   
@@ -136,8 +133,6 @@ const About = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default About;
