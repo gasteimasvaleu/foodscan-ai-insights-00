@@ -1,8 +1,9 @@
+
 import React, { useState, useMemo } from 'react';
 import { RotateCcw, Award, Info, Scale, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from '@/components/PortionSelector';
-import { NutritionData } from '@/pages/Index';
+import { NutritionData } from '@/types/nutrition';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';

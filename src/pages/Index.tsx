@@ -1,10 +1,12 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Camera, Target, BarChart3, Brain } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+
+// Export the NutritionData type for backward compatibility
+export type { NutritionData } from '@/types/nutrition';
 
 const Index = () => {
   const { user, profile } = useAuth();
