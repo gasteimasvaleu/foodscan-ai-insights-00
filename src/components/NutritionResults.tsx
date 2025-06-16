@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { RotateCcw, Award, Info, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PortionSelector } from '@/components/PortionSelector';
 import { NutritionData } from '@/pages/Index';
 
 interface NutritionResultsProps {
@@ -10,13 +11,40 @@ interface NutritionResultsProps {
 }
 
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onReset }) => {
+  const [selectedPortion, setSelectedPortion] = useState<string>(data.quantity);
+  const [selectedGrams, setSelectedGrams] = useState<number>(100); // Assumindo 100g como padrão inicial
+
+  // Extrair o valor numérico da quantidade original para calcular proporções
+  const originalGrams = useMemo(() => {
+    const match = data.quantity.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 100;
+  }, [data.quantity]);
+
+  // Calcular valores nutricionais ajustados
+  const adjustedNutrition = useMemo(() => {
+    const ratio = selectedGrams / originalGrams;
+    return {
+      calories: Math.round(data.nutrition.calories * ratio),
+      carbohydrates: Math.round(data.nutrition.carbohydrates * ratio * 10) / 10,
+      proteins: Math.round(data.nutrition.proteins * ratio * 10) / 10,
+      fats: Math.round(data.nutrition.fats * ratio * 10) / 10,
+      fiber: Math.round(data.nutrition.fiber * ratio * 10) / 10,
+      sodium: Math.round(data.nutrition.sodium * ratio),
+    };
+  }, [data.nutrition, selectedGrams, originalGrams]);
+
+  const handlePortionChange = (portion: string, grams: number) => {
+    setSelectedPortion(portion);
+    setSelectedGrams(grams);
+  };
+
   const nutritionItems = [
-    { label: 'Calorias', value: data.nutrition.calories, unit: 'kcal', color: 'text-red-600' },
-    { label: 'Carboidratos', value: data.nutrition.carbohydrates, unit: 'g', color: 'text-orange-600' },
-    { label: 'Proteínas', value: data.nutrition.proteins, unit: 'g', color: 'text-blue-600' },
-    { label: 'Gorduras', value: data.nutrition.fats, unit: 'g', color: 'text-yellow-600' },
-    { label: 'Fibras', value: data.nutrition.fiber, unit: 'g', color: 'text-green-600' },
-    { label: 'Sódio', value: data.nutrition.sodium, unit: 'mg', color: 'text-purple-600' },
+    { label: 'Calorias', value: adjustedNutrition.calories, unit: 'kcal', color: 'text-red-600' },
+    { label: 'Carboidratos', value: adjustedNutrition.carbohydrates, unit: 'g', color: 'text-orange-600' },
+    { label: 'Proteínas', value: adjustedNutrition.proteins, unit: 'g', color: 'text-blue-600' },
+    { label: 'Gorduras', value: adjustedNutrition.fats, unit: 'g', color: 'text-yellow-600' },
+    { label: 'Fibras', value: adjustedNutrition.fiber, unit: 'g', color: 'text-green-600' },
+    { label: 'Sódio', value: adjustedNutrition.sodium, unit: 'mg', color: 'text-purple-600' },
   ];
 
   return (
@@ -59,12 +87,38 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
           </div>
           <div className="text-center">
             <h4 className="text-lg font-semibold text-blue-800">
-              Porção de Referência
+              Porção de Referência Original
             </h4>
             <p className="text-2xl font-bold text-blue-700">
               {data.quantity}
             </p>
             <p className="text-sm text-blue-600">
+              Valores nutricionais da análise original
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Portion Selector */}
+      <PortionSelector
+        currentPortion={selectedPortion}
+        onPortionChange={handlePortionChange}
+      />
+
+      {/* Current Portion Display */}
+      <div className="bg-green-50 border border-green-200 rounded-3xl p-6">
+        <div className="flex items-center justify-center space-x-3">
+          <div className="bg-green-100 rounded-full p-3">
+            <Scale className="w-6 h-6 text-green-600" />
+          </div>
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-green-800">
+              Porção Selecionada
+            </h4>
+            <p className="text-2xl font-bold text-green-700">
+              {selectedPortion} ({selectedGrams}g)
+            </p>
+            <p className="text-sm text-green-600">
               Os valores nutricionais abaixo são referentes a esta porção
             </p>
           </div>
@@ -117,7 +171,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
                     Unidade
                   </th>
                   <th className="px-6 py-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wide">
-                    Porção ({data.quantity})
+                    Porção ({selectedPortion})
                   </th>
                 </tr>
               </thead>
@@ -134,7 +188,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
                       {item.unit}
                     </td>
                     <td className="px-6 py-4 text-center text-sm text-gray-500">
-                      {data.quantity}
+                      {selectedPortion}
                     </td>
                   </tr>
                 ))}
