@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,13 +29,10 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
         data: {
           name: name
         }
@@ -54,7 +50,7 @@ export const useAuth = () => {
 
     toast({
       title: "Cadastro realizado!",
-      description: "Verifique seu email para confirmar a conta.",
+      description: "Você já pode fazer login.",
     });
 
     return { error: null };
