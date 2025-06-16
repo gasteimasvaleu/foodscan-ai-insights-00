@@ -1,5 +1,8 @@
+
 import React from 'react';
 import { Sparkles } from 'lucide-react';
+import { GradientText } from './ui/gradient-text';
+
 export const Header = () => {
   return <div className="text-center mb-12 animate-fade-in">
       <div className="flex items-center justify-center mb-6">
@@ -8,9 +11,13 @@ export const Header = () => {
         </div>
       </div>
       
-      <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+      <GradientText
+        colors={["#40ffaa", "#4079ff", "#40ffaa"]}
+        animationSpeed={3}
+        className="text-5xl md:text-6xl font-bold mb-4 tracking-tight"
+      >
         FoodScan & Diet
-      </h1>
+      </GradientText>
       
       <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Nutrição Inteligente na Palma da Mão!</p>
       
