@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { DailyGoals } from '@/components/DailyGoals';
@@ -7,9 +8,7 @@ import { DietAnalysis } from '@/components/DietAnalysis';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Calendar, Send } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Calendar } from 'lucide-react';
 
 export interface DailyGoal {
   id?: string;
@@ -40,7 +39,8 @@ const DailyControl = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState<string>('');
+
+  const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
 
   useEffect(() => {
     loadUserData();
@@ -115,15 +115,6 @@ const DailyControl = () => {
   };
 
   const handleEndDay = async () => {
-    if (!webhookUrl) {
-      toast({
-        title: "Erro",
-        description: "Por favor, configure o webhook URL do Make",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!goals) {
       toast({
         title: "Erro",
@@ -204,7 +195,7 @@ const DailyControl = () => {
       console.error('Erro ao enviar dados para Make:', error);
       toast({
         title: "Erro",
-        description: "Erro ao analisar a dieta. Verifique a URL do webhook.",
+        description: "Erro ao analisar a dieta. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -241,21 +232,6 @@ const DailyControl = () => {
               <p className="text-gray-600">
                 Acompanhe suas metas nutricionais e registre suas refeições
               </p>
-            </div>
-
-            {/* Configuração do Webhook */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-              <div className="space-y-4">
-                <Label htmlFor="webhook-url">URL do Webhook Make (para análise da IA)</Label>
-                <Input
-                  id="webhook-url"
-                  type="url"
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://hook.eu1.make.com/..."
-                  className="rounded-xl"
-                />
-              </div>
             </div>
 
             {goals ? (
@@ -296,7 +272,7 @@ const DailyControl = () => {
               <div className="text-center">
                 <Button
                   onClick={handleEndDay}
-                  disabled={isAnalyzing || !webhookUrl}
+                  disabled={isAnalyzing}
                   className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   {isAnalyzing ? (
