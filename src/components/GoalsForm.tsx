@@ -117,7 +117,7 @@ export const GoalsForm: React.FC<GoalsFormProps> = ({
           />
         </div>
 
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
           <Button
             type="submit"
             className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 flex-1"
@@ -129,7 +129,7 @@ export const GoalsForm: React.FC<GoalsFormProps> = ({
             type="button"
             onClick={onCancel}
             variant="outline"
-            className="rounded-xl px-8"
+            className="rounded-xl px-8 flex-1"
           >
             Cancelar
           </Button>
