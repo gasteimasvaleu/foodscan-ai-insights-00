@@ -360,9 +360,13 @@ Todos os valores devem ser números reais baseados na porção identificada.`
             <AuthCard />
             
             {isAnalyzing ? (
-              <LoadingState />
+              <div data-results-section>
+                <LoadingState />
+              </div>
             ) : nutritionData ? (
-              <NutritionResults data={nutritionData} onReset={handleReset} />
+              <div data-results-section>
+                <NutritionResults data={nutritionData} onReset={handleReset} />
+              </div>
             ) : (
               <div className="space-y-8">
                 <EmptyState />
@@ -370,7 +374,7 @@ Todos os valores devem ser números reais baseados na porção identificada.`
                 
                 {/* Seção de Descrição */}
                 {(selectedImage || imageDescription) && (
-                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+                  <div data-description-section className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Descrição da Imagem
                     </h3>

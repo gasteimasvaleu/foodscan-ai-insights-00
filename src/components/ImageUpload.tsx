@@ -31,6 +31,27 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
   const handleAnalyze = () => {
     if (selectedFile) {
       onImageSelect(selectedFile);
+      
+      // Scroll suave para a seção de resultados após um pequeno delay
+      setTimeout(() => {
+        const resultsSection = document.querySelector('[data-results-section]') || 
+                             document.querySelector('.bg-success-50') ||
+                             document.querySelector('[data-description-section]');
+        
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        } else {
+          // Se não encontrar a seção específica, rola para baixo na página
+          window.scrollTo({
+            top: window.scrollY + 400,
+            behavior: 'smooth'
+          });
+        }
+      }, 300);
     }
   };
 
