@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Clock, Utensils, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,9 +6,10 @@ import { MealRecord } from '@/pages/DailyControl';
 interface MealsListProps {
   meals: MealRecord[];
   onRefresh: () => void;
+  onClearMeals: () => void;
 }
 
-export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh }) => {
+export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearMeals }) => {
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('pt-BR', {
       hour: '2-digit',
@@ -30,7 +30,7 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh }) => {
           </div>
         </div>
         <Button
-          onClick={onRefresh}
+          onClick={onClearMeals}
           variant="outline"
           size="sm"
           className="rounded-xl"

@@ -233,6 +233,14 @@ const DailyControl = () => {
     }
   };
 
+  const handleClearMeals = () => {
+    setMeals([]);
+    toast({
+      title: "Sucesso",
+      description: "Refeições limpas com sucesso!",
+    });
+  };
+
   if (authLoading || isLoading) {
     return (
       <>
@@ -317,7 +325,7 @@ const DailyControl = () => {
               />
             )}
 
-            <MealsList meals={meals} onRefresh={loadUserData} />
+            <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
             {/* Botão Encerrar Dia */}
             {goals && meals.length > 0 && (
