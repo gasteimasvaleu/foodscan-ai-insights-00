@@ -12,7 +12,7 @@ export const Header = () => {
       </div>
       
       <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-        Food<span className="text-white/80">Scan</span> AI
+        FoodScan & Diet
       </h1>
       
       <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
