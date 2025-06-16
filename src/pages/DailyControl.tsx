@@ -1,11 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { DailyGoals } from '@/components/DailyGoals';
 import { MealsList } from '@/components/MealsList';
 import { GoalsForm } from '@/components/GoalsForm';
+import { DietAnalysis } from '@/components/DietAnalysis';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Calendar, Send } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export interface DailyGoal {
   id?: string;
@@ -34,6 +38,9 @@ const DailyControl = () => {
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [analysis, setAnalysis] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState<string>('');
 
   useEffect(() => {
     loadUserData();
@@ -107,6 +114,104 @@ const DailyControl = () => {
     }
   };
 
+  const handleEndDay = async () => {
+    if (!webhookUrl) {
+      toast({
+        title: "Erro",
+        description: "Por favor, configure o webhook URL do Make",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!goals) {
+      toast({
+        title: "Erro",
+        description: "Metas diárias não configuradas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+
+    // Calcular totais consumidos
+    const consumed = meals.reduce(
+      (acc, meal) => ({
+        calories: acc.calories + meal.calories,
+        carbohydrates: acc.carbohydrates + meal.carbohydrates,
+        proteins: acc.proteins + meal.proteins,
+        fats: acc.fats + meal.fats,
+      }),
+      { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
+    );
+
+    const payload = {
+      date: new Date().toISOString().split('T')[0],
+      goals: {
+        calories: goals.calories,
+        carbohydrates: goals.carbohydrates,
+        proteins: goals.proteins,
+        fats: goals.fats,
+        diet_objective: goals.diet_objective
+      },
+      consumed: {
+        calories: Math.round(consumed.calories),
+        carbohydrates: Math.round(consumed.carbohydrates),
+        proteins: Math.round(consumed.proteins),
+        fats: Math.round(consumed.fats)
+      },
+      meals: meals.map(meal => ({
+        food_name: meal.food_name,
+        calories: meal.calories,
+        carbohydrates: meal.carbohydrates,
+        proteins: meal.proteins,
+        fats: meal.fats,
+        portion: meal.portion,
+        meal_time: meal.meal_time
+      })),
+      summary: {
+        total_meals: meals.length,
+        calorie_difference: consumed.calories - goals.calories,
+        carb_difference: consumed.carbohydrates - goals.carbohydrates,
+        protein_difference: consumed.proteins - goals.proteins,
+        fat_difference: consumed.fats - goals.fats
+      }
+    };
+
+    try {
+      console.log('Enviando dados para Make:', payload);
+
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const result = await response.text();
+        setAnalysis(result);
+        toast({
+          title: "Sucesso",
+          description: "Análise do dia concluída!",
+        });
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar dados para Make:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao analisar a dieta. Verifique a URL do webhook.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <>
@@ -136,6 +241,21 @@ const DailyControl = () => {
               <p className="text-gray-600">
                 Acompanhe suas metas nutricionais e registre suas refeições
               </p>
+            </div>
+
+            {/* Configuração do Webhook */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+              <div className="space-y-4">
+                <Label htmlFor="webhook-url">URL do Webhook Make (para análise da IA)</Label>
+                <Input
+                  id="webhook-url"
+                  type="url"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  placeholder="https://hook.eu1.make.com/..."
+                  className="rounded-xl"
+                />
+              </div>
             </div>
 
             {goals ? (
@@ -170,6 +290,32 @@ const DailyControl = () => {
             )}
 
             <MealsList meals={meals} onRefresh={loadUserData} />
+
+            {/* Botão Encerrar Dia */}
+            {goals && meals.length > 0 && (
+              <div className="text-center">
+                <Button
+                  onClick={handleEndDay}
+                  disabled={isAnalyzing || !webhookUrl}
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  {isAnalyzing ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Analisando...
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <Calendar className="w-5 h-5 mr-2" />
+                      Encerrar Dia
+                    </div>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Componente de Análise */}
+            <DietAnalysis analysis={analysis} isLoading={isAnalyzing} />
           </div>
         </div>
       </div>
