@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { WelcomeMessage } from '@/components/WelcomeMessage';
 import { DailyGoals } from '@/components/DailyGoals';
@@ -44,6 +43,7 @@ const DailyControl = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const analysisRef = useRef<HTMLDivElement>(null);
 
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
 
@@ -210,6 +210,14 @@ const DailyControl = () => {
           title: "Sucesso",
           description: "Análise do dia concluída!",
         });
+        
+        // Scroll suave até o card de análise
+        setTimeout(() => {
+          analysisRef.current?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 100);
       } else {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -335,7 +343,9 @@ const DailyControl = () => {
             )}
 
             {/* Componente de Análise */}
-            <DietAnalysis analysis={analysis} isLoading={isAnalyzing} />
+            <div ref={analysisRef}>
+              <DietAnalysis analysis={analysis} isLoading={isAnalyzing} />
+            </div>
           </div>
         </div>
       </div>
