@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthCard = () => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
@@ -30,6 +31,11 @@ export const AuthCard = () => {
       ...prev,
       [e.target.name]: e.target.value
     }));
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   if (loading) {
@@ -60,7 +66,7 @@ export const AuthCard = () => {
               </div>
             </div>
             <Button
-              onClick={signOut}
+              onClick={handleSignOut}
               variant="outline"
               size="sm"
               className="flex items-center space-x-2"
