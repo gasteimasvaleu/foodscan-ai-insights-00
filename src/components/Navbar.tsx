@@ -13,7 +13,7 @@ export const Navbar = () => {
     { label: 'Início', href: '/' },
     { label: 'Controle Diário', href: '/controle-diario' },
     { label: 'Quero Assinar', href: '/quero-assinar' },
-    { label: 'Sobre', href: '#' }
+    { label: 'Sobre', href: '/sobre' }
   ];
 
   const isActiveRoute = (href: string) => {
