@@ -1,9 +1,11 @@
-
 import React, { useState, useMemo } from 'react';
-import { RotateCcw, Award, Info, Scale } from 'lucide-react';
+import { RotateCcw, Award, Info, Scale, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from '@/components/PortionSelector';
 import { NutritionData } from '@/pages/Index';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface NutritionResultsProps {
   data: NutritionData;
@@ -11,8 +13,10 @@ interface NutritionResultsProps {
 }
 
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onReset }) => {
+  const navigate = useNavigate();
   const [selectedPortion, setSelectedPortion] = useState<string>(data.quantity);
-  const [selectedGrams, setSelectedGrams] = useState<number>(100); // Assumindo 100g como padrão inicial
+  const [selectedGrams, setSelectedGrams] = useState<number>(100);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Extrair o valor numérico da quantidade original para calcular proporções
   const originalGrams = useMemo(() => {
@@ -46,6 +50,45 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
     { label: 'Fibras', value: adjustedNutrition.fiber, unit: 'g', color: 'text-green-600' },
     { label: 'Sódio', value: adjustedNutrition.sodium, unit: 'mg', color: 'text-purple-600' },
   ];
+
+  const handleRegisterMeal = async () => {
+    setIsRegistering(true);
+    
+    try {
+      const mealData = {
+        food_name: data.foodName,
+        calories: adjustedNutrition.calories,
+        carbohydrates: adjustedNutrition.carbohydrates,
+        proteins: adjustedNutrition.proteins,
+        fats: adjustedNutrition.fats,
+        portion: `${selectedPortion} (${selectedGrams}g)`,
+        meal_time: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('meal_records')
+        .insert([mealData]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Refeição registrada!",
+        description: "Sua refeição foi adicionada ao controle diário.",
+      });
+
+      // Navegar para a página de controle diário
+      navigate('/controle-diario');
+    } catch (error) {
+      console.error('Erro ao registrar refeição:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao registrar refeição. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -198,14 +241,33 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
         </div>
       </div>
 
-      {/* Action Button */}
-      <div className="text-center">
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button
           onClick={onReset}
-          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+          variant="outline"
+          className="rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <RotateCcw className="w-4 h-4 mr-2" />
           Analisar Outro Alimento
+        </Button>
+        
+        <Button
+          onClick={handleRegisterMeal}
+          disabled={isRegistering}
+          className="bg-green-500 hover:bg-green-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          {isRegistering ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Registrando...
+            </>
+          ) : (
+            <>
+              <Plus className="w-4 h-4 mr-2" />
+              Registrar Refeição
+            </>
+          )}
         </Button>
       </div>
     </div>
