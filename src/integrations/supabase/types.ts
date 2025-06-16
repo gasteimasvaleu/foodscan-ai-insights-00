@@ -18,7 +18,6 @@ export type Database = {
           fats: number
           id: string
           proteins: number
-          user_id: string | null
         }
         Insert: {
           calories: number
@@ -28,7 +27,6 @@ export type Database = {
           fats: number
           id?: string
           proteins: number
-          user_id?: string | null
         }
         Update: {
           calories?: number
@@ -38,7 +36,6 @@ export type Database = {
           fats?: number
           id?: string
           proteins?: number
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -53,7 +50,6 @@ export type Database = {
           meal_time: string
           portion: string
           proteins: number
-          user_id: string | null
         }
         Insert: {
           calories: number
@@ -65,7 +61,6 @@ export type Database = {
           meal_time: string
           portion: string
           proteins: number
-          user_id?: string | null
         }
         Update: {
           calories?: number
@@ -77,28 +72,6 @@ export type Database = {
           meal_time?: string
           portion?: string
           proteins?: number
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
         }
         Relationships: []
       }

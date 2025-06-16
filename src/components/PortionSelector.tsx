@@ -1,76 +1,70 @@
 
 import React from 'react';
-import { Minus, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Scale } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-interface PortionSelectorProps {
-  selectedPortion: number;
-  onPortionChange: (portion: number) => void;
+interface PortionOption {
+  label: string;
+  value: string;
+  grams: number;
 }
 
-export const PortionSelector: React.FC<PortionSelectorProps> = ({
-  selectedPortion,
-  onPortionChange,
+interface PortionSelectorProps {
+  currentPortion: string;
+  onPortionChange: (portion: string, grams: number) => void;
+}
+
+const portionOptions: PortionOption[] = [
+  { label: 'Prato Pequeno', value: 'prato-pequeno', grams: 150 },
+  { label: 'Prato Médio', value: 'prato-medio', grams: 250 },
+  { label: 'Prato Grande', value: 'prato-grande', grams: 350 },
+  { label: 'Copo Pequeno', value: 'copo-pequeno', grams: 100 },
+  { label: 'Copo Médio', value: 'copo-medio', grams: 200 },
+  { label: 'Copo Grande', value: 'copo-grande', grams: 300 },
+  { label: 'Fatia', value: 'fatia', grams: 80 },
+  { label: 'Colher de Chá', value: 'colher-cha', grams: 5 },
+];
+
+export const PortionSelector: React.FC<PortionSelectorProps> = ({ 
+  currentPortion, 
+  onPortionChange 
 }) => {
-  const handleDecrease = () => {
-    if (selectedPortion > 0.25) {
-      onPortionChange(Math.max(0.25, selectedPortion - 0.25));
+  const handlePortionChange = (value: string) => {
+    const selectedOption = portionOptions.find(option => option.value === value);
+    if (selectedOption) {
+      onPortionChange(selectedOption.label, selectedOption.grams);
     }
-  };
-
-  const handleIncrease = () => {
-    if (selectedPortion < 5) {
-      onPortionChange(Math.min(5, selectedPortion + 0.25));
-    }
-  };
-
-  const formatPortion = (portion: number) => {
-    if (portion === 1) return '1 porção';
-    if (portion < 1) return `${portion} porção`;
-    return `${portion} porções`;
   };
 
   return (
-    <div className="bg-gray-50 rounded-2xl p-6">
-      <div className="text-center space-y-4">
-        <h4 className="text-lg font-semibold text-gray-800">
-          Ajustar Porção
-        </h4>
-        
-        <div className="flex items-center justify-center space-x-4">
-          <Button
-            onClick={handleDecrease}
-            disabled={selectedPortion <= 0.25}
-            variant="outline"
-            size="icon"
-            className="rounded-full h-12 w-12"
-          >
-            <Minus className="w-4 h-4" />
-          </Button>
-          
-          <div className="text-center min-w-[120px]">
-            <div className="text-2xl font-bold text-primary-600">
-              {selectedPortion}x
-            </div>
-            <div className="text-sm text-gray-600">
-              {formatPortion(selectedPortion)}
-            </div>
-          </div>
-          
-          <Button
-            onClick={handleIncrease}
-            disabled={selectedPortion >= 5}
-            variant="outline"
-            size="icon"
-            className="rounded-full h-12 w-12"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
+    <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6">
+      <div className="flex items-center justify-center space-x-3 mb-4">
+        <div className="bg-amber-100 rounded-full p-3">
+          <Scale className="w-6 h-6 text-amber-600" />
         </div>
-        
-        <div className="text-xs text-gray-500">
-          Ajuste a quantidade para obter valores nutricionais precisos
+        <div className="text-center">
+          <h4 className="text-lg font-semibold text-amber-800">
+            Ajustar Porção
+          </h4>
+          <p className="text-sm text-amber-600">
+            Selecione o tamanho da porção que você consumiu
+          </p>
         </div>
+      </div>
+      
+      <div className="max-w-xs mx-auto">
+        <Select onValueChange={handlePortionChange} defaultValue="">
+          <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+            <SelectValue placeholder="Escolha uma porção" />
+          </SelectTrigger>
+          <SelectContent>
+            {portionOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label} ({option.grams}g)
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Clock, Utensils, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MealRecord } from '@/types/daily-control';
+import { MealRecord } from '@/pages/DailyControl';
 
 interface MealsListProps {
   meals: MealRecord[];

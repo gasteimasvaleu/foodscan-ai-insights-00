@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Target, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DailyGoal, MealRecord } from '@/types/daily-control';
+import { DailyGoal, MealRecord } from '@/pages/DailyControl';
 
 interface DailyGoalsProps {
   goals: DailyGoal;
