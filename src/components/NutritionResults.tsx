@@ -23,13 +23,41 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
 
   // Extrair o valor numérico da quantidade original para calcular proporções
   const originalGrams = useMemo(() => {
-    const match = data.quantity.match(/(\d+)/);
-    return match ? parseInt(match[1]) : 100;
+    console.log("Quantidade original:", data.quantity);
+    
+    // Primeiro tentar extrair valor entre parênteses (ex: "2 unidades médias (40g)")
+    const parenthesesMatch = data.quantity.match(/\((\d+)g?\)/);
+    if (parenthesesMatch) {
+      const grams = parseInt(parenthesesMatch[1]);
+      console.log("Gramas extraídas dos parênteses:", grams);
+      return grams;
+    }
+    
+    // Se não encontrar parênteses, tentar extrair o primeiro número seguido de "g"
+    const gramsMatch = data.quantity.match(/(\d+)g/);
+    if (gramsMatch) {
+      const grams = parseInt(gramsMatch[1]);
+      console.log("Gramas extraídas do padrão Xg:", grams);
+      return grams;
+    }
+    
+    // Como último recurso, extrair qualquer número da string
+    const anyNumberMatch = data.quantity.match(/(\d+)/);
+    const fallbackGrams = anyNumberMatch ? parseInt(anyNumberMatch[1]) : 100;
+    console.log("Gramas de fallback:", fallbackGrams);
+    return fallbackGrams;
   }, [data.quantity]);
 
   // Calcular valores nutricionais ajustados
   const adjustedNutrition = useMemo(() => {
     const ratio = selectedGrams / originalGrams;
+    console.log("Calculando ajuste nutricional:");
+    console.log("- Gramas selecionadas:", selectedGrams);
+    console.log("- Gramas originais:", originalGrams);
+    console.log("- Proporção:", ratio);
+    console.log("- Calorias originais:", data.nutrition.calories);
+    console.log("- Calorias ajustadas:", Math.round(data.nutrition.calories * ratio));
+    
     return {
       calories: Math.round(data.nutrition.calories * ratio),
       carbohydrates: Math.round(data.nutrition.carbohydrates * ratio * 10) / 10,
