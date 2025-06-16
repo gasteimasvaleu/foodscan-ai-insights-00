@@ -233,12 +233,45 @@ const DailyControl = () => {
     }
   };
 
-  const handleClearMeals = () => {
-    setMeals([]);
-    toast({
-      title: "Sucesso",
-      description: "Refeições limpas com sucesso!",
-    });
+  const handleClearMeals = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Deletar todas as refeições do dia atual do banco de dados
+      const today = new Date().toISOString().split('T')[0];
+      const { error } = await supabase
+        .from('meal_records')
+        .delete()
+        .eq('user_id', user.id)
+        .gte('created_at', `${today}T00:00:00.000Z`)
+        .lt('created_at', `${today}T23:59:59.999Z`);
+
+      if (error) {
+        throw error;
+      }
+
+      // Limpar o estado local
+      setMeals([]);
+      
+      toast({
+        title: "Sucesso",
+        description: "Refeições removidas permanentemente!",
+      });
+    } catch (error) {
+      console.error('Erro ao limpar refeições:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao remover refeições. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (authLoading || isLoading) {
