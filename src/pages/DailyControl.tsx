@@ -44,6 +44,7 @@ const DailyControl = () => {
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const analysisRef = useRef<HTMLDivElement>(null);
+  const goalsFormRef = useRef<HTMLDivElement>(null);
 
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
 
@@ -134,6 +135,17 @@ const DailyControl = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditGoals = () => {
+    setShowGoalsForm(true);
+    // Scroll suave até o formulário após um pequeno delay para garantir que ele seja renderizado
+    setTimeout(() => {
+      goalsFormRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
   };
 
   const handleEndDay = async () => {
@@ -331,7 +343,7 @@ const DailyControl = () => {
               <DailyGoals 
                 goals={goals} 
                 meals={meals}
-                onEditGoals={() => setShowGoalsForm(true)}
+                onEditGoals={handleEditGoals}
               />
             ) : (
               <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
@@ -351,11 +363,13 @@ const DailyControl = () => {
             )}
 
             {showGoalsForm && (
-              <GoalsForm
-                onSave={handleSaveGoals}
-                onCancel={() => setShowGoalsForm(false)}
-                initialGoals={goals}
-              />
+              <div ref={goalsFormRef}>
+                <GoalsForm
+                  onSave={handleSaveGoals}
+                  onCancel={() => setShowGoalsForm(false)}
+                  initialGoals={goals}
+                />
+              </div>
             )}
 
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
