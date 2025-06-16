@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ export const Navbar = () => {
   const menuItems = [
     { label: 'Início', href: '/' },
     { label: 'Controle Diário', href: '/controle-diario' },
+    { label: 'Quero Assinar', href: '#' },
     { label: 'Sobre', href: '#' }
   ];
 
