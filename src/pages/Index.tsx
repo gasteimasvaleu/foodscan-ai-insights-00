@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { NutritionResults } from '@/components/NutritionResults';
@@ -353,8 +352,6 @@ Todos os valores devem ser números reais baseados na porção identificada.`
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16">
         <div className="container mx-auto px-4 py-8">
-          <Header />
-          
           {/* Banner Section */}
           <div className="mb-12 animate-fade-in">
             <div className="max-w-6xl mx-auto">
@@ -365,6 +362,8 @@ Todos os valores devem ser números reais baseados na porção identificada.`
               />
             </div>
           </div>
+          
+          <Header />
           
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Auth Card */}
