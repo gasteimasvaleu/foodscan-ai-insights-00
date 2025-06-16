@@ -4,11 +4,10 @@ import { NutritionResults } from '@/components/NutritionResults';
 import { LoadingState } from '@/components/LoadingState';
 import { Header } from '@/components/Header';
 import { EmptyState } from '@/components/EmptyState';
+import { Navbar } from '@/components/Navbar';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 export interface NutritionData {
   foodName: string;
@@ -348,68 +347,71 @@ Todos os valores devem ser números reais baseados na porção identificada.`
   };
 
   return (
-    <div className="min-h-screen bg-gradient-primary font-inter">
-      <div className="container mx-auto px-4 py-8">
-        <Header />
-        
-        <div className="max-w-4xl mx-auto space-y-8">
-          {isAnalyzing ? (
-            <LoadingState />
-          ) : nutritionData ? (
-            <NutritionResults data={nutritionData} onReset={handleReset} />
-          ) : (
-            <div className="space-y-8">
-              <EmptyState />
-              <ImageUpload onImageSelect={handleImageAnalysis} />
-              
-              {/* Seção de Descrição */}
-              {(selectedImage || imageDescription) && (
-                <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Descrição da Imagem
-                  </h3>
-                  
-                  {selectedImage && (
-                    <div className="mb-4">
-                      <img
-                        src={selectedImage}
-                        alt="Imagem selecionada"
-                        className="w-32 h-32 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-                  
-                  {isDescribing ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
-                      <span className="text-gray-600">Analisando imagem...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <Textarea
-                        value={imageDescription}
-                        onChange={(e) => setImageDescription(e.target.value)}
-                        placeholder="A descrição da imagem aparecerá aqui..."
-                        className="min-h-[120px] mb-4"
-                      />
-                      
-                      {imageDescription && (
-                        <Button
-                          onClick={handleNutritionAnalysis}
-                          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
-                        >
-                          Analisar Nutrição
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+        <div className="container mx-auto px-4 py-8">
+          <Header />
+          
+          <div className="max-w-4xl mx-auto space-y-8">
+            {isAnalyzing ? (
+              <LoadingState />
+            ) : nutritionData ? (
+              <NutritionResults data={nutritionData} onReset={handleReset} />
+            ) : (
+              <div className="space-y-8">
+                <EmptyState />
+                <ImageUpload onImageSelect={handleImageAnalysis} />
+                
+                {/* Seção de Descrição */}
+                {(selectedImage || imageDescription) && (
+                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                      Descrição da Imagem
+                    </h3>
+                    
+                    {selectedImage && (
+                      <div className="mb-4">
+                        <img
+                          src={selectedImage}
+                          alt="Imagem selecionada"
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {isDescribing ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+                        <span className="text-gray-600">Analisando imagem...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Textarea
+                          value={imageDescription}
+                          onChange={(e) => setImageDescription(e.target.value)}
+                          placeholder="A descrição da imagem aparecerá aqui..."
+                          className="min-h-[120px] mb-4"
+                        />
+                        
+                        {imageDescription && (
+                          <Button
+                            onClick={handleNutritionAnalysis}
+                            className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
+                          >
+                            Analisar Nutrição
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
