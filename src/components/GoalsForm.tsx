@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { DailyGoal } from '@/pages/DailyControl';
+import { DailyGoal } from '@/types/daily-control';
 
 interface GoalsFormProps {
-  onSave: (goals: Omit<DailyGoal, 'id' | 'created_at'>) => void;
+  onSave: (goals: Omit<DailyGoal, 'id' | 'created_at' | 'user_id'>) => void;
   onCancel: () => void;
   initialGoals?: DailyGoal | null;
 }
