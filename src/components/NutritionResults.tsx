@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { RotateCcw, Award, Info, Scale, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { NutritionData } from '@/pages/Index';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NutritionResultsProps {
   data: NutritionData;
@@ -14,6 +16,7 @@ interface NutritionResultsProps {
 
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onReset }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedPortion, setSelectedPortion] = useState<string>(data.quantity);
   const [selectedGrams, setSelectedGrams] = useState<number>(100);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -52,6 +55,15 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
   ];
 
   const handleRegisterMeal = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para registrar refeições.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsRegistering(true);
     
     try {
@@ -63,6 +75,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
         fats: adjustedNutrition.fats,
         portion: `${selectedPortion} (${selectedGrams}g)`,
         meal_time: new Date().toISOString(),
+        user_id: user.id,
       };
 
       const { error } = await supabase
@@ -254,7 +267,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ data, onRese
         
         <Button
           onClick={handleRegisterMeal}
-          disabled={isRegistering}
+          disabled={isRegistering || !user}
           className="bg-green-500 hover:bg-green-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           {isRegistering ? (

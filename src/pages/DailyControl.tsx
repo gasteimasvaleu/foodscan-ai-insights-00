@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { WelcomeMessage } from '@/components/WelcomeMessage';
@@ -9,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface DailyGoal {
   id?: string;
@@ -17,6 +19,7 @@ export interface DailyGoal {
   proteins: number;
   fats: number;
   diet_objective: string;
+  user_id?: string;
   created_at?: string;
 }
 
@@ -29,10 +32,12 @@ export interface MealRecord {
   fats: number;
   portion: string;
   meal_time: string;
+  user_id?: string;
   created_at?: string;
 }
 
 const DailyControl = () => {
+  const { user, loading: authLoading } = useAuth();
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
@@ -43,20 +48,27 @@ const DailyControl = () => {
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
 
   useEffect(() => {
-    loadUserData();
-  }, []);
+    if (!authLoading && user) {
+      loadUserData();
+    } else if (!authLoading && !user) {
+      setIsLoading(false);
+    }
+  }, [user, authLoading]);
 
   const loadUserData = async () => {
+    if (!user) return;
+
     try {
       // Carregar metas do usuário
       const { data: goalsData, error: goalsError } = await supabase
         .from('daily_goals')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (goalsError && goalsError.code !== 'PGRST116') {
+      if (goalsError) {
         console.error('Erro ao carregar metas:', goalsError);
       } else if (goalsData) {
         setGoals(goalsData);
@@ -67,6 +79,7 @@ const DailyControl = () => {
       const { data: mealsData, error: mealsError } = await supabase
         .from('meal_records')
         .select('*')
+        .eq('user_id', user.id)
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`)
         .order('created_at', { ascending: false });
@@ -88,11 +101,20 @@ const DailyControl = () => {
     }
   };
 
-  const handleSaveGoals = async (newGoals: Omit<DailyGoal, 'id' | 'created_at'>) => {
+  const handleSaveGoals = async (newGoals: Omit<DailyGoal, 'id' | 'created_at' | 'user_id'>) => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('daily_goals')
-        .insert([newGoals])
+        .insert([{ ...newGoals, user_id: user.id }])
         .select()
         .single();
 
@@ -203,7 +225,7 @@ const DailyControl = () => {
     }
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <>
         <Navbar />
@@ -212,6 +234,26 @@ const DailyControl = () => {
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
               <p className="mt-4 text-gray-600">Carregando...</p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                Acesso Restrito
+              </h1>
+              <p className="text-gray-600">
+                Você precisa estar logado para acessar o controle diário.
+              </p>
             </div>
           </div>
         </div>
