@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ChefHat, Edit2, Save, X, Clock, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserPreferences {
   favoriteIngredients: string;
@@ -64,68 +64,35 @@ const MasterCheFIT = () => {
   const generateMenuPlan = async () => {
     setIsGenerating(true);
     
-    // Distribui as calorias entre as refeições (percentuais aproximados)
-    const calorieDistribution = {
-      breakfast: 0.25,      // 25%
-      morningSnack: 0.10,   // 10%
-      lunch: 0.35,          // 35%
-      afternoonSnack: 0.10, // 10%
-      dinner: 0.20          // 20%
-    };
-    
-    // Simulação de geração de cardápio (aqui você pode integrar com OpenAI posteriormente)
-    setTimeout(() => {
-      const sampleMenu: MenuPlan = {
-        breakfast: {
-          name: "Smoothie Proteico com Aveia",
-          recipe: `${preferences.favoriteIngredients.includes('banana') ? 'Banana, ' : ''}Aveia, whey protein, leite desnatado, mel`,
-          instructions: "1. Bata todos os ingredientes no liquidificador\n2. Sirva gelado\n3. Adicione granola por cima se desejar",
-          calories: Math.round(preferences.maxCalories * calorieDistribution.breakfast),
-          time: "10 min",
-          servings: 1
-        },
-        morningSnack: {
-          name: "Mix de Castanhas",
-          recipe: "Castanha do Pará, amêndoas, nozes",
-          instructions: "1. Misture as castanhas em um recipiente\n2. Consuma uma porção pequena",
-          calories: Math.round(preferences.maxCalories * calorieDistribution.morningSnack),
-          time: "2 min",
-          servings: 1
-        },
-        lunch: {
-          name: "Peito de Frango Grelhado",
-          recipe: `Peito de frango, ${preferences.favoriteIngredients.includes('arroz') ? 'arroz integral, ' : 'quinoa, '}salada verde, azeite`,
-          instructions: "1. Tempere o frango com sal, pimenta e ervas\n2. Grelhe por 6-8 minutos cada lado\n3. Sirva com acompanhamentos",
-          calories: Math.round(preferences.maxCalories * calorieDistribution.lunch),
-          time: "25 min",
-          servings: 1
-        },
-        afternoonSnack: {
-          name: "Iogurte com Frutas",
-          recipe: "Iogurte grego natural, frutas vermelhas, chia",
-          instructions: "1. Coloque o iogurte em uma tigela\n2. Adicione as frutas por cima\n3. Polvilhe chia",
-          calories: Math.round(preferences.maxCalories * calorieDistribution.afternoonSnack),
-          time: "5 min",
-          servings: 1
-        },
-        dinner: {
-          name: "Salmão com Legumes",
-          recipe: "Filé de salmão, brócolis, cenoura, batata doce",
-          instructions: "1. Tempere o salmão e asse por 15 min\n2. Refogue os legumes no vapor\n3. Sirva junto com batata doce cozida",
-          calories: Math.round(preferences.maxCalories * calorieDistribution.dinner),
-          time: "30 min",
-          servings: 1
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-menu', {
+        body: {
+          favoriteIngredients: preferences.favoriteIngredients,
+          specificRequirements: preferences.specificRequirements,
+          maxCalories: preferences.maxCalories
         }
-      };
-      
-      setMenuPlan(sampleMenu);
-      setIsGenerating(false);
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMenuPlan(data);
       
       toast({
         title: "Cardápio Gerado!",
-        description: "Seu cardápio personalizado está pronto."
+        description: "Seu cardápio personalizado foi criado pela IA."
       });
-    }, 3000);
+    } catch (error) {
+      console.error('Erro ao gerar cardápio:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o cardápio. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const getMealIcon = (mealType: string) => {
