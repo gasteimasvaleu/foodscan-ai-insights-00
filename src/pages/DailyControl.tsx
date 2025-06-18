@@ -8,8 +8,10 @@ import { DietAnalysis } from '@/components/DietAnalysis';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -37,6 +39,7 @@ const DailyControl = () => {
     user,
     loading: authLoading
   } = useAuth();
+  const navigate = useNavigate();
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
@@ -337,17 +340,31 @@ const DailyControl = () => {
 
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
-            {/* Botão Encerrar Dia */}
-            {goals && meals.length > 0 && <div className="text-center">
-                <Button onClick={handleEndDay} disabled={isAnalyzing} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  {isAnalyzing ? <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Analisando...
-                    </div> : <div className="flex items-center">
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Encerrar Dia
-                    </div>}
+            {/* Botões de Ação */}
+            {goals && <div className="flex justify-center space-x-4">
+                <Button 
+                  onClick={() => navigate('/foodscan')}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Comer Mais
                 </Button>
+                
+                {meals.length > 0 && (
+                  <Button 
+                    onClick={handleEndDay} 
+                    disabled={isAnalyzing} 
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    {isAnalyzing ? <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Analisando...
+                      </div> : <div className="flex items-center">
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Encerrar Dia
+                      </div>}
+                  </Button>
+                )}
               </div>}
 
             {/* Componente de Análise */}
