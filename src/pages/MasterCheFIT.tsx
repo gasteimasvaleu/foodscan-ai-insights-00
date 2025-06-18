@@ -109,7 +109,14 @@ const MasterCheFIT = () => {
 
       if (error) throw error;
 
-      setSavedMenuPlans(data || []);
+      // Type assertion para converter Json para MenuPlan
+      const typedMenuPlans: SavedMenuPlan[] = (data || []).map(item => ({
+        id: item.id,
+        menu_data: item.menu_data as MenuPlan,
+        created_at: item.created_at
+      }));
+
+      setSavedMenuPlans(typedMenuPlans);
     } catch (error) {
       console.error('Erro ao carregar histórico:', error);
     }
@@ -189,13 +196,13 @@ const MasterCheFIT = () => {
 
       setMenuPlan(data);
 
-      // Save the generated menu plan to database
+      // Save the generated menu plan to database - convertendo UserPreferences para Json
       await supabase
         .from('user_menu_plans')
         .insert({
           user_id: user.id,
-          menu_data: data,
-          preferences_snapshot: preferences
+          menu_data: data as any, // Cast para Json
+          preferences_snapshot: preferences as any // Cast para Json
         });
 
       // Reload menu history
