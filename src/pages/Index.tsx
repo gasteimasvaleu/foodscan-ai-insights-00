@@ -1,7 +1,10 @@
+
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
+import { FeaturesSection } from '@/components/FeaturesSection';
+
 const Index = () => {
   return <>
       <Navbar />
@@ -17,9 +20,13 @@ const Index = () => {
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Auth Card */}
             <AuthCard />
+            
+            {/* Features Section */}
+            <FeaturesSection />
           </div>
         </div>
       </div>
     </>;
 };
+
 export default Index;
