@@ -312,8 +312,18 @@ Todos os valores devem ser números reais baseados na porção identificada.`
                     </h3>
                     
                     {selectedImage && (
-                      <div className="mb-4">
+                      <div className="mb-4 flex flex-col md:flex-row gap-4">
                         <img src={selectedImage} alt="Imagem selecionada" className="w-32 h-32 object-cover rounded-lg" />
+                        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg flex-1">
+                          <div className="flex">
+                            <div className="ml-3">
+                              <p className="text-sm text-blue-700">
+                                💡 <strong>Dica:</strong> Para uma análise mais refinada, você pode adicionar informações específicas no campo abaixo. 
+                                Por exemplo: "café sem açúcar", "pizza margherita", "salada com azeite", etc.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                     
