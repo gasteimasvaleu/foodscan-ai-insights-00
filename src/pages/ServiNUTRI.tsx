@@ -393,22 +393,13 @@ const ServiNUTRI = () => {
                   </div>
                   <div>
                     <Label htmlFor="city">Cidade</Label>
-                    <Select 
-                      value={formData.city} 
-                      onValueChange={(value) => setFormData({...formData, city: value})}
-                      disabled={!formData.state}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={formData.state ? "Selecione uma cidade" : "Primeiro selecione um estado"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getAvailableCities().map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => setFormData({...formData, city: e.target.value})}
+                      placeholder="Digite sua cidade"
+                      required
+                    />
                   </div>
                 </div>
 
