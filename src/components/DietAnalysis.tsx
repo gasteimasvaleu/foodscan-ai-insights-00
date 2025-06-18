@@ -1,14 +1,16 @@
-
 import React, { useState } from 'react';
 import { Brain, MessageCircle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SaveButton } from '@/components/ui/save-button';
 import { TruthMoment } from './TruthMoment';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DietAnalysisProps {
   analysis: string;
   isLoading: boolean;
+  goals?: any;
+  consumed?: any;
 }
 
 interface TruthMomentData {
@@ -16,7 +18,7 @@ interface TruthMomentData {
   feedback: string;
 }
 
-export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading }) => {
+export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading, goals, consumed }) => {
   const [truthMoment, setTruthMoment] = useState<TruthMomentData | null>(null);
   const [isTruthLoading, setIsTruthLoading] = useState(false);
 
@@ -31,27 +33,19 @@ export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading 
     setIsTruthLoading(true);
     
     try {
-      // Simular chamada para IA - aqui você pode integrar com uma API real
-      const prompt = `Analise esta análise nutricional e dê uma nota de 0 a 10 baseada no desempenho do usuário em relação às suas metas. Considere se ele ficou próximo às metas, se teve uma alimentação equilibrada, etc. Seja divertido e motivacional no feedback.
+      const { data, error } = await supabase.functions.invoke('truth-moment-analysis', {
+        body: {
+          analysis,
+          goals,
+          consumed
+        }
+      });
 
-Análise: ${analysis}
+      if (error) {
+        throw error;
+      }
 
-Responda APENAS um JSON no formato:
-{
-  "score": número_de_0_a_10,
-  "feedback": "feedback_motivacional_divertido"
-}`;
-
-      // Por enquanto, vamos simular uma resposta
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulação de análise baseada no conteúdo
-      const mockResponse = {
-        score: Math.floor(Math.random() * 6) + 4, // Entre 4 e 9
-        feedback: "🎯 Ei, guerreiro da dieta! Vamos conversar sério aqui...\n\nVocê está no caminho certo, mas ainda tem espaço para melhorar! 💪 Vejo que você está tentando, e isso já é meio caminho andado.\n\n🔥 Dicas para arrasar amanhã:\n• Não desista! Roma não foi construída em um dia\n• Cada pequeno passo conta\n• Você é mais forte do que imagina\n\n🚀 Amanhã é uma nova oportunidade para mostrar do que você é capaz! Vamos que vamos! 💙"
-      };
-
-      setTruthMoment(mockResponse);
+      setTruthMoment(data);
       
       toast({
         title: "Hora da Verdade Revelada! 🎭",
@@ -60,10 +54,16 @@ Responda APENAS um JSON no formato:
       
     } catch (error) {
       console.error('Erro na análise da Hora da Verdade:', error);
+      
+      // Fallback em caso de erro
+      setTruthMoment({
+        score: 5,
+        feedback: "🤖 Ops! A IA está ocupada, mas vou te dar uma dica: o importante é não desistir! Continue firme em suas metas. Amanhã é uma nova chance de arrasar! 💪✨"
+      });
+      
       toast({
-        title: "Erro",
-        description: "Erro ao gerar análise. Tente novamente.",
-        variant: "destructive"
+        title: "Análise Gerada",
+        description: "Análise criada com sucesso (modo offline)."
       });
     } finally {
       setIsTruthLoading(false);

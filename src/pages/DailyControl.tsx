@@ -46,6 +46,7 @@ const DailyControl = () => {
   const analysisRef = useRef<HTMLDivElement>(null);
   const goalsFormRef = useRef<HTMLDivElement>(null);
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
+  const [analysisData, setAnalysisData] = useState<{goals: any, consumed: any} | null>(null);
   useEffect(() => {
     if (!authLoading && user) {
       loadUserData();
@@ -141,7 +142,7 @@ const DailyControl = () => {
       toast({
         title: "Erro",
         description: "Metas diárias não configuradas",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -159,6 +160,7 @@ const DailyControl = () => {
       proteins: 0,
       fats: 0
     });
+
     const payload = {
       date: new Date().toISOString().split('T')[0],
       goals: {
@@ -191,6 +193,7 @@ const DailyControl = () => {
         fat_difference: consumed.fats - goals.fats
       }
     };
+
     try {
       console.log('Enviando dados para Make:', payload);
       const response = await fetch(webhookUrl, {
@@ -203,6 +206,13 @@ const DailyControl = () => {
       if (response.ok) {
         const result = await response.text();
         setAnalysis(result);
+        
+        // Salvar os dados para a análise da IA
+        setAnalysisData({
+          goals: payload.goals,
+          consumed: payload.consumed
+        });
+        
         toast({
           title: "Sucesso",
           description: "Análise do dia concluída!"
@@ -342,7 +352,12 @@ const DailyControl = () => {
 
             {/* Componente de Análise */}
             <div ref={analysisRef}>
-              <DietAnalysis analysis={analysis} isLoading={isAnalyzing} />
+              <DietAnalysis 
+                analysis={analysis} 
+                isLoading={isAnalyzing}
+                goals={analysisData?.goals}
+                consumed={analysisData?.consumed}
+              />
             </div>
           </div>
         </div>
