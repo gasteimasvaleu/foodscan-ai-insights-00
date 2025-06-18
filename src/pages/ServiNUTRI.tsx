@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
 
 type NutritionistAd = Database['public']['Tables']['nutritionist_ads']['Row'] & {
-  profiles?: { name: string };
+  profile_name?: string;
 };
 
 const ServiNUTRI = () => {
@@ -86,18 +86,32 @@ const ServiNUTRI = () => {
 
   const fetchAds = async () => {
     try {
-      const { data, error } = await supabase
+      // Primeiro buscar os anúncios
+      const { data: adsData, error: adsError } = await supabase
         .from('nutritionist_ads')
-        .select(`
-          *,
-          profiles (
-            name
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setAds(data || []);
+      if (adsError) throw adsError;
+
+      // Depois buscar os perfis dos usuários
+      const userIds = adsData?.map(ad => ad.user_id) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, name')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Erro ao buscar perfis:', profilesError);
+      }
+
+      // Combinar os dados
+      const adsWithProfiles = adsData?.map(ad => ({
+        ...ad,
+        profile_name: profilesData?.find(profile => profile.id === ad.user_id)?.name || 'Nutricionista'
+      })) || [];
+
+      setAds(adsWithProfiles);
     } catch (error) {
       console.error('Erro ao buscar anúncios:', error);
     }
@@ -219,7 +233,7 @@ const ServiNUTRI = () => {
         ad.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ad.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
         specialties.find(s => s.value === ad.specialty)?.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ad.profiles?.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (ad.profile_name && ad.profile_name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
       setAds(filtered);
     } finally {
@@ -412,7 +426,7 @@ const ServiNUTRI = () => {
                     </div>
                   )}
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{ad.profiles?.name || 'Nutricionista'}</h3>
+                    <h3 className="font-semibold text-lg">{ad.profile_name || 'Nutricionista'}</h3>
                     {ad.logo_url && (
                       <img
                         src={ad.logo_url}
