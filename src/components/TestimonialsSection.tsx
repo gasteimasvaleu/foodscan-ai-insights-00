@@ -54,7 +54,7 @@ export const TestimonialsSection = () => {
   const thirdColumn = testimonials.slice(6, 9);
   return (
     <section className="bg-background my-20 relative bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100">
-      <div className="container z-10 mx-auto bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100">
+      <div className="container z-10 mx-auto bg-white/30 backdrop-blur-sm rounded-3xl p-2 border border-gray-100">
         <motion.div initial={{
         opacity: 0,
         y: 20
