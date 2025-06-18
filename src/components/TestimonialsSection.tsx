@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { TestimonialsColumn } from '@/components/ui/testimonials-columns-1';
-
 export const TestimonialsSection = () => {
   const testimonials = [{
     text: "Incrível como a IA identifica até temperos! Meus pacientes adoram a praticidade e eu confio nos dados nutricionais. Revolucionou minha prática!",
@@ -52,8 +51,7 @@ export const TestimonialsSection = () => {
   const firstColumn = testimonials.slice(0, 3);
   const secondColumn = testimonials.slice(3, 6);
   const thirdColumn = testimonials.slice(6, 9);
-  return (
-    <section className="bg-background my-20 relative bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100">
+  return <section className="bg-background my-20 relative bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 py-[5px] px-[5px]">
       <div className="container z-10 mx-auto bg-white/30 backdrop-blur-sm rounded-3xl p-1 border border-gray-100">
         <motion.div initial={{
         opacity: 0,
@@ -89,6 +87,5 @@ export const TestimonialsSection = () => {
           <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
