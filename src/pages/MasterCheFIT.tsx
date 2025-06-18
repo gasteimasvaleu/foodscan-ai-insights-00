@@ -141,17 +141,39 @@ const MasterCheFIT = () => {
     }
 
     try {
-      const { error } = await supabase
+      // Primeiro, verificar se o usuário já tem preferências
+      const { data: existingPrefs } = await supabase
         .from('user_menu_preferences')
-        .upsert({
-          user_id: user.id,
-          favorite_ingredients: preferences.favoriteIngredients,
-          specific_requirements: preferences.specificRequirements,
-          max_calories: preferences.maxCalories,
-          updated_at: new Date().toISOString()
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existingPrefs) {
+        // Se existir, fazer UPDATE
+        const { error } = await supabase
+          .from('user_menu_preferences')
+          .update({
+            favorite_ingredients: preferences.favoriteIngredients,
+            specific_requirements: preferences.specificRequirements,
+            max_calories: preferences.maxCalories,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Se não existir, fazer INSERT
+        const { error } = await supabase
+          .from('user_menu_preferences')
+          .insert({
+            user_id: user.id,
+            favorite_ingredients: preferences.favoriteIngredients,
+            specific_requirements: preferences.specificRequirements,
+            max_calories: preferences.maxCalories
+          });
+
+        if (error) throw error;
+      }
 
       setIsEditing(false);
       toast({
