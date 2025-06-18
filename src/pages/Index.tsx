@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
@@ -5,6 +6,8 @@ import { AuthCard } from '@/components/AuthCard';
 import { FeaturesSection } from '@/components/FeaturesSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FAQSection } from '@/components/FAQSection';
+import { Footer } from '@/components/Footer';
+
 const Index = () => {
   return <>
       <Navbar />
@@ -32,6 +35,8 @@ const Index = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>;
 };
+
 export default Index;
