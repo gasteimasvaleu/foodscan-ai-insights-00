@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
@@ -14,14 +13,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
-
 type NutritionistAd = Database['public']['Tables']['nutritionist_ads']['Row'] & {
   profile_name?: string;
 };
-
 const ServiNUTRI = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const [ads, setAds] = useState<NutritionistAd[]>([]);
   const [userAds, setUserAds] = useState<NutritionistAd[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,48 +44,113 @@ const ServiNUTRI = () => {
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-
-  const specialties = [
-    { value: 'nutricao_clinica', label: 'Nutrição Clínica' },
-    { value: 'nutricao_esportiva', label: 'Nutrição Esportiva' },
-    { value: 'nutricao_funcional', label: 'Nutrição Funcional' },
-    { value: 'nutricao_estetica', label: 'Nutrição Estética' },
-    { value: 'nutricao_materno_infantil', label: 'Nutrição Materno-Infantil' },
-    { value: 'nutricao_hospitalar', label: 'Nutrição Hospitalar' },
-    { value: 'nutricao_coletiva', label: 'Nutrição Coletiva' },
-    { value: 'nutricao_saude_publica', label: 'Nutrição em Saúde Pública' }
-  ];
-
-  const brazilianStates = [
-    { value: 'AC', label: 'AC - Acre' },
-    { value: 'AL', label: 'AL - Alagoas' },
-    { value: 'AP', label: 'AP - Amapá' },
-    { value: 'AM', label: 'AM - Amazonas' },
-    { value: 'BA', label: 'BA - Bahia' },
-    { value: 'CE', label: 'CE - Ceará' },
-    { value: 'DF', label: 'DF - Distrito Federal' },
-    { value: 'ES', label: 'ES - Espírito Santo' },
-    { value: 'GO', label: 'GO - Goiás' },
-    { value: 'MA', label: 'MA - Maranhão' },
-    { value: 'MT', label: 'MT - Mato Grosso' },
-    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
-    { value: 'MG', label: 'MG - Minas Gerais' },
-    { value: 'PA', label: 'PA - Pará' },
-    { value: 'PB', label: 'PB - Paraíba' },
-    { value: 'PR', label: 'PR - Paraná' },
-    { value: 'PE', label: 'PE - Pernambuco' },
-    { value: 'PI', label: 'PI - Piauí' },
-    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
-    { value: 'RN', label: 'RN - Rio Grande do Norte' },
-    { value: 'RS', label: 'RS - Rio Grande do Sul' },
-    { value: 'RO', label: 'RO - Rondônia' },
-    { value: 'RR', label: 'RR - Roraima' },
-    { value: 'SC', label: 'SC - Santa Catarina' },
-    { value: 'SP', label: 'SP - São Paulo' },
-    { value: 'SE', label: 'SE - Sergipe' },
-    { value: 'TO', label: 'TO - Tocantins' }
-  ];
-
+  const specialties = [{
+    value: 'nutricao_clinica',
+    label: 'Nutrição Clínica'
+  }, {
+    value: 'nutricao_esportiva',
+    label: 'Nutrição Esportiva'
+  }, {
+    value: 'nutricao_funcional',
+    label: 'Nutrição Funcional'
+  }, {
+    value: 'nutricao_estetica',
+    label: 'Nutrição Estética'
+  }, {
+    value: 'nutricao_materno_infantil',
+    label: 'Nutrição Materno-Infantil'
+  }, {
+    value: 'nutricao_hospitalar',
+    label: 'Nutrição Hospitalar'
+  }, {
+    value: 'nutricao_coletiva',
+    label: 'Nutrição Coletiva'
+  }, {
+    value: 'nutricao_saude_publica',
+    label: 'Nutrição em Saúde Pública'
+  }];
+  const brazilianStates = [{
+    value: 'AC',
+    label: 'AC - Acre'
+  }, {
+    value: 'AL',
+    label: 'AL - Alagoas'
+  }, {
+    value: 'AP',
+    label: 'AP - Amapá'
+  }, {
+    value: 'AM',
+    label: 'AM - Amazonas'
+  }, {
+    value: 'BA',
+    label: 'BA - Bahia'
+  }, {
+    value: 'CE',
+    label: 'CE - Ceará'
+  }, {
+    value: 'DF',
+    label: 'DF - Distrito Federal'
+  }, {
+    value: 'ES',
+    label: 'ES - Espírito Santo'
+  }, {
+    value: 'GO',
+    label: 'GO - Goiás'
+  }, {
+    value: 'MA',
+    label: 'MA - Maranhão'
+  }, {
+    value: 'MT',
+    label: 'MT - Mato Grosso'
+  }, {
+    value: 'MS',
+    label: 'MS - Mato Grosso do Sul'
+  }, {
+    value: 'MG',
+    label: 'MG - Minas Gerais'
+  }, {
+    value: 'PA',
+    label: 'PA - Pará'
+  }, {
+    value: 'PB',
+    label: 'PB - Paraíba'
+  }, {
+    value: 'PR',
+    label: 'PR - Paraná'
+  }, {
+    value: 'PE',
+    label: 'PE - Pernambuco'
+  }, {
+    value: 'PI',
+    label: 'PI - Piauí'
+  }, {
+    value: 'RJ',
+    label: 'RJ - Rio de Janeiro'
+  }, {
+    value: 'RN',
+    label: 'RN - Rio Grande do Norte'
+  }, {
+    value: 'RS',
+    label: 'RS - Rio Grande do Sul'
+  }, {
+    value: 'RO',
+    label: 'RO - Rondônia'
+  }, {
+    value: 'RR',
+    label: 'RR - Roraima'
+  }, {
+    value: 'SC',
+    label: 'SC - Santa Catarina'
+  }, {
+    value: 'SP',
+    label: 'SP - São Paulo'
+  }, {
+    value: 'SE',
+    label: 'SE - Sergipe'
+  }, {
+    value: 'TO',
+    label: 'TO - Tocantins'
+  }];
   const citiesByState = {
     'AC': ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira', 'Tarauacá', 'Feijó'],
     'AL': ['Maceió', 'Arapiraca', 'Palmeira dos Índios', 'Rio Largo', 'Penedo'],
@@ -114,41 +180,67 @@ const ServiNUTRI = () => {
     'SE': ['Aracaju', 'Nossa Senhora do Socorro', 'Lagarto', 'Itabaiana', 'Estância'],
     'TO': ['Palmas', 'Araguaína', 'Gurupi', 'Porto Nacional', 'Paraíso do Tocantins']
   };
-
-  const dddOptions = [
-    '11', '12', '13', '14', '15', '16', '17', '18', '19', // SP
-    '21', '22', '24', // RJ
-    '27', '28', // ES
-    '31', '32', '33', '34', '35', '37', '38', // MG
-    '41', '42', '43', '44', '45', '46', // PR
-    '47', '48', '49', // SC
-    '51', '53', '54', '55', // RS
-    '61', // DF
-    '62', '64', // GO
-    '63', // TO
-    '65', '66', // MT
-    '67', // MS
-    '68', // AC
-    '69', // RO
-    '71', '73', '74', '75', '77', // BA
-    '79', // SE
-    '81', '87', // PE
-    '82', // AL
-    '83', // PB
-    '84', // RN
-    '85', '88', // CE
-    '86', '89', // PI
-    '91', '93', '94', // PA
-    '92', '97', // AM
-    '95', // RR
-    '96', // AP
-    '98', '99' // MA
+  const dddOptions = ['11', '12', '13', '14', '15', '16', '17', '18', '19',
+  // SP
+  '21', '22', '24',
+  // RJ
+  '27', '28',
+  // ES
+  '31', '32', '33', '34', '35', '37', '38',
+  // MG
+  '41', '42', '43', '44', '45', '46',
+  // PR
+  '47', '48', '49',
+  // SC
+  '51', '53', '54', '55',
+  // RS
+  '61',
+  // DF
+  '62', '64',
+  // GO
+  '63',
+  // TO
+  '65', '66',
+  // MT
+  '67',
+  // MS
+  '68',
+  // AC
+  '69',
+  // RO
+  '71', '73', '74', '75', '77',
+  // BA
+  '79',
+  // SE
+  '81', '87',
+  // PE
+  '82',
+  // AL
+  '83',
+  // PB
+  '84',
+  // RN
+  '85', '88',
+  // CE
+  '86', '89',
+  // PI
+  '91', '93', '94',
+  // PA
+  '92', '97',
+  // AM
+  '95',
+  // RR
+  '96',
+  // AP
+  '98', '99' // MA
   ];
-
   const handleStateChange = (value: string) => {
-    setFormData({...formData, state: value, city: ''});
+    setFormData({
+      ...formData,
+      state: value,
+      city: ''
+    });
   };
-
   const handleSpecialtyChange = (specialtyValue: string, checked: boolean) => {
     if (checked) {
       setFormData({
@@ -162,36 +254,33 @@ const ServiNUTRI = () => {
       });
     }
   };
-
   const getAvailableCities = () => {
     if (!formData.state) return [];
     return citiesByState[formData.state as keyof typeof citiesByState] || [];
   };
-
   useEffect(() => {
     fetchAds();
     if (user) {
       fetchUserAds();
     }
   }, [user]);
-
   const fetchAds = async () => {
     try {
       // Primeiro buscar os anúncios
-      const { data: adsData, error: adsError } = await supabase
-        .from('nutritionist_ads')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const {
+        data: adsData,
+        error: adsError
+      } = await supabase.from('nutritionist_ads').select('*').order('created_at', {
+        ascending: false
+      });
       if (adsError) throw adsError;
 
       // Depois buscar os perfis dos usuários
       const userIds = adsData?.map(ad => ad.user_id) || [];
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, name')
-        .in('id', userIds);
-
+      const {
+        data: profilesData,
+        error: profilesError
+      } = await supabase.from('profiles').select('id, name').in('id', userIds);
       if (profilesError) {
         console.error('Erro ao buscar perfis:', profilesError);
       }
@@ -201,58 +290,48 @@ const ServiNUTRI = () => {
         ...ad,
         profile_name: profilesData?.find(profile => profile.id === ad.user_id)?.name || 'Nutricionista'
       })) || [];
-
       setAds(adsWithProfiles);
     } catch (error) {
       console.error('Erro ao buscar anúncios:', error);
     }
   };
-
   const fetchUserAds = async () => {
     if (!user) return;
-
     try {
-      const { data, error } = await supabase
-        .from('nutritionist_ads')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from('nutritionist_ads').select('*').eq('user_id', user.id).order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
-
       const adsWithProfiles = data?.map(ad => ({
         ...ad,
         profile_name: 'Meus Anúncios'
       })) || [];
-
       setUserAds(adsWithProfiles);
     } catch (error) {
       console.error('Erro ao buscar anúncios do usuário:', error);
     }
   };
-
   const uploadFile = async (file: File, folder: string): Promise<string | null> => {
     if (!user) return null;
-
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/${folder}/${Date.now()}.${fileExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('nutritionist-ads')
-      .upload(fileName, file);
-
+    const {
+      error: uploadError
+    } = await supabase.storage.from('nutritionist-ads').upload(fileName, file);
     if (uploadError) {
       console.error('Erro no upload:', uploadError);
       return null;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('nutritionist-ads')
-      .getPublicUrl(fileName);
-
+    const {
+      data: {
+        publicUrl
+      }
+    } = supabase.storage.from('nutritionist-ads').getPublicUrl(fileName);
     return publicUrl;
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -263,7 +342,6 @@ const ServiNUTRI = () => {
       });
       return;
     }
-
     if (formData.specialties.length === 0) {
       toast({
         title: "Erro",
@@ -272,48 +350,40 @@ const ServiNUTRI = () => {
       });
       return;
     }
-
     setLoading(true);
-
     try {
       let photoUrl = formData.photo_url;
       let logoUrl = formData.logo_url;
 
       // Upload da foto
       if (photoFile) {
-        photoUrl = await uploadFile(photoFile, 'photos') || '';
+        photoUrl = (await uploadFile(photoFile, 'photos')) || '';
       }
 
       // Upload da logo
       if (logoFile) {
-        logoUrl = await uploadFile(logoFile, 'logos') || '';
+        logoUrl = (await uploadFile(logoFile, 'logos')) || '';
       }
 
       // Criar um anúncio para cada especialidade selecionada
-      const insertPromises = formData.specialties.map(specialty => 
-        supabase
-          .from('nutritionist_ads')
-          .insert({
-            user_id: user.id,
-            state: formData.state,
-            city: formData.city,
-            specialty: specialty as any,
-            phone_ddd: formData.phone_ddd,
-            phone_number: formData.phone_number,
-            consultation_price: formData.consultation_price ? parseFloat(formData.consultation_price) : null,
-            photo_url: photoUrl,
-            logo_url: logoUrl
-          })
-      );
-
+      const insertPromises = formData.specialties.map(specialty => supabase.from('nutritionist_ads').insert({
+        user_id: user.id,
+        state: formData.state,
+        city: formData.city,
+        specialty: specialty as any,
+        phone_ddd: formData.phone_ddd,
+        phone_number: formData.phone_number,
+        consultation_price: formData.consultation_price ? parseFloat(formData.consultation_price) : null,
+        photo_url: photoUrl,
+        logo_url: logoUrl
+      }));
       const results = await Promise.all(insertPromises);
-      
+
       // Verificar se houve erros
       const errors = results.filter(result => result.error);
       if (errors.length > 0) {
         throw errors[0].error;
       }
-
       toast({
         title: "Sucesso!",
         description: "Seus anúncios foram cadastrados com sucesso."
@@ -346,25 +416,18 @@ const ServiNUTRI = () => {
       setLoading(false);
     }
   };
-
   const handleDeleteAd = async (adId: string) => {
     if (!user) return;
-
     setDeleteLoading(adId);
     try {
-      const { error } = await supabase
-        .from('nutritionist_ads')
-        .delete()
-        .eq('id', adId)
-        .eq('user_id', user.id);
-
+      const {
+        error
+      } = await supabase.from('nutritionist_ads').delete().eq('id', adId).eq('user_id', user.id);
       if (error) throw error;
-
       toast({
         title: "Sucesso!",
         description: "Anúncio removido com sucesso."
       });
-
       fetchAds();
       fetchUserAds();
     } catch (error) {
@@ -378,47 +441,41 @@ const ServiNUTRI = () => {
       setDeleteLoading(null);
     }
   };
-
   const handleAISearch = async () => {
     if (!searchTerm.trim()) {
       fetchAds();
       return;
     }
-
     setSearchLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-search-nutritionists', {
-        body: { searchTerm, ads }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('ai-search-nutritionists', {
+        body: {
+          searchTerm,
+          ads
+        }
       });
-
       if (error) throw error;
       setAds(data.filteredAds || []);
     } catch (error) {
       console.error('Erro na busca:', error);
       // Fallback para busca simples
-      const filtered = ads.filter(ad => 
-        ad.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ad.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        specialties.find(s => s.value === ad.specialty)?.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (ad.profile_name && ad.profile_name.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      const filtered = ads.filter(ad => ad.city.toLowerCase().includes(searchTerm.toLowerCase()) || ad.state.toLowerCase().includes(searchTerm.toLowerCase()) || specialties.find(s => s.value === ad.specialty)?.label.toLowerCase().includes(searchTerm.toLowerCase()) || ad.profile_name && ad.profile_name.toLowerCase().includes(searchTerm.toLowerCase()));
       setAds(filtered);
     } finally {
       setSearchLoading(false);
     }
   };
-
   const getSpecialtyLabel = (specialty: string) => {
     return specialties.find(s => s.value === specialty)?.label || specialty;
   };
-
   const formatPrice = (price: number | null) => {
     if (!price) return 'Valor não informado';
     return `R$ ${price.toFixed(2).replace('.', ',')}`;
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+  return <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <Navbar />
       <div className="container mx-auto px-4 pt-20 pb-12">
         <div className="text-center mb-8">
@@ -443,11 +500,7 @@ const ServiNUTRI = () => {
                   </TableCell>
                   <TableCell className="w-1/3 p-6 align-top">
                     <div className="flex justify-center">
-                      <img
-                        src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop"
-                        alt="Nutrição e alimentação saudável"
-                        className="rounded-lg shadow-md w-full max-w-sm object-cover"
-                      />
+                      <img alt="Nutrição e alimentação saudável" className="rounded-lg shadow-md w-full max-w-sm object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UiLCJpYXQiOjE3NTAyNjEzNTUsImV4cCI6MTc4MTc5NzM1NX0.0WeU-fnnvTafoepwV_0wWUI6_Dffe7CpYkwG2o06gYI" />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -461,18 +514,9 @@ const ServiNUTRI = () => {
           <CardContent className="p-6">
             <div className="flex gap-4 items-center">
               <div className="flex-1">
-                <Input
-                  placeholder="Busque por especialidade, cidade, estado ou qualquer critério..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="text-lg"
-                />
+                <Input placeholder="Busque por especialidade, cidade, estado ou qualquer critério..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="text-lg" />
               </div>
-              <Button 
-                onClick={handleAISearch}
-                disabled={searchLoading}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
+              <Button onClick={handleAISearch} disabled={searchLoading} className="bg-blue-600 hover:bg-blue-700">
                 <Search className="w-4 h-4 mr-2" />
                 {searchLoading ? 'Buscando...' : 'Buscar'}
               </Button>
@@ -481,45 +525,23 @@ const ServiNUTRI = () => {
         </Card>
 
         {/* Meus Anúncios - só mostra se o usuário está logado e tem anúncios */}
-        {user && userAds.length > 0 && (
-          <Card className="mb-8">
+        {user && userAds.length > 0 && <Card className="mb-8">
             <CardHeader>
               <CardTitle>Meus Anúncios</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userAds.map((ad) => (
-                  <Card key={ad.id} className="relative">
+                {userAds.map(ad => <Card key={ad.id} className="relative">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3 mb-3">
-                        {ad.photo_url ? (
-                          <img
-                            src={ad.photo_url}
-                            alt="Foto do nutricionista"
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                        {ad.photo_url ? <img src={ad.photo_url} alt="Foto do nutricionista" className="w-12 h-12 rounded-full object-cover" /> : <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                             <ImageIcon className="w-6 h-6 text-gray-400" />
-                          </div>
-                        )}
+                          </div>}
                         <div className="flex-1">
                           <h4 className="font-medium text-sm">{ad.profile_name}</h4>
-                          {ad.logo_url && (
-                            <img
-                              src={ad.logo_url}
-                              alt="Logo"
-                              className="w-8 h-8 object-contain mt-1"
-                            />
-                          )}
+                          {ad.logo_url && <img src={ad.logo_url} alt="Logo" className="w-8 h-8 object-contain mt-1" />}
                         </div>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDeleteAd(ad.id)}
-                          disabled={deleteLoading === ad.id}
-                        >
+                        <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteAd(ad.id)} disabled={deleteLoading === ad.id}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -543,34 +565,26 @@ const ServiNUTRI = () => {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
         {/* Card de Cadastro */}
-        {!showForm && (
-          <Card className="mb-8 border-2 border-dashed border-green-300 hover:border-green-500 transition-colors">
+        {!showForm && <Card className="mb-8 border-2 border-dashed border-green-300 hover:border-green-500 transition-colors">
             <CardContent className="p-8 text-center">
               <UserPlus className="w-16 h-16 text-green-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Cadastrar Serviço</h3>
               <p className="text-gray-600 mb-4">Divulgue seu trabalho como nutricionista</p>
-              <Button 
-                onClick={() => setShowForm(true)}
-                className="bg-green-600 hover:bg-green-700"
-              >
+              <Button onClick={() => setShowForm(true)} className="bg-green-600 hover:bg-green-700">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Cadastrar
               </Button>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
         {/* Formulário de Cadastro */}
-        {showForm && (
-          <Card className="mb-8">
+        {showForm && <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserPlus className="w-5 h-5" />
@@ -587,109 +601,75 @@ const ServiNUTRI = () => {
                         <SelectValue placeholder="Selecione um estado" />
                       </SelectTrigger>
                       <SelectContent>
-                        {brazilianStates.map((state) => (
-                          <SelectItem key={state.value} value={state.value}>
+                        {brazilianStates.map(state => <SelectItem key={state.value} value={state.value}>
                             {state.label}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <Label htmlFor="city">Cidade</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => setFormData({...formData, city: e.target.value})}
-                      placeholder="Digite sua cidade"
-                      required
-                    />
+                    <Input id="city" value={formData.city} onChange={e => setFormData({
+                  ...formData,
+                  city: e.target.value
+                })} placeholder="Digite sua cidade" required />
                   </div>
                 </div>
 
                 <div>
                   <Label>Especialidades (selecione uma ou mais)</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                    {specialties.map((specialty) => (
-                      <div key={specialty.value} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={specialty.value}
-                          checked={formData.specialties.includes(specialty.value)}
-                          onCheckedChange={(checked) => 
-                            handleSpecialtyChange(specialty.value, checked as boolean)
-                          }
-                        />
-                        <Label 
-                          htmlFor={specialty.value}
-                          className="text-sm font-normal cursor-pointer"
-                        >
+                    {specialties.map(specialty => <div key={specialty.value} className="flex items-center space-x-2">
+                        <Checkbox id={specialty.value} checked={formData.specialties.includes(specialty.value)} onCheckedChange={checked => handleSpecialtyChange(specialty.value, checked as boolean)} />
+                        <Label htmlFor={specialty.value} className="text-sm font-normal cursor-pointer">
                           {specialty.label}
                         </Label>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="ddd">DDD</Label>
-                    <Select value={formData.phone_ddd} onValueChange={(value) => setFormData({...formData, phone_ddd: value})}>
+                    <Select value={formData.phone_ddd} onValueChange={value => setFormData({
+                  ...formData,
+                  phone_ddd: value
+                })}>
                       <SelectTrigger>
                         <SelectValue placeholder="DDD" />
                       </SelectTrigger>
                       <SelectContent>
-                        {dddOptions.map((ddd) => (
-                          <SelectItem key={ddd} value={ddd}>
+                        {dddOptions.map(ddd => <SelectItem key={ddd} value={ddd}>
                             {ddd}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="md:col-span-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone_number}
-                      onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                      placeholder="99999-9999"
-                      required
-                    />
+                    <Input id="phone" value={formData.phone_number} onChange={e => setFormData({
+                  ...formData,
+                  phone_number: e.target.value
+                })} placeholder="99999-9999" required />
                   </div>
                 </div>
 
                 <div>
                   <Label htmlFor="consultation_price">Valor da Consulta (R$)</Label>
-                  <Input
-                    id="consultation_price"
-                    type="number"
-                    step="0.01"
-                    value={formData.consultation_price}
-                    onChange={(e) => setFormData({...formData, consultation_price: e.target.value})}
-                    placeholder="150.00"
-                  />
+                  <Input id="consultation_price" type="number" step="0.01" value={formData.consultation_price} onChange={e => setFormData({
+                ...formData,
+                consultation_price: e.target.value
+              })} placeholder="150.00" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="photo">Foto Pessoal</Label>
-                    <Input
-                      id="photo"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-                      className="cursor-pointer"
-                    />
+                    <Input id="photo" type="file" accept="image/*" onChange={e => setPhotoFile(e.target.files?.[0] || null)} className="cursor-pointer" />
                   </div>
                   <div>
                     <Label htmlFor="logo">Logomarca (Opcional)</Label>
-                    <Input
-                      id="logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-                      className="cursor-pointer"
-                    />
+                    <Input id="logo" type="file" accept="image/*" onChange={e => setLogoFile(e.target.files?.[0] || null)} className="cursor-pointer" />
                   </div>
                 </div>
 
@@ -703,35 +683,19 @@ const ServiNUTRI = () => {
                 </div>
               </form>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
         {/* Lista de Anúncios */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ads.map((ad) => (
-            <Card key={ad.id} className="hover:shadow-lg transition-shadow">
+          {ads.map(ad => <Card key={ad.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4 mb-4">
-                  {ad.photo_url ? (
-                    <img
-                      src={ad.photo_url}
-                      alt="Foto do nutricionista"
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  {ad.photo_url ? <img src={ad.photo_url} alt="Foto do nutricionista" className="w-16 h-16 rounded-full object-cover" /> : <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
                       <ImageIcon className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
+                    </div>}
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{ad.profile_name || 'Nutricionista'}</h3>
-                    {ad.logo_url && (
-                      <img
-                        src={ad.logo_url}
-                        alt="Logo"
-                        className="w-12 h-12 object-contain mt-2"
-                      />
-                    )}
+                    {ad.logo_url && <img src={ad.logo_url} alt="Logo" className="w-12 h-12 object-contain mt-2" />}
                   </div>
                 </div>
 
@@ -754,29 +718,21 @@ const ServiNUTRI = () => {
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full mt-4 bg-green-600 hover:bg-green-700"
-                  onClick={() => {
-                    const message = encodeURIComponent("Oi, ví seu anúncio no FoodScan & Diet, tenho interesse no atendimento");
-                    window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}?text=${message}`, '_blank');
-                  }}
-                >
+                <Button className="w-full mt-4 bg-green-600 hover:bg-green-700" onClick={() => {
+              const message = encodeURIComponent("Oi, ví seu anúncio no FoodScan & Diet, tenho interesse no atendimento");
+              window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}?text=${message}`, '_blank');
+            }}>
                   <MessageCircle className="w-4 h-4 mr-2" />
                   WhatsApp
                 </Button>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
-        {ads.length === 0 && (
-          <div className="text-center py-12">
+        {ads.length === 0 && <div className="text-center py-12">
             <p className="text-gray-500 text-lg">Nenhum anúncio encontrado.</p>
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ServiNUTRI;
