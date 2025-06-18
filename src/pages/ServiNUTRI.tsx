@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +47,36 @@ const ServiNUTRI = () => {
     { value: 'nutricao_hospitalar', label: 'Nutrição Hospitalar' },
     { value: 'nutricao_coletiva', label: 'Nutrição Coletiva' },
     { value: 'nutricao_saude_publica', label: 'Nutrição em Saúde Pública' }
+  ];
+
+  const brazilianStates = [
+    { value: 'AC', label: 'AC - Acre' },
+    { value: 'AL', label: 'AL - Alagoas' },
+    { value: 'AP', label: 'AP - Amapá' },
+    { value: 'AM', label: 'AM - Amazonas' },
+    { value: 'BA', label: 'BA - Bahia' },
+    { value: 'CE', label: 'CE - Ceará' },
+    { value: 'DF', label: 'DF - Distrito Federal' },
+    { value: 'ES', label: 'ES - Espírito Santo' },
+    { value: 'GO', label: 'GO - Goiás' },
+    { value: 'MA', label: 'MA - Maranhão' },
+    { value: 'MT', label: 'MT - Mato Grosso' },
+    { value: 'MS', label: 'MS - Mato Grosso do Sul' },
+    { value: 'MG', label: 'MG - Minas Gerais' },
+    { value: 'PA', label: 'PA - Pará' },
+    { value: 'PB', label: 'PB - Paraíba' },
+    { value: 'PR', label: 'PR - Paraná' },
+    { value: 'PE', label: 'PE - Pernambuco' },
+    { value: 'PI', label: 'PI - Piauí' },
+    { value: 'RJ', label: 'RJ - Rio de Janeiro' },
+    { value: 'RN', label: 'RN - Rio Grande do Norte' },
+    { value: 'RS', label: 'RS - Rio Grande do Sul' },
+    { value: 'RO', label: 'RO - Rondônia' },
+    { value: 'RR', label: 'RR - Roraima' },
+    { value: 'SC', label: 'SC - Santa Catarina' },
+    { value: 'SP', label: 'SP - São Paulo' },
+    { value: 'SE', label: 'SE - Sergipe' },
+    { value: 'TO', label: 'TO - Tocantins' }
   ];
 
   const dddOptions = [
@@ -310,12 +339,18 @@ const ServiNUTRI = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="state">Estado</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => setFormData({...formData, state: e.target.value})}
-                      required
-                    />
+                    <Select value={formData.state} onValueChange={(value) => setFormData({...formData, state: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {brazilianStates.map((state) => (
+                          <SelectItem key={state.value} value={state.value}>
+                            {state.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label htmlFor="city">Cidade</Label>
