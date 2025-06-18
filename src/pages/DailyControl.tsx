@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -50,7 +49,10 @@ const DailyControl = () => {
   const analysisRef = useRef<HTMLDivElement>(null);
   const goalsFormRef = useRef<HTMLDivElement>(null);
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
-  const [analysisData, setAnalysisData] = useState<{goals: any, consumed: any} | null>(null);
+  const [analysisData, setAnalysisData] = useState<{
+    goals: any;
+    consumed: any;
+  } | null>(null);
   useEffect(() => {
     if (!authLoading && user) {
       loadUserData();
@@ -146,7 +148,7 @@ const DailyControl = () => {
       toast({
         title: "Erro",
         description: "Metas diárias não configuradas",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
@@ -164,7 +166,6 @@ const DailyControl = () => {
       proteins: 0,
       fats: 0
     });
-
     const payload = {
       date: new Date().toISOString().split('T')[0],
       goals: {
@@ -197,7 +198,6 @@ const DailyControl = () => {
         fat_difference: consumed.fats - goals.fats
       }
     };
-
     try {
       console.log('Enviando dados para Make:', payload);
       const response = await fetch(webhookUrl, {
@@ -210,13 +210,12 @@ const DailyControl = () => {
       if (response.ok) {
         const result = await response.text();
         setAnalysis(result);
-        
+
         // Salvar os dados para a análise da IA
         setAnalysisData({
           goals: payload.goals,
           consumed: payload.consumed
         });
-        
         toast({
           title: "Sucesso",
           description: "Análise do dia concluída!"
@@ -278,8 +277,7 @@ const DailyControl = () => {
     }
   };
   if (authLoading || isLoading) {
-    return (
-      <>
+    return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -290,12 +288,10 @@ const DailyControl = () => {
           </div>
         </div>
         <Footer />
-      </>
-    );
+      </>;
   }
   if (!user) {
-    return (
-      <>
+    return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -310,14 +306,12 @@ const DailyControl = () => {
           </div>
         </div>
         <Footer />
-      </>
-    );
+      </>;
   }
-  return (
-    <>
+  return <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto py-8 px-[6px]">
           <WelcomeMessage />
           
           <div className="max-w-4xl mx-auto space-y-8">
@@ -330,81 +324,50 @@ const DailyControl = () => {
               </p>
             </div>
 
-            {goals ? (
-              <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} />
-            ) : (
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
+            {goals ? <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} /> : <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Configure suas Metas Diárias
                 </h3>
                 <p className="text-gray-600 mb-6">
                   Defina seus objetivos nutricionais para começar o controle
                 </p>
-                <button 
-                  onClick={() => setShowGoalsForm(true)} 
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
+                <button onClick={() => setShowGoalsForm(true)} className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                   Configurar Metas
                 </button>
-              </div>
-            )}
+              </div>}
 
-            {showGoalsForm && (
-              <div ref={goalsFormRef}>
+            {showGoalsForm && <div ref={goalsFormRef}>
                 <GoalsForm onSave={handleSaveGoals} onCancel={() => setShowGoalsForm(false)} initialGoals={goals} />
-              </div>
-            )}
+              </div>}
 
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
             {/* Botões de Ação */}
-            {goals && (
-              <div className="flex justify-center space-x-4">
-                <Button 
-                  onClick={() => navigate('/foodscan')}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
+            {goals && <div className="flex justify-center space-x-4">
+                <Button onClick={() => navigate('/foodscan')} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                   <Plus className="w-5 h-5 mr-2" />
                   Comer Mais
                 </Button>
                 
-                {meals.length > 0 && (
-                  <Button 
-                    onClick={handleEndDay} 
-                    disabled={isAnalyzing} 
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    {isAnalyzing ? (
-                      <div className="flex items-center">
+                {meals.length > 0 && <Button onClick={handleEndDay} disabled={isAnalyzing} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                    {isAnalyzing ? <div className="flex items-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                         Analisando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center">
+                      </div> : <div className="flex items-center">
                         <Calendar className="w-5 h-5 mr-2" />
                         Encerrar Dia
-                      </div>
-                    )}
-                  </Button>
-                )}
-              </div>
-            )}
+                      </div>}
+                  </Button>}
+              </div>}
 
             {/* Componente de Análise */}
             <div ref={analysisRef}>
-              <DietAnalysis 
-                analysis={analysis} 
-                isLoading={isAnalyzing}
-                goals={analysisData?.goals}
-                consumed={analysisData?.consumed}
-              />
+              <DietAnalysis analysis={analysis} isLoading={isAnalyzing} goals={analysisData?.goals} consumed={analysisData?.consumed} />
             </div>
           </div>
         </div>
       </div>
       <Footer />
-    </>
-  );
+    </>;
 };
-
 export default DailyControl;
