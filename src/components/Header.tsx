@@ -1,11 +1,10 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { GradientText } from './ui/gradient-text';
-import { AuroraBackground } from './ui/aurora-background';
 
 export const Header = () => {
   return (
-    <AuroraBackground className="text-center mb-12 animate-fade-in rounded-xl h-auto py-[19px]">
+    <div className="text-center mb-12 animate-fade-in bg-white py-[19px] px-0 rounded-xl">
       <div className="flex items-center justify-center mb-6">
         
       </div>
@@ -30,6 +29,6 @@ export const Header = () => {
           <span className="text-sm text-primary-700">100% Precisão</span>
         </div>
       </div>
-    </AuroraBackground>
+    </div>
   );
 };
