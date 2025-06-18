@@ -542,17 +542,19 @@ const MasterCheFIT = () => {
                 <Button
                   onClick={generateMenuPlan}
                   disabled={isGenerating}
-                  className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 text-lg"
+                  className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 text-base sm:px-8 sm:text-lg"
                 >
                   {isGenerating ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Gerando Cardápio...
+                      <span className="hidden sm:inline">Gerando Cardápio...</span>
+                      <span className="sm:hidden">Gerando...</span>
                     </>
                   ) : (
                     <>
                       <ChefHat className="w-5 h-5 mr-2" />
-                      Gerar Cardápio Personalizado
+                      <span className="hidden sm:inline">Gerar Cardápio Personalizado</span>
+                      <span className="sm:hidden">Gerar Cardápio</span>
                     </>
                   )}
                 </Button>
