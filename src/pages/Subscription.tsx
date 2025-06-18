@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
-import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle } from 'lucide-react';
+import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users } from 'lucide-react';
 const Subscription = () => {
   return <div className="min-h-screen bg-gradient-primary">
       <Navbar />
@@ -98,6 +99,30 @@ const Subscription = () => {
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-success-500" />
                   <span className="text-gray-700">Compartilhamento via WhatsApp</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Cardápios personalizados por IA</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Receitas baseadas nos seus gostos</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Planejamento semanal de refeições</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Rede de nutricionistas especializados</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Busca inteligente por profissionais</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-success-500" />
+                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Contato direto via WhatsApp</span>
                 </div>
               </div>
             </CardContent>
