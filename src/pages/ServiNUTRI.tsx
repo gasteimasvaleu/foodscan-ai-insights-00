@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -423,6 +425,36 @@ const ServiNUTRI = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">ServiNUTRI</h1>
           <p className="text-lg text-gray-600">Encontre nutricionistas especializados na sua região</p>
         </div>
+
+        {/* Card Informativo */}
+        <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+          <CardContent className="p-6">
+            <Table>
+              <TableBody>
+                <TableRow className="border-none">
+                  <TableCell className="w-2/3 p-6 align-top">
+                    <p className="text-gray-700 leading-relaxed text-justify">
+                      Aqui na FoodScan & Diet, acreditamos que tecnologia é uma aliada, mas jamais um substituto para o olhar humano. 
+                      Por mais avançada que seja a inteligência artificial, nada supera o cuidado, a empatia e o atendimento personalizado 
+                      que só um profissional de Nutrição pode oferecer. Por isso, criamos o ServiNUTRI, uma funcionalidade que conecta 
+                      você diretamente com nutricionistas qualificados. Nosso objetivo é unir tecnologia e atendimento humanizado, 
+                      oferecendo não só dados, mas também orientação, acompanhamento e motivação real para sua jornada alimentar.
+                    </p>
+                  </TableCell>
+                  <TableCell className="w-1/3 p-6 align-top">
+                    <div className="flex justify-center">
+                      <img
+                        src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=300&fit=crop"
+                        alt="Nutrição e alimentação saudável"
+                        className="rounded-lg shadow-md w-full max-w-sm object-cover"
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
         {/* Busca com IA */}
         <Card className="mb-8">
