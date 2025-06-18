@@ -1,9 +1,8 @@
-
 import { motion } from 'framer-motion';
 
 export const Component = () => {
   return (
-    <section className="bg-background px-4 py-12 min-h-screen transition-colors">
+    <section className="bg-transparent px-4 py-12 min-h-screen transition-colors">
       <div className="mx-auto flex w-fit flex-wrap justify-center gap-4">
           <PricingCard
             label="Assinatura Mensal"
