@@ -46,7 +46,8 @@ export default {
 					50: '#F0FDF4',
 					100: '#DCFCE7',
 					500: '#22C55E',
-					600: '#16A34A'
+					600: '#16A34A',
+					foreground: 'hsl(0 0% 100%)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -138,6 +139,12 @@ export default {
 					"50%": { backgroundPosition: "100% 50%" },
 					"100%": { backgroundPosition: "0% 50%" },
 				},
+				flip: {
+					to: { transform: "rotate(360deg)" },
+				},
+				rotate: {
+					to: { transform: "rotate(90deg)" },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -146,6 +153,8 @@ export default {
 				'scale-in': 'scale-in 0.2s ease-out',
 				'pulse-glow': 'pulse-glow 2s infinite',
 				gradient: "gradient var(--animation-duration, 8s) linear infinite",
+				flip: "flip 6s infinite steps(2, end)",
+				rotate: "rotate 3s linear infinite both",
 			}
 		}
 	},

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Brain, MessageCircle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SaveButton } from '@/components/ui/save-button';
 import { TruthMoment } from './TruthMoment';
 import { toast } from '@/hooks/use-toast';
 
@@ -124,23 +125,14 @@ Responda APENAS um JSON no formato:
             Enviar pelo Whatsapp
           </Button>
           
-          <Button
-            onClick={handleTruthMoment}
-            disabled={isTruthLoading}
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {isTruthLoading ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Analisando...
-              </div>
-            ) : (
-              <>
-                <Zap className="w-5 h-5 mr-2" />
-                Hora da Verdade 🎭
-              </>
-            )}
-          </Button>
+          <SaveButton
+            text={{
+              idle: "Hora da Verdade 🎭",
+              saving: "Analisando...",
+              saved: "Análise Completa!"
+            }}
+            onSave={handleTruthMoment}
+          />
         </div>
       </div>
 

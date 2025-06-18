@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Check, Download, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -104,7 +105,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
 
       <div className="mb-4">
         <PortionSelector
-          defaultValue={1}
+          value={portion}
           onChange={(value) => setPortion(value)}
           quantidadeReferencia={nutritionData.quantidade_referencia}
         />
