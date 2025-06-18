@@ -10,6 +10,7 @@ import DailyControl from "./pages/DailyControl";
 import MasterCheFIT from "./pages/MasterCheFIT";
 import Subscription from "./pages/Subscription";
 import About from "./pages/About";
+import ServiNUTRI from "./pages/ServiNUTRI";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/masterchef" element={<MasterCheFIT />} />
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
+          <Route path="/servinutri" element={<ServiNUTRI />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -81,6 +81,48 @@ export type Database = {
         }
         Relationships: []
       }
+      nutritionist_ads: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          logo_url: string | null
+          phone_ddd: string
+          phone_number: string
+          photo_url: string | null
+          specialty: Database["public"]["Enums"]["nutrition_specialty"]
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          phone_ddd: string
+          phone_number: string
+          photo_url?: string | null
+          specialty: Database["public"]["Enums"]["nutrition_specialty"]
+          state: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          phone_ddd?: string
+          phone_number?: string
+          photo_url?: string | null
+          specialty?: Database["public"]["Enums"]["nutrition_specialty"]
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -164,7 +206,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      nutrition_specialty:
+        | "nutricao_clinica"
+        | "nutricao_esportiva"
+        | "nutricao_funcional"
+        | "nutricao_estetica"
+        | "nutricao_materno_infantil"
+        | "nutricao_hospitalar"
+        | "nutricao_coletiva"
+        | "nutricao_saude_publica"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -279,6 +329,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      nutrition_specialty: [
+        "nutricao_clinica",
+        "nutricao_esportiva",
+        "nutricao_funcional",
+        "nutricao_estetica",
+        "nutricao_materno_infantil",
+        "nutricao_hospitalar",
+        "nutricao_coletiva",
+        "nutricao_saude_publica",
+      ],
+    },
   },
 } as const
