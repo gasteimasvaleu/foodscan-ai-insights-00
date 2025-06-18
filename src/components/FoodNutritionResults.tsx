@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { RotateCcw, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -68,7 +67,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           proteins: proteins,
           fats: fats,
           portion: currentPortion || `${portionGrams}g`,
-          meal_time: new Date().toLocaleTimeString(),
+          meal_time: new Date().toISOString(),
           user_id: user.id,
         },
       ]).select().single();
