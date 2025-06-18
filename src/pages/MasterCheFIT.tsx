@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,10 +108,10 @@ const MasterCheFIT = () => {
 
       if (error) throw error;
 
-      // Type assertion para converter Json para MenuPlan
+      // Type assertion para converter Json para MenuPlan usando unknown como intermediário
       const typedMenuPlans: SavedMenuPlan[] = (data || []).map(item => ({
         id: item.id,
-        menu_data: item.menu_data as MenuPlan,
+        menu_data: item.menu_data as unknown as MenuPlan,
         created_at: item.created_at
       }));
 
