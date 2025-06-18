@@ -512,7 +512,7 @@ const ServiNUTRI = () => {
           <CardContent className="p-6">
             <div className="flex gap-4 items-center">
               <div className="flex-1">
-                <Input placeholder="Busque por especialidade, cidade, estado ou qualquer critério..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="text-lg" />
+                <Input placeholder="Busque por especialidade, cidade, estado ou qualquer critério..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="text-sm lg:text-lg" />
               </div>
               <Button onClick={handleAISearch} disabled={searchLoading} className="bg-blue-600 hover:bg-blue-700">
                 <Search className="w-4 h-4 mr-2" />
