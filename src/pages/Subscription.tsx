@@ -2,7 +2,7 @@
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle } from 'lucide-react';
 
 const Subscription = () => {
@@ -74,21 +74,18 @@ const Subscription = () => {
             </CardContent>
           </Card>
 
-          {/* Subscription Card */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 animate-scale-in">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-primary-600 mb-2">
-                Assinatura Mensal
-              </CardTitle>
-              <div className="text-5xl font-bold text-primary-600 mb-4">
-                R$ 27,90
-              </div>
-              <p className="text-gray-600">
-                Acesso completo a todas as funcionalidades
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
+          {/* New Pricing Card Component */}
+          <div className="animate-scale-in">
+            <PricingComponent />
+          </div>
+
+          {/* Features List */}
+          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold text-primary-600 mb-6 text-center">
+                Incluído na Assinatura
+              </h3>
+              <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-success-500" />
                   <span className="text-gray-700">Análise ilimitada de fotos</span>
@@ -105,12 +102,6 @@ const Subscription = () => {
                   <CheckCircle className="w-5 h-5 text-success-500" />
                   <span className="text-gray-700">Compartilhamento via WhatsApp</span>
                 </div>
-              </div>
-              
-              <div className="pt-6">
-                <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white rounded-xl py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  Assinar Agora
-                </Button>
               </div>
             </CardContent>
           </Card>
