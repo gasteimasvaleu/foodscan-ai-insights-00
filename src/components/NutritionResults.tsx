@@ -5,6 +5,7 @@ import { PortionSelector } from './PortionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 // Interface local para dados nutricionais
 interface NutritionData {
@@ -27,6 +28,7 @@ interface NutritionResultsProps {
 
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionData, onSave, onClose }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
   const [isSaving, setIsSaving] = useState(false);
@@ -82,6 +84,10 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
       });
 
       onSave?.();
+
+      // Redirecionar para a página de Controle Diário
+      navigate('/controle-diario');
+
     } catch (error) {
       console.error('Erro ao salvar refeição:', error);
       toast({
