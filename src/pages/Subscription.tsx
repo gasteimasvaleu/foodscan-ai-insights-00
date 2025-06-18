@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users } from 'lucide-react';
-
 const Subscription = () => {
-  return (
-    <div className="min-h-screen bg-gradient-primary">
+  return <div className="min-h-screen bg-gradient-primary">
       <Navbar />
       
       <div className="pt-20 pb-12 px-4">
@@ -15,9 +12,7 @@ const Subscription = () => {
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in">
             <div className="flex items-center justify-center mb-6">
-              <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 shadow-lg animate-pulse-glow">
-                <Sparkles className="w-12 h-12 text-white" />
-              </div>
+              
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -145,8 +140,6 @@ const Subscription = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Subscription;
