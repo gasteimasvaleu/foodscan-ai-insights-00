@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon } from 'lucide-react';
+import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -569,10 +570,13 @@ const ServiNUTRI = () => {
 
                 <Button 
                   className="w-full mt-4 bg-green-600 hover:bg-green-700"
-                  onClick={() => window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}`, '_blank')}
+                  onClick={() => {
+                    const message = encodeURIComponent("Oi, ví seu anúncio no FoodScan & Diet, tenho interesse no atendimento");
+                    window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}?text=${message}`, '_blank');
+                  }}
                 >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Entrar em Contato
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
                 </Button>
               </CardContent>
             </Card>
