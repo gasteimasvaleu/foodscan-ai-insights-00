@@ -26,7 +26,7 @@ export const Footer = () => {
     href: '/sobre'
   }];
   return <footer className="bg-white/80 backdrop-blur-md border-t border-white/20 shadow-sm mt-12">
-      <div className="container mx-auto px-4 py-px">
+      <div className="container mx-auto px-[21px] py-[20px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo e Descrição */}
           <div className="space-y-4">
