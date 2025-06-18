@@ -4,9 +4,17 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
 
@@ -33,63 +41,62 @@ export const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Menu */}
-          {!isMobile && (
-            <div className="hidden md:flex items-center space-x-6">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`transition-colors duration-200 font-medium ${
-                    isActiveRoute(item.href)
-                      ? 'text-primary-600 border-b-2 border-primary-600 pb-1'
-                      : 'text-gray-700 hover:text-primary-600'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {/* Mobile Menu Button */}
-          {isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
-          )}
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobile && isMobileMenuOpen && (
-          <div className="md:hidden border-t border-white/20 bg-white/90 backdrop-blur-md">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={`block px-3 py-2 rounded-md transition-colors duration-200 font-medium ${
-                    isActiveRoute(item.href)
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+          {/* Desktop Menu - Hidden on all screens, replaced with hamburger */}
+          <div className="hidden">
+            {/* Desktop menu removed */}
           </div>
-        )}
+
+          {/* Hamburger Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative z-50"
+              >
+                {isOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent 
+              side="right" 
+              className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0"
+            >
+              <SheetHeader className="p-6 border-b border-white/20">
+                <SheetTitle className="text-primary-600 text-lg font-bold">
+                  Menu
+                </SheetTitle>
+              </SheetHeader>
+              
+              <ScrollArea className="h-full">
+                <div className="p-6 space-y-4">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className={`block p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm ${
+                        isActiveRoute(item.href)
+                          ? 'bg-primary-500/20 text-primary-700 border border-primary-300/30 shadow-lg'
+                          : 'bg-white/20 text-gray-700 hover:bg-white/30 hover:text-primary-600 border border-white/30'
+                      }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-base">{item.label}</span>
+                        {isActiveRoute(item.href) && (
+                          <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   );
