@@ -343,13 +343,13 @@ const DailyControl = () => {
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
             {/* Botões de Ação */}
-            {goals && <div className="flex justify-center space-x-4">
-                <Button onClick={() => navigate('/foodscan')} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+            {goals && <div className="flex flex-col items-center space-y-4">
+                <Button onClick={() => navigate('/foodscan')} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-xs">
                   <Plus className="w-5 h-5 mr-2" />
                   Comer Mais
                 </Button>
                 
-                {meals.length > 0 && <Button onClick={handleEndDay} disabled={isAnalyzing} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                {meals.length > 0 && <Button onClick={handleEndDay} disabled={isAnalyzing} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-xs">
                     {isAnalyzing ? <div className="flex items-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                         Analisando...
