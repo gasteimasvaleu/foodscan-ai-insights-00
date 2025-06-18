@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,7 +30,7 @@ const ServiNUTRI = () => {
   const [formData, setFormData] = useState({
     state: '',
     city: '',
-    specialty: '',
+    specialties: [] as string[],
     phone_ddd: '',
     phone_number: '',
     photo_url: '',
@@ -143,6 +144,20 @@ const ServiNUTRI = () => {
     setFormData({...formData, state: value, city: ''});
   };
 
+  const handleSpecialtyChange = (specialtyValue: string, checked: boolean) => {
+    if (checked) {
+      setFormData({
+        ...formData,
+        specialties: [...formData.specialties, specialtyValue]
+      });
+    } else {
+      setFormData({
+        ...formData,
+        specialties: formData.specialties.filter(s => s !== specialtyValue)
+      });
+    }
+  };
+
   const getAvailableCities = () => {
     if (!formData.state) return [];
     return citiesByState[formData.state as keyof typeof citiesByState] || [];
@@ -218,6 +233,15 @@ const ServiNUTRI = () => {
       return;
     }
 
+    if (formData.specialties.length === 0) {
+      toast({
+        title: "Erro",
+        description: "Selecione pelo menos uma especialidade.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -234,31 +258,40 @@ const ServiNUTRI = () => {
         logoUrl = await uploadFile(logoFile, 'logos') || '';
       }
 
-      const { error } = await supabase
-        .from('nutritionist_ads')
-        .insert({
-          user_id: user.id,
-          state: formData.state,
-          city: formData.city,
-          specialty: formData.specialty as any,
-          phone_ddd: formData.phone_ddd,
-          phone_number: formData.phone_number,
-          photo_url: photoUrl,
-          logo_url: logoUrl
-        });
+      // Criar um anúncio para cada especialidade selecionada
+      const insertPromises = formData.specialties.map(specialty => 
+        supabase
+          .from('nutritionist_ads')
+          .insert({
+            user_id: user.id,
+            state: formData.state,
+            city: formData.city,
+            specialty: specialty as any,
+            phone_ddd: formData.phone_ddd,
+            phone_number: formData.phone_number,
+            photo_url: photoUrl,
+            logo_url: logoUrl
+          })
+      );
 
-      if (error) throw error;
+      const results = await Promise.all(insertPromises);
+      
+      // Verificar se houve erros
+      const errors = results.filter(result => result.error);
+      if (errors.length > 0) {
+        throw errors[0].error;
+      }
 
       toast({
         title: "Sucesso!",
-        description: "Seu anúncio foi cadastrado com sucesso."
+        description: "Seus anúncios foram cadastrados com sucesso."
       });
 
       // Reset form
       setFormData({
         state: '',
         city: '',
-        specialty: '',
+        specialties: [],
         phone_ddd: '',
         phone_number: '',
         photo_url: '',
@@ -269,10 +302,10 @@ const ServiNUTRI = () => {
       setShowForm(false);
       fetchAds();
     } catch (error) {
-      console.error('Erro ao cadastrar anúncio:', error);
+      console.error('Erro ao cadastrar anúncios:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível cadastrar o anúncio. Tente novamente.",
+        description: "Não foi possível cadastrar os anúncios. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -404,19 +437,26 @@ const ServiNUTRI = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="specialty">Especialidade</Label>
-                  <Select value={formData.specialty} onValueChange={(value) => setFormData({...formData, specialty: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma especialidade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {specialties.map((specialty) => (
-                        <SelectItem key={specialty.value} value={specialty.value}>
+                  <Label>Especialidades (selecione uma ou mais)</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                    {specialties.map((specialty) => (
+                      <div key={specialty.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={specialty.value}
+                          checked={formData.specialties.includes(specialty.value)}
+                          onCheckedChange={(checked) => 
+                            handleSpecialtyChange(specialty.value, checked as boolean)
+                          }
+                        />
+                        <Label 
+                          htmlFor={specialty.value}
+                          className="text-sm font-normal cursor-pointer"
+                        >
                           {specialty.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -472,7 +512,7 @@ const ServiNUTRI = () => {
 
                 <div className="flex gap-4">
                   <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700">
-                    {loading ? 'Cadastrando...' : 'Cadastrar Anúncio'}
+                    {loading ? 'Cadastrando...' : 'Cadastrar Anúncios'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                     Cancelar
