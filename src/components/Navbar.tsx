@@ -66,7 +66,7 @@ export const Navbar = () => {
               className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0"
             >
               <SheetHeader className="p-6 border-b border-white/20">
-                <SheetTitle className="text-primary-600 text-lg font-bold">
+                <SheetTitle className="text-white text-lg font-bold">
                   Menu
                 </SheetTitle>
               </SheetHeader>
@@ -79,13 +79,13 @@ export const Navbar = () => {
                       to={item.href}
                       className={`block p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm ${
                         isActiveRoute(item.href)
-                          ? 'bg-primary-500/20 text-primary-700 border border-primary-300/30 shadow-lg'
-                          : 'bg-white/20 text-gray-700 hover:bg-white/30 hover:text-primary-600 border border-white/30'
+                          ? 'bg-primary-500/20 text-white border border-primary-300/30 shadow-lg'
+                          : 'bg-white/20 text-white hover:bg-white/30 hover:text-white border border-white/30'
                       }`}
                       onClick={() => setIsOpen(false)}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-base">{item.label}</span>
+                        <span className="text-base text-white">{item.label}</span>
                         {isActiveRoute(item.href) && (
                           <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                         )}
