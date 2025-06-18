@@ -13,9 +13,7 @@ const About = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Sobre
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-              Conheça mais sobre o FoodScan AI
-            </p>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o FoodScan&amp;Diet</p>
           </div>
 
           <div className="space-y-8">
@@ -65,10 +63,7 @@ const About = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-4 text-gray-700">
                   <h3 className="text-lg font-semibold text-primary-600">Aceitação dos Termos</h3>
-                  <p>
-                    Ao usar o FoodScan AI, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer 
-                    parte destes termos, não use nosso serviço.
-                  </p>
+                  <p>Ao usar o FoodScan&Diet, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer parte destes termos, não use nosso serviço.</p>
                   
                   <h3 className="text-lg font-semibold text-primary-600">Uso Permitido</h3>
                   <p>
