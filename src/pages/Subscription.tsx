@@ -1,10 +1,14 @@
+
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users } from 'lucide-react';
+
 const Subscription = () => {
-  return <div className="min-h-screen bg-gradient-primary">
+  return (
+    <div className="min-h-screen bg-gradient-primary">
       <Navbar />
       
       <div className="pt-20 pb-12 px-0">
@@ -140,6 +144,9 @@ const Subscription = () => {
           </Card>
         </div>
       </div>
-    </div>;
+      <Footer />
+    </div>
+  );
 };
+
 export default Subscription;

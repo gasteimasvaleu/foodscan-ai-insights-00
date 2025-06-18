@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { FoodNutritionResults } from '@/components/FoodNutritionResults';
 import { LoadingState } from '@/components/LoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -357,6 +359,7 @@ Todos os valores devem ser números reais baseados na porção identificada.`
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

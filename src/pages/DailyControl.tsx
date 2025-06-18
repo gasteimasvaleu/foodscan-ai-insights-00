@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { WelcomeMessage } from '@/components/WelcomeMessage';
 import { DailyGoals } from '@/components/DailyGoals';
 import { MealsList } from '@/components/MealsList';
@@ -277,7 +278,8 @@ const DailyControl = () => {
     }
   };
   if (authLoading || isLoading) {
-    return <>
+    return (
+      <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -287,10 +289,13 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-      </>;
+        <Footer />
+      </>
+    );
   }
   if (!user) {
-    return <>
+    return (
+      <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
@@ -304,9 +309,12 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-      </>;
+        <Footer />
+      </>
+    );
   }
-  return <>
+  return (
+    <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto px-4 py-8">
@@ -322,26 +330,36 @@ const DailyControl = () => {
               </p>
             </div>
 
-            {goals ? <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} /> : <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
+            {goals ? (
+              <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} />
+            ) : (
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Configure suas Metas Diárias
                 </h3>
                 <p className="text-gray-600 mb-6">
                   Defina seus objetivos nutricionais para começar o controle
                 </p>
-                <button onClick={() => setShowGoalsForm(true)} className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                <button 
+                  onClick={() => setShowGoalsForm(true)} 
+                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
                   Configurar Metas
                 </button>
-              </div>}
+              </div>
+            )}
 
-            {showGoalsForm && <div ref={goalsFormRef}>
+            {showGoalsForm && (
+              <div ref={goalsFormRef}>
                 <GoalsForm onSave={handleSaveGoals} onCancel={() => setShowGoalsForm(false)} initialGoals={goals} />
-              </div>}
+              </div>
+            )}
 
             <MealsList meals={meals} onRefresh={loadUserData} onClearMeals={handleClearMeals} />
 
             {/* Botões de Ação */}
-            {goals && <div className="flex justify-center space-x-4">
+            {goals && (
+              <div className="flex justify-center space-x-4">
                 <Button 
                   onClick={() => navigate('/foodscan')}
                   className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -356,16 +374,21 @@ const DailyControl = () => {
                     disabled={isAnalyzing} 
                     className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    {isAnalyzing ? <div className="flex items-center">
+                    {isAnalyzing ? (
+                      <div className="flex items-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                         Analisando...
-                      </div> : <div className="flex items-center">
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
                         <Calendar className="w-5 h-5 mr-2" />
                         Encerrar Dia
-                      </div>}
+                      </div>
+                    )}
                   </Button>
                 )}
-              </div>}
+              </div>
+            )}
 
             {/* Componente de Análise */}
             <div ref={analysisRef}>
@@ -379,6 +402,9 @@ const DailyControl = () => {
           </div>
         </div>
       </div>
-    </>;
+      <Footer />
+    </>
+  );
 };
+
 export default DailyControl;
