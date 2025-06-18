@@ -28,7 +28,7 @@ export const FeaturesSection = () => {
   return <div className="space-y-8 animate-fade-in">
       {/* Main Description */}
       <Card className="bg-white/95 backdrop-blur-sm border border-white/30 shadow-2xl">
-        <CardContent className="p-8 px-[16px]">
+        <CardContent className="p-8 px-[11px]">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               Transforme sua alimentação com{' '}
@@ -45,7 +45,7 @@ export const FeaturesSection = () => {
 
           {/* Feature Cards Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {features.map((feature, index) => <div key={index} className="group p-6 rounded-xl bg-gradient-to-br from-white/50 to-white/30 border border-white/40 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            {features.map((feature, index) => <div key={index} className="group p-6 rounded-xl bg-gradient-to-br from-white/50 to-white/30 border border-white/40 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 px-[8px]">
                 <div className="bg-primary-100 rounded-full w-12 h-12 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-6 h-6 text-primary-600" />
                 </div>

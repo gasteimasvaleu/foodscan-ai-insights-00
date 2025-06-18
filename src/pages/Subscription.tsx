@@ -7,7 +7,7 @@ const Subscription = () => {
   return <div className="min-h-screen bg-gradient-primary">
       <Navbar />
       
-      <div className="pt-20 pb-12 px-4">
+      <div className="pt-20 pb-12 px-0">
         <div className="container mx-auto max-w-4xl">
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in">
@@ -90,7 +90,7 @@ const Subscription = () => {
 
           {/* Features List */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">
-            <CardContent className="p-8 py-[29px]">
+            <CardContent className="p-8 py-[29px] px-[14px]">
               <h3 className="text-2xl font-bold text-primary-600 mb-6 text-center">
                 Incluído na Assinatura
               </h3>
