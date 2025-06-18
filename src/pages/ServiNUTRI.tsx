@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle } from 'lucide-react';
+import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,10 +21,12 @@ const ServiNUTRI = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [ads, setAds] = useState<NutritionistAd[]>([]);
+  const [userAds, setUserAds] = useState<NutritionistAd[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -34,6 +35,7 @@ const ServiNUTRI = () => {
     specialties: [] as string[],
     phone_ddd: '',
     phone_number: '',
+    consultation_price: '',
     photo_url: '',
     logo_url: ''
   });
@@ -166,7 +168,10 @@ const ServiNUTRI = () => {
 
   useEffect(() => {
     fetchAds();
-  }, []);
+    if (user) {
+      fetchUserAds();
+    }
+  }, [user]);
 
   const fetchAds = async () => {
     try {
@@ -198,6 +203,29 @@ const ServiNUTRI = () => {
       setAds(adsWithProfiles);
     } catch (error) {
       console.error('Erro ao buscar anúncios:', error);
+    }
+  };
+
+  const fetchUserAds = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('nutritionist_ads')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const adsWithProfiles = data?.map(ad => ({
+        ...ad,
+        profile_name: 'Meus Anúncios'
+      })) || [];
+
+      setUserAds(adsWithProfiles);
+    } catch (error) {
+      console.error('Erro ao buscar anúncios do usuário:', error);
     }
   };
 
@@ -270,6 +298,7 @@ const ServiNUTRI = () => {
             specialty: specialty as any,
             phone_ddd: formData.phone_ddd,
             phone_number: formData.phone_number,
+            consultation_price: formData.consultation_price ? parseFloat(formData.consultation_price) : null,
             photo_url: photoUrl,
             logo_url: logoUrl
           })
@@ -295,6 +324,7 @@ const ServiNUTRI = () => {
         specialties: [],
         phone_ddd: '',
         phone_number: '',
+        consultation_price: '',
         photo_url: '',
         logo_url: ''
       });
@@ -302,6 +332,7 @@ const ServiNUTRI = () => {
       setLogoFile(null);
       setShowForm(false);
       fetchAds();
+      fetchUserAds();
     } catch (error) {
       console.error('Erro ao cadastrar anúncios:', error);
       toast({
@@ -311,6 +342,38 @@ const ServiNUTRI = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAd = async (adId: string) => {
+    if (!user) return;
+
+    setDeleteLoading(adId);
+    try {
+      const { error } = await supabase
+        .from('nutritionist_ads')
+        .delete()
+        .eq('id', adId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso!",
+        description: "Anúncio removido com sucesso."
+      });
+
+      fetchAds();
+      fetchUserAds();
+    } catch (error) {
+      console.error('Erro ao remover anúncio:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o anúncio. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -347,6 +410,11 @@ const ServiNUTRI = () => {
     return specialties.find(s => s.value === specialty)?.label || specialty;
   };
 
+  const formatPrice = (price: number | null) => {
+    if (!price) return 'Valor não informado';
+    return `R$ ${price.toFixed(2).replace('.', ',')}`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <Navbar />
@@ -379,6 +447,76 @@ const ServiNUTRI = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Meus Anúncios - só mostra se o usuário está logado e tem anúncios */}
+        {user && userAds.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Meus Anúncios</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {userAds.map((ad) => (
+                  <Card key={ad.id} className="relative">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        {ad.photo_url ? (
+                          <img
+                            src={ad.photo_url}
+                            alt="Foto do nutricionista"
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                            <ImageIcon className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm">{ad.profile_name}</h4>
+                          {ad.logo_url && (
+                            <img
+                              src={ad.logo_url}
+                              alt="Logo"
+                              className="w-8 h-8 object-contain mt-1"
+                            />
+                          )}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleDeleteAd(ad.id)}
+                          disabled={deleteLoading === ad.id}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-1 text-xs">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <MapPin className="w-3 h-3" />
+                          {ad.city}, {ad.state}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Stethoscope className="w-3 h-3" />
+                          {getSpecialtyLabel(ad.specialty)}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Phone className="w-3 h-3" />
+                          ({ad.phone_ddd}) {ad.phone_number}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <DollarSign className="w-3 h-3" />
+                          {formatPrice(ad.consultation_price)}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Card de Cadastro */}
         {!showForm && (
@@ -488,6 +626,18 @@ const ServiNUTRI = () => {
                   </div>
                 </div>
 
+                <div>
+                  <Label htmlFor="consultation_price">Valor da Consulta (R$)</Label>
+                  <Input
+                    id="consultation_price"
+                    type="number"
+                    step="0.01"
+                    value={formData.consultation_price}
+                    onChange={(e) => setFormData({...formData, consultation_price: e.target.value})}
+                    placeholder="150.00"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="photo">Foto Pessoal</Label>
@@ -565,6 +715,10 @@ const ServiNUTRI = () => {
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Phone className="w-4 h-4" />
                     ({ad.phone_ddd}) {ad.phone_number}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <DollarSign className="w-4 h-4" />
+                    {formatPrice(ad.consultation_price)}
                   </div>
                 </div>
 
