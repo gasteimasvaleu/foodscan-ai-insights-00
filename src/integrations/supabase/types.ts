@@ -102,6 +102,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_menu_plans: {
+        Row: {
+          created_at: string
+          id: string
+          menu_data: Json
+          preferences_snapshot: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          menu_data: Json
+          preferences_snapshot: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          menu_data?: Json
+          preferences_snapshot?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_menu_preferences: {
+        Row: {
+          created_at: string
+          favorite_ingredients: string
+          id: string
+          max_calories: number
+          specific_requirements: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          favorite_ingredients: string
+          id?: string
+          max_calories?: number
+          specific_requirements?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          favorite_ingredients?: string
+          id?: string
+          max_calories?: number
+          specific_requirements?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

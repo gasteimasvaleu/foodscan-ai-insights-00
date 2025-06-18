@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { ChefHat, Edit2, Save, X, Clock, Users } from 'lucide-react';
+import { ChefHat, Edit2, Save, X, Clock, Users, History } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserPreferences {
   favoriteIngredients: string;
@@ -32,8 +34,15 @@ interface MenuPlan {
   dinner: Meal;
 }
 
+interface SavedMenuPlan {
+  id: string;
+  menu_data: MenuPlan;
+  created_at: string;
+}
+
 const MasterCheFIT = () => {
   const { toast } = useToast();
+  const { user, loading } = useAuth();
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteIngredients: '',
     specificRequirements: '',
@@ -43,8 +52,79 @@ const MasterCheFIT = () => {
   const [isEditing, setIsEditing] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [menuPlan, setMenuPlan] = useState<MenuPlan | null>(null);
+  const [savedMenuPlans, setSavedMenuPlans] = useState<SavedMenuPlan[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [loadingPreferences, setLoadingPreferences] = useState(true);
 
-  const handleSavePreferences = () => {
+  // Load user preferences and menu history on component mount
+  useEffect(() => {
+    if (user) {
+      loadUserPreferences();
+      loadMenuHistory();
+    } else if (!loading) {
+      setLoadingPreferences(false);
+    }
+  }, [user, loading]);
+
+  const loadUserPreferences = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_menu_preferences')
+        .select('*')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setPreferences({
+          favoriteIngredients: data.favorite_ingredients,
+          specificRequirements: data.specific_requirements || '',
+          maxCalories: data.max_calories
+        });
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar preferências:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar suas preferências.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingPreferences(false);
+    }
+  };
+
+  const loadMenuHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_menu_plans')
+        .select('id, menu_data, created_at')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+
+      setSavedMenuPlans(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para salvar preferências.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!preferences.favoriteIngredients.trim()) {
       toast({
         title: "Erro",
@@ -53,15 +133,45 @@ const MasterCheFIT = () => {
       });
       return;
     }
-    
-    setIsEditing(false);
-    toast({
-      title: "Preferências Salvas!",
-      description: "Suas preferências foram registradas com sucesso."
-    });
+
+    try {
+      const { error } = await supabase
+        .from('user_menu_preferences')
+        .upsert({
+          user_id: user.id,
+          favorite_ingredients: preferences.favoriteIngredients,
+          specific_requirements: preferences.specificRequirements,
+          max_calories: preferences.maxCalories,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      setIsEditing(false);
+      toast({
+        title: "Preferências Salvas!",
+        description: "Suas preferências foram registradas com sucesso."
+      });
+    } catch (error) {
+      console.error('Erro ao salvar preferências:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar suas preferências.",
+        variant: "destructive"
+      });
+    }
   };
 
   const generateMenuPlan = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para gerar cardápios.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
@@ -78,6 +188,18 @@ const MasterCheFIT = () => {
       }
 
       setMenuPlan(data);
+
+      // Save the generated menu plan to database
+      await supabase
+        .from('user_menu_plans')
+        .insert({
+          user_id: user.id,
+          menu_data: data,
+          preferences_snapshot: preferences
+        });
+
+      // Reload menu history
+      loadMenuHistory();
       
       toast({
         title: "Cardápio Gerado!",
@@ -93,6 +215,15 @@ const MasterCheFIT = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const loadSavedMenu = (savedMenu: SavedMenuPlan) => {
+    setMenuPlan(savedMenu.menu_data);
+    setShowHistory(false);
+    toast({
+      title: "Cardápio Carregado!",
+      description: "Cardápio anterior foi carregado com sucesso."
+    });
   };
 
   const getMealIcon = (mealType: string) => {
@@ -117,6 +248,53 @@ const MasterCheFIT = () => {
     }
   };
 
+  // Show loading state while checking auth
+  if (loading || loadingPreferences) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      </>
+    );
+  }
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+          <div className="container mx-auto px-4 py-8">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <ChefHat className="w-8 h-8 text-white" />
+                <h1 className="text-3xl font-bold text-white">MasterCheFIT</h1>
+              </div>
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+                <CardContent className="p-8">
+                  <h2 className="text-xl font-semibold text-white mb-4">
+                    Acesso Restrito
+                  </h2>
+                  <p className="text-white/80 mb-6">
+                    Você precisa estar logado para acessar o MasterCheFIT e criar seus cardápios personalizados.
+                  </p>
+                  <Button 
+                    onClick={() => window.location.href = '/'}
+                    className="bg-primary-500 hover:bg-primary-600"
+                  >
+                    Fazer Login
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />
@@ -139,37 +317,50 @@ const MasterCheFIT = () => {
             <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-white">Suas Preferências</CardTitle>
-                {!isEditing ? (
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setIsEditing(true)}
-                    className="text-white hover:bg-white/20"
-                  >
-                    <Edit2 className="w-4 h-4 mr-2" />
-                    Editar
-                  </Button>
-                ) : (
-                  <div className="flex gap-2">
+                <div className="flex gap-2">
+                  {savedMenuPlans.length > 0 && (
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => setIsEditing(false)}
+                      onClick={() => setShowHistory(!showHistory)}
                       className="text-white hover:bg-white/20"
                     >
-                      <X className="w-4 h-4" />
+                      <History className="w-4 h-4 mr-2" />
+                      Histórico
                     </Button>
+                  )}
+                  {!isEditing ? (
                     <Button 
-                      variant="default" 
+                      variant="ghost" 
                       size="sm"
-                      onClick={handleSavePreferences}
-                      className="bg-primary-500 hover:bg-primary-600"
+                      onClick={() => setIsEditing(true)}
+                      className="text-white hover:bg-white/20"
                     >
-                      <Save className="w-4 h-4 mr-2" />
-                      Salvar
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Editar
                     </Button>
-                  </div>
-                )}
+                  ) : (
+                    <>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setIsEditing(false)}
+                        className="text-white hover:bg-white/20"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={handleSavePreferences}
+                        className="bg-primary-500 hover:bg-primary-600"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Salvar
+                      </Button>
+                    </>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {isEditing ? (
@@ -239,6 +430,42 @@ const MasterCheFIT = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Menu History */}
+            {showHistory && savedMenuPlans.length > 0 && (
+              <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+                <CardHeader>
+                  <CardTitle className="text-white">Cardápios Anteriores</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {savedMenuPlans.map((savedMenu) => (
+                      <div 
+                        key={savedMenu.id}
+                        className="flex items-center justify-between p-3 bg-white/10 rounded-lg"
+                      >
+                        <div>
+                          <p className="text-white font-medium">
+                            Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
+                          </p>
+                          <p className="text-white/60 text-sm">
+                            {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} calorias total
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => loadSavedMenu(savedMenu)}
+                          className="text-white hover:bg-white/20"
+                        >
+                          Carregar
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Generate Menu Button */}
             {!isEditing && (
