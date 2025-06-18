@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { FeaturesSection } from '@/components/FeaturesSection';
+import { TestimonialsSection } from '@/components/TestimonialsSection';
 
 const Index = () => {
   return <>
@@ -23,6 +24,9 @@ const Index = () => {
             
             {/* Features Section */}
             <FeaturesSection />
+            
+            {/* Testimonials Section */}
+            <TestimonialsSection />
           </div>
         </div>
       </div>
