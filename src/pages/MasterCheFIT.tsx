@@ -379,10 +379,10 @@ const MasterCheFIT = () => {
                 <div className="flex flex-col sm:flex-row gap-2">
                   {savedMenuPlans.length > 0 && (
                     <Button 
-                      variant="ghost" 
+                      variant="default"
                       size="sm"
                       onClick={() => setShowHistory(!showHistory)}
-                      className="text-white hover:bg-white/20"
+                      className="bg-primary-500 hover:bg-primary-600 text-white"
                     >
                       <History className="w-4 h-4 mr-2" />
                       Histórico
@@ -390,10 +390,10 @@ const MasterCheFIT = () => {
                   )}
                   {!isEditing ? (
                     <Button 
-                      variant="ghost" 
+                      variant="default"
                       size="sm"
                       onClick={() => setIsEditing(true)}
-                      className="text-white hover:bg-white/20"
+                      className="bg-primary-500 hover:bg-primary-600 text-white"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Editar
