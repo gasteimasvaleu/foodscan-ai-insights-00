@@ -374,9 +374,9 @@ const MasterCheFIT = () => {
 
             {/* Preferences Card */}
             <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="text-white">Suas Preferências</CardTitle>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   {savedMenuPlans.length > 0 && (
                     <Button 
                       variant="ghost" 
@@ -399,7 +399,7 @@ const MasterCheFIT = () => {
                       Editar
                     </Button>
                   ) : (
-                    <>
+                    <div className="flex gap-2">
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -417,7 +417,7 @@ const MasterCheFIT = () => {
                         <Save className="w-4 h-4 mr-2" />
                         Salvar
                       </Button>
-                    </>
+                    </div>
                   )}
                 </div>
               </CardHeader>
