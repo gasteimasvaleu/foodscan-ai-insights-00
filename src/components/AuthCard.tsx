@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -149,13 +150,13 @@ export const AuthCard = () => {
         </form>
         
         <div className="mt-4 text-center">
-          <button
+          <Button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-primary-600 hover:text-primary-700 text-sm underline"
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white"
           >
-            {isLogin ? 'Não tem conta? Criar uma' : 'Já tem conta? Fazer login'}
-          </button>
+            {isLogin ? 'Criar Conta' : 'Fazer Login'}
+          </Button>
         </div>
       </CardContent>
     </Card>
