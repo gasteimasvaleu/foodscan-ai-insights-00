@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { GradientText } from './ui/gradient-text';
 export const Header = () => {
-  return <div className="text-center mb-12 animate-fade-in bg-white py-[19px] rounded-xl px-0">
+  return <div className="text-center mb-12 animate-fade-in bg-white rounded-xl px-[30px] py-[14px]">
       <div className="flex items-center justify-center mb-6">
         
       </div>
