@@ -37,7 +37,7 @@ const MasterCheFIT = () => {
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteIngredients: '',
     specificRequirements: '',
-    maxCalories: 500
+    maxCalories: 2000
   });
   
   const [isEditing, setIsEditing] = useState(true);
@@ -64,6 +64,15 @@ const MasterCheFIT = () => {
   const generateMenuPlan = async () => {
     setIsGenerating(true);
     
+    // Distribui as calorias entre as refeições (percentuais aproximados)
+    const calorieDistribution = {
+      breakfast: 0.25,      // 25%
+      morningSnack: 0.10,   // 10%
+      lunch: 0.35,          // 35%
+      afternoonSnack: 0.10, // 10%
+      dinner: 0.20          // 20%
+    };
+    
     // Simulação de geração de cardápio (aqui você pode integrar com OpenAI posteriormente)
     setTimeout(() => {
       const sampleMenu: MenuPlan = {
@@ -71,7 +80,7 @@ const MasterCheFIT = () => {
           name: "Smoothie Proteico com Aveia",
           recipe: `${preferences.favoriteIngredients.includes('banana') ? 'Banana, ' : ''}Aveia, whey protein, leite desnatado, mel`,
           instructions: "1. Bata todos os ingredientes no liquidificador\n2. Sirva gelado\n3. Adicione granola por cima se desejar",
-          calories: Math.min(preferences.maxCalories, 380),
+          calories: Math.round(preferences.maxCalories * calorieDistribution.breakfast),
           time: "10 min",
           servings: 1
         },
@@ -79,7 +88,7 @@ const MasterCheFIT = () => {
           name: "Mix de Castanhas",
           recipe: "Castanha do Pará, amêndoas, nozes",
           instructions: "1. Misture as castanhas em um recipiente\n2. Consuma uma porção pequena",
-          calories: Math.min(preferences.maxCalories, 200),
+          calories: Math.round(preferences.maxCalories * calorieDistribution.morningSnack),
           time: "2 min",
           servings: 1
         },
@@ -87,7 +96,7 @@ const MasterCheFIT = () => {
           name: "Peito de Frango Grelhado",
           recipe: `Peito de frango, ${preferences.favoriteIngredients.includes('arroz') ? 'arroz integral, ' : 'quinoa, '}salada verde, azeite`,
           instructions: "1. Tempere o frango com sal, pimenta e ervas\n2. Grelhe por 6-8 minutos cada lado\n3. Sirva com acompanhamentos",
-          calories: Math.min(preferences.maxCalories, 450),
+          calories: Math.round(preferences.maxCalories * calorieDistribution.lunch),
           time: "25 min",
           servings: 1
         },
@@ -95,7 +104,7 @@ const MasterCheFIT = () => {
           name: "Iogurte com Frutas",
           recipe: "Iogurte grego natural, frutas vermelhas, chia",
           instructions: "1. Coloque o iogurte em uma tigela\n2. Adicione as frutas por cima\n3. Polvilhe chia",
-          calories: Math.min(preferences.maxCalories, 180),
+          calories: Math.round(preferences.maxCalories * calorieDistribution.afternoonSnack),
           time: "5 min",
           servings: 1
         },
@@ -103,7 +112,7 @@ const MasterCheFIT = () => {
           name: "Salmão com Legumes",
           recipe: "Filé de salmão, brócolis, cenoura, batata doce",
           instructions: "1. Tempere o salmão e asse por 15 min\n2. Refogue os legumes no vapor\n3. Sirva junto com batata doce cozida",
-          calories: Math.min(preferences.maxCalories, 420),
+          calories: Math.round(preferences.maxCalories * calorieDistribution.dinner),
           time: "30 min",
           servings: 1
         }
@@ -228,15 +237,15 @@ const MasterCheFIT = () => {
 
                     <div>
                       <Label htmlFor="calories" className="text-white mb-2 block">
-                        Máximo de Calorias por Refeição
+                        Máximo de Calorias do Cardápio Completo
                       </Label>
                       <Input
                         id="calories"
                         type="number"
-                        min="100"
-                        max="1000"
+                        min="1000"
+                        max="4000"
                         value={preferences.maxCalories}
-                        onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 500 }))}
+                        onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
                         className="bg-white/20 border-white/30 text-white placeholder:text-white/60 w-48"
                       />
                     </div>
@@ -256,8 +265,8 @@ const MasterCheFIT = () => {
                     )}
                     
                     <div>
-                      <h4 className="text-white font-medium mb-2">Máximo de Calorias:</h4>
-                      <p className="text-white/80">{preferences.maxCalories} calorias por refeição</p>
+                      <h4 className="text-white font-medium mb-2">Máximo de Calorias do Cardápio:</h4>
+                      <p className="text-white/80">{preferences.maxCalories} calorias no total</p>
                     </div>
                   </div>
                 )}
