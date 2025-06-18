@@ -39,8 +39,8 @@ export const EmptyState = () => {
           <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Target className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-lg font-semibold mb-2 text-indigo-400">4. Avalie Sua Meta</h3>
-          <p className="text-sm text-indigo-400">
+          <h3 className="text-lg font-semibold mb-2 text-white">4. Avalie Sua Meta</h3>
+          <p className="text-sm text-white">
             Integre suas refeições a sua meta diária automáticamente
           </p>
         </div>
@@ -49,8 +49,8 @@ export const EmptyState = () => {
           <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Star className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-lg font-semibold mb-2 text-indigo-400">5. Evie para seu Profissional</h3>
-          <p className="text-sm text-indigo-500">
+          <h3 className="text-lg font-semibold mb-2 text-white">5. Evie para seu Profissional</h3>
+          <p className="text-sm text-white">
             Evie a avaliação e análise para seu Profissional de Confiança por Whatsapp
           </p>
         </div>
