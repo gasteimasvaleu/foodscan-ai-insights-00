@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { ChefHat, Edit2, Save, X, Clock, Users, History } from 'lucide-react';
+import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -254,6 +254,33 @@ const MasterCheFIT = () => {
     });
   };
 
+  const deleteSavedMenu = async (menuId: string) => {
+    try {
+      const { error } = await supabase
+        .from('user_menu_plans')
+        .delete()
+        .eq('id', menuId)
+        .eq('user_id', user!.id);
+
+      if (error) throw error;
+
+      // Atualizar a lista local removendo o item deletado
+      setSavedMenuPlans(prev => prev.filter(menu => menu.id !== menuId));
+      
+      toast({
+        title: "Cardápio Removido!",
+        description: "O cardápio foi removido com sucesso do seu histórico."
+      });
+    } catch (error) {
+      console.error('Erro ao remover cardápio:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o cardápio. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getMealIcon = (mealType: string) => {
     switch(mealType) {
       case 'breakfast': return '🌅';
@@ -480,14 +507,24 @@ const MasterCheFIT = () => {
                             {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} calorias total
                           </p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => loadSavedMenu(savedMenu)}
-                          className="text-white hover:bg-white/20"
-                        >
-                          Carregar
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => loadSavedMenu(savedMenu)}
+                            className="text-white hover:bg-white/20"
+                          >
+                            Carregar
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteSavedMenu(savedMenu.id)}
+                            className="text-red-300 hover:bg-red-500/20 hover:text-red-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
