@@ -22,6 +22,7 @@ export const Navbar = () => {
     { label: 'Início', href: '/' },
     { label: 'FoodScan', href: '/foodscan' },
     { label: 'Controle Diário', href: '/controle-diario' },
+    { label: 'MasterCheFIT', href: '/masterchef' },
     { label: 'Quero Assinar', href: '/quero-assinar' },
     { label: 'Sobre', href: '/sobre' }
   ];
