@@ -1,10 +1,8 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { GradientText } from './ui/gradient-text';
-
 export const Header = () => {
-  return (
-    <div className="text-center mb-12 animate-fade-in bg-white py-[19px] px-0 rounded-xl">
+  return <div className="text-center mb-12 animate-fade-in bg-white py-[19px] rounded-xl px-0">
       <div className="flex items-center justify-center mb-6">
         
       </div>
@@ -29,6 +27,5 @@ export const Header = () => {
           <span className="text-sm text-primary-700">100% Precisão</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
