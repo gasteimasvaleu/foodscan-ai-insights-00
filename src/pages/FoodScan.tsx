@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
-import { NutritionResults } from '@/components/NutritionResults';
+import { FoodNutritionResults } from '@/components/FoodNutritionResults';
 import { LoadingState } from '@/components/LoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
@@ -298,7 +297,7 @@ Todos os valores devem ser números reais baseados na porção identificada.`
               </div>
             ) : nutritionData ? (
               <div data-results-section>
-                <NutritionResults data={nutritionData} onReset={handleReset} />
+                <FoodNutritionResults data={nutritionData} onReset={handleReset} />
               </div>
             ) : (
               <div className="space-y-8">

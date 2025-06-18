@@ -1,32 +1,32 @@
 
 import React, { useState } from 'react';
-import { Check, Download, Save, Utensils } from 'lucide-react';
+import { RotateCcw, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 
-// Interface local para dados nutricionais
-interface NutritionData {
-  nome_alimento: string;
-  descricao: string;
-  quantidade_referencia: string;
-  calorias: number;
-  carboidratos: number;
-  proteinas: number;
-  gorduras: number;
-  fibras: number;
-  sodio: number;
+export interface NutritionData {
+  foodName: string;
+  description: string;
+  quantity: string;
+  nutrition: {
+    calories: number;
+    carbohydrates: number;
+    proteins: number;
+    fats: number;
+    fiber: number;
+    sodium: number;
+  };
 }
 
-interface NutritionResultsProps {
-  nutritionData: NutritionData;
-  onSave?: () => void;
-  onClose?: () => void;
+interface FoodNutritionResultsProps {
+  data: NutritionData;
+  onReset: () => void;
 }
 
-export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionData, onSave, onClose }) => {
+export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
   const { user } = useAuth();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
@@ -42,10 +42,10 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
     return Math.round(baseValue * multiplier);
   };
 
-  const calories = calculateNutrition(nutritionData.calorias);
-  const carbohydrates = calculateNutrition(nutritionData.carboidratos);
-  const proteins = calculateNutrition(nutritionData.proteinas);
-  const fats = calculateNutrition(nutritionData.gorduras);
+  const calories = calculateNutrition(data.nutrition.calories);
+  const carbohydrates = calculateNutrition(data.nutrition.carbohydrates);
+  const proteins = calculateNutrition(data.nutrition.proteins);
+  const fats = calculateNutrition(data.nutrition.fats);
 
   const handleSaveMeal = async () => {
     if (!user) {
@@ -60,9 +60,9 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
     setIsSaving(true);
 
     try {
-      const { data, error } = await supabase.from('meal_records').insert([
+      const { data: savedData, error } = await supabase.from('meal_records').insert([
         {
-          food_name: nutritionData.nome_alimento,
+          food_name: data.foodName,
           calories: calories,
           carbohydrates: carbohydrates,
           proteins: proteins,
@@ -82,7 +82,6 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
         description: "Refeição salva com sucesso!",
       });
 
-      onSave?.();
     } catch (error) {
       console.error('Erro ao salvar refeição:', error);
       toast({
@@ -92,7 +91,6 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
       });
     } finally {
       setIsSaving(false);
-      onClose?.();
     }
   };
 
@@ -103,8 +101,8 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
           <Utensils className="w-6 h-6 text-blue-600" />
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-gray-800">{nutritionData.nome_alimento}</h3>
-          <p className="text-gray-600">{nutritionData.descricao}</p>
+          <h3 className="text-2xl font-bold text-gray-800">{data.foodName}</h3>
+          <p className="text-gray-600">{data.description}</p>
         </div>
       </div>
 
@@ -142,7 +140,16 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
         </div>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center space-x-4">
+        <Button
+          onClick={onReset}
+          variant="outline"
+          className="rounded-xl px-6 py-3 font-semibold"
+        >
+          <RotateCcw className="w-5 h-5 mr-2" />
+          Nova Análise
+        </Button>
+        
         <Button
           onClick={handleSaveMeal}
           disabled={isSaving}
