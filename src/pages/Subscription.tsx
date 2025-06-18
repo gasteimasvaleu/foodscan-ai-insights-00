@@ -4,8 +4,10 @@ import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users } from 'lucide-react';
+
 const Subscription = () => {
-  return <div className="min-h-screen bg-gradient-primary">
+  return (
+    <div className="min-h-screen bg-gradient-primary">
       <Navbar />
       
       <div className="pt-20 pb-12 px-4">
@@ -68,6 +70,20 @@ const Subscription = () => {
                   </div>
                   <span className="text-gray-700 font-medium">Compartilhamento via WhatsApp</span>
                 </div>
+
+                <div className="flex items-center space-x-3">
+                  <div className="bg-orange-100 rounded-full p-2">
+                    <ChefHat className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium"><strong>MasterCheFIT:</strong> Cardápios personalizados</span>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-100 rounded-full p-2">
+                    <Users className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-gray-700 font-medium"><strong>ServiNUTRI:</strong> Rede de nutricionistas</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -129,6 +145,8 @@ const Subscription = () => {
           </Card>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Subscription;
