@@ -42,12 +42,20 @@ export const Navbar = () => {
             {/* Desktop menu removed */}
           </div>
 
-          {/* Hamburger Menu */}
+          {/* Hamburger Menu with MENU text */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative z-50">
-                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <span 
+                  className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+                  onClick={() => setIsOpen(true)}
+                >
+                  MENU
+                </span>
+                <Button variant="ghost" size="icon" className="relative z-50">
+                  {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
+              </div>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0">
               <SheetHeader className="p-6 border-b border-white/20">
