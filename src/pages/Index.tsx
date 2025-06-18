@@ -1,11 +1,15 @@
+
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { FeaturesSection } from '@/components/FeaturesSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
+import { FAQSection } from '@/components/FAQSection';
+
 const Index = () => {
-  return <>
+  return (
+    <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 py-[65px]">
         {/* Banner Section */}
@@ -25,9 +29,14 @@ const Index = () => {
             
             {/* Testimonials Section */}
             <TestimonialsSection />
+            
+            {/* FAQ Section */}
+            <FAQSection />
           </div>
         </div>
       </div>
-    </>;
+    </>
+  );
 };
+
 export default Index;
