@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 export const Component = () => {
-  return <section className="bg-transparent px-4 min-h-screen transition-colors py-0">
+  return <section className="bg-transparent px-4 transition-colors py-0">
       <div className="mx-auto flex w-fit flex-wrap justify-center gap-4">
           <PricingCard label="Assinatura Mensal" monthlyPrice="27,90" description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" cta="Assinar Agora" background="bg-primary-600 dark:bg-primary-700" BGComponent={BGComponent1} />
         </div>
