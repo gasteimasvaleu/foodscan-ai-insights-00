@@ -485,27 +485,25 @@ const ServiNUTRI = () => {
 
         {/* Card Informativo */}
         <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-          <CardContent className="p-6">
-            <Table>
-              <TableBody>
-                <TableRow className="border-none">
-                  <TableCell className="w-2/3 p-6 align-top">
-                    <p className="text-gray-700 leading-relaxed text-justify">
-                      Aqui na FoodScan & Diet, acreditamos que tecnologia é uma aliada, mas jamais um substituto para o olhar humano. 
-                      Por mais avançada que seja a inteligência artificial, nada supera o cuidado, a empatia e o atendimento personalizado 
-                      que só um profissional de Nutrição pode oferecer. Por isso, criamos o ServiNUTRI, uma funcionalidade que conecta 
-                      você diretamente com nutricionistas qualificados. Nosso objetivo é unir tecnologia e atendimento humanizado, 
-                      oferecendo não só dados, mas também orientação, acompanhamento e motivação real para sua jornada alimentar.
-                    </p>
-                  </TableCell>
-                  <TableCell className="w-1/3 p-6 align-top">
-                    <div className="flex justify-center">
-                      <img alt="Nutrição e alimentação saudável" className="rounded-lg shadow-md w-full max-w-sm object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UiLCJpYXQiOjE3NTAyNjEzNTUsImV4cCI6MTc4MTc5NzM1NX0.0WeU-fnnvTafoepwV_0wWUI6_Dffe7CpYkwG2o06gYI" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+          <CardContent className="p-3 sm:p-4 md:p-6">
+            <div className="block lg:table w-full">
+              <div className="block lg:table-row">
+                <div className="block lg:table-cell w-full lg:w-2/3 p-3 sm:p-4 md:p-6 align-top">
+                  <p className="text-gray-700 leading-relaxed text-justify text-sm sm:text-base">
+                    Aqui na FoodScan & Diet, acreditamos que tecnologia é uma aliada, mas jamais um substituto para o olhar humano. 
+                    Por mais avançada que seja a inteligência artificial, nada supera o cuidado, a empatia e o atendimento personalizado 
+                    que só um profissional de Nutrição pode oferecer. Por isso, criamos o ServiNUTRI, uma funcionalidade que conecta 
+                    você diretamente com nutricionistas qualificados. Nosso objetivo é unir tecnologia e atendimento humanizado, 
+                    oferecendo não só dados, mas também orientação, acompanhamento e motivação real para sua jornada alimentar.
+                  </p>
+                </div>
+                <div className="block lg:table-cell w-full lg:w-1/3 p-3 sm:p-4 md:p-6 align-top">
+                  <div className="flex justify-center">
+                    <img alt="Nutrição e alimentação saudável" className="rounded-lg shadow-md w-full max-w-xs sm:max-w-sm object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UiLCJpYXQiOjE3NTAyNjEzNTUsImV4cCI6MTc4MTc5NzM1NX0.0WeU-fnnvTafoepwV_0wWUI6_Dffe7CpYkwG2o06gYI" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
