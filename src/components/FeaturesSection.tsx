@@ -65,9 +65,7 @@ export const FeaturesSection = () => {
           {/* Call to Action */}
           <div className="text-center">
             <div className="inline-block bg-gradient-to-r from-primary-500/10 to-purple-600/10 px-6 py-3 rounded-sm">
-              <p className="text-primary-700 font-medium">
-                🎯 Feedback diário personalizado • 🍽️ Resultados reais • 🚀 Fácil e divertido
-              </p>
+              <p className="text-primary-700 font-medium"> Feedback diário personalizado • Resultados reais • Fácil e divertido</p>
             </div>
           </div>
         </CardContent>
