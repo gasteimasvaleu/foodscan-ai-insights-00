@@ -45,11 +45,8 @@ INSTRUÇÕES:
 4. Quanto mais próximo das metas, melhor a nota
 5. Considere também o equilíbrio nutricional
 
-RESPONDA APENAS com um JSON no formato:
-{
-  "score": número_de_0_a_10,
-  "feedback": "feedback_motivacional_divertido_e_específico_max_300_palavras"
-}
+RESPONDA APENAS com um JSON VÁLIDO no formato:
+{"score": número_de_0_a_10, "feedback": "feedback_motivacional_divertido_e_específico_max_300_palavras"}
 
 IMPORTANTE:
 - Para notas 8-10: Seja festivo mas alerte para não se acomodar
@@ -57,7 +54,9 @@ IMPORTANTE:
 - Para notas 4-5: Seja firme mas motivacional
 - Para notas 0-3: Seja duro mas sempre termine com encorajamento
 - Use emojis e seja bem específico sobre os números
-- Fale sobre as consequências reais do que aconteceu`;
+- Fale sobre as consequências reais do que aconteceu
+- NÃO USE markdown, apenas JSON puro
+- NÃO adicione \`\`\`json ou \`\`\` na resposta`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -80,13 +79,19 @@ IMPORTANTE:
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    let content = data.choices[0].message.content;
+    
+    // Limpar markdown se houver
+    content = content.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
     
     // Parse do JSON retornado pela IA
     let analysisResult;
     try {
       analysisResult = JSON.parse(content);
     } catch (parseError) {
+      console.error('Erro ao fazer parse do JSON:', parseError);
+      console.error('Conteúdo recebido:', content);
+      
       // Fallback se a IA não retornar JSON válido
       analysisResult = {
         score: 5,
