@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
 const STRIPE_LINKS = {
-  monthly: 'https://checkout.stripe.com/pay/cs_test_monthly', // Replace with your actual Stripe link
-  semester: 'https://checkout.stripe.com/pay/cs_test_semester', // Replace with your actual Stripe link  
-  annual: 'https://checkout.stripe.com/pay/cs_test_annual' // Replace with your actual Stripe link
+  monthly: 'https://buy.stripe.com/8x2fZhg80em61my2754Rq00',
+  semester: 'https://buy.stripe.com/eVq28raNG91M2qCcLJ4Rq01',
+  annual: 'https://buy.stripe.com/7sY28r7Bu3HsaX89zx4Rq02'
 };
 
 export const Component = () => {
