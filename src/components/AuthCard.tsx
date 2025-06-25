@@ -156,19 +156,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             {isLogin ? 'Entrar' : 'Criar Conta'}
           </Button>
         </form>
-        
-        {/* Only show toggle button if we're not in payment success page or if mode is not explicitly set */}
-        {mode === 'login' && (
-          <div className="mt-4 text-center">
-            <Button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="w-full bg-primary-500 hover:bg-primary-600 text-white"
-            >
-              {isLogin ? 'Criar Conta' : 'Fazer Login'}
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
