@@ -7,10 +7,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const AuthCard = () => {
+interface AuthCardProps {
+  mode?: 'login' | 'signup';
+}
+
+export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(mode === 'login');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,7 +27,11 @@ export const AuthCard = () => {
     if (isLogin) {
       await signIn(formData.email, formData.password);
     } else {
-      await signUp(formData.email, formData.password, formData.name);
+      const result = await signUp(formData.email, formData.password, formData.name);
+      // If signup successful and we're on payment success page, redirect to home
+      if (!result.error && window.location.pathname === '/payment-success') {
+        navigate('/');
+      }
     }
   };
 
@@ -149,15 +157,18 @@ export const AuthCard = () => {
           </Button>
         </form>
         
-        <div className="mt-4 text-center">
-          <Button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white"
-          >
-            {isLogin ? 'Criar Conta' : 'Fazer Login'}
-          </Button>
-        </div>
+        {/* Only show toggle button if we're not in payment success page or if mode is not explicitly set */}
+        {mode === 'login' && (
+          <div className="mt-4 text-center">
+            <Button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="w-full bg-primary-500 hover:bg-primary-600 text-white"
+            >
+              {isLogin ? 'Criar Conta' : 'Fazer Login'}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

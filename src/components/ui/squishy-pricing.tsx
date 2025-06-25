@@ -1,11 +1,42 @@
 import { motion } from 'framer-motion';
+
+const STRIPE_LINKS = {
+  monthly: 'https://checkout.stripe.com/pay/cs_test_monthly', // Replace with your actual Stripe link
+  semester: 'https://checkout.stripe.com/pay/cs_test_semester', // Replace with your actual Stripe link  
+  annual: 'https://checkout.stripe.com/pay/cs_test_annual' // Replace with your actual Stripe link
+};
+
 export const Component = () => {
   return <section className="bg-transparent px-2 sm:px-4 transition-colors py-0">
       <div className="mx-auto flex w-full justify-center items-center">
         <div className="flex flex-wrap justify-center gap-2 sm:gap-4 max-w-fit">
-          <PricingCard label="Assinatura Mensal" monthlyPrice="27,90" description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" cta="Assinar Agora" background="bg-primary-600 dark:bg-primary-700" BGComponent={BGComponent1} />
-          <PricingCard label="Assinatura Semestral" monthlyPrice="149,90" description="6 meses de análise nutricional inteligente com economia e praticidade" cta="Assinar Agora" background="bg-purple-600 dark:bg-purple-700" BGComponent={BGComponent2} />
-          <PricingCard label="Assinatura Anual" monthlyPrice="127,90" description="1 ano completo de transformação alimentar com o melhor custo-benefício" cta="Assinar Agora" background="bg-green-600 dark:bg-green-700" BGComponent={BGComponent3} />
+          <PricingCard 
+            label="Assinatura Mensal" 
+            monthlyPrice="27,90" 
+            description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" 
+            cta="Assinar Agora" 
+            background="bg-primary-600 dark:bg-primary-700" 
+            BGComponent={BGComponent1}
+            stripeLink={STRIPE_LINKS.monthly}
+          />
+          <PricingCard 
+            label="Assinatura Semestral" 
+            monthlyPrice="149,90" 
+            description="6 meses de análise nutricional inteligente com economia e praticidade" 
+            cta="Assinar Agora" 
+            background="bg-purple-600 dark:bg-purple-700" 
+            BGComponent={BGComponent2}
+            stripeLink={STRIPE_LINKS.semester}
+          />
+          <PricingCard 
+            label="Assinatura Anual" 
+            monthlyPrice="127,90" 
+            description="1 ano completo de transformação alimentar com o melhor custo-benefício" 
+            cta="Assinar Agora" 
+            background="bg-green-600 dark:bg-green-700" 
+            BGComponent={BGComponent3}
+            stripeLink={STRIPE_LINKS.annual}
+          />
         </div>
       </div>
     </section>;
@@ -17,7 +48,8 @@ const PricingCard = ({
   description,
   cta,
   background,
-  BGComponent
+  BGComponent,
+  stripeLink
 }: {
   label: string;
   monthlyPrice: string;
@@ -25,7 +57,12 @@ const PricingCard = ({
   cta: string;
   background: string;
   BGComponent: React.ComponentType;
+  stripeLink: string;
 }) => {
+  const handleSubscribe = () => {
+    window.open(stripeLink, '_blank');
+  };
+
   return <motion.div whileHover="hover" transition={{
     duration: 1,
     ease: "backInOut"
@@ -52,7 +89,10 @@ const PricingCard = ({
         </motion.span>
         <p className="text-sm sm:text-lg text-white/90">{description}</p>
       </div>
-      <button className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-20 rounded-lg border-2 border-white bg-white py-1.5 sm:py-2 text-center font-mono text-xs sm:text-sm font-black uppercase text-neutral-800 backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:text-white hover:border-white/80 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent">
+      <button 
+        onClick={handleSubscribe}
+        className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-20 rounded-lg border-2 border-white bg-white py-1.5 sm:py-2 text-center font-mono text-xs sm:text-sm font-black uppercase text-neutral-800 backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:text-white hover:border-white/80 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
+      >
         {cta}
       </button>
       <BGComponent />
