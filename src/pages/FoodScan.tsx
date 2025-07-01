@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { FoodNutritionResults } from '@/components/FoodNutritionResults';
@@ -6,6 +5,8 @@ import { LoadingState } from '@/components/LoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { AuthCard } from '@/components/AuthCard';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ export interface NutritionData {
 }
 
 const FoodScan = () => {
+  const { user, loading } = useAuth();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
@@ -33,6 +35,47 @@ const FoodScan = () => {
   
   const openaiApiKey = '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';
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Show login form if user is not authenticated
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+          <div className="container mx-auto px-4 py-8">
+            <div className="max-w-md mx-auto space-y-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                  Acesso Restrito
+                </h1>
+                <p className="text-gray-600 mb-8">
+                  Você precisa estar logado para acessar o FoodScan
+                </p>
+              </div>
+              <AuthCard mode="login" />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   const parseNutritionValue = (value: any): number => {
     console.log("Parsing nutrition value:", value, "Type:", typeof value);
