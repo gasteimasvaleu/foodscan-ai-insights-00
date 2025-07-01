@@ -6,6 +6,7 @@ import { DailyGoals } from '@/components/DailyGoals';
 import { MealsList } from '@/components/MealsList';
 import { GoalsForm } from '@/components/GoalsForm';
 import { DietAnalysis } from '@/components/DietAnalysis';
+import { AuthCard } from '@/components/AuthCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -295,13 +296,16 @@ const DailyControl = () => {
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-16">
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-800 mb-4">
-                Acesso Restrito
-              </h1>
-              <p className="text-gray-600">
-                Você precisa estar logado para acessar o controle diário.
-              </p>
+            <div className="max-w-md mx-auto space-y-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                  Acesso Restrito
+                </h1>
+                <p className="text-gray-600 mb-8">
+                  Você precisa estar logado para acessar o controle diário.
+                </p>
+              </div>
+              <AuthCard mode="login" />
             </div>
           </div>
         </div>
