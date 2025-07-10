@@ -12,8 +12,8 @@
   "categories": ["health", "food", "nutrition"],
   "icons": [
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "72x72 96x96 128x128 144x144 152x152 192x192 384x384 512x512",
+      "src": "/lovable-uploads/1dd06b02-7d6d-4d10-8cd7-5ac6fa53c5a1.png",
+      "sizes": "420x420",
       "type": "image/png",
       "purpose": "maskable any"
     }
