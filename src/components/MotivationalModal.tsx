@@ -22,12 +22,13 @@ export const MotivationalModal: React.FC<MotivationalModalProps> = ({
 }) => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    if (isOpen && userName) {
+    if (isOpen && userName && !hasLoaded) {
       fetchMotivationalMessage();
     }
-  }, [isOpen, userName]);
+  }, [isOpen, userName, hasLoaded]);
 
   const fetchMotivationalMessage = async () => {
     setLoading(true);
@@ -38,16 +39,24 @@ export const MotivationalModal: React.FC<MotivationalModalProps> = ({
 
       if (error) throw error;
       setMessage(data.message);
+      setHasLoaded(true);
     } catch (error) {
       console.error('Erro ao buscar mensagem motivacional:', error);
       setMessage(`Olá, ${userName}! 🌟 Que bom te ver aqui! Hoje é um novo dia para cuidar da sua saúde e bem-estar. Lembre-se: cada pequena escolha saudável que você faz é um passo em direção aos seus objetivos. Você tem tudo o que precisa para alcançar o sucesso! Vamos começar essa jornada juntos? 💪✨`);
+      setHasLoaded(true);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleClose = () => {
+    setHasLoaded(false);
+    setMessage('');
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-sm sm:max-w-md mx-auto bg-background/95 backdrop-blur-xl border border-white/20 shadow-2xl max-h-[85vh] overflow-y-auto">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-lg" />
         
@@ -98,7 +107,7 @@ export const MotivationalModal: React.FC<MotivationalModalProps> = ({
 
           <div className="flex justify-center pt-2">
             <Button 
-              onClick={onClose}
+              onClick={handleClose}
               className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-sm"
             >
               Vamos começar! 🚀

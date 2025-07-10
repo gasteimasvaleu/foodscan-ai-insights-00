@@ -76,13 +76,36 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      // Clear local state immediately to prevent stale session access
+      setUser(null);
+      setSession(null);
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          title: "Erro ao sair",
+          description: error.message,
+          variant: "destructive",
+        });
+        return { error };
+      }
+      
       toast({
-        title: "Erro ao sair",
-        description: error.message,
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
+      
+      return { error: null };
+    } catch (err) {
+      console.error('Unexpected logout error:', err);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro durante o logout.",
         variant: "destructive",
       });
+      return { error: err };
     }
   };
 
