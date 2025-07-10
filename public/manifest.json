@@ -12,10 +12,20 @@
   "categories": ["health", "food", "nutrition"],
   "icons": [
     {
-      "src": "/lovable-uploads/1dd06b02-7d6d-4d10-8cd7-5ac6fa53c5a1.png",
+      "src": "/lovable-uploads/dbf9d94e-96a5-49c3-a8df-f5000847f4d8.png",
       "sizes": "420x420",
       "type": "image/png",
       "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/dbf9d94e-96a5-49c3-a8df-f5000847f4d8.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/lovable-uploads/dbf9d94e-96a5-49c3-a8df-f5000847f4d8.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
   "screenshots": [
