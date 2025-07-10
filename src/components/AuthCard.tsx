@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MotivationalModal } from './MotivationalModal';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
@@ -20,12 +21,25 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     email: '',
     password: ''
   });
+  const [showMotivationalModal, setShowMotivationalModal] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+
+  // Detect when user just logged in to show motivational modal
+  useEffect(() => {
+    if (user && justLoggedIn) {
+      setShowMotivationalModal(true);
+      setJustLoggedIn(false);
+    }
+  }, [user, justLoggedIn]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isLogin) {
-      await signIn(formData.email, formData.password);
+      const result = await signIn(formData.email, formData.password);
+      if (!result.error) {
+        setJustLoggedIn(true);
+      }
     } else {
       const result = await signUp(formData.email, formData.password, formData.name);
       // If signup successful and we're on payment success page, redirect to home
@@ -60,32 +74,41 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = user.user_metadata?.name || user.email;
     return (
-      <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary-100 rounded-full w-10 h-10 flex items-center justify-center">
-                <User className="w-5 h-5 text-primary-600" />
+      <>
+        <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="bg-primary-100 rounded-full w-10 h-10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">
+                    Boas-vindas, {userName}!
+                  </h3>
+                  <p className="text-sm text-gray-600">Usuário logado</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">
-                  Boas-vindas, {userName}!
-                </h3>
-                <p className="text-sm text-gray-600">Usuário logado</p>
-              </div>
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sair</span>
+              </Button>
             </div>
-            <Button
-              onClick={handleSignOut}
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-2"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Sair</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        
+        {/* Motivational Modal */}
+        <MotivationalModal
+          isOpen={showMotivationalModal}
+          onClose={() => setShowMotivationalModal(false)}
+          userName={userName}
+        />
+      </>
     );
   }
 
@@ -156,6 +179,16 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             {isLogin ? 'Entrar' : 'Criar Conta'}
           </Button>
         </form>
+        
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm text-primary-600 hover:text-primary-700 underline"
+          >
+            {isLogin ? 'Não tem conta? Criar uma' : 'Já tem conta? Fazer login'}
+          </button>
+        </div>
       </CardContent>
     </Card>
   );
