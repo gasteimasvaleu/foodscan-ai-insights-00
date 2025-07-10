@@ -1,10 +1,17 @@
-const CACHE_NAME = 'foodscan-ai-v1';
+const CACHE_NAME = 'foodscan-ai-v2'; // Incrementei a versão
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
   '/static/css/main.css',
   '/manifest.json'
 ];
+
+// Permite que o novo service worker assuma o controle imediatamente
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 // Install event - cache resources
 self.addEventListener('install', event => {

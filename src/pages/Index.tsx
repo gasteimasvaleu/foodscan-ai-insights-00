@@ -8,6 +8,7 @@ import { FAQSection } from '@/components/FAQSection';
 import { Footer } from '@/components/Footer';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
+import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt';
 const Index = () => {
   return <>
       <Navbar />
@@ -38,6 +39,7 @@ const Index = () => {
       <Footer />
       <PWAInstallPrompt />
       <PWAOfflineIndicator />
+      <PWAUpdatePrompt />
     </>;
 };
 export default Index;
