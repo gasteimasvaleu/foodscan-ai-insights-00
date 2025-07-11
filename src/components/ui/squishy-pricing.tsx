@@ -27,6 +27,7 @@ export const Component = () => {
             background="bg-purple-600 dark:bg-purple-700" 
             BGComponent={BGComponent2}
             stripeLink={STRIPE_LINKS.semester}
+            period="Semestral"
           />
           <PricingCard 
             label="Assinatura Anual" 
