@@ -11,6 +11,7 @@ import MasterCheFIT from "./pages/MasterCheFIT";
 import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
+import Community from "./pages/Community";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
+          <Route path="/comunidade" element={<Community />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
