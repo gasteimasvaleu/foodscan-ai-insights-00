@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageCircle, Camera, Trophy, Users } from 'lucide-react';
+import { Heart, MessageCircle, Camera, Trophy, Users, UserCheck, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface CommunityPost {
   id: string;
@@ -32,8 +33,10 @@ interface TopUser {
 
 const Community = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
+  const [userProfile, setUserProfile] = useState<{id: string, name: string} | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPost, setNewPost] = useState({
@@ -45,7 +48,10 @@ const Community = () => {
   useEffect(() => {
     fetchPosts();
     fetchTopUsers();
-  }, []);
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
 
   const fetchPosts = async () => {
     try {
@@ -139,6 +145,23 @@ const Community = () => {
       }
     } catch (error) {
       console.error('Error fetching top users:', error);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
     }
   };
 
@@ -265,6 +288,58 @@ const Community = () => {
           </p>
         </div>
 
+        {/* Card de Boas-vindas para usuário logado */}
+        {user && userProfile && (
+          <Card className="mb-8 bg-gradient-to-r from-success/20 to-primary/20 backdrop-blur-sm border-success/30">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <UserCheck className="mr-2 text-success" />
+                Bem-vindo à Comunidade!
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback className="bg-success text-white text-lg">
+                    {userProfile.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-white font-medium text-lg">{userProfile.name}</p>
+                  <p className="text-white/80 text-sm">
+                    Pronto para compartilhar sua evolução e inspirar outros!
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Aviso para usuários não logados */}
+        {!user && (
+          <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Lock className="mr-2 text-yellow-400" />
+                Acesso Restrito
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6">
+                <p className="text-white/80 text-lg mb-4">
+                  Faça login para participar da comunidade e compartilhar sua evolução!
+                </p>
+                <Button 
+                  onClick={() => navigate('/')}
+                  className="bg-white text-primary hover:bg-white/90"
+                >
+                  Fazer Login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Ranking Card */}
         {topUsers.length > 0 && (
           <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
@@ -276,16 +351,16 @@ const Community = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {topUsers.map((user, index) => (
-                  <div key={user.user_id} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                {topUsers.map((topUser, index) => (
+                  <div key={topUser.user_id} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
                     <div className="flex items-center space-x-3">
                       <Badge variant={index === 0 ? "default" : "secondary"} className="w-8 h-8 rounded-full flex items-center justify-center">
                         {index + 1}
                       </Badge>
-                      <span className="text-white font-medium">{user.name}</span>
+                      <span className="text-white font-medium">{topUser.name}</span>
                     </div>
                     <div className="text-white/80 text-sm">
-                      {user.total_likes} curtidas • {user.posts_count} posts
+                      {topUser.total_likes} curtidas • {topUser.posts_count} posts
                     </div>
                   </div>
                 ))}
@@ -294,35 +369,49 @@ const Community = () => {
           </Card>
         )}
 
-        {/* Create Post Button */}
-        <div className="mb-8 text-center">
-          <Button 
-            onClick={() => setShowCreatePost(!showCreatePost)}
-            className="bg-white text-primary hover:bg-white/90"
-          >
-            <Camera className="mr-2 h-4 w-4" />
-            Compartilhar Evolução
-          </Button>
-        </div>
+        {/* Create Post Button - Apenas para usuários logados */}
+        {user && userProfile && (
+          <div className="mb-8 text-center">
+            <Button 
+              onClick={() => setShowCreatePost(!showCreatePost)}
+              className="bg-white text-primary hover:bg-white/90"
+            >
+              <Camera className="mr-2 h-4 w-4" />
+              {showCreatePost ? 'Cancelar Post' : 'Compartilhar Evolução'}
+            </Button>
+          </div>
+        )}
 
-        {/* Create Post Form */}
-        {showCreatePost && (
+        {/* Create Post Form - Apenas para usuários logados */}
+        {user && showCreatePost && (
           <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
-              <CardTitle className="text-white">Compartilhe sua evolução</CardTitle>
+              <CardTitle className="text-white flex items-center">
+                <Camera className="mr-2" />
+                Compartilhe sua evolução
+              </CardTitle>
+              <p className="text-white/80 text-sm mt-2">
+                Conte sua história de transformação e inspire outros membros da comunidade!
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Conte sua história de transformação..."
-                value={newPost.description}
-                onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-              />
+            <CardContent className="space-y-6">
+              <div>
+                <label className="text-white text-sm font-medium mb-2 block">
+                  Sua História de Transformação *
+                </label>
+                <Textarea
+                  placeholder="Conte sobre sua jornada: O que te motivou? Quais foram os desafios? Como foi o processo? Quais resultados você alcançou? Inspire outros com sua história!"
+                  value={newPost.description}
+                  onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 min-h-[120px]"
+                  rows={5}
+                />
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-white text-sm font-medium mb-2 block">
-                    Foto "Antes"
+                    📸 Foto "Antes" (Opcional)
                   </label>
                   <Input
                     type="file"
@@ -330,11 +419,14 @@ const Community = () => {
                     onChange={(e) => setNewPost({ ...newPost, beforePhoto: e.target.files?.[0] || null })}
                     className="bg-white/10 border-white/20 text-white"
                   />
+                  <p className="text-white/60 text-xs mt-1">
+                    Compartilhe como você estava no início da jornada
+                  </p>
                 </div>
                 
                 <div>
                   <label className="text-white text-sm font-medium mb-2 block">
-                    Foto "Depois"
+                    🎉 Foto "Depois" (Opcional)
                   </label>
                   <Input
                     type="file"
@@ -342,12 +434,19 @@ const Community = () => {
                     onChange={(e) => setNewPost({ ...newPost, afterPhoto: e.target.files?.[0] || null })}
                     className="bg-white/10 border-white/20 text-white"
                   />
+                  <p className="text-white/60 text-xs mt-1">
+                    Mostre seus resultados e conquistas
+                  </p>
                 </div>
               </div>
 
-              <div className="flex space-x-2">
-                <Button onClick={handleCreatePost} className="bg-success hover:bg-success/90">
-                  Publicar
+              <div className="flex space-x-3">
+                <Button 
+                  onClick={handleCreatePost} 
+                  className="bg-success hover:bg-success/90 flex-1"
+                  disabled={!newPost.description.trim()}
+                >
+                  🚀 Publicar Minha História
                 </Button>
                 <Button 
                   variant="outline" 
