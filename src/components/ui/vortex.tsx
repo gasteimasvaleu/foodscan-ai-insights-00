@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef } from "react";
+import * as React from "react";
 import { createNoise3D } from "simplex-noise";
 import { motion } from "framer-motion";
 
@@ -18,8 +18,8 @@ interface VortexProps {
 }
 
 export const Vortex = (props: VortexProps) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const containerRef = React.useRef(null);
   const particleCount = props.particleCount || 700;
   const particlePropCount = 9;
   const particlePropsLength = particleCount * particlePropCount;
@@ -225,7 +225,7 @@ export const Vortex = (props: VortexProps) => {
     ctx.restore();
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     setup();
     window.addEventListener("resize", () => {
       const canvas = canvasRef.current;

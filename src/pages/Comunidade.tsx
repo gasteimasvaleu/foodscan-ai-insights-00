@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Heart, MessageCircle, Upload, Camera, Users, Sparkles, Trophy } from "lucide-react";
 import { Vortex } from "@/components/ui/vortex";
 
 export default function Comunidade() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = React.useState({
     user_name: '',
     city: '',
     state: '',
