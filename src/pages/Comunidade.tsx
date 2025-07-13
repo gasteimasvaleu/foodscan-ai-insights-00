@@ -32,7 +32,7 @@ export default function Comunidade() {
             <h1 className="text-5xl font-bold mb-6">
               Comunidade FoodScan
             </h1>
-            <div className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
+            <div className="text-xl mb-8 max-w-2xl mx-auto text-white/90 flex justify-center">
               <TextRotate
                 texts={[
                   "Transformações reais, histórias inspiradoras!",
@@ -44,7 +44,7 @@ export default function Comunidade() {
                 staggerDuration={0.02}
                 staggerFrom="first"
                 splitBy="characters"
-                mainClassName="text-center"
+                mainClassName="text-center justify-center items-center"
                 transition={{ type: "spring", damping: 30, stiffness: 400 }}
               />
             </div>
