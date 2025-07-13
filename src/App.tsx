@@ -1,34 +1,39 @@
-import React from "react";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Comunidade from "./pages/Comunidade";
-import DailyControl from "./pages/DailyControl";
 import FoodScan from "./pages/FoodScan";
+import DailyControl from "./pages/DailyControl";
 import MasterCheFIT from "./pages/MasterCheFIT";
-import NotFound from "./pages/NotFound";
-import PaymentCancel from "./pages/PaymentCancel";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import ServiNUTRI from "./pages/ServiNUTRI";
 import Subscription from "./pages/Subscription";
+import About from "./pages/About";
+import ServiNUTRI from "./pages/ServiNUTRI";
+import Community from "./pages/Community";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/comunidade" element={<Comunidade />} />
-      <Route path="/daily-control" element={<DailyControl />} />
-      <Route path="/food-scan" element={<FoodScan />} />
-      <Route path="/masterchef" element={<MasterCheFIT />} />
-      <Route path="/servnutri" element={<ServiNUTRI />} />
-      <Route path="/subscription" element={<Subscription />} />
-      <Route path="/quero-assinar" element={<Subscription />} />
-      <Route path="/payment-success" element={<PaymentSuccess />} />
-      <Route path="/payment-cancel" element={<PaymentCancel />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/foodscan" element={<FoodScan />} />
+        <Route path="/controle-diario" element={<DailyControl />} />
+        <Route path="/masterchef" element={<MasterCheFIT />} />
+        <Route path="/quero-assinar" element={<Subscription />} />
+        <Route path="/sobre" element={<About />} />
+        <Route path="/servinutri" element={<ServiNUTRI />} />
+        <Route path="/comunidade" element={<Community />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;

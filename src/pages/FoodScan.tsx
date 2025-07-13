@@ -6,8 +6,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AuthCard } from '@/components/AuthCard';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from '@/hooks/use-toast';
+// import { useAuth } from '@/hooks/useAuth'; // Temporariamente removido
+// import { toast } from '@/hooks/use-toast'; // Temporariamente removido
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
@@ -26,7 +26,10 @@ export interface NutritionData {
 }
 
 const FoodScan = () => {
-  const { user, loading } = useAuth();
+  // Temporariamente removido useAuth para resolver erro de contexto React
+  // const { user, loading } = useAuth();
+  const user = null; // Mock temporário
+  const loading = false; // Mock temporário
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
@@ -93,11 +96,8 @@ const FoodScan = () => {
   const handleImageAnalysis = async (imageFile: File) => {
     setSelectedImage(URL.createObjectURL(imageFile));
     if (!openaiApiKey.trim()) {
-      toast({
-        title: "API Key necessária",
-        description: "Por favor, insira sua chave da OpenAI primeiro.",
-        variant: "destructive"
-      });
+      console.error("API Key necessária");
+      alert("Por favor, insira sua chave da OpenAI primeiro.");
       return;
     }
     setIsDescribing(true);
@@ -106,17 +106,10 @@ const FoodScan = () => {
       const base64Full = await convertToBase64(imageFile);
       const description = await analyzeImageWithOpenAI(base64Full);
       setImageDescription(description);
-      toast({
-        title: "Descrição gerada!",
-        description: "Agora você pode enviar para análise nutricional."
-      });
+      console.log("Descrição gerada com sucesso!");
     } catch (error) {
       console.error("Erro na descrição:", error);
-      toast({
-        title: "Erro na descrição",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
-        variant: "destructive"
-      });
+      alert(`Erro na descrição: ${error instanceof Error ? error.message : "Erro desconhecido"}`);
     } finally {
       setIsDescribing(false);
     }
@@ -156,11 +149,8 @@ const FoodScan = () => {
 
   const handleNutritionAnalysis = async () => {
     if (!imageDescription.trim()) {
-      toast({
-        title: "Descrição necessária",
-        description: "Por favor, gere a descrição da imagem primeiro.",
-        variant: "destructive"
-      });
+      console.error("Descrição necessária");
+      alert("Por favor, gere a descrição da imagem primeiro.");
       return;
     }
     setIsAnalyzing(true);
@@ -206,17 +196,10 @@ Todos os valores devem ser números reais baseados na porção identificada.`
       }
       const processedData = processOpenAIResponse(responseText);
       setNutritionData(processedData);
-      toast({
-        title: "Análise concluída!",
-        description: "Os dados nutricionais foram identificados com sucesso."
-      });
+      console.log("Análise concluída com sucesso!");
     } catch (error) {
       console.error("Erro:", error);
-      toast({
-        title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
-        variant: "destructive"
-      });
+      alert(`Erro na análise: ${error instanceof Error ? error.message : "Erro desconhecido"}`);
     } finally {
       setIsAnalyzing(false);
     }
