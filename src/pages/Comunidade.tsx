@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, MessageCircle, Upload, Camera, Users, Sparkles, Trophy } from "lucide-react";
+import { Vortex } from "@/components/ui/vortex";
 
 export default function Comunidade() {
   const [formData, setFormData] = useState({
@@ -18,9 +19,15 @@ export default function Comunidade() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 py-20">
-        <div className="container mx-auto px-4 relative">
+      {/* Hero Section com Vortex */}
+      <div className="h-[30rem] overflow-hidden">
+        <Vortex
+          backgroundColor="#1e40af"
+          rangeY={800}
+          particleCount={500}
+          baseHue={220}
+          className="flex items-center flex-col justify-center px-2 md:px-10 py-4 w-full h-full"
+        >
           <div className="text-center text-white">
             <div className="flex justify-center mb-6">
               <div className="relative">
@@ -49,7 +56,7 @@ export default function Comunidade() {
               </div>
             </div>
           </div>
-        </div>
+        </Vortex>
       </div>
 
       <div className="container mx-auto px-4 py-12">
