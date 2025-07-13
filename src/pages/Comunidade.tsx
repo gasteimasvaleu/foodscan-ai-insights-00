@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Heart, MessageCircle, Upload, Camera, Users, Sparkles, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,7 +37,6 @@ export default function Comunidade() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [commenterName, setCommenterName] = useState('');
-  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     user_name: '',
@@ -87,11 +85,7 @@ export default function Comunidade() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.user_name || !formData.city || !formData.state || !formData.description) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
+      console.log("Erro: Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -122,10 +116,7 @@ export default function Comunidade() {
 
       if (error) throw error;
 
-      toast({
-        title: "Sucesso! 🎉",
-        description: "Seu depoimento foi enviado e está inspirando outras pessoas!"
-      });
+      console.log("Sucesso! 🎉 Seu depoimento foi enviado e está inspirando outras pessoas!");
 
       setFormData({
         user_name: '',
@@ -139,11 +130,7 @@ export default function Comunidade() {
       fetchPosts();
     } catch (error) {
       console.error('Erro ao enviar depoimento:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao enviar depoimento. Tente novamente.",
-        variant: "destructive"
-      });
+      console.log("Erro ao enviar depoimento. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
