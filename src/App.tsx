@@ -23,6 +23,7 @@ const App = () => (
       <Route path="/masterchef" element={<MasterCheFIT />} />
       <Route path="/servnutri" element={<ServiNUTRI />} />
       <Route path="/subscription" element={<Subscription />} />
+      <Route path="/quero-assinar" element={<Subscription />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/payment-cancel" element={<PaymentCancel />} />
       <Route path="*" element={<NotFound />} />
