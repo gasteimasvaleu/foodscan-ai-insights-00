@@ -13,6 +13,7 @@ import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import Comunidade from "./pages/Comunidade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
+          <Route path="/comunidade" element={<Comunidade />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
