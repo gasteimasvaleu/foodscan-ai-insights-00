@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, MessageCircle, Upload, Camera, Users, Sparkles, Trophy } from "lucide-react";
+import { TextRotate } from "@/components/ui/text-rotate";
 
 export default function Comunidade() {
   const [formData, setFormData] = useState({
@@ -31,9 +32,22 @@ export default function Comunidade() {
             <h1 className="text-5xl font-bold mb-6">
               Comunidade FoodScan
             </h1>
-            <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
-              Transformações reais, histórias inspiradoras! Compartilhe sua jornada e inspire milhares de pessoas.
-            </p>
+            <div className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
+              <TextRotate
+                texts={[
+                  "Transformações reais, histórias inspiradoras!",
+                  "Compartilhe sua jornada incrível!",
+                  "Inspire milhares de pessoas!",
+                  "Sua história pode mudar vidas!"
+                ]}
+                rotationInterval={3000}
+                staggerDuration={0.02}
+                staggerFrom="first"
+                splitBy="characters"
+                mainClassName="text-center"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+              />
+            </div>
             <div className="flex justify-center space-x-8 text-white/80">
               <div className="text-center">
                 <Trophy className="w-8 h-8 mx-auto mb-2" />
