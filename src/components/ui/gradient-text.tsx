@@ -1,6 +1,6 @@
 
 import { cn } from "@/lib/utils"
-import React from "react"
+import * as React from "react"
 import { HTMLAttributes } from "react"
 
 interface GradientTextProps extends HTMLAttributes<HTMLDivElement> {

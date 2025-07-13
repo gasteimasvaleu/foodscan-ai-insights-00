@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -39,11 +41,19 @@ export const useAuth = () => {
     });
 
     if (error) {
-      console.error('SignUp error:', error);
+      toast({
+        title: "Erro no cadastro",
+        description: error.message,
+        variant: "destructive",
+      });
       return { error };
     }
 
-    console.log('Cadastro realizado com sucesso');
+    toast({
+      title: "Cadastro realizado!",
+      description: "Você já pode fazer login.",
+    });
+
     return { error: null };
   };
 
@@ -54,7 +64,11 @@ export const useAuth = () => {
     });
 
     if (error) {
-      console.error('SignIn error:', error);
+      toast({
+        title: "Erro no login",
+        description: error.message,
+        variant: "destructive",
+      });
       return { error };
     }
 
@@ -70,13 +84,27 @@ export const useAuth = () => {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
+        toast({
+          title: "Erro ao sair",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error };
       }
       
-      console.log('Logout realizado com sucesso');
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
+      
       return { error: null };
     } catch (err) {
       console.error('Unexpected logout error:', err);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro durante o logout.",
+        variant: "destructive",
+      });
       return { error: err };
     }
   };

@@ -372,6 +372,6 @@ const DailyControl = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </>;
 };
 export default DailyControl;
