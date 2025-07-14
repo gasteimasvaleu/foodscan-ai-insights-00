@@ -18,7 +18,7 @@ export const HowItWorksCard = () => {
         <div className="grid md:grid-cols-2 gap-6 items-center">
           {/* Imagem à esquerda */}
           <div className="relative group">
-            <div className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow duration-300 h-80">
               <img 
                 src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/mulher%20pg%20principal.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvbXVsaGVyIHBnIHByaW5jaXBhbC5wbmciLCJpYXQiOjE3NTI1MDcxMzQsImV4cCI6MTc4NDA0MzEzNH0._omfzxOX83N5AcX_mjXD7dMVlOdB_ixbg9Nhn3dhyyc"
                 alt="Análise nutricional inteligente"
@@ -38,7 +38,7 @@ export const HowItWorksCard = () => {
           
           {/* Vídeo à direita */}
           <div className="relative group">
-            <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300 h-80">
               <div className="relative bg-gray-900 rounded-lg overflow-hidden">
                 <video 
                   className="w-full h-64 object-cover"
