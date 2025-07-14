@@ -20,7 +20,7 @@ export const HowItWorksCard = () => {
           <div className="relative group">
             <div className="bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
               <img 
-                src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image12%20(1).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UxMiAoMSkucG5nIiwiaWF0IjoxNzUyNTA2NjQ5LCJleHAiOjE3ODQwNDI2NDl9.E4xKfoHnE_uvh_aw1WHzFOUv3sGe0b6Dvxj-K_0zJxc"
+                src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/mulher%20pg%20principal.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvbXVsaGVyIHBnIHByaW5jaXBhbC5wbmciLCJpYXQiOjE3NTI1MDcxMzQsImV4cCI6MTc4NDA0MzEzNH0._omfzxOX83N5AcX_mjXD7dMVlOdB_ixbg9Nhn3dhyyc"
                 alt="Análise nutricional inteligente"
                 className="w-full h-64 object-contain rounded-lg shadow-md"
               />
