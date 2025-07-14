@@ -21,23 +21,21 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/foodscan" element={<FoodScan />} />
-          <Route path="/controle-diario" element={<DailyControl />} />
-          <Route path="/masterchef" element={<MasterCheFIT />} />
-          <Route path="/quero-assinar" element={<Subscription />} />
-          <Route path="/sobre" element={<About />} />
-          <Route path="/servinutri" element={<ServiNUTRI />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancel" element={<PaymentCancel />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/foodscan" element={<FoodScan />} />
+        <Route path="/controle-diario" element={<DailyControl />} />
+        <Route path="/masterchef" element={<MasterCheFIT />} />
+        <Route path="/quero-assinar" element={<Subscription />} />
+        <Route path="/sobre" element={<About />} />
+        <Route path="/servinutri" element={<ServiNUTRI />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </BrowserRouter>
   </QueryClientProvider>
 );
