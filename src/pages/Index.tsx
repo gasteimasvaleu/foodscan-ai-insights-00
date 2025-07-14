@@ -2,6 +2,7 @@ import React from 'react';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
+import { HowItWorksCard } from '@/components/HowItWorksCard';
 import { FeaturesSection } from '@/components/FeaturesSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FAQSection } from '@/components/FAQSection';
@@ -23,6 +24,9 @@ const Index = () => {
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Auth Card */}
             <AuthCard />
+            
+            {/* How It Works Card */}
+            <HowItWorksCard />
             
             {/* Features Section */}
             <FeaturesSection />
