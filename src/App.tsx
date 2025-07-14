@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,41 +18,34 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const [isReactReady, setIsReactReady] = useState(false);
+const AppContent = () => (
+  <TooltipProvider>
+    <Toaster />
+    <Sonner />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/foodscan" element={<FoodScan />} />
+        <Route path="/controle-diario" element={<DailyControl />} />
+        <Route path="/masterchef" element={<MasterCheFIT />} />
+        <Route path="/quero-assinar" element={<Subscription />} />
+        <Route path="/sobre" element={<About />} />
+        <Route path="/servinutri" element={<ServiNUTRI />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  </TooltipProvider>
+);
 
-  useEffect(() => {
-    // Garante que o React está completamente inicializado antes de renderizar TooltipProvider
-    setIsReactReady(true);
-  }, []);
-
-  if (!isReactReady) {
-    return null;
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/foodscan" element={<FoodScan />} />
-            <Route path="/controle-diario" element={<DailyControl />} />
-            <Route path="/masterchef" element={<MasterCheFIT />} />
-            <Route path="/quero-assinar" element={<Subscription />} />
-            <Route path="/sobre" element={<About />} />
-            <Route path="/servinutri" element={<ServiNUTRI />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/payment-cancel" element={<PaymentCancel />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-};
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <React.StrictMode>
+      <AppContent />
+    </React.StrictMode>
+  </QueryClientProvider>
+);
 
 export default App;
