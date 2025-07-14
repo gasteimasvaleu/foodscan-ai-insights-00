@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { WelcomeMessage } from '@/components/WelcomeMessage';
-import { DailyGoals } from '@/components/DailyGoals';
-import { MealsList } from '@/components/MealsList';
-import { GoalsForm } from '@/components/GoalsForm';
-import { DietAnalysis } from '@/components/DietAnalysis';
 import { AuthCard } from '@/components/AuthCard';
 import { Button } from '@/components/ui/button';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus, Target, Utensils, BarChart3 } from 'lucide-react';
 
 export interface DailyGoal {
   id?: string;
@@ -38,53 +33,11 @@ const DailyControl = () => {
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState<string>('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleGoalsSubmit = (goalsData: DailyGoal) => {
-    setGoals(goalsData);
-    setShowGoalsForm(false);
-    console.log('Metas salvas:', goalsData);
-  };
-
-  const handleMealAdd = (meal: MealRecord) => {
-    setMeals([...meals, meal]);
-    console.log('Refeição adicionada:', meal);
-  };
-
-  const handleMealDelete = (mealId: string) => {
-    setMeals(meals.filter(meal => meal.id !== mealId));
-    console.log('Refeição removida:', mealId);
-  };
-
-  const handleAnalyzeDay = async () => {
-    if (!goals || meals.length === 0) return;
-
-    setIsAnalyzing(true);
-    
-    // Simular análise
-    setTimeout(() => {
-      const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
-      const totalCarbs = meals.reduce((sum, meal) => sum + meal.carbohydrates, 0);
-      const totalProteins = meals.reduce((sum, meal) => sum + meal.proteins, 0);
-      const totalFats = meals.reduce((sum, meal) => sum + meal.fats, 0);
-
-      const analysisText = `
-        Análise do seu dia:
-        
-        Calorias: ${totalCalories}/${goals.calories} (${((totalCalories/goals.calories)*100).toFixed(1)}%)
-        Carboidratos: ${totalCarbs.toFixed(1)}g/${goals.carbohydrates}g
-        Proteínas: ${totalProteins.toFixed(1)}g/${goals.proteins}g
-        Gorduras: ${totalFats.toFixed(1)}g/${goals.fats}g
-        
-        ${totalCalories > goals.calories ? 'Você excedeu sua meta calórica.' : 'Você está dentro da meta calórica.'}
-      `;
-
-      setAnalysis(analysisText);
-      setIsAnalyzing(false);
-    }, 2000);
-  };
+  const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
+  const totalCarbs = meals.reduce((sum, meal) => sum + meal.carbohydrates, 0);
+  const totalProteins = meals.reduce((sum, meal) => sum + meal.proteins, 0);
+  const totalFats = meals.reduce((sum, meal) => sum + meal.fats, 0);
 
   return (
     <>
@@ -101,7 +54,7 @@ const DailyControl = () => {
                   Controle Diário
                 </h1>
                 <Button
-                  onClick={() => setShowGoalsForm(true)}
+                  onClick={() => setShowGoalsForm(!showGoalsForm)}
                   className="bg-primary-500 hover:bg-primary-600 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -109,59 +62,40 @@ const DailyControl = () => {
                 </Button>
               </div>
 
-              <WelcomeMessage />
-
-              {showGoalsForm && (
-                <div className="mt-6">
-                  <GoalsForm
-                    onSubmit={handleGoalsSubmit}
-                    onCancel={() => setShowGoalsForm(false)}
-                    currentGoals={goals}
-                  />
-                </div>
-              )}
-
-              {goals && (
-                <div className="mt-6">
-                  <DailyGoals
-                    goals={goals}
-                    currentIntake={{
-                      calories: meals.reduce((sum, meal) => sum + meal.calories, 0),
-                      carbohydrates: meals.reduce((sum, meal) => sum + meal.carbohydrates, 0),
-                      proteins: meals.reduce((sum, meal) => sum + meal.proteins, 0),
-                      fats: meals.reduce((sum, meal) => sum + meal.fats, 0),
-                    }}
-                  />
-                </div>
-              )}
-
-              <div className="mt-6">
-                <MealsList
-                  meals={meals}
-                  onMealAdd={handleMealAdd}
-                  onMealDelete={handleMealDelete}
-                />
-              </div>
-
-              {goals && meals.length > 0 && (
-                <div className="mt-6">
-                  <div className="flex justify-center">
-                    <Button
-                      onClick={handleAnalyzeDay}
-                      disabled={isAnalyzing}
-                      className="bg-primary-500 hover:bg-primary-600 text-white"
-                    >
-                      {isAnalyzing ? 'Analisando...' : 'Analisar Dia'}
-                    </Button>
-                  </div>
-                  
-                  {analysis && (
-                    <div className="mt-6">
-                      <DietAnalysis analysis={analysis} />
+              <div className="text-center py-8 text-white/80">
+                <Target className="w-16 h-16 mx-auto mb-4 text-primary-300" />
+                <h2 className="text-2xl font-semibold mb-2">Controle Diário</h2>
+                <p className="mb-4">Acompanhe suas refeições e metas nutricionais</p>
+                
+                {goals && (
+                  <div className="bg-white/5 rounded-lg p-4 mb-4">
+                    <h3 className="text-lg font-medium mb-2">Suas Metas</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>Calorias: {goals.calories}</div>
+                      <div>Carboidratos: {goals.carbohydrates}g</div>
+                      <div>Proteínas: {goals.proteins}g</div>
+                      <div>Gorduras: {goals.fats}g</div>
                     </div>
-                  )}
+                  </div>
+                )}
+
+                {meals.length > 0 && (
+                  <div className="bg-white/5 rounded-lg p-4 mb-4">
+                    <h3 className="text-lg font-medium mb-2">Consumo Atual</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>Calorias: {totalCalories}</div>
+                      <div>Carboidratos: {totalCarbs.toFixed(1)}g</div>
+                      <div>Proteínas: {totalProteins.toFixed(1)}g</div>
+                      <div>Gorduras: {totalFats.toFixed(1)}g</div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-sm text-white/60">
+                  <p>Esta é uma versão simplificada do controle diário.</p>
+                  <p>Use o FoodScan para analisar suas refeições.</p>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
