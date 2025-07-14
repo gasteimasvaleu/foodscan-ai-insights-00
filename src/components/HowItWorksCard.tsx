@@ -20,7 +20,7 @@ export const HowItWorksCard = () => {
           <div className="relative group">
             <div className="bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
               <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fX0%3D&auto=format&fit=crop&w=1000&q=80"
+                src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image12%20(1).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UxMiAoMSkucG5nIiwiaWF0IjoxNzUyNTA2NjQ5LCJleHAiOjE3ODQwNDI2NDl9.E4xKfoHnE_uvh_aw1WHzFOUv3sGe0b6Dvxj-K_0zJxc"
                 alt="Análise nutricional inteligente"
                 className="w-full h-64 object-cover rounded-lg shadow-md"
               />
