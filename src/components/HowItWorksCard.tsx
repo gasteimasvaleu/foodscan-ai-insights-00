@@ -46,7 +46,7 @@ export const HowItWorksCard = () => {
                   controls
                   preload="metadata"
                 >
-                  <source src="#" type="video/mp4" />
+                  <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/mp4" />
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
                     <div className="text-center text-white">
                       <Play className="w-16 h-16 mx-auto mb-2 opacity-80" />
