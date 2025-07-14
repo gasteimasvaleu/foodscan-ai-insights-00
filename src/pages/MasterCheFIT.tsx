@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -41,6 +42,7 @@ interface SavedMenuPlan {
 }
 
 const MasterCheFIT = () => {
+  const { toast } = useToast();
   const { user, loading } = useAuth();
   const [preferences, setPreferences] = useState<UserPreferences>({
     favoriteIngredients: '',
@@ -87,7 +89,11 @@ const MasterCheFIT = () => {
       }
     } catch (error) {
       console.error('Erro ao carregar preferências:', error);
-      console.log("Erro: Não foi possível carregar suas preferências.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar suas preferências.",
+        variant: "destructive"
+      });
     } finally {
       setLoadingPreferences(false);
     }
@@ -119,12 +125,20 @@ const MasterCheFIT = () => {
 
   const handleSavePreferences = async () => {
     if (!user) {
-      console.log("Erro: Você precisa estar logado para salvar preferências.");
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para salvar preferências.",
+        variant: "destructive"
+      });
       return;
     }
 
     if (!preferences.favoriteIngredients.trim()) {
-      console.log("Erro: Por favor, adicione pelo menos alguns ingredientes favoritos.");
+      toast({
+        title: "Erro",
+        description: "Por favor, adicione pelo menos alguns ingredientes favoritos.",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -164,16 +178,27 @@ const MasterCheFIT = () => {
       }
 
       setIsEditing(false);
-      console.log("Preferências Salvas! Suas preferências foram registradas com sucesso.");
+      toast({
+        title: "Preferências Salvas!",
+        description: "Suas preferências foram registradas com sucesso."
+      });
     } catch (error) {
       console.error('Erro ao salvar preferências:', error);
-      console.log("Erro: Não foi possível salvar suas preferências.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar suas preferências.",
+        variant: "destructive"
+      });
     }
   };
 
   const generateMenuPlan = async () => {
     if (!user) {
-      console.log("Erro: Você precisa estar logado para gerar cardápios.");
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para gerar cardápios.",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -206,10 +231,17 @@ const MasterCheFIT = () => {
       // Reload menu history
       loadMenuHistory();
       
-      console.log("Cardápio Gerado! Seu cardápio personalizado foi criado pela IA.");
+      toast({
+        title: "Cardápio Gerado!",
+        description: "Seu cardápio personalizado foi criado pela IA."
+      });
     } catch (error) {
       console.error('Erro ao gerar cardápio:', error);
-      console.log("Erro: Não foi possível gerar o cardápio. Tente novamente.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o cardápio. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -218,7 +250,10 @@ const MasterCheFIT = () => {
   const loadSavedMenu = (savedMenu: SavedMenuPlan) => {
     setMenuPlan(savedMenu.menu_data);
     setShowHistory(false);
-    console.log("Cardápio Carregado! Cardápio anterior foi carregado com sucesso.");
+    toast({
+      title: "Cardápio Carregado!",
+      description: "Cardápio anterior foi carregado com sucesso."
+    });
   };
 
   const deleteSavedMenu = async (menuId: string) => {
@@ -234,10 +269,17 @@ const MasterCheFIT = () => {
       // Atualizar a lista local removendo o item deletado
       setSavedMenuPlans(prev => prev.filter(menu => menu.id !== menuId));
       
-      console.log("Cardápio Removido! O cardápio foi removido com sucesso do seu histórico.");
+      toast({
+        title: "Cardápio Removido!",
+        description: "O cardápio foi removido com sucesso do seu histórico."
+      });
     } catch (error) {
       console.error('Erro ao remover cardápio:', error);
-      console.log("Erro: Não foi possível remover o cardápio. Tente novamente.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o cardápio. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 

@@ -11,6 +11,7 @@ import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIco
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
 type NutritionistAd = Database['public']['Tables']['nutritionist_ads']['Row'] & {
   profile_name?: string;
@@ -19,6 +20,9 @@ const ServiNUTRI = () => {
   const {
     user
   } = useAuth();
+  const {
+    toast
+  } = useToast();
   const [ads, setAds] = useState<NutritionistAd[]>([]);
   const [userAds, setUserAds] = useState<NutritionistAd[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -331,11 +335,19 @@ const ServiNUTRI = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      console.log("Erro: Você precisa estar logado para cadastrar um anúncio.");
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para cadastrar um anúncio.",
+        variant: "destructive"
+      });
       return;
     }
     if (formData.specialties.length === 0) {
-      console.log("Erro: Selecione pelo menos uma especialidade.");
+      toast({
+        title: "Erro",
+        description: "Selecione pelo menos uma especialidade.",
+        variant: "destructive"
+      });
       return;
     }
     setLoading(true);
@@ -372,7 +384,10 @@ const ServiNUTRI = () => {
       if (errors.length > 0) {
         throw errors[0].error;
       }
-      console.log("Sucesso! Seus anúncios foram cadastrados com sucesso.");
+      toast({
+        title: "Sucesso!",
+        description: "Seus anúncios foram cadastrados com sucesso."
+      });
 
       // Reset form
       setFormData({
@@ -392,7 +407,11 @@ const ServiNUTRI = () => {
       fetchUserAds();
     } catch (error) {
       console.error('Erro ao cadastrar anúncios:', error);
-      console.log("Erro: Não foi possível cadastrar os anúncios. Tente novamente.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível cadastrar os anúncios. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -405,12 +424,19 @@ const ServiNUTRI = () => {
         error
       } = await supabase.from('nutritionist_ads').delete().eq('id', adId).eq('user_id', user.id);
       if (error) throw error;
-      console.log("Sucesso! Anúncio removido com sucesso.");
+      toast({
+        title: "Sucesso!",
+        description: "Anúncio removido com sucesso."
+      });
       fetchAds();
       fetchUserAds();
     } catch (error) {
       console.error('Erro ao remover anúncio:', error);
-      console.log("Erro: Não foi possível remover o anúncio. Tente novamente.");
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o anúncio. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setDeleteLoading(null);
     }
