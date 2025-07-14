@@ -22,7 +22,7 @@ export const HowItWorksCard = () => {
               <img 
                 src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image12%20(1).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UxMiAoMSkucG5nIiwiaWF0IjoxNzUyNTA2NjQ5LCJleHAiOjE3ODQwNDI2NDl9.E4xKfoHnE_uvh_aw1WHzFOUv3sGe0b6Dvxj-K_0zJxc"
                 alt="Análise nutricional inteligente"
-                className="w-full h-64 object-cover rounded-lg shadow-md"
+                className="w-full h-64 object-contain rounded-lg shadow-md"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
