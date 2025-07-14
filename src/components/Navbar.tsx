@@ -2,17 +2,13 @@
 import React, { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAuth } from '@/hooks/useAuth';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
   const location = useLocation();
-  const { user, signOut } = useAuth();
 
   const menuItems = [
     { label: 'Início', href: '/' },
@@ -28,11 +24,6 @@ export const Navbar = () => {
     return location.pathname === href;
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    setIsOpen(false);
-  };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
       <div className="container mx-auto px-4">
@@ -42,11 +33,6 @@ export const Navbar = () => {
             <Link to="/">
               <h1 className="text-xl font-bold text-primary-600">FoodScan & Diet</h1>
             </Link>
-          </div>
-
-          {/* Desktop Menu - Hidden on all screens, replaced with hamburger */}
-          <div className="hidden">
-            {/* Desktop menu removed */}
           </div>
 
           {/* Hamburger Menu with MENU text */}
@@ -92,19 +78,6 @@ export const Navbar = () => {
                       </div>
                     </Link>
                   ))}
-                  
-                  {/* Logout Button - Only show if user is logged in */}
-                  {user && (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm bg-red-500/20 text-white hover:bg-red-500/30 border border-red-300/30 shadow-lg"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-base text-white">Sair</span>
-                        <LogOut className="w-4 h-4 text-white" />
-                      </div>
-                    </button>
-                  )}
                 </div>
               </ScrollArea>
             </SheetContent>
