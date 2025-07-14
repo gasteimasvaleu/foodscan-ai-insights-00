@@ -183,10 +183,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         <div className="mt-4 text-center">
           <button
             type="button"
-            onClick={() => navigate('/quero-assinar')}
+            onClick={() => setIsLogin(!isLogin)}
             className="text-sm text-primary-600 hover:text-primary-700 underline"
           >
-            Quero Assinar
+            {isLogin ? 'Não tem conta? Criar uma' : 'Já tem conta? Fazer login'}
           </button>
         </div>
       </CardContent>
