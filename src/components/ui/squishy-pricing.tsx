@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 const STRIPE_LINKS = {
   monthly: 'https://buy.stripe.com/bJebJ15tm6TEd5g1314Rq05',
   semester: 'https://buy.stripe.com/5kQ5kDg806TE0iuh1Z4Rq04',
-  annual: 'https://buy.stripe.com/bJebJ18Fydi2c1cfXV4Rq06'
+  annual: 'https://buy.stripe.com/00w3cv8Fya5QaX8h1Z4Rq03'
 };
 
 export const Component = () => {

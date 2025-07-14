@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TestimonialsColumn } from '@/components/ui/testimonials-columns-1';
 export const TestimonialsSection = () => {
   const testimonials = [{

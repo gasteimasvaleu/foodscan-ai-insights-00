@@ -8,14 +8,13 @@ import { FAQSection } from '@/components/FAQSection';
 import { Footer } from '@/components/Footer';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
-import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt';
 const Index = () => {
   return <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 py-[65px]">
         {/* Banner Section */}
         <div className="mb-12 animate-fade-in">
-          <img alt="Banner FoodScan & Diet" className="w-full h-auto object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/banner%20superior%204.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvYmFubmVyIHN1cGVyaW9yIDQucG5nIiwiaWF0IjoxNzUyMTc0MDU0LCJleHAiOjE3ODM3MTAwNTR9.ehb9fHMsiC98ejAQyyGfKLfXob52nH65K6yX7aek8yQ" />
+          <img alt="Banner FoodScan & Diet" className="w-full h-auto object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/banner%20superior%203.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvYmFubmVyIHN1cGVyaW9yIDMucG5nIiwiaWF0IjoxNzUyMTcyMTk3LCJleHAiOjE3ODM3MDgxOTd9.tak4txDNXmPTZFMpkiy5hIHYMjS-e1pRKSVZ-53NpqQ" />
         </div>
         
         <div className="container mx-auto py-0 px-[13px]">
@@ -39,7 +38,6 @@ const Index = () => {
       <Footer />
       <PWAInstallPrompt />
       <PWAOfflineIndicator />
-      <PWAUpdatePrompt />
     </>;
 };
 export default Index;

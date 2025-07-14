@@ -57,12 +57,8 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   };
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Error during sign out:', error);
-    }
+    await signOut();
+    navigate('/');
   };
 
   if (loading) {
