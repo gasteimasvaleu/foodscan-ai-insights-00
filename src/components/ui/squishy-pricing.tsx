@@ -27,6 +27,7 @@ export const Component = () => {
             background="bg-purple-600 dark:bg-purple-700" 
             BGComponent={BGComponent2}
             stripeLink={STRIPE_LINKS.semester}
+            isSemester={true}
           />
           <PricingCard 
             label="Assinatura Anual" 
@@ -51,7 +52,8 @@ const PricingCard = ({
   background,
   BGComponent,
   stripeLink,
-  isAnnual = false
+  isAnnual = false,
+  isSemester = false
 }: {
   label: string;
   monthlyPrice: string;
@@ -61,6 +63,7 @@ const PricingCard = ({
   BGComponent: React.ComponentType;
   stripeLink: string;
   isAnnual?: boolean;
+  isSemester?: boolean;
 }) => {
   const handleSubscribe = () => {
     window.open(stripeLink, '_blank');
@@ -88,7 +91,7 @@ const PricingCard = ({
         duration: 1,
         ease: "backInOut"
       }} className="my-1 sm:my-2 block origin-top-left font-mono text-4xl sm:text-6xl font-black leading-[1.2]">
-          R${monthlyPrice}/<br />{isAnnual ? 'Ano' : 'Mês'}
+          R${monthlyPrice}/<br />{isAnnual ? 'Ano' : isSemester ? 'Semestral' : 'Mês'}
         </motion.span>
         <p className="text-sm sm:text-lg text-white/90">{description}</p>
       </div>
