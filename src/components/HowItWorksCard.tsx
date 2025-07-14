@@ -21,7 +21,7 @@ export const HowItWorksCard = () => {
           <div className="order-1 md:order-2">
             <div className="aspect-video bg-gray-100 rounded-lg shadow-md overflow-hidden">
               <video className="w-full h-full object-cover" poster="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" controls preload="metadata">
-                <source src="/demo-video.mp4" type="video/mp4" />
+                <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDQ0OTMsImV4cCI6MTc4NDA0MDQ5M30.GaxBZto0lq8csIMDhrXBqMH5DAdNJMZ7umB5U0PU7QQ" type="video/mp4" />
                 <p className="p-4 text-center text-gray-600">
                   Seu navegador não suporta vídeos. 
                   <a href="/demo-video.mp4" className="text-primary underline ml-1">
