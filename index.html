@@ -21,6 +21,21 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6C63FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FoodScan AI">
+    <link rel="apple-touch-icon" href="/lovable-uploads/2f6b538e-e7c8-43c5-a21a-5e63902e489b.png">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/sw.js" as="script">
+    
+    <!-- Mobile viewport optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="FoodScan AI">
   </head>
 
   <body>
@@ -28,5 +43,20 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

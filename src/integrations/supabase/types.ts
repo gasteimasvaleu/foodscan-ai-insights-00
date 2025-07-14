@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_posts: {
+        Row: {
+          after_photo_url: string | null
+          before_photo_url: string | null
+          comments_count: number
+          created_at: string
+          description: string
+          id: string
+          likes_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          after_photo_url?: string | null
+          before_photo_url?: string | null
+          comments_count?: number
+          created_at?: string
+          description: string
+          id?: string
+          likes_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          after_photo_url?: string | null
+          before_photo_url?: string | null
+          comments_count?: number
+          created_at?: string
+          description?: string
+          id?: string
+          likes_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_goals: {
         Row: {
           calories: number
@@ -130,6 +166,67 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      post_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
