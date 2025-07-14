@@ -1,9 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 export const HowItWorksCard = () => {
-  return (
-    <Card className="bg-white/90 backdrop-blur-sm border-white/20 shadow-lg">
+  return <Card className="bg-white/90 backdrop-blur-sm border-white/20 shadow-lg">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-gray-800">
           Como Funciona o FoodScan
@@ -16,22 +14,13 @@ export const HowItWorksCard = () => {
         <div className="grid md:grid-cols-2 gap-6 items-center">
           {/* Imagem do lado esquerdo */}
           <div className="order-2 md:order-1">
-            <img 
-              src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-              alt="Como usar o FoodScan"
-              className="w-full h-64 md:h-80 object-cover rounded-lg shadow-md"
-            />
+            <img alt="Como usar o FoodScan" className="w-full h-64 md:h-80 object-cover rounded-lg shadow-md" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image12%20(1).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UxMiAoMSkucG5nIiwiaWF0IjoxNzUyNTA0NDUwLCJleHAiOjE3ODQwNDA0NTB9.JbdCe9JMHmsP1ZbwN32rNHhsbZkpYVR7By99Pf4zYbU" />
           </div>
           
           {/* Vídeo do lado direito */}
           <div className="order-1 md:order-2">
             <div className="aspect-video bg-gray-100 rounded-lg shadow-md overflow-hidden">
-              <video 
-                className="w-full h-full object-cover"
-                poster="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                controls
-                preload="metadata"
-              >
+              <video className="w-full h-full object-cover" poster="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" controls preload="metadata">
                 <source src="/demo-video.mp4" type="video/mp4" />
                 <p className="p-4 text-center text-gray-600">
                   Seu navegador não suporta vídeos. 
@@ -77,6 +66,5 @@ export const HowItWorksCard = () => {
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
