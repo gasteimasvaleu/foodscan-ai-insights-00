@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 
 const STRIPE_LINKS = {
@@ -28,17 +27,15 @@ export const Component = () => {
             background="bg-purple-600 dark:bg-purple-700" 
             BGComponent={BGComponent2}
             stripeLink={STRIPE_LINKS.semester}
-            period="Semestral"
           />
           <PricingCard 
             label="Assinatura Anual" 
-            monthlyPrice="277,90" 
+            monthlyPrice="127,90" 
             description="1 ano completo de transformação alimentar com o melhor custo-benefício" 
             cta="Assinar Agora" 
             background="bg-green-600 dark:bg-green-700" 
             BGComponent={BGComponent3}
             stripeLink={STRIPE_LINKS.annual}
-            period="Ano"
           />
         </div>
       </div>
@@ -52,8 +49,7 @@ const PricingCard = ({
   cta,
   background,
   BGComponent,
-  stripeLink,
-  period = "Mês"
+  stripeLink
 }: {
   label: string;
   monthlyPrice: string;
@@ -62,7 +58,6 @@ const PricingCard = ({
   background: string;
   BGComponent: React.ComponentType;
   stripeLink: string;
-  period?: string;
 }) => {
   const handleSubscribe = () => {
     window.open(stripeLink, '_blank');
@@ -90,7 +85,7 @@ const PricingCard = ({
         duration: 1,
         ease: "backInOut"
       }} className="my-1 sm:my-2 block origin-top-left font-mono text-4xl sm:text-6xl font-black leading-[1.2]">
-          R${monthlyPrice}/<br />{period}
+          R${monthlyPrice}/<br />Mês
         </motion.span>
         <p className="text-sm sm:text-lg text-white/90">{description}</p>
       </div>

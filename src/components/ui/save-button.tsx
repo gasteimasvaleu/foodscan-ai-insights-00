@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Check, Sparkles } from "lucide-react"
 import confetti from "canvas-confetti"
