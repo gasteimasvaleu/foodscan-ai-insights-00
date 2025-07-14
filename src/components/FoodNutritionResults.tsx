@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { RotateCcw, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export interface NutritionData {
   foodName: string;
@@ -23,115 +27,150 @@ interface FoodNutritionResultsProps {
 }
 
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
-  const [selectedPortion, setSelectedPortion] = useState<string>('100g');
-  const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [currentPortion, setCurrentPortion] = useState<string>('');
+  const [portionGrams, setPortionGrams] = useState<number>(100);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handlePortionChange = (portion: string, grams: number) => {
-    setSelectedPortion(portion);
-    // Calcula o multiplicador baseado nos gramas (assumindo 100g como base)
-    const multiplier = grams / 100;
-    setPortionMultiplier(multiplier);
+    setCurrentPortion(portion);
+    setPortionGrams(grams);
   };
 
-  const adjustedNutrition = {
-    calories: Math.round(data.nutrition.calories * portionMultiplier),
-    carbohydrates: Math.round(data.nutrition.carbohydrates * portionMultiplier * 10) / 10,
-    proteins: Math.round(data.nutrition.proteins * portionMultiplier * 10) / 10,
-    fats: Math.round(data.nutrition.fats * portionMultiplier * 10) / 10,
-    fiber: Math.round(data.nutrition.fiber * portionMultiplier * 10) / 10,
-    sodium: Math.round(data.nutrition.sodium * portionMultiplier)
+  const calculateNutrition = (baseValue: number) => {
+    const multiplier = portionGrams / 100;
+    return Math.round(baseValue * multiplier);
   };
 
-  const handleSave = async () => {
-    console.log('Dados nutricionais salvos:', {
-      foodName: data.foodName,
-      portion: selectedPortion,
-      nutrition: adjustedNutrition
-    });
-    // Aqui você pode adicionar a lógica para salvar os dados
+  const calories = calculateNutrition(data.nutrition.calories);
+  const carbohydrates = calculateNutrition(data.nutrition.carbohydrates);
+  const proteins = calculateNutrition(data.nutrition.proteins);
+  const fats = calculateNutrition(data.nutrition.fats);
+
+  const handleSaveMeal = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const { data: savedData, error } = await supabase.from('meal_records').insert([
+        {
+          food_name: data.foodName,
+          calories: calories,
+          carbohydrates: carbohydrates,
+          proteins: proteins,
+          fats: fats,
+          portion: currentPortion || `${portionGrams}g`,
+          meal_time: new Date().toISOString(),
+          user_id: user.id,
+        },
+      ]).select().single();
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Refeição salva com sucesso!",
+      });
+
+      // Redirecionar para a página de Controle Diário
+      navigate('/controle-diario');
+
+    } catch (error) {
+      console.error('Erro ao salvar refeição:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar refeição. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-white flex items-center">
-          <Utensils className="w-5 h-5 mr-2 text-primary-300" />
-          Análise Nutricional
-        </h3>
+    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="bg-blue-100 rounded-full p-3">
+          <Utensils className="w-6 h-6 text-blue-600" />
+        </div>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-800">{data.foodName}</h3>
+          <p className="text-gray-600">{data.description}</p>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <PortionSelector
+          currentPortion={currentPortion}
+          onPortionChange={handlePortionChange}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-gray-50 rounded-2xl p-4 text-center">
+          <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Calorias
+          </h4>
+          <div className="text-2xl font-bold text-red-600">{calories} kcal</div>
+        </div>
+        <div className="bg-gray-50 rounded-2xl p-4 text-center">
+          <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Carboidratos
+          </h4>
+          <div className="text-2xl font-bold text-orange-600">{carbohydrates} g</div>
+        </div>
+        <div className="bg-gray-50 rounded-2xl p-4 text-center">
+          <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Proteínas
+          </h4>
+          <div className="text-2xl font-bold text-blue-600">{proteins} g</div>
+        </div>
+        <div className="bg-gray-50 rounded-2xl p-4 text-center">
+          <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Gorduras
+          </h4>
+          <div className="text-2xl font-bold text-yellow-600">{fats} g</div>
+        </div>
+      </div>
+
+      <div className="flex justify-center space-x-4">
         <Button
           onClick={onReset}
           variant="outline"
-          size="sm"
-          className="text-white border-white/30 hover:bg-white/10"
+          className="rounded-xl px-6 py-3 font-semibold"
         >
-          <RotateCcw className="w-4 h-4 mr-2" />
+          <RotateCcw className="w-5 h-5 mr-2" />
           Nova Análise
         </Button>
-      </div>
-
-      <div className="space-y-6">
-        {/* Food Information */}
-        <div className="bg-white/5 rounded-xl p-4">
-          <h4 className="font-medium text-white mb-2">{data.foodName}</h4>
-          <p className="text-white/80 text-sm">{data.description}</p>
-          <p className="text-white/60 text-sm mt-2">Quantidade: {data.quantity}</p>
-        </div>
-
-        {/* Portion Selector */}
-        <PortionSelector
-          currentPortion={selectedPortion}
-          onPortionChange={handlePortionChange}
-        />
-
-        {/* Nutrition Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Calorias</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.calories}</p>
-            <p className="text-white/60 text-xs">kcal</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Carboidratos</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.carbohydrates}</p>
-            <p className="text-white/60 text-xs">g</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Proteínas</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.proteins}</p>
-            <p className="text-white/60 text-xs">g</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Gorduras</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.fats}</p>
-            <p className="text-white/60 text-xs">g</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Fibras</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.fiber}</p>
-            <p className="text-white/60 text-xs">g</p>
-          </div>
-          
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/80 text-sm">Sódio</p>
-            <p className="text-2xl font-bold text-white">{adjustedNutrition.sodium}</p>
-            <p className="text-white/60 text-xs">mg</p>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-4">
-          <Button
-            onClick={handleSave}
-            className="flex-1 bg-primary-500 hover:bg-primary-600 text-white"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Salvar no Histórico
-          </Button>
-        </div>
+        
+        <Button
+          onClick={handleSaveMeal}
+          disabled={isSaving}
+          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          {isSaving ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+              Salvando...
+            </div>
+          ) : (
+            <>
+              <Save className="w-5 h-5 mr-2" />
+              Salvar Refeição
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

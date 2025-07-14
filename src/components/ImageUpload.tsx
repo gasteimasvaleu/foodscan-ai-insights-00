@@ -1,95 +1,142 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { Upload, Camera, X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ImageUploadProps {
-  onImageSelect: (imageDataUrl: string) => void;
+  onImageSelect: (file: File) => void;
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageDataUrl = e.target?.result as string;
-        setSelectedImage(imageDataUrl);
-        onImageSelect(imageDataUrl);
+        setSelectedImage(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleUploadClick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (event) => {
-      const target = event.target as HTMLInputElement;
-      const file = target.files?.[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const imageDataUrl = e.target?.result as string;
-          setSelectedImage(imageDataUrl);
-          onImageSelect(imageDataUrl);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-    input.click();
+    fileInputRef.current?.click();
+  };
+
+  const handleAnalyze = () => {
+    if (selectedFile) {
+      onImageSelect(selectedFile);
+      
+      // Scroll suave para a seção de resultados após um pequeno delay
+      setTimeout(() => {
+        const resultsSection = document.querySelector('[data-results-section]') || 
+                             document.querySelector('.bg-success-50') ||
+                             document.querySelector('[data-description-section]');
+        
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        } else {
+          // Se não encontrar a seção específica, rola para baixo na página
+          window.scrollTo({
+            top: window.scrollY + 400,
+            behavior: 'smooth'
+          });
+        }
+      }, 300);
+    }
   };
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg">
-      <div className="text-center">
-        <h3 className="text-xl font-semibold text-white mb-4">
-          Faça o upload da imagem da sua comida
-        </h3>
-        
+    <div className="space-y-6 animate-scale-in">
+      {/* Upload Area */}
+      <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
         {!selectedImage ? (
-          <div className="space-y-4">
-            <div className="border-2 border-dashed border-white/30 rounded-xl p-8 bg-white/5">
-              <Upload className="w-12 h-12 text-white/60 mx-auto mb-4" />
-              <p className="text-white/80 text-sm mb-4">
-                Arraste uma imagem aqui ou clique para selecionar
-              </p>
-              <Button
-                onClick={handleUploadClick}
-                className="bg-primary-500 hover:bg-primary-600 text-white"
-              >
-                <Camera className="w-4 h-4 mr-2" />
-                Selecionar Imagem
-              </Button>
+          <div
+            onClick={handleUploadClick}
+            className="border-2 border-dashed border-primary-300 rounded-2xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50/50 transition-all duration-300 group"
+          >
+            <div className="space-y-4">
+              <div className="bg-primary-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                <Upload className="w-10 h-10 text-primary-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Faça upload da sua foto
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Clique aqui ou arraste uma imagem do seu prato ou alimento
+                </p>
+                <p className="text-sm text-gray-500">
+                  Formatos suportados: JPG, PNG, WebP (máx. 10MB)
+                </p>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="relative">
               <img
                 src={selectedImage}
-                alt="Imagem selecionada"
-                className="w-full max-w-md mx-auto rounded-xl shadow-lg"
+                alt="Preview"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-lg"
               />
-              <Button
+              <button
                 onClick={handleRemoveImage}
-                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
-                size="sm"
+                className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-200 shadow-lg"
               >
                 <X className="w-4 h-4" />
-              </Button>
+              </button>
             </div>
-            <p className="text-white/80 text-sm">
-              Imagem carregada com sucesso! Clique em "Analisar" para continuar.
-            </p>
+            
+            <div className="text-center space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Imagem selecionada
+              </h3>
+              <div className="flex justify-center space-x-4">
+                <Button
+                  onClick={handleUploadClick}
+                  variant="outline"
+                  className="rounded-xl"
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Trocar Imagem
+                </Button>
+                <Button
+                  onClick={handleAnalyze}
+                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Analisar Alimento
+                </Button>
+              </div>
+            </div>
           </div>
         )}
+        
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
       </div>
     </div>
   );

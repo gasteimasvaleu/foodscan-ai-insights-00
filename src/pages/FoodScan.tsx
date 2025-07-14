@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { FoodNutritionResults } from '@/components/FoodNutritionResults';
 import { LoadingState } from '@/components/LoadingState';
@@ -6,6 +6,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AuthCard } from '@/components/AuthCard';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
@@ -24,6 +26,7 @@ export interface NutritionData {
 }
 
 const FoodScan = () => {
+  const { user, loading } = useAuth();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
@@ -33,137 +36,298 @@ const FoodScan = () => {
   const openaiApiKey = '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';
   const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
 
-  const handleImageUpload = (imageDataUrl: string) => {
-    setSelectedImage(imageDataUrl);
-    setNutritionData(null);
-    setImageDescription('');
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Show login form if user is not authenticated
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+          <div className="container mx-auto px-4 py-8">
+            <div className="max-w-md mx-auto space-y-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                  Acesso Restrito
+                </h1>
+                <p className="text-gray-600 mb-8">
+                  Você precisa estar logado para acessar o FoodScan
+                </p>
+              </div>
+              <AuthCard mode="login" />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  const parseNutritionValue = (value: any): number => {
+    console.log("Parsing nutrition value:", value, "Type:", typeof value);
+    if (typeof value === 'number') {
+      return isNaN(value) ? 0 : value;
+    }
+    if (typeof value === 'string') {
+      const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+      const numericValue = parseFloat(cleanValue);
+      return isNaN(numericValue) ? 0 : numericValue;
+    }
+    return 0;
   };
 
-  const handleDescribeImage = async () => {
-    if (!selectedImage) return;
-    
-    setIsDescribing(true);
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "Descreva esta imagem de comida em português de forma detalhada, incluindo os ingredientes visíveis e o método de preparo."
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: selectedImage
-                  }
-                }
-              ]
-            }
-          ],
-          max_tokens: 500
-        }),
+  const handleImageAnalysis = async (imageFile: File) => {
+    setSelectedImage(URL.createObjectURL(imageFile));
+    if (!openaiApiKey.trim()) {
+      toast({
+        title: "API Key necessária",
+        description: "Por favor, insira sua chave da OpenAI primeiro.",
+        variant: "destructive"
       });
-
-      const data = await response.json();
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        setImageDescription(data.choices[0].message.content);
-      }
+      return;
+    }
+    setIsDescribing(true);
+    console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
+    try {
+      const base64Full = await convertToBase64(imageFile);
+      const description = await analyzeImageWithOpenAI(base64Full);
+      setImageDescription(description);
+      toast({
+        title: "Descrição gerada!",
+        description: "Agora você pode enviar para análise nutricional."
+      });
     } catch (error) {
-      console.error('Erro ao descrever imagem:', error);
+      console.error("Erro na descrição:", error);
+      toast({
+        title: "Erro na descrição",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive"
+      });
     } finally {
       setIsDescribing(false);
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!selectedImage) return;
-    
-    setIsAnalyzing(true);
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "Analise esta imagem de comida e forneça as informações nutricionais detalhadas em formato JSON com os seguintes campos: foodName, description, quantity, nutrition (com calories, carbohydrates, proteins, fats, fiber, sodium). Forneça apenas o JSON, sem formatação adicional."
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: selectedImage
-                  }
-                }
-              ]
+  const analyzeImageWithOpenAI = async (base64Image: string): Promise<string> => {
+    console.log("Enviando para OpenAI...");
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [{
+          role: "user",
+          content: [{
+            type: "text",
+            text: "Descreva detalhadamente este alimento. Identifique o que você vê: tipo de alimento, ingredientes visíveis, modo de preparo, características visuais. Seja muito específico e preciso."
+          }, {
+            type: "image_url",
+            image_url: {
+              url: base64Image
             }
-          ],
-          max_tokens: 1000
-        }),
-      });
+          }]
+        }],
+        max_tokens: 500
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`Erro da OpenAI: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.choices[0].message.content;
+  };
 
-      const data = await response.json();
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        try {
-          const nutritionInfo = JSON.parse(data.choices[0].message.content);
-          setNutritionData(nutritionInfo);
-        } catch (parseError) {
-          console.error('Erro ao analisar resposta:', parseError);
-        }
+  const handleNutritionAnalysis = async () => {
+    if (!imageDescription.trim()) {
+      toast({
+        title: "Descrição necessária",
+        description: "Por favor, gere a descrição da imagem primeiro.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsAnalyzing(true);
+    console.log("=== ENVIANDO DESCRIÇÃO PARA MAKE ===");
+    try {
+      const payload = {
+        description: imageDescription,
+        prompt: `Baseado nesta descrição detalhada de um alimento: "${imageDescription}"
+
+Retorne APENAS um JSON válido no formato:
+{
+  "nome_alimento": "Nome específico do alimento",
+  "descricao": "Descrição nutricional",
+  "quantidade_referencia": "Porção típica (ex: 100g, 1 fatia média, 1 xícara, 1 unidade média)",
+  "calorias": número_por_porção,
+  "carboidratos": gramas_por_porção,
+  "proteinas": gramas_por_porção,
+  "gorduras": gramas_por_porção,
+  "fibras": gramas_por_porção,
+  "sodio": miligramas_por_porção
+}
+
+IMPORTANTE: Identifique uma porção típica realista do alimento (não apenas 100g) e calcule os valores nutricionais para essa porção específica. Por exemplo:
+- Pizza: 1 fatia média (120g)
+- Maçã: 1 unidade média (180g)
+- Arroz: 1 xícara cozida (150g)
+- Pão: 1 fatia (25g)
+
+Todos os valores devem ser números reais baseados na porção identificada.`
+      };
+      console.log("Enviando payload:", payload);
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      const responseText = await response.text();
+      console.log("Resposta:", responseText);
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${responseText}`);
       }
+      const processedData = processOpenAIResponse(responseText);
+      setNutritionData(processedData);
+      toast({
+        title: "Análise concluída!",
+        description: "Os dados nutricionais foram identificados com sucesso."
+      });
     } catch (error) {
-      console.error('Erro ao analisar imagem:', error);
+      console.error("Erro:", error);
+      toast({
+        title: "Erro na análise",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+        variant: "destructive"
+      });
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const handleSaveToHistory = async () => {
-    if (!nutritionData) return;
-    
+  const processOpenAIResponse = (responseText: string): NutritionData => {
+    console.log("=== PROCESSANDO RESPOSTA DA OPENAI ===");
+    let data;
     try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          foodName: nutritionData.foodName,
-          description: nutritionData.description,
-          quantity: nutritionData.quantity,
-          calories: nutritionData.nutrition.calories,
-          carbohydrates: nutritionData.nutrition.carbohydrates,
-          proteins: nutritionData.nutrition.proteins,
-          fats: nutritionData.nutrition.fats,
-          fiber: nutritionData.nutrition.fiber,
-          sodium: nutritionData.nutrition.sodium,
-          image: selectedImage,
-          timestamp: new Date().toISOString()
-        }),
-      });
-
-      if (response.ok) {
-        console.log('Dados salvos com sucesso!');
-      }
-    } catch (error) {
-      console.error('Erro ao salvar dados:', error);
+      data = JSON.parse(responseText);
+      console.log("JSON parseado com sucesso:", data);
+    } catch (parseError) {
+      console.log("Não é JSON válido, processando como texto simples");
+      data = parseTextResponse(responseText);
     }
+
+    const processedData: NutritionData = {
+      foodName: extractFoodName(data, responseText),
+      description: extractDescription(data, responseText),
+      quantity: extractQuantity(data, responseText),
+      nutrition: {
+        calories: extractNutritionValue(data, responseText, ['calories', 'calorias', 'kcal']),
+        carbohydrates: extractNutritionValue(data, responseText, ['carbohydrates', 'carboidratos', 'carbs']),
+        proteins: extractNutritionValue(data, responseText, ['proteins', 'proteinas', 'protein']),
+        fats: extractNutritionValue(data, responseText, ['fats', 'gorduras', 'fat', 'lipids']),
+        fiber: extractNutritionValue(data, responseText, ['fiber', 'fibras', 'fibre']),
+        sodium: extractNutritionValue(data, responseText, ['sodium', 'sodio', 'salt'])
+      }
+    };
+    return processedData;
+  };
+
+  const parseTextResponse = (text: string) => {
+    const lines = text.split('\n');
+    const result: any = {};
+    lines.forEach(line => {
+      const match = line.match(/([^:]+):\s*(\d+(?:\.\d+)?)/i);
+      if (match) {
+        const key = match[1].trim().toLowerCase();
+        const value = parseFloat(match[2]);
+        result[key] = value;
+      }
+    });
+    return result;
+  };
+
+  const extractFoodName = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.food_name || data.foodName || data.nome || data.alimento || data.nome_alimento || "Alimento identificado";
+    }
+    const foodMatch = text.match(/(?:alimento|food|nome):\s*([^\n]+)/i);
+    return foodMatch ? foodMatch[1].trim() : "Alimento identificado";
+  };
+
+  const extractDescription = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.";
+    }
+    const firstLine = text.split('\n')[0];
+    return firstLine || "Informações nutricionais do alimento analisado.";
+  };
+
+  const extractQuantity = (data: any, text: string): string => {
+    if (data && typeof data === 'object') {
+      return data.quantidade_referencia || data.quantity || data.porção || data.portion || "100g";
+    }
+    const quantityMatch = text.match(/(?:quantidade|porção|portion):\s*([^\n]+)/i);
+    return quantityMatch ? quantityMatch[1].trim() : "100g";
+  };
+
+  const extractNutritionValue = (data: any, text: string, keys: string[]): number => {
+    if (data && typeof data === 'object') {
+      for (const key of keys) {
+        if (data[key] !== undefined) {
+          return parseNutritionValue(data[key]);
+        }
+      }
+    }
+    for (const key of keys) {
+      const regex = new RegExp(`${key}[^\\d]*([\\d,\\.]+)`, 'i');
+      const match = text.match(regex);
+      if (match) {
+        return parseNutritionValue(match[1]);
+      }
+    }
+    return 0;
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) {
+          resolve(reader.result as string);
+        } else {
+          reject(new Error("Erro ao converter imagem para base64"));
+        }
+      };
+      reader.onerror = () => {
+        reject(new Error("Erro ao ler arquivo de imagem"));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleReset = () => {
+    setNutritionData(null);
+    setImageDescription('');
+    setSelectedImage(null);
+    setIsAnalyzing(false);
+    setIsDescribing(false);
   };
 
   return (
@@ -171,71 +335,70 @@ const FoodScan = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto">
-            <AuthCard />
-            
-            <div className="mt-8 space-y-6">
-              <div className="text-center">
-                <h1 className="text-3xl font-bold text-white mb-2">
-                  FoodScan
-                </h1>
-                <p className="text-white/80">
-                  Escaneie sua comida e descubra as informações nutricionais
-                </p>
+          <div className="max-w-4xl mx-auto space-y-8">
+            {isAnalyzing ? (
+              <div data-results-section>
+                <LoadingState />
               </div>
-
-              <ImageUpload onImageSelect={handleImageUpload} />
-
-              {selectedImage && (
-                <div className="space-y-4">
-                  <div className="flex gap-4">
-                    <Button
-                      onClick={handleDescribeImage}
-                      disabled={isDescribing}
-                      className="flex-1"
-                    >
-                      {isDescribing ? 'Descrevendo...' : 'Descrever Imagem'}
-                    </Button>
-                    <Button
-                      onClick={handleAnalyze}
-                      disabled={isAnalyzing}
-                      className="flex-1"
-                    >
-                      {isAnalyzing ? 'Analisando...' : 'Analisar Nutrição'}
-                    </Button>
-                  </div>
-
-                  {imageDescription && (
-                    <div className="bg-white/10 backdrop-blur-md rounded-lg p-4">
-                      <h3 className="text-white font-medium mb-2">Descrição da Imagem:</h3>
-                      <Textarea
-                        value={imageDescription}
-                        onChange={(e) => setImageDescription(e.target.value)}
-                        placeholder="Descrição da imagem..."
-                        className="bg-white/10 text-white border-white/20"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {isAnalyzing && <LoadingState />}
-              
-              {nutritionData && (
-                <FoodNutritionResults
-                  data={nutritionData}
-                  onReset={() => {
-                    setNutritionData(null);
-                    setSelectedImage(null);
-                    setImageDescription('');
-                  }}
-                />
-              )}
-              
-              {!selectedImage && !isAnalyzing && !nutritionData && (
+            ) : nutritionData ? (
+              <div data-results-section>
+                <FoodNutritionResults data={nutritionData} onReset={handleReset} />
+              </div>
+            ) : (
+              <div className="space-y-8">
                 <EmptyState />
-              )}
-            </div>
+                <ImageUpload onImageSelect={handleImageAnalysis} />
+                
+                {(selectedImage || imageDescription) && (
+                  <div data-description-section className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                      Descrição da Imagem
+                    </h3>
+                    
+                    {selectedImage && (
+                      <div className="mb-4 flex flex-col md:flex-row gap-4">
+                        <img src={selectedImage} alt="Imagem selecionada" className="w-32 h-32 object-cover rounded-lg" />
+                        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg flex-1">
+                          <div className="flex">
+                            <div className="ml-3">
+                              <p className="text-sm text-blue-700">
+                                💡 <strong>Dica:</strong> Para uma análise mais refinada, você pode adicionar informações específicas no campo abaixo. 
+                                Por exemplo: "café sem açúcar", "pizza margherita", "salada com azeite", etc.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {isDescribing ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+                        <span className="text-gray-600">Analisando imagem...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Textarea
+                          value={imageDescription}
+                          onChange={(e) => setImageDescription(e.target.value)}
+                          placeholder="A descrição da imagem aparecerá aqui..."
+                          className="min-h-[200px] md:min-h-[250px] mb-4"
+                        />
+                        
+                        {imageDescription && (
+                          <Button
+                            onClick={handleNutritionAnalysis}
+                            className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
+                          >
+                            Analisar Nutrição
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

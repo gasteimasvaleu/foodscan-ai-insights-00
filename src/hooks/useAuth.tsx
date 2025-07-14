@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-// import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -41,11 +41,18 @@ export const useAuth = () => {
     });
 
     if (error) {
-      console.log("Erro no cadastro:", error.message);
+      toast({
+        title: "Erro no cadastro",
+        description: error.message,
+        variant: "destructive",
+      });
       return { error };
     }
 
-    console.log("Cadastro realizado! Você já pode fazer login.");
+    toast({
+      title: "Cadastro realizado!",
+      description: "Você já pode fazer login.",
+    });
 
     return { error: null };
   };
@@ -57,7 +64,11 @@ export const useAuth = () => {
     });
 
     if (error) {
-      console.log("Erro no login:", error.message);
+      toast({
+        title: "Erro no login",
+        description: error.message,
+        variant: "destructive",
+      });
       return { error };
     }
 
@@ -67,7 +78,11 @@ export const useAuth = () => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.log("Erro ao sair:", error.message);
+      toast({
+        title: "Erro ao sair",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
