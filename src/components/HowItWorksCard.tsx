@@ -49,13 +49,6 @@ export const HowItWorksCard = () => {
                   <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/mp4" />
                   Seu navegador não suporta a reprodução de vídeo.
                 </video>
-                
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                  <div className="bg-white/90 rounded-full p-4 shadow-lg">
-                    <Play className="w-8 h-8 text-primary-600" />
-                  </div>
-                </div>
               </div>
             </div>
             <div className="mt-4 text-center">
