@@ -107,7 +107,7 @@ const About = () => {
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <div className="bg-gray-50 rounded-lg p-4">
                       <h4 className="font-semibold text-primary-600 mb-2">Email</h4>
-                      <p className="text-gray-600">direitaquevence@hotmail.com</p>
+                      <p className="text-gray-600">foodscanEdiet@hotmail.com</p>
                     </div>
                     
                     <div className="bg-gray-50 rounded-lg p-4">
