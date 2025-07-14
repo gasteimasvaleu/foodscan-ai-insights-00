@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { TestimonialsColumn } from '@/components/ui/testimonials-columns-1';
 export const TestimonialsSection = () => {
   const testimonials = [{
@@ -52,7 +53,19 @@ export const TestimonialsSection = () => {
   const thirdColumn = testimonials.slice(6, 9);
   return <section className="bg-background relative bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 py-[2px] px-[2px] my-[30px]">
       <div className="container z-10 mx-auto bg-white/30 backdrop-blur-sm rounded-3xl p-1 border border-gray-100">
-        <div className="flex flex-col items-center justify-center max-w-[540px] mx-auto animate-fade-in">
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} whileInView={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.8,
+        delay: 0.1,
+        ease: [0.16, 1, 0.3, 1]
+      }} viewport={{
+        once: true
+      }} className="flex flex-col items-center justify-center max-w-[540px] mx-auto">
           <div className="flex justify-center">
             
           </div>
@@ -66,7 +79,7 @@ export const TestimonialsSection = () => {
           <p className="text-center mt-5 opacity-75 text-gray-600">
             Veja o que nossos usuários têm a dizer sobre o FoodScan & Diet.
           </p>
-        </div>
+        </motion.div>
 
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 px-[6px]">
           <TestimonialsColumn testimonials={firstColumn} duration={15} />
