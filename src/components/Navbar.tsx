@@ -1,17 +1,12 @@
-
 import React, { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { SimpleLink } from '@/components/SimpleLink';
 import { useRouter } from '@/hooks/useRouter';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
   const { currentPath } = useRouter();
   const { user, signOut } = useAuth();
 
@@ -45,72 +40,54 @@ export const Navbar = () => {
             </SimpleLink>
           </div>
 
-          {/* Desktop Menu - Hidden on all screens, replaced with hamburger */}
-          <div className="hidden">
-            {/* Desktop menu removed */}
+          {/* Mobile Menu Button */}
+          <div className="flex items-center space-x-2">
+            <span 
+              className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              MENU
+            </span>
+            <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
-
-          {/* Hamburger Menu with MENU text */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <span 
-                  className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-                  onClick={() => setIsOpen(true)}
-                >
-                  MENU
-                </span>
-                <Button variant="ghost" size="icon" className="relative z-50">
-                  {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </Button>
-              </div>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0">
-              <SheetHeader className="p-6 border-b border-white/20">
-                <SheetTitle className="text-white text-lg font-bold">
-                  Menu
-                </SheetTitle>
-              </SheetHeader>
-              
-              <ScrollArea className="h-full">
-                <div className="p-6 space-y-4">
-                  {menuItems.map(item => (
-                    <SimpleLink
-                      key={item.label}
-                      to={item.href}
-                      className={`block p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm ${
-                        isActiveRoute(item.href)
-                          ? 'bg-primary-500/20 text-white border border-primary-300/30 shadow-lg'
-                          : 'bg-white/20 text-white hover:bg-white/30 hover:text-white border border-white/30'
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-base text-white">{item.label}</span>
-                        {isActiveRoute(item.href) && (
-                          <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                        )}
-                      </div>
-                    </SimpleLink>
-                  ))}
-                  
-                  {/* Logout Button - Only show if user is logged in */}
-                  {user && (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm bg-red-500/20 text-white hover:bg-red-500/30 border border-red-300/30 shadow-lg"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-base text-white">Sair</span>
-                        <LogOut className="w-4 h-4 text-white" />
-                      </div>
-                    </button>
-                  )}
-                </div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-white/20 shadow-lg">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex flex-col space-y-2">
+                {menuItems.map(item => (
+                  <SimpleLink
+                    key={item.label}
+                    to={item.href}
+                    className={`block px-4 py-3 rounded-lg transition-all duration-200 font-medium ${
+                      isActiveRoute(item.href)
+                        ? 'bg-primary-500 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </SimpleLink>
+                ))}
+                
+                {/* Logout Button - Only show if user is logged in */}
+                {user && (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 font-medium text-red-600 hover:bg-red-50"
+                  >
+                    <span>Sair</span>
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
