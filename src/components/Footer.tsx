@@ -1,5 +1,5 @@
 import React from 'react';
-import { SimpleLink } from '@/components/SimpleLink';
+import { Link } from 'react-router-dom';
 import { Heart, Mail, Phone, MapPin } from 'lucide-react';
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -30,9 +30,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo e Descrição */}
           <div className="space-y-4">
-            <SimpleLink to="/">
+            <Link to="/">
               <h3 className="text-xl font-bold text-primary-600">FoodScan & Diet</h3>
-            </SimpleLink>
+            </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
               Transforme sua alimentação com tecnologia de ponta. Análise nutricional inteligente na palma da sua mão.
             </p>
@@ -46,15 +46,9 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-semibold text-gray-800">Navegação</h4>
             <div className="grid grid-cols-2 gap-2">
-              {menuItems.map(item => (
-                <SimpleLink 
-                  key={item.label} 
-                  to={item.href} 
-                  className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm"
-                >
+              {menuItems.map(item => <Link key={item.label} to={item.href} className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm">
                   {item.label}
-                </SimpleLink>
-              ))}
+                </Link>)}
             </div>
           </div>
 
@@ -85,12 +79,12 @@ export const Footer = () => {
               © {currentYear} FoodScan & Diet. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6">
-              <SimpleLink to="/sobre" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm">
+              <Link to="/sobre" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm">
                 Política de Privacidade
-              </SimpleLink>
-              <SimpleLink to="/sobre" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm">
+              </Link>
+              <Link to="/sobre" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm">
                 Termos de Uso
-              </SimpleLink>
+              </Link>
             </div>
           </div>
         </div>

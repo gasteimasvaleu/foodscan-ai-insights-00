@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useRouter } from '@/hooks/useRouter';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,19 +8,20 @@ import { CheckCircle } from 'lucide-react';
 import { AuthCard } from '@/components/AuthCard';
 
 const PaymentSuccess = () => {
-  const { navigate } = useRouter();
-  
-  // Get session_id from URL manually
-  const sessionId = new URLSearchParams(window.location.search).get('session_id');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    
     // Redireciona para a página de assinatura se não houver session_id
     if (!sessionId) {
-      navigate('/quero-assinar');
+      navigate('/quero-assinar', { replace: true });
     }
-  }, [sessionId, navigate]);
+  }, [searchParams, navigate]);
 
   // Só renderiza se houver session_id
+  const sessionId = searchParams.get('session_id');
   if (!sessionId) {
     return null;
   }

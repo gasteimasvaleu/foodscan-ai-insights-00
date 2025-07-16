@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from '@/hooks/useRouter';
+import { useNavigate } from 'react-router-dom';
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -40,7 +40,7 @@ const DailyControl = () => {
     user,
     loading: authLoading
   } = useAuth();
-  const { navigate } = useRouter();
+  const navigate = useNavigate();
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);

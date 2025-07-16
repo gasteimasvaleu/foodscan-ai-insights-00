@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 export const FAQSection = () => {
   const faqs = [{
@@ -27,7 +28,19 @@ export const FAQSection = () => {
     answer: "No primeiro uso, o app fará algumas perguntas sobre seus objetivos (emagrecimento, ganho de massa, manutenção, etc.) e criará metas personalizadas. Você pode ajustar essas metas a qualquer momento nas configurações."
   }];
   return <section className="bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 my-8 px-[3px]">
-      <div className="flex flex-col items-center justify-center max-w-4xl mx-auto animate-fade-in">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} whileInView={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.8,
+      delay: 0.1,
+      ease: [0.16, 1, 0.3, 1]
+    }} viewport={{
+      once: true
+    }} className="flex flex-col items-center justify-center max-w-4xl mx-auto">
         <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter mb-8 text-center">
           Perguntas mais{' '}
           <span className="bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">
@@ -47,6 +60,6 @@ export const FAQSection = () => {
               </AccordionItem>)}
           </Accordion>
         </div>
-      </div>
+      </motion.div>
     </section>;
 };

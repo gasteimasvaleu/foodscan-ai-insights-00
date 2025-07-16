@@ -7,10 +7,10 @@ import { FeaturesSection } from '@/components/FeaturesSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FAQSection } from '@/components/FAQSection';
 import { Footer } from '@/components/Footer';
-
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 const Index = () => {
-  return (
-    <div>
+  return <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 py-[65px]">
         {/* Banner Section */}
@@ -40,8 +40,8 @@ const Index = () => {
         </div>
       </div>
       <Footer />
-    </div>
-  );
+      <PWAInstallPrompt />
+      <PWAOfflineIndicator />
+    </>;
 };
-
 export default Index;

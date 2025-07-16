@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { motion } from "motion/react";
 export const TestimonialsColumn = (props: {
   className?: string;
   testimonials: Array<{
@@ -10,7 +13,14 @@ export const TestimonialsColumn = (props: {
   duration?: number;
 }) => {
   return <div className={props.className}>
-      <div className="flex flex-col gap-6 pb-6 bg-background animate-pulse">
+      <motion.div animate={{
+      y: "-50%"
+    }} transition={{
+      duration: props.duration || 10,
+      repeat: Infinity,
+      ease: "linear",
+      repeatType: "loop"
+    }} className="flex flex-col gap-6 pb-6 bg-background">
         {[...new Array(2).fill(0).map((_, index) => <React.Fragment key={index}>
               {props.testimonials.map(({
           text,
@@ -28,6 +38,6 @@ export const TestimonialsColumn = (props: {
                   </div>
                 </div>)}
             </React.Fragment>)]}
-      </div>
+      </motion.div>
     </div>;
 };

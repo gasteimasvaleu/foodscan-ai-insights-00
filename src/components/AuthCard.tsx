@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
-import { useRouter } from '@/hooks/useRouter';
+import { useNavigate } from 'react-router-dom';
 import { MotivationalModal } from './MotivationalModal';
 
 interface AuthCardProps {
@@ -14,7 +14,7 @@ interface AuthCardProps {
 
 export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
-  const { navigate } = useRouter();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(mode === 'login');
   const [formData, setFormData] = useState({
     name: '',

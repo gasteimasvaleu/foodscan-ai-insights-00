@@ -5,10 +5,10 @@ import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { XCircle, ArrowLeft } from 'lucide-react';
-import { useRouter } from '@/hooks/useRouter';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentCancel = () => {
-  const { navigate } = useRouter();
+  const navigate = useNavigate();
 
   const handleTryAgain = () => {
     navigate('/quero-assinar');
