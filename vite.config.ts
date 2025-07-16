@@ -5,23 +5,24 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/',
+  base: './',
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
-    strictPort: true,
+    strictPort: false,
     hmr: {
       port: 8080
     },
     headers: {
-      'X-Frame-Options': 'SAMEORIGIN',
-      'Content-Security-Policy': "frame-ancestors 'self' https://*.lovableproject.com"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     }
   },
   preview: {
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
-    strictPort: true
+    strictPort: false
   },
   build: {
     outDir: 'dist',
