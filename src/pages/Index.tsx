@@ -10,7 +10,8 @@ import { Footer } from '@/components/Footer';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 const Index = () => {
-  return <>
+  return (
+    <div>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 py-[65px]">
         {/* Banner Section */}
@@ -42,6 +43,7 @@ const Index = () => {
       <Footer />
       <PWAInstallPrompt />
       <PWAOfflineIndicator />
-    </>;
+    </div>
+  );
 };
 export default Index;
