@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Link, useLocation } from 'react-router-dom';
+import { SimpleLink } from '@/components/SimpleLink';
+import { useRouter } from '@/hooks/useRouter';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
-  const location = useLocation();
+  const { currentPath } = useRouter();
   const { user, signOut } = useAuth();
 
   const menuItems = [
@@ -25,7 +26,7 @@ export const Navbar = () => {
   ];
 
   const isActiveRoute = (href: string) => {
-    return location.pathname === href;
+    return currentPath === href;
   };
 
   const handleLogout = async () => {
@@ -39,9 +40,9 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/">
+            <SimpleLink to="/">
               <h1 className="text-xl font-bold text-primary-600">FoodScan & Diet</h1>
-            </Link>
+            </SimpleLink>
           </div>
 
           {/* Desktop Menu - Hidden on all screens, replaced with hamburger */}
@@ -74,7 +75,7 @@ export const Navbar = () => {
               <ScrollArea className="h-full">
                 <div className="p-6 space-y-4">
                   {menuItems.map(item => (
-                    <Link
+                    <SimpleLink
                       key={item.label}
                       to={item.href}
                       className={`block p-4 rounded-xl transition-all duration-200 font-medium backdrop-blur-sm ${
@@ -90,7 +91,7 @@ export const Navbar = () => {
                           <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                         )}
                       </div>
-                    </Link>
+                    </SimpleLink>
                   ))}
                   
                   {/* Logout Button - Only show if user is logged in */}

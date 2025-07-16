@@ -5,7 +5,7 @@ import { PortionSelector } from './PortionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from '@/hooks/useRouter';
 
 // Interface local para dados nutricionais
 interface NutritionData {
@@ -28,7 +28,7 @@ interface NutritionResultsProps {
 
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionData, onSave, onClose }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
   const [isSaving, setIsSaving] = useState(false);
