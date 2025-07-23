@@ -109,18 +109,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
               <h3 className="text-lg font-semibold text-gray-800">
                 Imagem selecionada
               </h3>
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button
                   onClick={handleUploadClick}
                   variant="outline"
-                  className="rounded-xl"
+                  className="rounded-xl w-full sm:w-auto"
                 >
                   <Camera className="w-4 h-4 mr-2" />
                   Trocar Imagem
                 </Button>
                 <Button
                   onClick={handleAnalyze}
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
                 >
                   <Zap className="w-4 h-4 mr-2" />
                   Analisar Alimento
