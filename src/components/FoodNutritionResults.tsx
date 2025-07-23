@@ -144,11 +144,11 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
         </div>
       </div>
 
-      <div className="flex justify-center space-x-4">
+      <div className="flex flex-col sm:flex-row justify-center gap-4">
         <Button
           onClick={onReset}
           variant="outline"
-          className="rounded-xl px-6 py-3 font-semibold"
+          className="rounded-xl px-6 py-3 font-semibold w-full sm:w-auto"
         >
           <RotateCcw className="w-5 h-5 mr-2" />
           Nova Análise
@@ -157,7 +157,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
         <Button
           onClick={handleSaveMeal}
           disabled={isSaving}
-          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+          className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
         >
           {isSaving ? (
             <div className="flex items-center">
