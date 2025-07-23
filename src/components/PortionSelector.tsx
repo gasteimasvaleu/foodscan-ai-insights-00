@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Scale } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 interface PortionOption {
   label: string;
@@ -29,10 +30,26 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
   currentPortion, 
   onPortionChange 
 }) => {
+  const [manualGrams, setManualGrams] = useState<string>('');
+  const [selectedPortion, setSelectedPortion] = useState<string>('');
+
   const handlePortionChange = (value: string) => {
     const selectedOption = portionOptions.find(option => option.value === value);
     if (selectedOption) {
+      setSelectedPortion(value);
+      setManualGrams(''); // Limpa o input manual
       onPortionChange(selectedOption.label, selectedOption.grams);
+    }
+  };
+
+  const handleManualGramsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setManualGrams(value);
+    
+    if (value) {
+      setSelectedPortion(''); // Limpa o select
+      const grams = parseInt(value) || 0;
+      onPortionChange(`${grams}g`, grams);
     }
   };
 
@@ -52,19 +69,39 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
         </div>
       </div>
       
-      <div className="max-w-xs mx-auto">
-        <Select onValueChange={handlePortionChange} defaultValue="">
-          <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
-            <SelectValue placeholder="Escolha uma porção" />
-          </SelectTrigger>
-          <SelectContent>
-            {portionOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label} ({option.grams}g)
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="max-w-md mx-auto space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <Select onValueChange={handlePortionChange} value={selectedPortion}>
+              <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+                <SelectValue placeholder="Escolha uma porção" />
+              </SelectTrigger>
+              <SelectContent>
+                {portionOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label} ({option.grams}g)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="text-amber-600 font-medium text-sm">ou</div>
+          
+          <div className="flex-1">
+            <div className="relative">
+              <Input
+                type="number"
+                placeholder="Gramas"
+                value={manualGrams}
+                onChange={handleManualGramsChange}
+                className="bg-white border-amber-200 focus:border-amber-400 pr-8"
+                min="1"
+              />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600 text-sm">g</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
