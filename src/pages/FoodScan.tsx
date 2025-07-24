@@ -212,11 +212,24 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
         body: JSON.stringify(payload)
       });
       const responseText = await response.text();
-      console.log("Resposta:", responseText);
+      console.log("Resposta do webhook:", responseText);
+      
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${responseText}`);
       }
+      
+      // Verificar se a resposta é apenas "Accepted" ou similar
+      if (responseText.trim().toLowerCase() === 'accepted' || responseText.length < 50) {
+        throw new Error("O webhook retornou apenas uma confirmação, mas não os dados nutricionais. Verifique a configuração do webhook no Make.");
+      }
+      
       const processedData = processOpenAIResponse(responseText);
+      
+      // Verificar se os dados processados são válidos
+      if (!processedData.nutrition.calories && !processedData.elements) {
+        throw new Error("Não foi possível extrair dados nutricionais da resposta. Tente novamente.");
+      }
+      
       setNutritionData(processedData);
       toast({
         title: "Análise concluída!",
@@ -323,7 +336,8 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
   const extractElements = (data: any): FoodElement[] | undefined => {
     console.log("=== EXTRAINDO ELEMENTOS ===", data);
     
-    if (data && data.elementos && Array.isArray(data.elementos)) {
+    // Verificar se data é válido e tem a propriedade elementos
+    if (data && typeof data === 'object' && data.elementos && Array.isArray(data.elementos)) {
       console.log("Elementos encontrados:", data.elementos);
       
       return data.elementos.map((elemento: any) => ({
@@ -339,7 +353,8 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
       }));
     }
     
-    console.log("Nenhum elemento múltiplo detectado");
+    // Se data é inválido ou não tem elementos, retornar undefined
+    console.log("Nenhum elemento múltiplo detectado - data:", typeof data, data);
     return undefined;
   };
 
