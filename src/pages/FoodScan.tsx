@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { NutritionData, FoodElement } from '@/types/nutrition';
+import { supabase } from '@/integrations/supabase/client';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
@@ -151,96 +152,31 @@ const FoodScan = () => {
       return;
     }
     setIsAnalyzing(true);
-    console.log("=== ENVIANDO DESCRIÇÃO PARA MAKE ===");
+    console.log("=== INICIANDO ANÁLISE NUTRICIONAL ===");
+
     try {
-      const payload = {
-        description: imageDescription,
-        prompt: `Baseado nesta descrição detalhada de um alimento: "${imageDescription}"
-
-ANALISE SE HÁ MÚLTIPLOS ELEMENTOS NO PRATO:
-
-Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada), retorne no formato:
-{
-  "nome_alimento": "Nome do prato completo",
-  "descricao": "Descrição do prato",
-  "quantidade_referencia": "Porção típica do prato completo",
-  "elementos": [
-    {
-      "nome": "Nome do elemento 1",
-      "calorias": valor_por_100g,
-      "carboidratos": valor_por_100g,
-      "proteinas": valor_por_100g,
-      "gorduras": valor_por_100g,
-      "fibras": valor_por_100g,
-      "sodio": valor_por_100g
-    },
-    {
-      "nome": "Nome do elemento 2",
-      "calorias": valor_por_100g,
-      ...
-    }
-  ],
-  "calorias": soma_total,
-  "carboidratos": soma_total,
-  "proteinas": soma_total,
-  "gorduras": soma_total,
-  "fibras": soma_total,
-  "sodio": soma_total
-}
-
-Se for UM elemento único, use o formato anterior:
-{
-  "nome_alimento": "Nome específico do alimento",
-  "descricao": "Descrição nutricional",
-  "quantidade_referencia": "Porção típica",
-  "calorias": número_por_porção,
-  "carboidratos": gramas_por_porção,
-  "proteinas": gramas_por_porção,
-  "gorduras": gramas_por_porção,
-  "fibras": gramas_por_porção,
-  "sodio": miligramas_por_porção
-}
-
-IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`
-      };
-      console.log("Enviando payload:", payload);
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+      // Usar edge function diretamente em vez do webhook externo
+      const { data, error } = await supabase.functions.invoke('analyze-nutrition', {
+        body: { description: imageDescription }
       });
-      const responseText = await response.text();
-      console.log("Resposta do webhook:", responseText);
-      
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${responseText}`);
+
+      if (error) {
+        throw new Error(error.message);
       }
+
+      console.log("Dados da edge function:", data);
+      setNutritionData(data);
       
-      // Verificar se a resposta é apenas "Accepted" ou similar
-      if (responseText.trim().toLowerCase() === 'accepted' || responseText.length < 50) {
-        throw new Error("O webhook retornou apenas uma confirmação, mas não os dados nutricionais. Verifique a configuração do webhook no Make.");
-      }
-      
-      const processedData = processOpenAIResponse(responseText);
-      
-      // Verificar se os dados processados são válidos
-      if (!processedData.nutrition.calories && !processedData.elements) {
-        throw new Error("Não foi possível extrair dados nutricionais da resposta. Tente novamente.");
-      }
-      
-      setNutritionData(processedData);
       toast({
         title: "Análise concluída!",
-        description: "Os dados nutricionais foram identificados com sucesso."
+        description: "Os dados nutricionais foram calculados com sucesso.",
       });
     } catch (error) {
-      console.error("Erro:", error);
+      console.error("Erro na análise nutricional:", error);
       toast({
-        title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
-        variant: "destructive"
+        title: "Erro na análise nutricional",
+        description: "Não foi possível analisar os dados nutricionais. Tente novamente.",
+        variant: "destructive",
       });
     } finally {
       setIsAnalyzing(false);
