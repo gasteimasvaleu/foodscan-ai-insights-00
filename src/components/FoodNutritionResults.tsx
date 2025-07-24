@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { RotateCcw, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
@@ -27,6 +27,18 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
   console.log("=== FOODNUTRITIONRESULTS DEBUG ===");
   console.log("data.elements:", data.elements);  
   console.log("hasMultipleElements:", hasMultipleElements);
+
+  // Inicializar porções padrão para elementos múltiplos (100g cada)
+  useEffect(() => {
+    if (hasMultipleElements && data.elements && elementPortions.length === 0) {
+      const defaultPortions: ElementPortion[] = data.elements.map(element => ({
+        elementName: element.name,
+        portion: '100g',
+        grams: 100
+      }));
+      setElementPortions(defaultPortions);
+    }
+  }, [hasMultipleElements, data.elements, elementPortions.length]);
 
   const handlePortionChange = (portion: string, grams: number) => {
     setCurrentPortion(portion);
@@ -77,7 +89,11 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
     };
   };
 
-  const nutritionValues = calculateMultipleElementsNutrition();
+  // Usar useMemo para recalcular automaticamente quando as porções mudarem
+  const nutritionValues = useMemo(() => {
+    return calculateMultipleElementsNutrition();
+  }, [hasMultipleElements, data.elements, elementPortions, portionGrams, data.nutrition]);
+  
   const { calories, carbohydrates, proteins, fats } = nutritionValues;
 
   const handleSaveMeal = async () => {
