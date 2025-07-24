@@ -24,44 +24,45 @@ ANALISE SE HÁ MÚLTIPLOS ELEMENTOS NO PRATO:
 
 Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada), retorne no formato:
 {
-  "nome_alimento": "Nome do prato completo",
-  "descricao": "Descrição do prato",
-  "quantidade_referencia": "Porção típica do prato completo",
-  "elementos": [
+  "foodName": "Nome do prato completo",
+  "description": "Descrição do prato",
+  "quantity": "Porção típica do prato completo",
+  "elements": [
     {
-      "nome": "Nome do elemento 1",
-      "calorias": valor_por_100g,
-      "carboidratos": valor_por_100g,
-      "proteinas": valor_por_100g,
-      "gorduras": valor_por_100g,
-      "fibras": valor_por_100g,
-      "sodio": valor_por_100g
-    },
-    {
-      "nome": "Nome do elemento 2",
-      "calorias": valor_por_100g,
-      ...
+      "name": "Nome do elemento 1",
+      "nutrition": {
+        "calories": valor_por_100g,
+        "carbohydrates": valor_por_100g,
+        "proteins": valor_por_100g,
+        "fats": valor_por_100g,
+        "fiber": valor_por_100g,
+        "sodium": valor_por_100g
+      }
     }
   ],
-  "calorias": soma_total,
-  "carboidratos": soma_total,
-  "proteinas": soma_total,
-  "gorduras": soma_total,
-  "fibras": soma_total,
-  "sodio": soma_total
+  "nutrition": {
+    "calories": soma_total,
+    "carbohydrates": soma_total,
+    "proteins": soma_total,
+    "fats": soma_total,
+    "fiber": soma_total,
+    "sodium": soma_total
+  }
 }
 
-Se for UM elemento único, use o formato anterior:
+Se for UM elemento único, use o formato:
 {
-  "nome_alimento": "Nome específico do alimento",
-  "descricao": "Descrição nutricional",
-  "quantidade_referencia": "Porção típica",
-  "calorias": número_por_porção,
-  "carboidratos": gramas_por_porção,
-  "proteinas": gramas_por_porção,
-  "gorduras": gramas_por_porção,
-  "fibras": gramas_por_porção,
-  "sodio": miligramas_por_porção
+  "foodName": "Nome específico do alimento",
+  "description": "Descrição nutricional",
+  "quantity": "Porção típica",
+  "nutrition": {
+    "calories": número_por_porção,
+    "carbohydrates": gramas_por_porção,
+    "proteins": gramas_por_porção,
+    "fats": gramas_por_porção,
+    "fiber": gramas_por_porção,
+    "sodium": miligramas_por_porção
+  }
 }
 
 IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`;
