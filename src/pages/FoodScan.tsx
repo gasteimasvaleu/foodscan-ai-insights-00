@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { NutritionData } from '@/types/nutrition';
+import { NutritionData, FoodElement } from '@/types/nutrition';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
@@ -157,11 +157,42 @@ const FoodScan = () => {
         description: imageDescription,
         prompt: `Baseado nesta descrição detalhada de um alimento: "${imageDescription}"
 
-Retorne APENAS um JSON válido no formato:
+ANALISE SE HÁ MÚLTIPLOS ELEMENTOS NO PRATO:
+
+Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada), retorne no formato:
+{
+  "nome_alimento": "Nome do prato completo",
+  "descricao": "Descrição do prato",
+  "quantidade_referencia": "Porção típica do prato completo",
+  "elementos": [
+    {
+      "nome": "Nome do elemento 1",
+      "calorias": valor_por_100g,
+      "carboidratos": valor_por_100g,
+      "proteinas": valor_por_100g,
+      "gorduras": valor_por_100g,
+      "fibras": valor_por_100g,
+      "sodio": valor_por_100g
+    },
+    {
+      "nome": "Nome do elemento 2",
+      "calorias": valor_por_100g,
+      ...
+    }
+  ],
+  "calorias": soma_total,
+  "carboidratos": soma_total,
+  "proteinas": soma_total,
+  "gorduras": soma_total,
+  "fibras": soma_total,
+  "sodio": soma_total
+}
+
+Se for UM elemento único, use o formato anterior:
 {
   "nome_alimento": "Nome específico do alimento",
   "descricao": "Descrição nutricional",
-  "quantidade_referencia": "Porção típica (ex: 100g, 1 fatia média, 1 xícara, 1 unidade média)",
+  "quantidade_referencia": "Porção típica",
   "calorias": número_por_porção,
   "carboidratos": gramas_por_porção,
   "proteinas": gramas_por_porção,
@@ -170,13 +201,7 @@ Retorne APENAS um JSON válido no formato:
   "sodio": miligramas_por_porção
 }
 
-IMPORTANTE: Identifique uma porção típica realista do alimento (não apenas 100g) e calcule os valores nutricionais para essa porção específica. Por exemplo:
-- Pizza: 1 fatia média (120g)
-- Maçã: 1 unidade média (180g)
-- Arroz: 1 xícara cozida (150g)
-- Pão: 1 fatia (25g)
-
-Todos os valores devem ser números reais baseados na porção identificada.`
+IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`
       };
       console.log("Enviando payload:", payload);
       const response = await fetch(webhookUrl, {
@@ -224,6 +249,7 @@ Todos os valores devem ser números reais baseados na porção identificada.`
       foodName: extractFoodName(data, responseText),
       description: extractDescription(data, responseText),
       quantity: extractQuantity(data, responseText),
+      elements: extractElements(data), // Nova função para extrair elementos
       nutrition: {
         calories: extractNutritionValue(data, responseText, ['calories', 'calorias', 'kcal']),
         carbohydrates: extractNutritionValue(data, responseText, ['carbohydrates', 'carboidratos', 'carbs']),
@@ -233,6 +259,8 @@ Todos os valores devem ser números reais baseados na porção identificada.`
         sodium: extractNutritionValue(data, responseText, ['sodium', 'sodio', 'salt'])
       }
     };
+    
+    console.log("=== DADOS PROCESSADOS FINAL ===", processedData);
     return processedData;
   };
 
@@ -290,6 +318,29 @@ Todos os valores devem ser números reais baseados na porção identificada.`
       }
     }
     return 0;
+  };
+
+  const extractElements = (data: any): FoodElement[] | undefined => {
+    console.log("=== EXTRAINDO ELEMENTOS ===", data);
+    
+    if (data && data.elementos && Array.isArray(data.elementos)) {
+      console.log("Elementos encontrados:", data.elementos);
+      
+      return data.elementos.map((elemento: any) => ({
+        name: elemento.nome || elemento.name || "Elemento",
+        nutrition: {
+          calories: parseNutritionValue(elemento.calorias || elemento.calories || 0),
+          carbohydrates: parseNutritionValue(elemento.carboidratos || elemento.carbohydrates || 0),
+          proteins: parseNutritionValue(elemento.proteinas || elemento.proteins || 0),
+          fats: parseNutritionValue(elemento.gorduras || elemento.fats || 0),
+          fiber: parseNutritionValue(elemento.fibras || elemento.fiber || 0),
+          sodium: parseNutritionValue(elemento.sodio || elemento.sodium || 0)
+        }
+      }));
+    }
+    
+    console.log("Nenhum elemento múltiplo detectado");
+    return undefined;
   };
 
   const convertToBase64 = (file: File): Promise<string> => {
