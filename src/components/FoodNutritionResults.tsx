@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { RotateCcw, Save, Utensils } from 'lucide-react';
+import { RotateCcw, Save, Utensils, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
 import { MultipleElementsPortionSelector } from './MultipleElementsPortionSelector';
@@ -159,6 +159,18 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <p className="text-gray-600">{data.description}</p>
         </div>
       </div>
+
+      {hasMultipleElements && (
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
+          <div className="flex items-start space-x-3">
+            <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-blue-800">
+              <p className="font-medium mb-1">Múltiplos elementos identificados</p>
+              <p>Os valores nutricionais são calculados com base em 100g de cada elemento. Você pode ajustar as porções individuais no card abaixo para obter valores mais precisos.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mb-4">
         {hasMultipleElements ? (
