@@ -2,15 +2,30 @@ import React, { useState } from 'react';
 import { RotateCcw, Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
+import { MultipleElementsPortionSelector } from './MultipleElementsPortionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
+interface FoodElement {
+  name: string;
+  description?: string;
+  nutrition: {
+    calories: number;
+    carbohydrates: number;
+    proteins: number;
+    fats: number;
+    fiber: number;
+    sodium: number;
+  };
+}
+
 export interface NutritionData {
   foodName: string;
   description: string;
   quantity: string;
+  elements?: FoodElement[]; // Array de elementos quando há múltiplos
   nutrition: {
     calories: number;
     carbohydrates: number;
@@ -26,16 +41,29 @@ interface FoodNutritionResultsProps {
   onReset: () => void;
 }
 
+interface ElementPortion {
+  elementName: string;
+  portion: string;
+  grams: number;
+}
+
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
+  const [elementPortions, setElementPortions] = useState<ElementPortion[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  const hasMultipleElements = data.elements && data.elements.length > 1;
 
   const handlePortionChange = (portion: string, grams: number) => {
     setCurrentPortion(portion);
     setPortionGrams(grams);
+  };
+
+  const handleElementPortionsChange = (portions: ElementPortion[]) => {
+    setElementPortions(portions);
   };
 
   const calculateNutrition = (baseValue: number) => {
@@ -43,10 +71,43 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
     return Math.round(baseValue * multiplier);
   };
 
-  const calories = calculateNutrition(data.nutrition.calories);
-  const carbohydrates = calculateNutrition(data.nutrition.carbohydrates);
-  const proteins = calculateNutrition(data.nutrition.proteins);
-  const fats = calculateNutrition(data.nutrition.fats);
+  const calculateMultipleElementsNutrition = () => {
+    if (!hasMultipleElements || !data.elements) {
+      // Fallback para elemento único
+      return {
+        calories: calculateNutrition(data.nutrition.calories),
+        carbohydrates: calculateNutrition(data.nutrition.carbohydrates),
+        proteins: calculateNutrition(data.nutrition.proteins),
+        fats: calculateNutrition(data.nutrition.fats)
+      };
+    }
+
+    let totalCalories = 0;
+    let totalCarbohydrates = 0;
+    let totalProteins = 0;
+    let totalFats = 0;
+
+    data.elements.forEach((element, index) => {
+      const portion = elementPortions[index];
+      if (portion) {
+        const multiplier = portion.grams / 100;
+        totalCalories += Math.round(element.nutrition.calories * multiplier);
+        totalCarbohydrates += Math.round(element.nutrition.carbohydrates * multiplier);
+        totalProteins += Math.round(element.nutrition.proteins * multiplier);
+        totalFats += Math.round(element.nutrition.fats * multiplier);
+      }
+    });
+
+    return {
+      calories: totalCalories,
+      carbohydrates: totalCarbohydrates,
+      proteins: totalProteins,
+      fats: totalFats
+    };
+  };
+
+  const nutritionValues = calculateMultipleElementsNutrition();
+  const { calories, carbohydrates, proteins, fats } = nutritionValues;
 
   const handleSaveMeal = async () => {
     if (!user) {
@@ -68,7 +129,9 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           carbohydrates: carbohydrates,
           proteins: proteins,
           fats: fats,
-          portion: currentPortion || `${portionGrams}g`,
+          portion: hasMultipleElements 
+            ? elementPortions.map(ep => `${ep.elementName}: ${ep.portion}`).join(', ')
+            : currentPortion || `${portionGrams}g`,
           meal_time: new Date().toISOString(),
           user_id: user.id,
         },
@@ -111,10 +174,17 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
       </div>
 
       <div className="mb-4">
-        <PortionSelector
-          currentPortion={currentPortion}
-          onPortionChange={handlePortionChange}
-        />
+        {hasMultipleElements ? (
+          <MultipleElementsPortionSelector
+            elements={data.elements || []}
+            onPortionsChange={handleElementPortionsChange}
+          />
+        ) : (
+          <PortionSelector
+            currentPortion={currentPortion}
+            onPortionChange={handlePortionChange}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
