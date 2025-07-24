@@ -2,28 +2,11 @@ import React, { useState } from 'react';
 import { Scale, Utensils } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { FoodElement, ElementPortion } from '@/types/nutrition';
 
 interface PortionOption {
   label: string;
   value: string;
-  grams: number;
-}
-
-interface FoodElement {
-  name: string;
-  nutrition: {
-    calories: number;
-    carbohydrates: number;
-    proteins: number;
-    fats: number;
-    fiber: number;
-    sodium: number;
-  };
-}
-
-interface ElementPortion {
-  elementName: string;
-  portion: string;
   grams: number;
 }
 

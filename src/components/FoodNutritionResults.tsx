@@ -7,44 +7,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-
-interface FoodElement {
-  name: string;
-  description?: string;
-  nutrition: {
-    calories: number;
-    carbohydrates: number;
-    proteins: number;
-    fats: number;
-    fiber: number;
-    sodium: number;
-  };
-}
-
-export interface NutritionData {
-  foodName: string;
-  description: string;
-  quantity: string;
-  elements?: FoodElement[]; // Array de elementos quando há múltiplos
-  nutrition: {
-    calories: number;
-    carbohydrates: number;
-    proteins: number;
-    fats: number;
-    fiber: number;
-    sodium: number;
-  };
-}
+import { NutritionData, ElementPortion } from '@/types/nutrition';
 
 interface FoodNutritionResultsProps {
   data: NutritionData;
   onReset: () => void;
-}
-
-interface ElementPortion {
-  elementName: string;
-  portion: string;
-  grams: number;
 }
 
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {

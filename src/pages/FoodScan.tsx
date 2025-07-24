@@ -10,34 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-
-interface FoodElement {
-  name: string;
-  description?: string;
-  nutrition: {
-    calories: number;
-    carbohydrates: number;
-    proteins: number;
-    fats: number;
-    fiber: number;
-    sodium: number;
-  };
-}
-
-export interface NutritionData {
-  foodName: string;
-  description: string;
-  quantity: string;
-  elements?: FoodElement[]; // Array de elementos quando há múltiplos
-  nutrition: {
-    calories: number;
-    carbohydrates: number;
-    proteins: number;
-    fats: number;
-    fiber: number;
-    sodium: number;
-  };
-}
+import { NutritionData } from '@/types/nutrition';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
