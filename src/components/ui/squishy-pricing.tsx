@@ -12,11 +12,6 @@ const HOTMART_LINKS = {
   annual: 'https://pay.hotmart.com/K100828927N'
 };
 
-const WHATSAPP_LINKS = {
-  monthly: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20MENSAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
-  semester: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20SEMESTRAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
-  annual: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20ANUAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:'
-};
 
 export const Component = () => {
   return <section className="bg-transparent px-2 sm:px-4 transition-colors py-0">
@@ -70,7 +65,6 @@ export const Component = () => {
                 background="bg-orange-600 dark:bg-orange-700" 
                 BGComponent={BGComponent1}
                 hotmartLink={HOTMART_LINKS.monthly}
-                whatsappLink={WHATSAPP_LINKS.monthly}
               />
               <PIXPricingCard 
                 label="Assinatura Semestral" 
@@ -80,7 +74,6 @@ export const Component = () => {
                 background="bg-yellow-600 dark:bg-yellow-700" 
                 BGComponent={BGComponent2}
                 hotmartLink={HOTMART_LINKS.semester}
-                whatsappLink={WHATSAPP_LINKS.semester}
                 isSemester={true}
               />
               <PIXPricingCard 
@@ -91,7 +84,6 @@ export const Component = () => {
                 background="bg-red-600 dark:bg-red-700" 
                 BGComponent={BGComponent3}
                 hotmartLink={HOTMART_LINKS.annual}
-                whatsappLink={WHATSAPP_LINKS.annual}
                 isAnnual={true}
               />
             </div>
@@ -170,7 +162,6 @@ const PIXPricingCard = ({
   background,
   BGComponent,
   hotmartLink,
-  whatsappLink,
   isAnnual = false,
   isSemester = false
 }: {
@@ -181,13 +172,11 @@ const PIXPricingCard = ({
   background: string;
   BGComponent: React.ComponentType;
   hotmartLink: string;
-  whatsappLink: string;
   isAnnual?: boolean;
   isSemester?: boolean;
 }) => {
   const handlePIXSubscribe = () => {
     window.open(hotmartLink, '_blank');
-    window.open(whatsappLink, '_blank');
   };
 
   return <motion.div whileHover="hover" transition={{
