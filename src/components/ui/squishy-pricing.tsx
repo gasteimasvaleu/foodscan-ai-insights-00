@@ -13,9 +13,9 @@ const HOTMART_LINKS = {
 };
 
 const WHATSAPP_LINKS = {
-  monthly: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20MENSAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
-  semester: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20SEMESTRAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
-  annual: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20ANUAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:'
+  monthly: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20MENSAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
+  semester: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20SEMESTRAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
+  annual: 'https://wa.me/5583999187322?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20ANUAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:'
 };
 
 export const Component = () => {
