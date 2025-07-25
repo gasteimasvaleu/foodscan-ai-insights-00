@@ -6,39 +6,96 @@ const STRIPE_LINKS = {
   annual: 'https://buy.stripe.com/bJebJ18Fydi2c1cfXV4Rq06'
 };
 
+const HOTMART_LINKS = {
+  monthly: 'https://pay.hotmart.com/S101015134A',
+  semester: 'https://pay.hotmart.com/N101015233T',
+  annual: 'https://pay.hotmart.com/K100828927N'
+};
+
+const WHATSAPP_LINKS = {
+  monthly: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20MENSAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
+  semester: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20SEMESTRAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:',
+  annual: 'https://wa.me/5511999999999?text=Olá!%20Acabei%20de%20fazer%20o%20pagamento%20PIX%20do%20plano%20ANUAL%20do%20FoodScan%20%26%20Diet.%20Segue%20o%20comprovante:'
+};
+
 export const Component = () => {
   return <section className="bg-transparent px-2 sm:px-4 transition-colors py-0">
       <div className="mx-auto flex w-full justify-center items-center">
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 max-w-fit">
-          <PricingCard 
-            label="Assinatura Mensal" 
-            monthlyPrice="27,90" 
-            description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" 
-            cta="Assinar Agora" 
-            background="bg-primary-600 dark:bg-primary-700" 
-            BGComponent={BGComponent1}
-            stripeLink={STRIPE_LINKS.monthly}
-          />
-          <PricingCard 
-            label="Assinatura Semestral" 
-            monthlyPrice="149,90" 
-            description="6 meses de análise nutricional inteligente com economia e praticidade" 
-            cta="Assinar Agora" 
-            background="bg-purple-600 dark:bg-purple-700" 
-            BGComponent={BGComponent2}
-            stripeLink={STRIPE_LINKS.semester}
-            isSemester={true}
-          />
-          <PricingCard 
-            label="Assinatura Anual" 
-            monthlyPrice="277,90" 
-            description="1 ano completo de transformação alimentar com o melhor custo-benefício" 
-            cta="Assinar Agora" 
-            background="bg-green-600 dark:bg-green-700" 
-            BGComponent={BGComponent3}
-            stripeLink={STRIPE_LINKS.annual}
-            isAnnual={true}
-          />
+        <div className="flex flex-col gap-8">
+          {/* Stripe Cards Section */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Pagamento com Cartão de Crédito</h3>
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 max-w-fit mx-auto">
+              <PricingCard 
+                label="Assinatura Mensal" 
+                monthlyPrice="27,90" 
+                description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" 
+                cta="Assinar Agora" 
+                background="bg-primary-600 dark:bg-primary-700" 
+                BGComponent={BGComponent1}
+                stripeLink={STRIPE_LINKS.monthly}
+              />
+              <PricingCard 
+                label="Assinatura Semestral" 
+                monthlyPrice="149,90" 
+                description="6 meses de análise nutricional inteligente com economia e praticidade" 
+                cta="Assinar Agora" 
+                background="bg-purple-600 dark:bg-purple-700" 
+                BGComponent={BGComponent2}
+                stripeLink={STRIPE_LINKS.semester}
+                isSemester={true}
+              />
+              <PricingCard 
+                label="Assinatura Anual" 
+                monthlyPrice="277,90" 
+                description="1 ano completo de transformação alimentar com o melhor custo-benefício" 
+                cta="Assinar Agora" 
+                background="bg-green-600 dark:bg-green-700" 
+                BGComponent={BGComponent3}
+                stripeLink={STRIPE_LINKS.annual}
+                isAnnual={true}
+              />
+            </div>
+          </div>
+
+          {/* PIX Cards Section */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Pagamento com PIX</h3>
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 max-w-fit mx-auto">
+              <PIXPricingCard 
+                label="Assinatura Mensal" 
+                monthlyPrice="27,90" 
+                description="Transforme sua alimentação com tecnologia de ponta e análise nutricional inteligente" 
+                cta="Pagar com PIX" 
+                background="bg-orange-600 dark:bg-orange-700" 
+                BGComponent={BGComponent1}
+                hotmartLink={HOTMART_LINKS.monthly}
+                whatsappLink={WHATSAPP_LINKS.monthly}
+              />
+              <PIXPricingCard 
+                label="Assinatura Semestral" 
+                monthlyPrice="149,90" 
+                description="6 meses de análise nutricional inteligente com economia e praticidade" 
+                cta="Pagar com PIX" 
+                background="bg-yellow-600 dark:bg-yellow-700" 
+                BGComponent={BGComponent2}
+                hotmartLink={HOTMART_LINKS.semester}
+                whatsappLink={WHATSAPP_LINKS.semester}
+                isSemester={true}
+              />
+              <PIXPricingCard 
+                label="Assinatura Anual" 
+                monthlyPrice="277,90" 
+                description="1 ano completo de transformação alimentar com o melhor custo-benefício" 
+                cta="Pagar com PIX" 
+                background="bg-red-600 dark:bg-red-700" 
+                BGComponent={BGComponent3}
+                hotmartLink={HOTMART_LINKS.annual}
+                whatsappLink={WHATSAPP_LINKS.annual}
+                isAnnual={true}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>;
@@ -97,6 +154,73 @@ const PricingCard = ({
       </div>
       <button 
         onClick={handleSubscribe}
+        className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-20 rounded-lg border-2 border-white bg-white py-1.5 sm:py-2 text-center font-mono text-xs sm:text-sm font-black uppercase text-neutral-800 backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:text-white hover:border-white/80 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
+      >
+        {cta}
+      </button>
+      <BGComponent />
+    </motion.div>;
+};
+
+const PIXPricingCard = ({
+  label,
+  monthlyPrice,
+  description,
+  cta,
+  background,
+  BGComponent,
+  hotmartLink,
+  whatsappLink,
+  isAnnual = false,
+  isSemester = false
+}: {
+  label: string;
+  monthlyPrice: string;
+  description: string;
+  cta: string;
+  background: string;
+  BGComponent: React.ComponentType;
+  hotmartLink: string;
+  whatsappLink: string;
+  isAnnual?: boolean;
+  isSemester?: boolean;
+}) => {
+  const handlePIXSubscribe = () => {
+    window.open(hotmartLink, '_blank');
+    window.open(whatsappLink, '_blank');
+  };
+
+  return <motion.div whileHover="hover" transition={{
+    duration: 1,
+    ease: "backInOut"
+  }} variants={{
+    hover: {
+      scale: 1.05
+    }
+  }} className={`relative h-80 w-72 sm:h-96 sm:w-80 shrink-0 overflow-hidden rounded-xl p-4 sm:p-8 ${background} shadow-lg hover:shadow-xl transition-shadow`}>
+      <div className="relative z-10 text-white">
+        <span className="mb-2 sm:mb-3 block w-fit rounded-full bg-white/20 backdrop-blur-sm px-2 sm:px-3 py-0.5 text-xs sm:text-sm font-medium text-white border border-white/20">
+          {label}
+        </span>
+        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+          PIX
+        </div>
+        <motion.span initial={{
+        scale: 0.85
+      }} variants={{
+        hover: {
+          scale: 1
+        }
+      }} transition={{
+        duration: 1,
+        ease: "backInOut"
+      }} className="my-1 sm:my-2 block origin-top-left font-mono text-4xl sm:text-6xl font-black leading-[1.2]">
+          R${monthlyPrice}/<br />{isAnnual ? 'Ano' : isSemester ? 'Semestral' : 'Mês'}
+        </motion.span>
+        <p className="text-sm sm:text-lg text-white/90">{description}</p>
+      </div>
+      <button 
+        onClick={handlePIXSubscribe}
         className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-20 rounded-lg border-2 border-white bg-white py-1.5 sm:py-2 text-center font-mono text-xs sm:text-sm font-black uppercase text-neutral-800 backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:text-white hover:border-white/80 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
       >
         {cta}
