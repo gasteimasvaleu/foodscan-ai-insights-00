@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
@@ -18,11 +19,11 @@ interface WorkoutContent {
   title: string;
   description: string;
   activity_type: string;
-  duration_minutes: number;
-  estimated_calories: number;
-  content_type: 'treino' | 'dica';
-  video_url: string;
-  thumbnail_url: string;
+  duration: number | null;
+  calories: number | null;
+  content_type: 'workout' | 'tip';
+  video_url: string | null;
+  thumbnail_url: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -39,8 +40,7 @@ const Treinos = () => {
 
   const fetchWorkouts = async () => {
     try {
-      // Temporary: Using any to avoid TypeScript errors until migration is run
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('workout_content')
         .select('*')
         .eq('is_active', true)
@@ -187,8 +187,8 @@ const Treinos = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos os Tipos</SelectItem>
-                      <SelectItem value="treino">Treinos</SelectItem>
-                      <SelectItem value="dica">Dicas</SelectItem>
+                      <SelectItem value="workout">Treinos</SelectItem>
+                      <SelectItem value="tip">Dicas</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -272,10 +272,10 @@ const Treinos = () => {
                         </div>
 
                         <Badge 
-                          variant={workout.content_type === 'treino' ? 'default' : 'secondary'}
+                          variant={workout.content_type === 'workout' ? 'default' : 'secondary'}
                           className="absolute top-3 left-3 shadow-lg"
                         >
-                          {workout.content_type === 'treino' ? '🏋️ Treino' : '💡 Dica'}
+                          {workout.content_type === 'workout' ? '🏋️ Treino' : '💡 Dica'}
                         </Badge>
                       </div>
 
@@ -296,16 +296,16 @@ const Treinos = () => {
                           </div>
                           
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            {workout.duration_minutes > 0 && (
+                            {workout.duration && workout.duration > 0 && (
                               <div className="flex items-center gap-1">
                                 <Clock className="w-4 h-4 text-primary" />
-                                <span className="font-medium">{workout.duration_minutes}min</span>
+                                <span className="font-medium">{workout.duration}min</span>
                               </div>
                             )}
-                            {workout.estimated_calories > 0 && (
+                            {workout.calories && workout.calories > 0 && (
                               <div className="flex items-center gap-1">
                                 <Flame className="w-4 h-4 text-orange-500" />
-                                <span className="font-medium">{workout.estimated_calories}kcal</span>
+                                <span className="font-medium">{workout.calories}kcal</span>
                               </div>
                             )}
                           </div>

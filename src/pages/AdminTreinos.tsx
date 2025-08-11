@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,11 +40,11 @@ interface WorkoutContent {
   title: string;
   description: string;
   activity_type: string;
-  estimated_calories: number;
-  duration_minutes: number;
-  content_type: 'treino' | 'dica';
-  video_url: string;
-  thumbnail_url?: string;
+  duration: number | null;
+  calories: number | null;
+  content_type: 'workout' | 'tip';
+  video_url: string | null;
+  thumbnail_url: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -52,9 +53,9 @@ const initialFormData = {
   title: "",
   description: "",
   activity_type: "",
-  estimated_calories: 0,
-  duration_minutes: 0,
-  content_type: "treino" as 'treino' | 'dica',
+  duration: 0,
+  calories: 0,
+  content_type: "workout" as 'workout' | 'tip',
   video_url: "",
   thumbnail_url: "",
   is_active: true,
@@ -80,8 +81,7 @@ export default function AdminTreinos() {
 
   const checkAdminRole = async () => {
     try {
-      // Temporary: Using any to avoid TypeScript errors until migration is run
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .rpc('has_role', { 
           _user_id: user?.id, 
           _role: 'admin' 
@@ -99,8 +99,7 @@ export default function AdminTreinos() {
 
   const fetchWorkouts = async () => {
     try {
-      // Temporary: Using any to avoid TypeScript errors until migration is run
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('workout_content')
         .select('*')
         .order('created_at', { ascending: false });
@@ -125,20 +124,25 @@ export default function AdminTreinos() {
 
     try {
       const workoutData = {
-        ...formData,
-        admin_user_id: user?.id,
+        title: formData.title,
+        description: formData.description,
+        activity_type: formData.activity_type,
+        duration: formData.duration || null,
+        calories: formData.calories || null,
+        content_type: formData.content_type,
+        video_url: formData.video_url || null,
+        thumbnail_url: formData.thumbnail_url || null,
+        is_active: formData.is_active,
       };
 
       let result;
       if (editingId) {
-        // Temporary: Using any to avoid TypeScript errors until migration is run
-        result = await (supabase as any)
+        result = await supabase
           .from('workout_content')
           .update(workoutData)
           .eq('id', editingId);
       } else {
-        // Temporary: Using any to avoid TypeScript errors until migration is run
-        result = await (supabase as any)
+        result = await supabase
           .from('workout_content')
           .insert([workoutData]);
       }
@@ -171,10 +175,10 @@ export default function AdminTreinos() {
       title: workout.title,
       description: workout.description,
       activity_type: workout.activity_type,
-      estimated_calories: workout.estimated_calories,
-      duration_minutes: workout.duration_minutes,
+      duration: workout.duration || 0,
+      calories: workout.calories || 0,
       content_type: workout.content_type,
-      video_url: workout.video_url,
+      video_url: workout.video_url || "",
       thumbnail_url: workout.thumbnail_url || "",
       is_active: workout.is_active,
     });
@@ -184,8 +188,7 @@ export default function AdminTreinos() {
 
   const handleDelete = async (id: string) => {
     try {
-      // Temporary: Using any to avoid TypeScript errors until migration is run
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('workout_content')
         .delete()
         .eq('id', id);
@@ -210,8 +213,7 @@ export default function AdminTreinos() {
 
   const toggleActive = async (id: string, currentStatus: boolean) => {
     try {
-      // Temporary: Using any to avoid TypeScript errors until migration is run
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('workout_content')
         .update({ is_active: !currentStatus })
         .eq('id', id);
@@ -325,52 +327,49 @@ export default function AdminTreinos() {
                     <Label htmlFor="content_type">Tipo de Conteúdo *</Label>
                     <Select 
                       value={formData.content_type} 
-                      onValueChange={(value) => setFormData({...formData, content_type: value as 'treino' | 'dica'})}
+                      onValueChange={(value) => setFormData({...formData, content_type: value as 'workout' | 'tip'})}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="treino">Treino</SelectItem>
-                        <SelectItem value="dica">Dica</SelectItem>
+                        <SelectItem value="workout">Treino</SelectItem>
+                        <SelectItem value="tip">Dica</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div>
-                    <Label htmlFor="duration">Duração (min) *</Label>
+                    <Label htmlFor="duration">Duração (min)</Label>
                     <Input
                       id="duration"
                       type="number"
-                      value={formData.duration_minutes}
-                      onChange={(e) => setFormData({...formData, duration_minutes: parseInt(e.target.value) || 0})}
+                      value={formData.duration}
+                      onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value) || 0})}
                       min="1"
-                      required
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="calories">Calorias (estimativa) *</Label>
+                    <Label htmlFor="calories">Calorias (estimativa)</Label>
                     <Input
                       id="calories"
                       type="number"
-                      value={formData.estimated_calories}
-                      onChange={(e) => setFormData({...formData, estimated_calories: parseInt(e.target.value) || 0})}
+                      value={formData.calories}
+                      onChange={(e) => setFormData({...formData, calories: parseInt(e.target.value) || 0})}
                       min="1"
-                      required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="video_url">URL do Vídeo *</Label>
+                  <Label htmlFor="video_url">URL do Vídeo</Label>
                   <Input
                     id="video_url"
                     type="url"
                     value={formData.video_url}
                     onChange={(e) => setFormData({...formData, video_url: e.target.value})}
                     placeholder="https://www.youtube.com/watch?v=..."
-                    required
                   />
                 </div>
 
@@ -444,8 +443,8 @@ export default function AdminTreinos() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold text-lg">{workout.title}</h3>
-                        <Badge variant={workout.content_type === 'treino' ? 'default' : 'secondary'}>
-                          {workout.content_type === 'treino' ? 'Treino' : 'Dica'}
+                        <Badge variant={workout.content_type === 'workout' ? 'default' : 'secondary'}>
+                          {workout.content_type === 'workout' ? 'Treino' : 'Dica'}
                         </Badge>
                         <Badge variant="outline">{workout.activity_type}</Badge>
                         {workout.is_active ? (
@@ -464,8 +463,8 @@ export default function AdminTreinos() {
                       <p className="text-muted-foreground mb-2 line-clamp-2">{workout.description}</p>
                       
                       <div className="flex gap-4 text-sm text-muted-foreground">
-                        <span>{workout.duration_minutes} min</span>
-                        <span>~{workout.estimated_calories} cal</span>
+                        {workout.duration && <span>{workout.duration} min</span>}
+                        {workout.calories && <span>~{workout.calories} cal</span>}
                         <span>Criado em {new Date(workout.created_at).toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
