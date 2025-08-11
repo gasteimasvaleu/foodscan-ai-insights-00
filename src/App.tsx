@@ -13,6 +13,8 @@ import MasterCheFIT from "./pages/MasterCheFIT";
 import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
+import Treinos from "./pages/Treinos";
+import AdminTreinos from "./pages/AdminTreinos";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import NotFound from "./pages/NotFound";
@@ -35,6 +37,8 @@ const App = () => (
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
+          <Route path="/treinos" element={<Treinos />} />
+          <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
