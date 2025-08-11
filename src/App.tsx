@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
+import FitTracker from "./pages/FitTracker";
 import MasterCheFIT from "./pages/MasterCheFIT";
 import Subscription from "./pages/Subscription";
 import About from "./pages/About";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/foodscan" element={<FoodScan />} />
           <Route path="/controle-diario" element={<DailyControl />} />
+          <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />

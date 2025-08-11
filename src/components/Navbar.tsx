@@ -18,6 +18,7 @@ export const Navbar = () => {
     { label: 'Início', href: '/' },
     { label: 'FoodScan', href: '/foodscan' },
     { label: 'Controle Diário', href: '/controle-diario' },
+    { label: 'FitTracker', href: '/fit-tracker' },
     { label: 'MasterCheFIT', href: '/masterchef' },
     { label: 'ServiNUTRI', href: '/servinutri' },
     { label: 'Quero Assinar', href: '/quero-assinar' },

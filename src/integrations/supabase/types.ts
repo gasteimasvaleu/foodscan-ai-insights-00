@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      calorie_adjustments: {
+        Row: {
+          adjustment_amount: number
+          created_at: string
+          date: string
+          exercise_record_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          adjustment_amount: number
+          created_at?: string
+          date?: string
+          exercise_record_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          adjustment_amount?: number
+          created_at?: string
+          date?: string
+          exercise_record_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_exercise_record"
+            columns: ["exercise_record_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_posts: {
         Row: {
           after_photo_url: string | null
@@ -80,6 +115,48 @@ export type Database = {
           id?: string
           proteins?: number
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      exercise_records: {
+        Row: {
+          activity_type: string
+          age: number
+          calories_burned: number
+          created_at: string
+          date: string
+          duration_minutes: number
+          id: string
+          intensity: string
+          updated_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          activity_type: string
+          age: number
+          calories_burned: number
+          created_at?: string
+          date?: string
+          duration_minutes: number
+          id?: string
+          intensity: string
+          updated_at?: string
+          user_id: string
+          weight: number
+        }
+        Update: {
+          activity_type?: string
+          age?: number
+          calories_burned?: number
+          created_at?: string
+          date?: string
+          duration_minutes?: number
+          id?: string
+          intensity?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number
         }
         Relationships: []
       }
