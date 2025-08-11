@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Activity, BarChart3 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Activity, BarChart3 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
@@ -85,15 +84,6 @@ export default function FitTracker() {
 
           <TabsContent value="register" className="space-y-6">
             <ExerciseForm onExerciseAdded={handleExerciseAdded} />
-            
-            <div className="pt-4">
-              <Link to="/controle-diario">
-                <Button variant="ghost">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar ao Controle Diário
-                </Button>
-              </Link>
-            </div>
           </TabsContent>
 
           <TabsContent value="dashboard" className="space-y-6">
