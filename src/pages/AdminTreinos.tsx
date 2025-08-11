@@ -178,7 +178,7 @@ export default function AdminTreinos() {
       activity_type: workout.activity_type,
       duration: workout.duration || 0,
       calories: workout.calories || 0,
-      content_type: workout.content_type,
+      content_type: workout.content_type as 'workout' | 'tip',
       video_url: workout.video_url || "",
       thumbnail_url: workout.thumbnail_url || "",
       is_active: workout.is_active,
