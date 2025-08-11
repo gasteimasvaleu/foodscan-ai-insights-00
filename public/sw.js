@@ -1,4 +1,4 @@
-const CACHE_NAME = 'foodscan-ai-v2';
+const CACHE_NAME = 'foodscan-ai-v3';
 const urlsToCache = [
   '/',
   '/food-scan',
@@ -23,6 +23,16 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  
+  // Don't skip waiting automatically - let the app decide
+  self.skipWaiting();
+});
+
+// Listen for messages from the main thread
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch event - serve from cache, fallback to network
@@ -78,6 +88,19 @@ self.addEventListener('activate', event => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all pages immediately
+      return self.clients.claim();
     })
   );
+  
+  // Notify clients about the update
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'UPDATE_AVAILABLE',
+        waitingWorker: self
+      });
+    });
+  });
 });
