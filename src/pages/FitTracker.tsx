@@ -54,13 +54,6 @@ export default function FitTracker() {
       <Navbar />
       <div className="container mx-auto px-4 py-8 pt-16">
         <div className="mb-6">
-          <Link to="/controle-diario">
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao Controle Diário
-            </Button>
-          </Link>
-          
           <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none">
             <CardHeader>
               <CardTitle className="text-2xl flex items-center gap-2">
@@ -92,6 +85,15 @@ export default function FitTracker() {
 
           <TabsContent value="register" className="space-y-6">
             <ExerciseForm onExerciseAdded={handleExerciseAdded} />
+            
+            <div className="pt-4">
+              <Link to="/controle-diario">
+                <Button variant="ghost">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar ao Controle Diário
+                </Button>
+              </Link>
+            </div>
           </TabsContent>
 
           <TabsContent value="dashboard" className="space-y-6">
