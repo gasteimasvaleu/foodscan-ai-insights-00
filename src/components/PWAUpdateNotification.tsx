@@ -10,7 +10,7 @@ const PWAUpdateNotification = () => {
   if (!hasUpdate || isUpdating) return null;
 
   return (
-    <Alert className="fixed top-4 left-4 right-4 z-50 border-blue-200 bg-blue-50 shadow-lg animate-slide-down safe-area-top">
+    <Alert className="fixed top-4 left-4 right-4 z-[60] border-blue-200 bg-blue-50 shadow-lg animate-slide-down safe-area-top">
       <Download className="h-4 w-4 text-blue-600" />
       <AlertDescription className="text-blue-800 flex items-center justify-between w-full">
         <div className="flex-1 pr-4">
