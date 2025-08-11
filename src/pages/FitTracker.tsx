@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
 import { ExerciseHistory } from "@/components/ExerciseHistory";
-import { Header } from "@/components/Header";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
 
@@ -22,13 +23,14 @@ export default function FitTracker() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8 pt-16">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 bg-muted rounded"></div>
             <div className="h-96 bg-muted rounded"></div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -36,20 +38,21 @@ export default function FitTracker() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8 pt-16">
           <div className="max-w-md mx-auto">
             <AuthCard />
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+      <Navbar />
+      <div className="container mx-auto px-4 py-8 pt-16">
         <div className="mb-6">
           <Link to="/controle-diario">
             <Button variant="ghost" className="mb-4">
@@ -100,6 +103,7 @@ export default function FitTracker() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }

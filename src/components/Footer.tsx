@@ -13,6 +13,9 @@ export const Footer = () => {
     label: 'Controle Diário',
     href: '/controle-diario'
   }, {
+    label: 'FitTracker',
+    href: '/fit-tracker'
+  }, {
     label: 'MasterCheFIT',
     href: '/masterchef'
   }, {
