@@ -80,7 +80,8 @@ export default function AdminTreinos() {
 
   const checkAdminRole = async () => {
     try {
-      const { data, error } = await supabase
+      // Temporary: Using any to avoid TypeScript errors until migration is run
+      const { data, error } = await (supabase as any)
         .rpc('has_role', { 
           _user_id: user?.id, 
           _role: 'admin' 
@@ -98,7 +99,8 @@ export default function AdminTreinos() {
 
   const fetchWorkouts = async () => {
     try {
-      const { data, error } = await supabase
+      // Temporary: Using any to avoid TypeScript errors until migration is run
+      const { data, error } = await (supabase as any)
         .from('workout_content')
         .select('*')
         .order('created_at', { ascending: false });
@@ -129,12 +131,14 @@ export default function AdminTreinos() {
 
       let result;
       if (editingId) {
-        result = await supabase
+        // Temporary: Using any to avoid TypeScript errors until migration is run
+        result = await (supabase as any)
           .from('workout_content')
           .update(workoutData)
           .eq('id', editingId);
       } else {
-        result = await supabase
+        // Temporary: Using any to avoid TypeScript errors until migration is run
+        result = await (supabase as any)
           .from('workout_content')
           .insert([workoutData]);
       }
@@ -180,7 +184,8 @@ export default function AdminTreinos() {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
+      // Temporary: Using any to avoid TypeScript errors until migration is run
+      const { error } = await (supabase as any)
         .from('workout_content')
         .delete()
         .eq('id', id);
@@ -205,7 +210,8 @@ export default function AdminTreinos() {
 
   const toggleActive = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
+      // Temporary: Using any to avoid TypeScript errors until migration is run
+      const { error } = await (supabase as any)
         .from('workout_content')
         .update({ is_active: !currentStatus })
         .eq('id', id);

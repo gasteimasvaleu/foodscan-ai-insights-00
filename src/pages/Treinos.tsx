@@ -1,69 +1,62 @@
-import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Flame, Search, Filter } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { AuthCard } from "@/components/AuthCard";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { LoadingState } from "@/components/LoadingState";
-import { toast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Navbar } from '@/components/Navbar';
+import { AuthCard } from '@/components/AuthCard';
+import { useAuth } from '@/hooks/useAuth';
+import { Play, Clock, Flame, Search, Filter, Activity, Dumbbell, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { GradientText } from '@/components/ui/gradient-text';
+import { Footer } from '@/components/Footer';
 
 interface WorkoutContent {
   id: string;
   title: string;
   description: string;
   activity_type: string;
-  estimated_calories: number;
   duration_minutes: number;
+  estimated_calories: number;
   content_type: 'treino' | 'dica';
   video_url: string;
-  thumbnail_url?: string;
+  thumbnail_url: string;
+  is_active: boolean;
   created_at: string;
+  updated_at: string;
 }
 
-export default function Treinos() {
-  const { user, loading } = useAuth();
+const Treinos = () => {
+  const { user } = useAuth();
   const [workouts, setWorkouts] = useState<WorkoutContent[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<WorkoutContent[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [contentTypeFilter, setContentTypeFilter] = useState<string>("all");
-  const [activityTypeFilter, setActivityTypeFilter] = useState<string>("all");
-  const [loadingContent, setLoadingContent] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      fetchWorkouts();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    filterWorkouts();
-  }, [workouts, searchTerm, contentTypeFilter, activityTypeFilter]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [contentTypeFilter, setContentTypeFilter] = useState<string>('all');
+  const [activityTypeFilter, setActivityTypeFilter] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
 
   const fetchWorkouts = async () => {
     try {
-      const { data, error } = await supabase
+      // Temporary: Using any to avoid TypeScript errors until migration is run
+      const { data, error } = await (supabase as any)
         .from('workout_content')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching workouts:', error);
+        return;
+      }
+
       setWorkouts(data || []);
+      setFilteredWorkouts(data || []);
     } catch (error) {
       console.error('Error fetching workouts:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar os treinos.",
-        variant: "destructive",
-      });
     } finally {
-      setLoadingContent(false);
+      setLoading(false);
     }
   };
 
@@ -78,174 +71,279 @@ export default function Treinos() {
       );
     }
 
-    if (contentTypeFilter !== "all") {
+    if (contentTypeFilter !== 'all') {
       filtered = filtered.filter(workout => workout.content_type === contentTypeFilter);
     }
 
-    if (activityTypeFilter !== "all") {
+    if (activityTypeFilter !== 'all') {
       filtered = filtered.filter(workout => workout.activity_type === activityTypeFilter);
     }
 
     setFilteredWorkouts(filtered);
   };
 
+  useEffect(() => {
+    if (user) {
+      fetchWorkouts();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    filterWorkouts();
+  }, [searchTerm, contentTypeFilter, activityTypeFilter, workouts]);
+
   const getUniqueActivityTypes = () => {
-    const types = [...new Set(workouts.map(w => w.activity_type))];
-    return types.sort();
+    const types = workouts.map(workout => workout.activity_type);
+    return [...new Set(types)].sort();
   };
 
-  if (loading) return <LoadingState />;
-  if (!user) return <AuthCard mode="login" />;
+  const clearFilters = () => {
+    setSearchTerm('');
+    setContentTypeFilter('all');
+    setActivityTypeFilter('all');
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <Navbar />
+        <div className="pt-16">
+          <AuthCard />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Treinos</h1>
-          <p className="text-muted-foreground">
-            Explore vídeos de treinos e dicas de exercícios para todos os níveis
-          </p>
-        </div>
-
-        {/* Filtros */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Buscar treinos..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Select value={contentTypeFilter} onValueChange={setContentTypeFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de conteúdo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="treino">Treinos</SelectItem>
-                  <SelectItem value="dica">Dicas</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={activityTypeFilter} onValueChange={setActivityTypeFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de atividade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas</SelectItem>
-                  {getUniqueActivityTypes().map(type => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setSearchTerm("");
-                  setContentTypeFilter("all");
-                  setActivityTypeFilter("all");
-                }}
-                className="w-full"
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Limpar filtros
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Grid de conteúdos */}
-        {loadingContent ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <div className="aspect-video bg-muted rounded-t-lg"></div>
-                <CardContent className="pt-4">
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-3 bg-muted rounded mb-4 w-2/3"></div>
-                  <div className="flex gap-2">
-                    <div className="h-6 bg-muted rounded w-16"></div>
-                    <div className="h-6 bg-muted rounded w-20"></div>
+      <main className="pt-16 px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Hero Header */}
+          <div className="text-center mb-12">
+            <Card className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-primary/20 shadow-xl backdrop-blur-sm">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-xl opacity-30 animate-pulse"></div>
+                    <div className="relative bg-gradient-to-br from-primary to-secondary p-4 rounded-full">
+                      <Dumbbell className="w-8 h-8 text-white" />
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+                
+                <GradientText 
+                  colors={["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--primary))"]} 
+                  animationSpeed={4}
+                  className="text-4xl md:text-5xl font-bold mb-4"
+                >
+                  Central de Treinos
+                </GradientText>
+                
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                  Descubra treinos personalizados e dicas profissionais para alcançar seus objetivos fitness
+                </p>
+                
+                <div className="flex items-center justify-center space-x-6 mt-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm text-muted-foreground">Treinos Profissionais</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+                    <span className="text-sm text-muted-foreground">Dicas Exclusivas</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm text-muted-foreground">Resultados Garantidos</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        ) : filteredWorkouts.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent>
-              <div className="text-muted-foreground mb-4">
-                <Play className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Nenhum treino encontrado</p>
-                <p className="text-sm">Tente ajustar os filtros ou buscar por outros termos</p>
+
+          {/* Filters Section */}
+          <Card className="mb-8 shadow-lg border-primary/10">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                <div className="flex-1 max-w-md">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <Input
+                      placeholder="Buscar treinos e dicas..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 border-primary/20 focus:border-primary/40"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Select value={contentTypeFilter} onValueChange={setContentTypeFilter}>
+                    <SelectTrigger className="w-40 border-primary/20">
+                      <Filter className="w-4 h-4 mr-2 text-primary" />
+                      <SelectValue placeholder="Tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Tipos</SelectItem>
+                      <SelectItem value="treino">Treinos</SelectItem>
+                      <SelectItem value="dica">Dicas</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={activityTypeFilter} onValueChange={setActivityTypeFilter}>
+                    <SelectTrigger className="w-40 border-primary/20">
+                      <Activity className="w-4 h-4 mr-2 text-primary" />
+                      <SelectValue placeholder="Atividade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as Atividades</SelectItem>
+                      {getUniqueActivityTypes().map(type => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Button 
+                    variant="outline" 
+                    onClick={clearFilters}
+                    className="whitespace-nowrap border-primary/20 hover:bg-primary/5"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Limpar Filtros
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredWorkouts.map((workout) => (
-              <Card key={workout.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video bg-muted relative group">
-                  {workout.thumbnail_url ? (
-                    <img 
-                      src={workout.thumbnail_url} 
-                      alt={workout.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                      <Play className="w-12 h-12 text-primary" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button size="lg" className="rounded-full">
-                      <Play className="w-6 h-6 ml-1" />
-                    </Button>
-                  </div>
-                  <Badge 
-                    variant={workout.content_type === 'treino' ? 'default' : 'secondary'}
-                    className="absolute top-2 right-2"
-                  >
-                    {workout.content_type === 'treino' ? 'Treino' : 'Dica'}
-                  </Badge>
-                </div>
-                
-                <CardContent className="pt-4">
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{workout.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{workout.description}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="outline" className="text-xs">
-                      {workout.activity_type}
-                    </Badge>
-                  </div>
 
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {workout.duration_minutes} min
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Flame className="w-4 h-4" />
-                      ~{workout.estimated_calories} cal
+          {/* Loading State */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index} className="overflow-hidden shadow-lg">
+                  <div className="relative">
+                    <Skeleton className="w-full h-48" />
+                    <div className="absolute top-3 left-3">
+                      <Skeleton className="h-6 w-16 rounded-full" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                  <CardContent className="p-4">
+                    <Skeleton className="h-6 w-3/4 mb-3" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-2/3 mb-4" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* Content Grid */}
+              {filteredWorkouts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredWorkouts.map((workout) => (
+                    <Card key={workout.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-primary/10 hover:border-primary/30">
+                      <div className="relative">
+                        {workout.thumbnail_url ? (
+                          <img 
+                            src={workout.thumbnail_url} 
+                            alt={workout.title}
+                            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-48 bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 flex items-center justify-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 animate-gradient"></div>
+                            <Activity className="w-12 h-12 text-primary relative z-10" />
+                          </div>
+                        )}
+                        
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
+                          <Button size="lg" className="gap-2 bg-white/90 text-primary hover:bg-white transform scale-90 group-hover:scale-100 transition-all duration-300">
+                            <Play className="w-5 h-5" />
+                            Assistir Agora
+                          </Button>
+                        </div>
+
+                        <Badge 
+                          variant={workout.content_type === 'treino' ? 'default' : 'secondary'}
+                          className="absolute top-3 left-3 shadow-lg"
+                        >
+                          {workout.content_type === 'treino' ? '🏋️ Treino' : '💡 Dica'}
+                        </Badge>
+                      </div>
+
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                          {workout.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed">
+                          {workout.description}
+                        </p>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="p-1 bg-primary/10 rounded-full">
+                              <Activity className="w-3 h-3 text-primary" />
+                            </div>
+                            <span className="text-foreground font-medium">{workout.activity_type}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            {workout.duration_minutes > 0 && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-4 h-4 text-primary" />
+                                <span className="font-medium">{workout.duration_minutes}min</span>
+                              </div>
+                            )}
+                            {workout.estimated_calories > 0 && (
+                              <div className="flex items-center gap-1">
+                                <Flame className="w-4 h-4 text-orange-500" />
+                                <span className="font-medium">{workout.estimated_calories}kcal</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="shadow-xl border-primary/20">
+                  <CardContent className="text-center py-16">
+                    <div className="relative mb-6">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-xl opacity-20 animate-pulse"></div>
+                      <div className="relative bg-gradient-to-br from-primary/10 to-secondary/10 p-6 rounded-full w-24 h-24 mx-auto flex items-center justify-center">
+                        <Activity className="w-12 h-12 text-primary" />
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                      Nenhum treino encontrado
+                    </h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Não encontramos treinos que correspondam aos seus filtros. Tente ajustar os critérios de busca.
+                    </p>
+                    <Button onClick={clearFilters} variant="outline" className="gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Limpar Todos os Filtros
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+        </div>
       </main>
 
       <Footer />
     </div>
   );
-}
+};
+
+export default Treinos;
