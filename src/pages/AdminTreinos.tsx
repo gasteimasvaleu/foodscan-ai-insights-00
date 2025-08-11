@@ -38,13 +38,25 @@ import {
 
 type WorkoutContent = Database['public']['Tables']['workout_content']['Row'];
 
-const initialFormData = {
+interface FormData {
+  title: string;
+  description: string;
+  activity_type: string;
+  duration: number;
+  calories: number;
+  content_type: 'workout' | 'tip';
+  video_url: string;
+  thumbnail_url: string;
+  is_active: boolean;
+}
+
+const initialFormData: FormData = {
   title: "",
   description: "",
   activity_type: "",
   duration: 0,
   calories: 0,
-  content_type: "workout" as const,
+  content_type: "workout",
   video_url: "",
   thumbnail_url: "",
   is_active: true,
@@ -58,7 +70,7 @@ export default function AdminTreinos() {
   const [checkingRole, setCheckingRole] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -166,7 +178,7 @@ export default function AdminTreinos() {
       activity_type: workout.activity_type,
       duration: workout.duration || 0,
       calories: workout.calories || 0,
-      content_type: workout.content_type as 'workout' | 'tip',
+      content_type: workout.content_type,
       video_url: workout.video_url || "",
       thumbnail_url: workout.thumbnail_url || "",
       is_active: workout.is_active,
