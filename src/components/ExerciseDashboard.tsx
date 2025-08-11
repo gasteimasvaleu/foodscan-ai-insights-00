@@ -139,7 +139,7 @@ export function ExerciseDashboard() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Esta Semana</p>
+              <p className="text-sm font-medium text-muted-foreground">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
                 <p className="text-2xl font-bold">{stats.weeklyCalories}</p>
                 <Badge variant="secondary" className="text-xs">cal</Badge>
