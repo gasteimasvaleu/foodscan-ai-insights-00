@@ -1,9 +1,17 @@
-const CACHE_NAME = 'foodscan-ai-v1';
+const CACHE_NAME = 'foodscan-ai-v2';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/food-scan',
+  '/controle-diario',
+  '/fit-tracker',
+  '/servnutri',
+  '/masterchef',
+  '/about',
+  '/manifest.json',
+  '/offline.html',
+  '/icons/icon-192x192-temp.png',
+  '/icons/icon-512x512-new.png',
+  '/assets/foodscan-logo.png'
 ];
 
 // Install event - cache resources
@@ -36,12 +44,23 @@ self.addEventListener('fetch', event => {
           // Clone the response
           const responseToCache = response.clone();
 
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
+          // Cache strategy: cache navigation requests and static assets
+          if (event.request.mode === 'navigate' || 
+              event.request.destination === 'style' ||
+              event.request.destination === 'script' ||
+              event.request.destination === 'image') {
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+          }
 
           return response;
+        }).catch(() => {
+          // Network failed, try to serve offline page for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/offline.html');
+          }
         });
       })
   );
