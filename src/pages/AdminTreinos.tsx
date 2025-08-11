@@ -16,6 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LoadingState } from "@/components/LoadingState";
 import { toast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 import {
   Dialog,
   DialogContent,
@@ -35,19 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface WorkoutContent {
-  id: string;
-  title: string;
-  description: string;
-  activity_type: string;
-  duration: number | null;
-  calories: number | null;
-  content_type: 'workout' | 'tip';
-  video_url: string | null;
-  thumbnail_url: string | null;
-  is_active: boolean;
-  created_at: string;
-}
+type WorkoutContent = Database['public']['Tables']['workout_content']['Row'];
 
 const initialFormData = {
   title: "",
@@ -55,7 +44,7 @@ const initialFormData = {
   activity_type: "",
   duration: 0,
   calories: 0,
-  content_type: "workout" as 'workout' | 'tip',
+  content_type: "workout" as const,
   video_url: "",
   thumbnail_url: "",
   is_active: true,
@@ -177,7 +166,7 @@ export default function AdminTreinos() {
       activity_type: workout.activity_type,
       duration: workout.duration || 0,
       calories: workout.calories || 0,
-      content_type: workout.content_type,
+      content_type: workout.content_type as 'workout' | 'tip',
       video_url: workout.video_url || "",
       thumbnail_url: workout.thumbnail_url || "",
       is_active: workout.is_active,

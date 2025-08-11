@@ -13,21 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Footer } from '@/components/Footer';
+import type { Database } from '@/integrations/supabase/types';
 
-interface WorkoutContent {
-  id: string;
-  title: string;
-  description: string;
-  activity_type: string;
-  duration: number | null;
-  calories: number | null;
-  content_type: 'workout' | 'tip';
-  video_url: string | null;
-  thumbnail_url: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+type WorkoutContent = Database['public']['Tables']['workout_content']['Row'];
 
 const Treinos = () => {
   const { user } = useAuth();
