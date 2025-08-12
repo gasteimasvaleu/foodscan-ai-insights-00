@@ -25,7 +25,6 @@ const Index = () => {
             loop 
             playsInline
             preload="metadata"
-            poster="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/banner%20superior%203.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvYmFubmVyIHN1cGVyaW9yIDMucG5nIiwiaWF0IjoxNzUyMTcyMTk3LCJleHAiOjE3ODM3MDgxOTd9.tak4txDNXmPTZFMpkiy5hIHYMjS-e1pRKSVZ-53NpqQ"
           >
             Seu navegador não suporta reprodução de vídeo.
           </video>
