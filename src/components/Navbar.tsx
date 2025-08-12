@@ -66,15 +66,15 @@ export const Navbar = () => {
                 </Button>
               </div>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0">
-              <SheetHeader className="p-6 border-b border-white/20">
+            <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0 flex flex-col h-full">
+              <SheetHeader className="p-6 border-b border-white/20 flex-shrink-0">
                 <SheetTitle className="text-white text-lg font-bold">
                   Menu
                 </SheetTitle>
               </SheetHeader>
               
-              <ScrollArea className="h-full">
-                <div className="p-6 space-y-4">
+              <ScrollArea className="flex-1">
+                <div className="p-6 space-y-4 pb-8">
                   {menuItems.map(item => (
                     <Link
                       key={item.label}
