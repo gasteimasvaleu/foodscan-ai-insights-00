@@ -14,12 +14,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Footer } from '@/components/Footer';
 import { VideoModal } from '@/components/VideoModal';
+import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
 
 type WorkoutContent = Database['public']['Tables']['workout_content']['Row'];
 
 const Treinos = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [workouts, setWorkouts] = useState<WorkoutContent[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<WorkoutContent[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -94,11 +96,27 @@ const Treinos = () => {
     setActivityTypeFilter('all');
   };
 
-  const handleWatchClick = (workout: WorkoutContent) => {
-    if (workout.video_url) {
-      setSelectedWorkout(workout);
-      setIsVideoModalOpen(true);
+  const isValidVideoUrl = (url: string) => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return url.includes('youtube.com') || url.includes('youtu.be') || url.endsWith('.mp4') || url.endsWith('.webm');
+    } catch {
+      return false;
     }
+  };
+
+  const handleWatchClick = (workout: WorkoutContent) => {
+    if (!isValidVideoUrl(workout.video_url)) {
+      toast({
+        title: "Erro",
+        description: "URL de vídeo inválida para este treino.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSelectedWorkout(workout);
+    setIsVideoModalOpen(true);
   };
 
   const closeVideoModal = () => {
@@ -274,7 +292,7 @@ const Treinos = () => {
                             size="lg" 
                             className="gap-2 bg-white/90 text-primary hover:bg-white transform scale-90 group-hover:scale-100 transition-all duration-300"
                             onClick={() => handleWatchClick(workout)}
-                            disabled={!workout.video_url}
+                            disabled={!isValidVideoUrl(workout.video_url)}
                           >
                             <Play className="w-5 h-5" />
                             Assistir Agora

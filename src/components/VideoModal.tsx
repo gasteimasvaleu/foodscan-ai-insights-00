@@ -19,6 +19,15 @@ interface VideoModalProps {
 export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
   if (!workout) return null;
 
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return url.includes('youtube.com') || url.includes('youtu.be') || url.endsWith('.mp4') || url.endsWith('.webm');
+    } catch {
+      return false;
+    }
+  };
+
   const getEmbedUrl = (url: string) => {
     // Convert YouTube URLs to embed format
     if (url.includes('youtube.com/watch')) {
@@ -35,6 +44,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
 
   const embedUrl = getEmbedUrl(workout.video_url);
   const isYouTube = embedUrl.includes('youtube.com/embed');
+  const isValidVideoUrl = isValidUrl(workout.video_url);
 
   const openInNewTab = () => {
     window.open(workout.video_url, '_blank');
@@ -66,7 +76,14 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
         <div className="flex-1 flex flex-col gap-4">
           {/* Video Container */}
           <div className="flex-1 bg-black rounded-lg overflow-hidden">
-            {isYouTube ? (
+            {!isValidVideoUrl ? (
+              <div className="w-full h-full flex items-center justify-center text-white">
+                <div className="text-center">
+                  <p className="text-lg mb-2">URL de vídeo inválida</p>
+                  <p className="text-sm text-gray-400">Não foi possível carregar o vídeo.</p>
+                </div>
+              </div>
+            ) : isYouTube ? (
               <iframe
                 src={embedUrl}
                 title={workout.title}
