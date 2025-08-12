@@ -154,7 +154,7 @@ export function ExerciseHistory() {
                     {exercise.calories_burned} cal
                   </div>
                   <span>
-                    {format(new Date(exercise.date), "dd/MM/yyyy", { locale: ptBR })}
+                    {format(new Date(exercise.date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}
                   </span>
                 </div>
               </div>
