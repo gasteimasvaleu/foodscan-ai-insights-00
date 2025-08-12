@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Footer } from '@/components/Footer';
+import { VideoModal } from '@/components/VideoModal';
 import type { Database } from '@/integrations/supabase/types';
 
 type WorkoutContent = Database['public']['Tables']['workout_content']['Row'];
@@ -25,6 +26,8 @@ const Treinos = () => {
   const [contentTypeFilter, setContentTypeFilter] = useState<string>('all');
   const [activityTypeFilter, setActivityTypeFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<WorkoutContent | null>(null);
 
   const fetchWorkouts = async () => {
     try {
@@ -89,6 +92,18 @@ const Treinos = () => {
     setSearchTerm('');
     setContentTypeFilter('all');
     setActivityTypeFilter('all');
+  };
+
+  const handleWatchClick = (workout: WorkoutContent) => {
+    if (workout.video_url) {
+      setSelectedWorkout(workout);
+      setIsVideoModalOpen(true);
+    }
+  };
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setSelectedWorkout(null);
   };
 
   if (!user) {
@@ -255,7 +270,12 @@ const Treinos = () => {
                         )}
                         
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
-                          <Button size="lg" className="gap-2 bg-white/90 text-primary hover:bg-white transform scale-90 group-hover:scale-100 transition-all duration-300">
+                          <Button 
+                            size="lg" 
+                            className="gap-2 bg-white/90 text-primary hover:bg-white transform scale-90 group-hover:scale-100 transition-all duration-300"
+                            onClick={() => handleWatchClick(workout)}
+                            disabled={!workout.video_url}
+                          >
                             <Play className="w-5 h-5" />
                             Assistir Agora
                           </Button>
@@ -330,6 +350,12 @@ const Treinos = () => {
           )}
         </div>
       </main>
+
+      <VideoModal 
+        isOpen={isVideoModalOpen}
+        onClose={closeVideoModal}
+        workout={selectedWorkout}
+      />
 
       <Footer />
     </div>
