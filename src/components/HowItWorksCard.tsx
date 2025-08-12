@@ -20,7 +20,7 @@ export const HowItWorksCard = () => {
           <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
             <div className="relative bg-gray-900 rounded-lg overflow-hidden">
               <video 
-                className="w-full h-64 object-cover"
+                className="w-full h-64 md:h-80 lg:h-96 object-contain"
                 controls
                 preload="metadata"
               >
