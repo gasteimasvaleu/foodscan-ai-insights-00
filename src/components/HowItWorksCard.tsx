@@ -15,51 +15,34 @@ export const HowItWorksCard = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-6 items-center">
-          {/* Imagem à esquerda */}
-          <div className="relative group">
-            <div className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow duration-300 h-80">
-              <img 
-                src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/mulher%20pg%20principal.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvbXVsaGVyIHBnIHByaW5jaXBhbC5wbmciLCJpYXQiOjE3NTI1MDcxMzQsImV4cCI6MTc4NDA0MzEzNH0._omfzxOX83N5AcX_mjXD7dMVlOdB_ixbg9Nhn3dhyyc"
-                alt="Análise nutricional inteligente"
-                className="w-full h-64 object-contain rounded-lg shadow-md"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Tecnologia Avançada
-              </h3>
-              <p className="text-sm text-gray-600">
-                IA que reconhece alimentos e calcula valores nutricionais instantaneamente
-              </p>
+        {/* Vídeo ocupando linha inteira */}
+        <div className="mb-6">
+          <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300">
+            <div className="relative bg-gray-900 rounded-lg overflow-hidden">
+              <video 
+                className="w-full h-64 object-cover"
+                controls
+                preload="metadata"
+              >
+                <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/quicktime" />
+                <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/mp4" />
+                Seu navegador não suporta a reprodução de vídeo.
+              </video>
             </div>
           </div>
-          
-          {/* Vídeo à direita */}
-          <div className="relative group">
-            <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-xl p-4 hover:shadow-lg transition-shadow duration-300 h-80">
-              <div className="relative bg-gray-900 rounded-lg overflow-hidden">
-                <video 
-                  className="w-full h-64 object-cover"
-                  controls
-                  preload="metadata"
-                >
-                  <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/quicktime" />
-                  <source src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/0713.mov?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvMDcxMy5tb3YiLCJpYXQiOjE3NTI1MDY4MTEsImV4cCI6MTc4NDA0MjgxMX0.S9wfmunxDIzTUV3qKkh3YJ7mu6hruic-rdgV68Gqj_Q" type="video/mp4" />
-                  Seu navegador não suporta a reprodução de vídeo.
-                </video>
-              </div>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Demonstração Prática
-              </h3>
-              <p className="text-sm text-gray-600">
-                Veja como é fácil analisar suas refeições e controlar sua dieta
-              </p>
-            </div>
-          </div>
+        </div>
+        
+        {/* Textos centralizados abaixo do vídeo */}
+        <div className="text-center mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Tecnologia Avançada
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            IA que reconhece alimentos e calcula valores nutricionais instantaneamente
+          </p>
+          <p className="text-sm text-gray-600">
+            Veja como é fácil analisar suas refeições e controlar sua dieta
+          </p>
         </div>
         
         {/* Passos do processo */}
