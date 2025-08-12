@@ -84,13 +84,8 @@ const Subscription = () => {
             </CardContent>
           </Card>
 
-          {/* New Pricing Card Component */}
-          <div className="animate-scale-in">
-            <PricingComponent />
-          </div>
-
           {/* Payment Processing Time Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mt-8 animate-scale-in">
+          <div className="grid md:grid-cols-2 gap-6 mb-8 animate-scale-in">
             {/* Credit Card Access Card */}
             <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
               <CardContent className="p-6 text-center">
@@ -124,6 +119,11 @@ const Subscription = () => {
                 </p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* New Pricing Card Component */}
+          <div className="animate-scale-in">
+            <PricingComponent />
           </div>
 
           {/* Features List */}
