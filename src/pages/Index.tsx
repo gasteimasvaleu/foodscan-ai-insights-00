@@ -2,8 +2,10 @@ import React from 'react';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
+import { QuickActions } from '@/components/QuickActions';
 import { HowItWorksCard } from '@/components/HowItWorksCard';
 import { FeaturesSection } from '@/components/FeaturesSection';
+import { EcosystemSection } from '@/components/EcosystemSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { FAQSection } from '@/components/FAQSection';
 import { Footer } from '@/components/Footer';
@@ -25,11 +27,17 @@ const Index = () => {
             {/* Auth Card */}
             <AuthCard />
             
+            {/* Quick Actions for logged users */}
+            <QuickActions />
+            
             {/* How It Works Card */}
             <HowItWorksCard />
             
             {/* Features Section */}
             <FeaturesSection />
+            
+            {/* Ecosystem Section */}
+            <EcosystemSection />
             
             {/* Testimonials Section */}
             <TestimonialsSection />
