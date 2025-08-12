@@ -48,7 +48,7 @@ export const FeaturesSection = () => {
               </span>
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              O FoodScan & FitLife é a plataforma completa que revoluciona como você cuida da sua saúde! 
+              O FoodScan & Diet é a plataforma completa que revoluciona como você cuida da sua saúde! 
               Análise nutricional por foto, controle de exercícios e biblioteca de treinos - tudo em um só lugar 
               para sua jornada de bem-estar.
             </p>
