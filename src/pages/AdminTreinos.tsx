@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Edit, Trash2, Eye, EyeOff, Save, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,6 +75,8 @@ export default function AdminTreinos() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [saving, setSaving] = useState(false);
+  const [videoUploadMethod, setVideoUploadMethod] = useState<'upload' | 'url'>('upload');
+  const [thumbnailUploadMethod, setThumbnailUploadMethod] = useState<'upload' | 'url'>('upload');
 
   useEffect(() => {
     if (user) {
@@ -365,20 +368,85 @@ export default function AdminTreinos() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <VideoUpload
-                    onVideoSelect={(url) => setFormData({...formData, video_url: url})}
-                    onRemove={() => setFormData({...formData, video_url: ""})}
-                    currentUrl={formData.video_url}
-                    label="Vídeo do Treino"
-                  />
-                  
-                  <ThumbnailUpload
-                    onThumbnailSelect={(url) => setFormData({...formData, thumbnail_url: url})}
-                    onRemove={() => setFormData({...formData, thumbnail_url: ""})}
-                    currentUrl={formData.thumbnail_url}
-                    label="Thumbnail do Treino"
-                  />
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Video Section */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">
+                      Vídeo do Treino
+                    </Label>
+                    <Tabs value={videoUploadMethod} onValueChange={(value) => setVideoUploadMethod(value as 'upload' | 'url')}>
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="upload">Upload</TabsTrigger>
+                        <TabsTrigger value="url">URL Externa</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="upload">
+                        <VideoUpload
+                          onVideoSelect={(url) => setFormData({...formData, video_url: url})}
+                          onRemove={() => setFormData({...formData, video_url: ""})}
+                          currentUrl={formData.video_url}
+                          label=""
+                        />
+                      </TabsContent>
+                      <TabsContent value="url">
+                        <div className="space-y-2">
+                          <Input
+                            placeholder="https://exemplo.com/video.mp4"
+                            value={formData.video_url}
+                            onChange={(e) => setFormData({...formData, video_url: e.target.value})}
+                          />
+                          {formData.video_url && (
+                            <div className="mt-3 p-3 bg-muted rounded-md">
+                              <video 
+                                src={formData.video_url} 
+                                className="w-full max-h-32 object-cover rounded"
+                                controls
+                                preload="metadata"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+
+                  {/* Thumbnail Section */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">
+                      Thumbnail do Treino
+                    </Label>
+                    <Tabs value={thumbnailUploadMethod} onValueChange={(value) => setThumbnailUploadMethod(value as 'upload' | 'url')}>
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="upload">Upload</TabsTrigger>
+                        <TabsTrigger value="url">URL Externa</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="upload">
+                        <ThumbnailUpload
+                          onThumbnailSelect={(url) => setFormData({...formData, thumbnail_url: url})}
+                          onRemove={() => setFormData({...formData, thumbnail_url: ""})}
+                          currentUrl={formData.thumbnail_url}
+                          label=""
+                        />
+                      </TabsContent>
+                      <TabsContent value="url">
+                        <div className="space-y-2">
+                          <Input
+                            placeholder="https://exemplo.com/thumbnail.jpg"
+                            value={formData.thumbnail_url}
+                            onChange={(e) => setFormData({...formData, thumbnail_url: e.target.value})}
+                          />
+                          {formData.thumbnail_url && (
+                            <div className="mt-3 p-3 bg-muted rounded-md">
+                              <img 
+                                src={formData.thumbnail_url} 
+                                alt="Thumbnail preview"
+                                className="w-full max-h-32 object-cover rounded"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
