@@ -154,22 +154,24 @@ const Treinos = () => {
           {/* Filters Section */}
           <Card className="mb-8 shadow-lg border-primary/10">
             <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-                <div className="flex-1 max-w-md">
+              <div className="flex flex-col gap-4">
+                {/* Search Input */}
+                <div className="w-full">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       placeholder="Buscar treinos e dicas..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 border-primary/20 focus:border-primary/40"
+                      className="pl-10 border-primary/20 focus:border-primary/40 w-full"
                     />
                   </div>
                 </div>
                 
+                {/* Filters Row */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Select value={contentTypeFilter} onValueChange={setContentTypeFilter}>
-                    <SelectTrigger className="w-40 border-primary/20">
+                    <SelectTrigger className="w-full sm:w-40 border-primary/20">
                       <Filter className="w-4 h-4 mr-2 text-primary" />
                       <SelectValue placeholder="Tipo" />
                     </SelectTrigger>
@@ -181,7 +183,7 @@ const Treinos = () => {
                   </Select>
 
                   <Select value={activityTypeFilter} onValueChange={setActivityTypeFilter}>
-                    <SelectTrigger className="w-40 border-primary/20">
+                    <SelectTrigger className="w-full sm:w-40 border-primary/20">
                       <Activity className="w-4 h-4 mr-2 text-primary" />
                       <SelectValue placeholder="Atividade" />
                     </SelectTrigger>
@@ -198,7 +200,7 @@ const Treinos = () => {
                   <Button 
                     variant="outline" 
                     onClick={clearFilters}
-                    className="whitespace-nowrap border-primary/20 hover:bg-primary/5"
+                    className="w-full sm:w-auto whitespace-nowrap border-primary/20 hover:bg-primary/5"
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
                     Limpar Filtros
