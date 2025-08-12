@@ -107,7 +107,9 @@ const Treinos = () => {
   };
 
   const handleWatchClick = (workout: WorkoutContent) => {
+    console.log('handleWatchClick called:', workout);
     if (!isValidVideoUrl(workout.video_url)) {
+      console.log('Invalid video URL:', workout.video_url);
       toast({
         title: "Erro",
         description: "URL de vídeo inválida para este treino.",
@@ -115,6 +117,7 @@ const Treinos = () => {
       });
       return;
     }
+    console.log('Setting modal open with workout:', workout);
     setSelectedWorkout(workout);
     setIsVideoModalOpen(true);
   };

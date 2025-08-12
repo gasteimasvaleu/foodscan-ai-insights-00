@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, X } from 'lucide-react';
 
@@ -8,7 +8,7 @@ interface VideoModalProps {
   onClose: () => void;
   workout: {
     title: string;
-    description: string;
+    description?: string;
     video_url: string;
     activity_type: string;
     duration?: number;
@@ -17,6 +17,7 @@ interface VideoModalProps {
 }
 
 export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
+  console.log('VideoModal rendering:', { isOpen, workout });
   if (!workout) return null;
 
   const isValidUrl = (url: string) => {
@@ -66,11 +67,11 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
               Abrir em nova aba
             </Button>
           </div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <DialogDescription className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="font-medium">{workout.activity_type}</span>
             {workout.duration && <span>• {workout.duration} min</span>}
             {workout.calories && <span>• {workout.calories} kcal</span>}
-          </div>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 flex flex-col gap-4">
