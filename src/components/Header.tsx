@@ -7,7 +7,7 @@ export const Header = () => {
         
       </div>
       
-      <GradientText colors={["#40ffaa", "#4079ff", "#40ffaa"]} animationSpeed={3} className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
+      <GradientText colors={["#40ffaa", "#4079ff", "#40ffaa"]} animationSpeed={3} className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
         FoodScan & Diet
       </GradientText>
       
