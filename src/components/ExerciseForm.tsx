@@ -38,6 +38,10 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
     setIsLoading(true);
 
     try {
+      // Get current local date for consistency
+      const currentLocalDate = new Date().toISOString().split('T')[0];
+      console.log('Using local date:', currentLocalDate, 'Timezone offset:', new Date().getTimezoneOffset());
+
       // Calculate calories using edge function
       const { data: calculationResult, error: calcError } = await supabase.functions.invoke('calculate-exercise-calories', {
         body: {
@@ -51,8 +55,8 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
 
       if (calcError) throw calcError;
 
-      // Save exercise record
-      const { error: exerciseError } = await supabase
+      // Save exercise record with explicit local date
+      const { data: exerciseData, error: exerciseError } = await supabase
         .from('exercise_records')
         .insert({
           user_id: user.id,
@@ -61,19 +65,24 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
           age: parseInt(formData.age),
           duration_minutes: parseInt(formData.durationMinutes),
           intensity: formData.intensity,
-          calories_burned: calculationResult.caloriesBurned
-        });
+          calories_burned: calculationResult.caloriesBurned,
+          date: currentLocalDate
+        })
+        .select()
+        .single();
 
       if (exerciseError) throw exerciseError;
 
-      // Create calorie adjustment
+      console.log('Exercise record created:', exerciseData);
+
+      // Create calorie adjustment with correct exercise_record_id
       const { error: adjustmentError } = await supabase
         .from('calorie_adjustments')
         .insert({
           user_id: user.id,
-          exercise_record_id: '', // Will be updated with actual ID
+          exercise_record_id: exerciseData.id,
           adjustment_amount: Math.round(calculationResult.caloriesBurned * 0.8),
-          date: new Date().toISOString().split('T')[0]
+          date: currentLocalDate
         });
 
       if (adjustmentError) console.log('Adjustment error (non-critical):', adjustmentError);
