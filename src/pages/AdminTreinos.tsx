@@ -15,6 +15,8 @@ import { AuthCard } from "@/components/AuthCard";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LoadingState } from "@/components/LoadingState";
+import { VideoUpload } from "@/components/VideoUpload";
+import { ThumbnailUpload } from "@/components/ThumbnailUpload";
 import { toast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 import {
@@ -363,25 +365,19 @@ export default function AdminTreinos() {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="video_url">URL do Vídeo</Label>
-                  <Input
-                    id="video_url"
-                    type="url"
-                    value={formData.video_url}
-                    onChange={(e) => setFormData({...formData, video_url: e.target.value})}
-                    placeholder="https://www.youtube.com/watch?v=..."
+                <div className="grid gap-4 md:grid-cols-2">
+                  <VideoUpload
+                    onVideoSelect={(url) => setFormData({...formData, video_url: url})}
+                    onRemove={() => setFormData({...formData, video_url: ""})}
+                    currentUrl={formData.video_url}
+                    label="Vídeo do Treino"
                   />
-                </div>
-
-                <div>
-                  <Label htmlFor="thumbnail_url">URL da Thumbnail</Label>
-                  <Input
-                    id="thumbnail_url"
-                    type="url"
-                    value={formData.thumbnail_url}
-                    onChange={(e) => setFormData({...formData, thumbnail_url: e.target.value})}
-                    placeholder="https://exemplo.com/imagem.jpg"
+                  
+                  <ThumbnailUpload
+                    onThumbnailSelect={(url) => setFormData({...formData, thumbnail_url: url})}
+                    onRemove={() => setFormData({...formData, thumbnail_url: ""})}
+                    currentUrl={formData.thumbnail_url}
+                    label="Thumbnail do Treino"
                   />
                 </div>
 
