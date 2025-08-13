@@ -8,7 +8,7 @@ import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 const Index = () => {
   return <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-[120px] pb-[40px]">
+      <div className="min-h-screen bg-gradient-primary font-inter pt-[180px] pb-[20px]">
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Auth Card */}
