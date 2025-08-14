@@ -37,17 +37,56 @@ serve(async (req) => {
               content: [
                 {
                   type: 'text',
-                  text: `Analise esta imagem de comida e forneça uma descrição detalhada. 
+                  text: `Analise esta imagem de comida e forneça uma análise estruturada em formato JSON.
 
-INSTRUÇÕES IMPORTANTES:
-- Identifique todos os alimentos visíveis na imagem
-- Descreva os ingredientes principais de cada item
-- Estime as quantidades/porções aproximadas
-- Mencione o método de preparo quando possível (grelhado, frito, assado, etc.)
-- Se houver múltiplos itens, liste cada um separadamente
-- Seja específico sobre tipos de alimentos (ex: "peito de frango grelhado" ao invés de apenas "frango")
+INSTRUÇÕES DETALHADAS:
 
-Formato da resposta: Descrição clara e detalhada dos alimentos identificados.`
+1. IDENTIFICAÇÃO DOS ALIMENTOS:
+   - Identifique todos os alimentos visíveis na imagem
+   - Seja específico sobre tipos e cortes (ex: "filé de salmão grelhado" não apenas "peixe")
+   - Identifique temperos, molhos e guarnições visíveis
+   - Mencione método de preparo (grelhado, frito, assado, cozido, cru, etc.)
+
+2. ESTIMATIVAS DE QUANTIDADE:
+   - Use referências visuais (tamanho de talheres, pratos, mãos se visíveis)
+   - Estime peso aproximado em gramas quando possível
+   - Descreva porções usando medidas caseiras (colher, xícara, fatia, unidade)
+   - Para líquidos, estime volume em ml
+
+3. DETALHES DE PREPARO E QUALIDADE:
+   - Estado de cocção (mal passado, ao ponto, bem passado)
+   - Temperos e condimentos visíveis
+   - Qualidade aparente dos alimentos
+   - Possíveis ingredientes ocultos ou misturas
+
+4. NÍVEL DE CONFIANÇA:
+   - Alto: Alimento claramente identificável
+   - Médio: Identificação provável mas com alguma incerteza
+   - Baixo: Difícil identificação, várias possibilidades
+
+FORMATO DE RESPOSTA JSON:
+{
+  "analysis_summary": "Breve resumo geral do prato",
+  "confidence_level": "Alto/Médio/Baixo",
+  "total_estimated_weight": "peso total aproximado em gramas",
+  "foods_identified": [
+    {
+      "name": "Nome específico do alimento",
+      "category": "categoria (proteína, carboidrato, vegetal, etc.)",
+      "preparation_method": "método de preparo",
+      "estimated_weight_grams": "peso estimado em gramas",
+      "portion_description": "descrição da porção (ex: 1 filé médio, 2 colheres de sopa)",
+      "confidence": "Alto/Médio/Baixo",
+      "visible_seasonings": ["temperos visíveis"],
+      "cooking_level": "nível de cocção se aplicável",
+      "observations": "observações específicas sobre este alimento"
+    }
+  ],
+  "general_observations": "observações gerais sobre o prato, possíveis ingredientes ocultos, qualidade visual",
+  "dietary_notes": "notas sobre dieta (vegano, sem glúten, etc.) se aplicável"
+}
+
+RESPONDA APENAS COM O JSON, SEM TEXTO ADICIONAL.`
                 },
                 {
                   type: 'image_url',
@@ -58,7 +97,7 @@ Formato da resposta: Descrição clara e detalhada dos alimentos identificados.`
               ]
             }
           ],
-          max_tokens: 1000
+          max_tokens: 1500
         })
       });
 
