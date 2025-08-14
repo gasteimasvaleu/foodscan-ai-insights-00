@@ -54,13 +54,6 @@ INSTRUÇÕES PARA ANÁLISE ROBUSTA:
    - Estime tempo de preparo baseado na aparência visual
    - Identifique técnicas culinárias específicas (refogado, braseado, salteado, etc.)
 
-3. ESTIMATIVAS QUANTITATIVAS PRECISAS:
-   - Use múltiplas referências visuais (talheres, pratos, mãos, objetos conhecidos)
-   - Estime peso em gramas considerando densidade dos alimentos
-   - Calcule volume em ml para líquidos
-   - Descreva porções usando medidas caseiras precisas
-   - Considere contexto da porção (individual, para compartilhar, etc.)
-
 4. ANÁLISE SENSORIAL E QUALITATIVA:
    - Analise textura visual (crocante, macio, suculento, firme, etc.)
    - Examine coloração e o que indica sobre o preparo
@@ -155,7 +148,7 @@ RESPONDA APENAS COM O JSON ESTRUTURADO, SEM TEXTO ADICIONAL.`
               ]
             }
           ],
-          max_tokens: 1500
+          max_tokens: 2050
         })
       });
 
@@ -240,7 +233,7 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
           { role: 'user', content: prompt }
         ],
         temperature: 0.3,
-        max_tokens: 1500,
+        max_tokens: 2050,
       }),
     });
 
