@@ -15,10 +15,70 @@ serve(async (req) => {
   }
 
   try {
-    const { description } = await req.json();
-    console.log('Analyzing nutrition for description:', description);
+    const { description, base64Image } = await req.json();
+    
+    let finalDescription = description;
+    
+    // If base64Image is provided, analyze it first to get description
+    if (base64Image) {
+      console.log("Analyzing image first...");
+      
+      const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `Analise esta imagem de comida e forneça uma descrição detalhada. 
 
-    const prompt = `Baseado nesta descrição detalhada de um alimento: "${description}"
+INSTRUÇÕES IMPORTANTES:
+- Identifique todos os alimentos visíveis na imagem
+- Descreva os ingredientes principais de cada item
+- Estime as quantidades/porções aproximadas
+- Mencione o método de preparo quando possível (grelhado, frito, assado, etc.)
+- Se houver múltiplos itens, liste cada um separadamente
+- Seja específico sobre tipos de alimentos (ex: "peito de frango grelhado" ao invés de apenas "frango")
+
+Formato da resposta: Descrição clara e detalhada dos alimentos identificados.`
+                },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:image/jpeg;base64,${base64Image}`
+                  }
+                }
+              ]
+            }
+          ],
+          max_tokens: 1000
+        })
+      });
+
+      if (!imageAnalysisResponse.ok) {
+        throw new Error('Failed to analyze image');
+      }
+
+      const imageData = await imageAnalysisResponse.json();
+      finalDescription = imageData.choices[0]?.message?.content;
+      
+      if (!finalDescription) {
+        throw new Error('No description generated from image');
+      }
+      
+      console.log("Image description generated:", finalDescription);
+    }
+    
+    console.log('Analyzing nutrition for description:', finalDescription);
+
+    const prompt = `Baseado nesta descrição detalhada de um alimento: "${finalDescription}"
 
 ANALISE SE HÁ MÚLTIPLOS ELEMENTOS NO PRATO:
 
@@ -107,7 +167,13 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
       throw new Error('Failed to parse nutrition analysis result');
     }
 
-    return new Response(JSON.stringify(parsedResult), {
+    // If we analyzed an image, also return the description
+    const response = base64Image ? {
+      description: finalDescription,
+      ...parsedResult
+    } : parsedResult;
+
+    return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 

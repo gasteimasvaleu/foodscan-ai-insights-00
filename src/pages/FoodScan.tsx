@@ -84,8 +84,21 @@ const FoodScan = () => {
     try {
       const base64Full = await convertToBase64(imageFile);
       const base64Data = base64Full.split(',')[1]; // Remove the data:image/jpeg;base64, prefix
-      const description = await analyzeImageWithEdgeFunction(base64Data);
-      setImageDescription(description);
+      
+      // Use analyze-nutrition function with image data
+      const { data, error } = await supabase.functions.invoke('analyze-nutrition', {
+        body: { base64Image: base64Data }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data || !data.description) {
+        throw new Error('Nenhuma descrição foi gerada');
+      }
+
+      setImageDescription(data.description);
       toast({
         title: "Descrição gerada!",
         description: "Agora você pode enviar para análise nutricional."
@@ -102,23 +115,6 @@ const FoodScan = () => {
     }
   };
 
-  const analyzeImageWithEdgeFunction = async (base64Image: string): Promise<string> => {
-    console.log("Enviando para Edge Function...");
-    
-    const { data, error } = await supabase.functions.invoke('analyze-image', {
-      body: { base64Image }
-    });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (!data || !data.description) {
-      throw new Error('Nenhuma descrição foi gerada');
-    }
-
-    return data.description;
-  };
 
   const handleNutritionAnalysis = async () => {
     if (!imageDescription.trim()) {
