@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
-import { AuthCard } from '@/components/AuthCard';
+import { PaymentRegistrationForm } from '@/components/PaymentRegistrationForm';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -51,7 +51,7 @@ const PaymentSuccess = () => {
           </Card>
 
           {/* Registration Form */}
-          <AuthCard mode="signup" />
+          <PaymentRegistrationForm sessionId={sessionId} />
         </div>
       </div>
       
