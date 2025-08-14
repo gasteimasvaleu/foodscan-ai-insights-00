@@ -18,17 +18,38 @@ interface FoodDetailsCardProps {
 export const FoodDetailsCard: React.FC<FoodDetailsCardProps> = ({ elements, analysisData }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!elements || elements.length === 0) return null;
+  // Debug logging
+  console.log('FoodDetailsCard - elements:', elements);
+  console.log('FoodDetailsCard - analysisData:', analysisData);
+
+  if (!elements || elements.length === 0) {
+    console.log('FoodDetailsCard - No elements, hiding card');
+    return null;
+  }
 
   const hasDetailedInfo = elements.some(element => 
     element.preparation_analysis || 
     element.quality_indicators || 
     element.nutritional_preview ||
     element.texture_analysis ||
-    element.color_analysis
+    element.color_analysis ||
+    element.detailed_description ||
+    element.confidence_level
   );
 
-  if (!hasDetailedInfo && !analysisData?.analysis_summary) return null;
+  const hasAnyInfo = hasDetailedInfo || 
+    analysisData?.analysis_summary || 
+    analysisData?.overall_confidence ||
+    analysisData?.total_estimated_weight ||
+    analysisData?.cuisine_analysis;
+
+  console.log('FoodDetailsCard - hasDetailedInfo:', hasDetailedInfo);
+  console.log('FoodDetailsCard - hasAnyInfo:', hasAnyInfo);
+
+  if (!hasAnyInfo) {
+    console.log('FoodDetailsCard - No detailed info, hiding card');
+    return null;
+  }
 
   return (
     <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
