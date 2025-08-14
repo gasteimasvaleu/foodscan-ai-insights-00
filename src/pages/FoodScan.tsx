@@ -21,8 +21,7 @@ const FoodScan = () => {
   const [imageDescription, setImageDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  const openaiApiKey = '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';
-  const webhookUrl = 'https://hook.us2.make.com/nlo14ull4syuj9t7nip92nukiegg1n2g';
+  // Removed exposed API key - now using secure Edge Functions
 
   // Show loading while checking authentication
   if (loading) {
@@ -80,19 +79,12 @@ const FoodScan = () => {
 
   const handleImageAnalysis = async (imageFile: File) => {
     setSelectedImage(URL.createObjectURL(imageFile));
-    if (!openaiApiKey.trim()) {
-      toast({
-        title: "API Key necessária",
-        description: "Por favor, insira sua chave da OpenAI primeiro.",
-        variant: "destructive"
-      });
-      return;
-    }
     setIsDescribing(true);
     console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
     try {
       const base64Full = await convertToBase64(imageFile);
-      const description = await analyzeImageWithOpenAI(base64Full);
+      const base64Data = base64Full.split(',')[1]; // Remove the data:image/jpeg;base64, prefix
+      const description = await analyzeImageWithEdgeFunction(base64Data);
       setImageDescription(description);
       toast({
         title: "Descrição gerada!",
@@ -110,36 +102,22 @@ const FoodScan = () => {
     }
   };
 
-  const analyzeImageWithOpenAI = async (base64Image: string): Promise<string> => {
-    console.log("Enviando para OpenAI...");
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [{
-          role: "user",
-          content: [{
-            type: "text",
-            text: "Descreva detalhadamente este alimento. Identifique o que você vê: tipo de alimento, ingredientes visíveis, modo de preparo, características visuais. Seja muito específico e preciso."
-          }, {
-            type: "image_url",
-            image_url: {
-              url: base64Image
-            }
-          }]
-        }],
-        max_tokens: 500
-      })
+  const analyzeImageWithEdgeFunction = async (base64Image: string): Promise<string> => {
+    console.log("Enviando para Edge Function...");
+    
+    const { data, error } = await supabase.functions.invoke('analyze-image', {
+      body: { base64Image }
     });
-    if (!response.ok) {
-      throw new Error(`Erro da OpenAI: ${response.status}`);
+
+    if (error) {
+      throw new Error(error.message);
     }
-    const data = await response.json();
-    return data.choices[0].message.content;
+
+    if (!data || !data.description) {
+      throw new Error('Nenhuma descrição foi gerada');
+    }
+
+    return data.description;
   };
 
   const handleNutritionAnalysis = async () => {
