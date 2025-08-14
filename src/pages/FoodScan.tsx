@@ -139,7 +139,8 @@ const FoodScan = () => {
       }
 
       console.log("Dados da edge function:", data);
-      setNutritionData(data);
+      const processedData = processOpenAIResponse(JSON.stringify(data));
+      setNutritionData(processedData);
       
       toast({
         title: "Análise concluída!",
@@ -172,7 +173,16 @@ const FoodScan = () => {
       foodName: extractFoodName(data, responseText),
       description: extractDescription(data, responseText),
       quantity: extractQuantity(data, responseText),
-      elements: extractElements(data), // Nova função para extrair elementos
+      elements: extractElements(data),
+      analysis_summary: data?.analysis_summary,
+      overall_confidence: data?.overall_confidence,
+      total_estimated_weight: data?.total_estimated_weight,
+      cuisine_analysis: data?.cuisine_analysis ? {
+        cooking_style: data.cuisine_analysis.cooking_style,
+        complexity_level: data.cuisine_analysis.complexity_level,
+        presentation_quality: data.cuisine_analysis.presentation_quality,
+        temperature_indicators: data.cuisine_analysis.temperature_indicators
+      } : undefined,
       nutrition: {
         calories: extractNutritionValue(data, responseText, ['calories', 'calorias', 'kcal']),
         carbohydrates: extractNutritionValue(data, responseText, ['carbohydrates', 'carboidratos', 'carbs']),
@@ -246,9 +256,51 @@ const FoodScan = () => {
   const extractElements = (data: any): FoodElement[] | undefined => {
     console.log("=== EXTRAINDO ELEMENTOS ===", data);
     
-    // Verificar se data é válido e tem a propriedade elementos
+    // Primeiro, tentar a nova estrutura foods_identified
+    if (data && typeof data === 'object' && data.foods_identified && Array.isArray(data.foods_identified)) {
+      console.log("Estrutura foods_identified encontrada:", data.foods_identified);
+      
+      return data.foods_identified.map((food: any) => ({
+        name: food.name || "Elemento",
+        description: food.detailed_description || food.description,
+        detailed_description: food.detailed_description,
+        category: food.category,
+        preparation_analysis: food.preparation_analysis ? {
+          primary_method: food.preparation_analysis.primary_method || "",
+          secondary_methods: food.preparation_analysis.secondary_methods || [],
+          cooking_tools: food.preparation_analysis.cooking_tools || [],
+          cooking_indicators: food.preparation_analysis.cooking_indicators || "",
+          estimated_cooking_time: food.preparation_analysis.estimated_cooking_time || "",
+          cooking_level: food.preparation_analysis.cooking_level || ""
+        } : undefined,
+        texture_analysis: food.texture_analysis,
+        color_analysis: food.color_analysis,
+        size_reference: food.size_reference,
+        confidence_level: food.confidence_level,
+        quality_indicators: food.quality_indicators ? {
+          freshness_signs: food.quality_indicators.freshness_signs || "",
+          cooking_quality: food.quality_indicators.cooking_quality || "",
+          visual_appeal: food.quality_indicators.visual_appeal || ""
+        } : undefined,
+        nutritional_preview: food.nutritional_preview ? {
+          macronutrient_profile: food.nutritional_preview.macronutrient_profile || "",
+          caloric_density: food.nutritional_preview.caloric_density || "",
+          health_indicators: food.nutritional_preview.health_indicators || ""
+        } : undefined,
+        nutrition: {
+          calories: parseNutritionValue(food.nutrition?.calories || 0),
+          carbohydrates: parseNutritionValue(food.nutrition?.carbohydrates || 0),
+          proteins: parseNutritionValue(food.nutrition?.proteins || 0),
+          fats: parseNutritionValue(food.nutrition?.fats || 0),
+          fiber: parseNutritionValue(food.nutrition?.fiber || 0),
+          sodium: parseNutritionValue(food.nutrition?.sodium || 0)
+        }
+      }));
+    }
+    
+    // Fallback para estrutura antiga (elementos)
     if (data && typeof data === 'object' && data.elementos && Array.isArray(data.elementos)) {
-      console.log("Elementos encontrados:", data.elementos);
+      console.log("Estrutura elementos (antiga) encontrada:", data.elementos);
       
       return data.elementos.map((elemento: any) => ({
         name: elemento.nome || elemento.name || "Elemento",
@@ -259,6 +311,24 @@ const FoodScan = () => {
           fats: parseNutritionValue(elemento.gorduras || elemento.fats || 0),
           fiber: parseNutritionValue(elemento.fibras || elemento.fiber || 0),
           sodium: parseNutritionValue(elemento.sodio || elemento.sodium || 0)
+        }
+      }));
+    }
+    
+    // Fallback para estrutura elements (alternativa)
+    if (data && typeof data === 'object' && data.elements && Array.isArray(data.elements)) {
+      console.log("Estrutura elements encontrada:", data.elements);
+      
+      return data.elements.map((element: any) => ({
+        name: element.name || "Elemento",
+        description: element.description,
+        nutrition: {
+          calories: parseNutritionValue(element.nutrition?.calories || 0),
+          carbohydrates: parseNutritionValue(element.nutrition?.carbohydrates || 0),
+          proteins: parseNutritionValue(element.nutrition?.proteins || 0),
+          fats: parseNutritionValue(element.nutrition?.fats || 0),
+          fiber: parseNutritionValue(element.nutrition?.fiber || 0),
+          sodium: parseNutritionValue(element.nutrition?.sodium || 0)
         }
       }));
     }

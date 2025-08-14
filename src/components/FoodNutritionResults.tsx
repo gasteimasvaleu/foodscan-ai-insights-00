@@ -3,6 +3,7 @@ import { RotateCcw, Save, Utensils, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
 import { MultipleElementsPortionSelector } from './MultipleElementsPortionSelector';
+import { FoodDetailsCard } from './FoodDetailsCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -212,6 +213,17 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <div className="text-2xl font-bold text-yellow-600">{fats} g</div>
         </div>
       </div>
+
+      {/* Card de Detalhes Expandível */}
+      <FoodDetailsCard 
+        elements={data.elements} 
+        analysisData={{
+          analysis_summary: data.analysis_summary,
+          overall_confidence: data.overall_confidence,
+          total_estimated_weight: data.total_estimated_weight,
+          cuisine_analysis: data.cuisine_analysis
+        }}
+      />
 
       <div className="flex flex-col sm:flex-row justify-center gap-4">
         <Button
