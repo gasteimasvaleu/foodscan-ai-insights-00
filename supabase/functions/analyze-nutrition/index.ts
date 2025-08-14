@@ -37,107 +37,18 @@ serve(async (req) => {
               content: [
                 {
                   type: 'text',
-                  text: `Analise esta imagem de comida e forneça uma análise culinária completa e estruturada em formato JSON.
+                  text: `Analise esta imagem de comida e descreva detalhadamente o que você vê.
 
-INSTRUÇÕES PARA ANÁLISE ROBUSTA:
+Comece com uma descrição geral do prato, depois detalhe cada alimento usando o formato:
 
-1. IDENTIFICAÇÃO DETALHADA DOS ALIMENTOS:
-   - Identifique todos os alimentos visíveis com máxima precisão
-   - Seja específico sobre tipos, cortes e variedades (ex: "filé de salmão atlântico grelhado" não apenas "peixe")
-   - Identifique temperos, ervas, molhos, acompanhamentos e guarnições
-   - Detecte ingredientes parcialmente visíveis ou misturados
+**Nome do Alimento**: Descrição detalhada incluindo método de preparo, características visuais, temperos aparentes, textura e qualidade.
 
-2. ANÁLISE PROFUNDA DE MÉTODOS DE PREPARO:
-   - Identifique todos os métodos de preparo utilizados para cada alimento
-   - Detecte sinais visuais específicos (marcas de grill, douração, crostas, caramelização)
-   - Analise equipamentos/utensílios provavelmente utilizados (grill, frigideira, forno, vapor, etc.)
-   - Estime tempo de preparo baseado na aparência visual
-   - Identifique técnicas culinárias específicas (refogado, braseado, salteado, etc.)
+Exemplo:
+"Este prato apresenta uma refeição típica brasileira com arroz, feijão e carne grelhada. **Arroz Branco**: Grãos soltos e bem cozidos, preparados de forma tradicional, apresentando coloração branca uniforme e textura macia. **Feijão Preto**: Caldo escuro e cremoso, tempero aparentemente caseiro com cebola e alho, textura consistente típica do feijão bem refogado."
 
-4. ANÁLISE SENSORIAL E QUALITATIVA:
-   - Analise textura visual (crocante, macio, suculento, firme, etc.)
-   - Examine coloração e o que indica sobre o preparo
-   - Avalie sinais de frescor e qualidade
-   - Detecte indicadores de temperatura (vapor, derretimento, condensação)
-   - Analise apresentação e técnicas de emplatamento
+Mantenha o texto natural e fluido, sem usar estruturas de lista ou markdown pesado. Foque na descrição visual e culinária dos alimentos.
 
-5. ANÁLISE CULINÁRIA COMPLETA:
-   - Identifique estilo culinário/origem (brasileiro, italiano, asiático, etc.)
-   - Detecte técnicas de cocção específicas
-   - Analise harmonização de sabores aparente
-   - Avalie complexidade do prato
-
-FORMATO DE RESPOSTA JSON ESTRUTURADO:
-{
-  "analysis_summary": "Resumo executivo da análise culinária completa",
-  "overall_confidence": "Alto/Médio/Baixo - confiança geral da análise",
-  "total_estimated_weight": "peso total aproximado com unidade",
-  "cuisine_analysis": {
-    "cooking_style": "estilo culinário identificado",
-    "complexity_level": "Simples/Moderado/Complexo",
-    "presentation_quality": "análise da apresentação",
-    "temperature_indicators": "sinais de temperatura observados"
-  },
-  "foods_identified": [
-    {
-      "name": "Nome específico e detalhado do alimento",
-      "detailed_description": "Descrição completa com características específicas",
-      "category": "categoria nutricional principal",
-      "preparation_analysis": {
-        "primary_method": "método principal de preparo",
-        "secondary_methods": ["métodos adicionais utilizados"],
-        "cooking_tools": ["equipamentos/utensílios provavelmente usados"],
-        "cooking_indicators": "sinais visuais do preparo",
-        "estimated_cooking_time": "tempo estimado de preparo",
-        "cooking_level": "nível de cocção detalhado"
-      },
-      "texture_analysis": "análise da textura visual",
-      "color_analysis": "análise da coloração e significado",
-      "size_reference": "referência específica de tamanho",
-      "quantity_analysis": {
-        "estimated_weight_grams": "peso estimado em gramas",
-        "portion_description": "descrição detalhada da porção",
-        "volume_if_liquid": "volume em ml se aplicável",
-        "density_consideration": "considerações sobre densidade"
-      },
-      "seasoning_analysis": {
-        "visible_seasonings": ["temperos e ervas visíveis"],
-        "probable_seasonings": ["temperos prováveis mas não claramente visíveis"],
-        "sauce_analysis": "análise de molhos se presentes"
-      },
-      "quality_indicators": {
-        "freshness_signs": "sinais de frescor",
-        "cooking_quality": "qualidade aparente do preparo",
-        "visual_appeal": "apelo visual do item"
-      },
-      "nutritional_preview": {
-        "macronutrient_profile": "perfil principal de macronutrientes",
-        "caloric_density": "densidade calórica estimada",
-        "health_indicators": "indicadores visuais de saudabilidade"
-      },
-      "confidence_level": "Alto/Médio/Baixo",
-      "observations": "observações específicas e detalhadas"
-    }
-  ],
-  "comprehensive_observations": {
-    "hidden_ingredients": "possíveis ingredientes não claramente visíveis",
-    "cooking_sequence": "sequência provável de preparo do prato",
-    "flavor_harmony": "análise da harmonização de sabores",
-    "visual_composition": "composição visual do prato"
-  },
-  "dietary_compatibility": {
-    "dietary_restrictions": "restrições dietéticas compatíveis",
-    "allergen_analysis": "possíveis alérgenos identificados",
-    "nutritional_balance": "equilíbrio nutricional aparente"
-  },
-  "serving_context": {
-    "meal_type": "tipo de refeição provável",
-    "serving_style": "estilo de servir",
-    "cultural_context": "contexto cultural se identificável"
-  }
-}
-
-RESPONDA APENAS COM O JSON ESTRUTURADO, SEM TEXTO ADICIONAL.`
+IMPORTANTE: Retorne APENAS o texto descritivo, sem JSON ou outras estruturas.`
                 },
                 {
                   type: 'image_url',
@@ -261,58 +172,11 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
     let response = parsedResult;
     
     if (base64Image && finalDescription) {
-      try {
-        // Parse the image analysis to extract detailed information
-        const cleanedImageAnalysis = finalDescription.replace(/```json\n?|\n?```/g, '').trim();
-        const imageAnalysisData = JSON.parse(cleanedImageAnalysis);
-        
-        // Preserve all the robust analysis data from the image
-        response = {
-          ...parsedResult,
-          description: finalDescription,
-          analysis_summary: imageAnalysisData.analysis_summary,
-          overall_confidence: imageAnalysisData.overall_confidence,
-          total_estimated_weight: imageAnalysisData.total_estimated_weight,
-          cuisine_analysis: imageAnalysisData.cuisine_analysis,
-          foods_identified: imageAnalysisData.foods_identified,
-          comprehensive_observations: imageAnalysisData.comprehensive_observations,
-          dietary_compatibility: imageAnalysisData.dietary_compatibility,
-          serving_context: imageAnalysisData.serving_context
-        };
-        
-        // Map the detailed foods_identified to elements with nutrition
-        if (imageAnalysisData.foods_identified && parsedResult.elements) {
-          response.elements = parsedResult.elements.map((element, index) => {
-            const detailedFood = imageAnalysisData.foods_identified[index];
-            if (detailedFood) {
-              return {
-                ...element,
-                detailed_description: detailedFood.detailed_description,
-                category: detailedFood.category,
-                preparation_analysis: detailedFood.preparation_analysis,
-                texture_analysis: detailedFood.texture_analysis,
-                color_analysis: detailedFood.color_analysis,
-                size_reference: detailedFood.size_reference,
-                quantity_analysis: detailedFood.quantity_analysis,
-                seasoning_analysis: detailedFood.seasoning_analysis,
-                quality_indicators: detailedFood.quality_indicators,
-                nutritional_preview: detailedFood.nutritional_preview,
-                confidence_level: detailedFood.confidence_level,
-                observations: detailedFood.observations
-              };
-            }
-            return element;
-          });
-        }
-        
-      } catch (parseError) {
-        console.error('Error parsing image analysis:', parseError);
-        // Fallback to simple format if parsing fails
-        response = {
-          description: finalDescription,
-          ...parsedResult
-        };
-      }
+      // Since we're now returning natural text descriptions, just add it to the response
+      response = {
+        ...parsedResult,
+        description: finalDescription
+      };
     }
 
     return new Response(JSON.stringify(response), {

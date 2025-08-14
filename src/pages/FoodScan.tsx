@@ -220,103 +220,17 @@ const FoodScan = () => {
   };
 
   const extractDescription = (data: any, text: string): string => {
-    if (data && typeof data === 'object') {
-      // Construir descrição natural com todas as informações disponíveis
-      let description = "";
-      
-      // Começar com análise resumida se disponível
-      if (data.analysis_summary) {
-        description += `${data.analysis_summary} `;
-      }
-      
-      // Adicionar alimentos identificados com detalhes
-      if (data.foods_identified && Array.isArray(data.foods_identified)) {
-        data.foods_identified.forEach((food: any, index: number) => {
-          if (index > 0) description += " ";
-          
-          description += `${food.name}: `;
-          
-          // Descrição detalhada
-          if (food.detailed_description) {
-            description += `${food.detailed_description}`;
-          }
-          
-          // Adicionar informações de preparo de forma natural
-          if (food.preparation_analysis) {
-            const prep = food.preparation_analysis;
-            if (prep.primary_method) {
-              description += `, preparado através de ${prep.primary_method.toLowerCase()}`;
-            }
-            if (prep.cooking_tools && prep.cooking_tools.length > 0) {
-              description += ` utilizando ${prep.cooking_tools.join(', ')}`;
-            }
-            if (prep.estimated_cooking_time) {
-              description += ` em aproximadamente ${prep.estimated_cooking_time}`;
-            }
-          }
-          
-          // Adicionar indicadores de qualidade
-          if (food.quality_indicators) {
-            const quality = food.quality_indicators;
-            if (quality.freshness_signs || quality.cooking_quality) {
-              description += ". ";
-              if (quality.freshness_signs) {
-                description += `${quality.freshness_signs}`;
-              }
-              if (quality.cooking_quality) {
-                description += ` ${quality.cooking_quality}`;
-              }
-            }
-          }
-          
-          description += ". ";
-        });
-      }
-      
-      // Adicionar análise culinária de forma natural
-      if (data.cuisine_analysis) {
-        const cuisine = data.cuisine_analysis;
-        
-        if (cuisine.estimated_total_weight || cuisine.cooking_style || cuisine.complexity_level || cuisine.presentation_quality) {
-          description += "O prato ";
-          
-          if (cuisine.estimated_total_weight) {
-            description += `tem peso estimado de ${cuisine.estimated_total_weight}`;
-          }
-          
-          if (cuisine.cooking_style) {
-            if (cuisine.estimated_total_weight) description += ", ";
-            description += `apresenta estilo de cozimento ${cuisine.cooking_style.toLowerCase()}`;
-          }
-          
-          if (cuisine.complexity_level) {
-            description += ` com complexidade ${cuisine.complexity_level.toLowerCase()}`;
-          }
-          
-          if (cuisine.presentation_quality) {
-            description += ` e qualidade de apresentação ${cuisine.presentation_quality.toLowerCase()}`;
-          }
-          
-          description += ". ";
-        }
-      }
-      
-      // Adicionar observações abrangentes
-      if (data.comprehensive_observations) {
-        description += `${data.comprehensive_observations}`;
-      }
-      
-      // Fallback para descrição simples se não houver dados robustos
-      if (!description.trim()) {
-        return data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.";
-      }
-      
-      return description.trim();
+    // Se data tem uma descrição direta (texto natural da API), usar ela
+    if (data && typeof data === 'object' && data.description && typeof data.description === 'string') {
+      return data.description;
     }
     
-    // Fallback para análise de texto
-    const firstLine = text.split('\n')[0];
-    return firstLine || "Informações nutricionais do alimento analisado.";
+    // Fallback: usar o texto bruto se for string simples
+    if (typeof text === 'string' && text.trim()) {
+      return text.trim();
+    }
+    
+    return "Informações nutricionais do alimento analisado.";
   };
 
   const extractQuantity = (data: any, text: string): string => {
