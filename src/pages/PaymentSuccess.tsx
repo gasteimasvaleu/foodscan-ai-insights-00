@@ -10,21 +10,39 @@ import { PaymentRegistrationForm } from '@/components/PaymentRegistrationForm';
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const sessionId = searchParams.get('session_id');
+
+  console.log('PaymentSuccess - sessionId:', sessionId);
+  console.log('PaymentSuccess - searchParams:', searchParams.toString());
 
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
+    console.log('PaymentSuccess useEffect - sessionId:', sessionId);
     
-    // Redireciona para a página de assinatura se não houver session_id
+    // Só redireciona se realmente não houver session_id após um delay
     if (!sessionId) {
-      navigate('/quero-assinar', { replace: true });
+      console.log('No session_id found, redirecting to subscription page');
+      const timer = setTimeout(() => {
+        navigate('/quero-assinar', { replace: true });
+      }, 2000); // 2 segundos de delay para debugging
+      
+      return () => clearTimeout(timer);
     }
-  }, [searchParams, navigate]);
+  }, [sessionId, navigate]);
 
-  // Só renderiza se houver session_id
-  const sessionId = searchParams.get('session_id');
+  // Se não há sessionId, mostra mensagem de carregamento por 2 segundos
   if (!sessionId) {
-    return null;
+    console.log('Rendering loading state - no sessionId');
+    return (
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
+        <div className="text-white text-center">
+          <p>Carregando informações do pagamento...</p>
+          <p className="text-sm mt-2">Redirecionando em alguns segundos...</p>
+        </div>
+      </div>
+    );
   }
+
+  console.log('Rendering PaymentSuccess with sessionId:', sessionId);
 
   return (
     <div className="min-h-screen bg-gradient-primary">

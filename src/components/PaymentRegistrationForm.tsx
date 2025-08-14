@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,12 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
     confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log('PaymentRegistrationForm rendered with sessionId:', sessionId);
+
+  useEffect(() => {
+    console.log('PaymentRegistrationForm mounted with sessionId:', sessionId);
+  }, [sessionId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
