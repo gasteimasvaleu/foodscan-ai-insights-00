@@ -127,7 +127,7 @@ Se for UM elemento único, use o formato:
 
 IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const nutritionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -147,11 +147,11 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+    if (!nutritionResponse.ok) {
+      throw new Error(`OpenAI API error: ${nutritionResponse.status}`);
     }
 
-    const data = await response.json();
+    const data = await nutritionResponse.json();
     const nutritionAnalysis = data.choices[0].message.content;
     
     console.log('Nutrition analysis result:', nutritionAnalysis);
