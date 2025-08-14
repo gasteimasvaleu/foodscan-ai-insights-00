@@ -12,6 +12,22 @@ interface FoodDetailsCardProps {
     overall_confidence?: string;
     total_estimated_weight?: string;
     cuisine_analysis?: CuisineAnalysis;
+    comprehensive_observations?: {
+      hidden_ingredients?: string;
+      cooking_sequence?: string;
+      flavor_harmony?: string;
+      visual_composition?: string;
+    };
+    dietary_compatibility?: {
+      dietary_restrictions?: string;
+      allergen_analysis?: string;
+      nutritional_balance?: string;
+    };
+    serving_context?: {
+      meal_type?: string;
+      serving_style?: string;
+      cultural_context?: string;
+    };
   };
 }
 

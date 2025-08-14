@@ -215,15 +215,18 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
       </div>
 
       {/* Card de Detalhes Expandível */}
-      <FoodDetailsCard 
-        elements={data.elements} 
-        analysisData={{
-          analysis_summary: data.analysis_summary,
-          overall_confidence: data.overall_confidence,
-          total_estimated_weight: data.total_estimated_weight,
-          cuisine_analysis: data.cuisine_analysis
-        }}
-      />
+        <FoodDetailsCard 
+          elements={data.elements || data.foods_identified} 
+          analysisData={{
+            analysis_summary: data.analysis_summary,
+            overall_confidence: data.overall_confidence,
+            total_estimated_weight: data.total_estimated_weight,
+            cuisine_analysis: data.cuisine_analysis,
+            comprehensive_observations: data.comprehensive_observations,
+            dietary_compatibility: data.dietary_compatibility,
+            serving_context: data.serving_context
+          }}
+        />
 
       <div className="flex flex-col sm:flex-row justify-center gap-4">
         <Button

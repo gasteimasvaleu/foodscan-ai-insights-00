@@ -48,6 +48,25 @@ export interface CuisineAnalysis {
   temperature_indicators?: string;
 }
 
+export interface ComprehensiveObservations {
+  hidden_ingredients?: string;
+  cooking_sequence?: string;
+  flavor_harmony?: string;
+  visual_composition?: string;
+}
+
+export interface DietaryCompatibility {
+  dietary_restrictions?: string;
+  allergen_analysis?: string;
+  nutritional_balance?: string;
+}
+
+export interface ServingContext {
+  meal_type?: string;
+  serving_style?: string;
+  cultural_context?: string;
+}
+
 export interface NutritionData {
   foodName: string;
   description: string;
@@ -57,6 +76,10 @@ export interface NutritionData {
   overall_confidence?: string;
   total_estimated_weight?: string;
   cuisine_analysis?: CuisineAnalysis;
+  foods_identified?: FoodElement[]; // Dados robustos da análise de imagem
+  comprehensive_observations?: ComprehensiveObservations;
+  dietary_compatibility?: DietaryCompatibility;
+  serving_context?: ServingContext;
   nutrition: {
     calories: number;
     carbohydrates: number;

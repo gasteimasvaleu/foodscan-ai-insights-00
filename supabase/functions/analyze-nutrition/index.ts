@@ -264,11 +264,63 @@ IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de c
       throw new Error('Failed to parse nutrition analysis result');
     }
 
-    // If we analyzed an image, also return the description
-    const response = base64Image ? {
-      description: finalDescription,
-      ...parsedResult
-    } : parsedResult;
+    // If we analyzed an image, extract and preserve the detailed analysis
+    let response = parsedResult;
+    
+    if (base64Image && finalDescription) {
+      try {
+        // Parse the image analysis to extract detailed information
+        const cleanedImageAnalysis = finalDescription.replace(/```json\n?|\n?```/g, '').trim();
+        const imageAnalysisData = JSON.parse(cleanedImageAnalysis);
+        
+        // Preserve all the robust analysis data from the image
+        response = {
+          ...parsedResult,
+          description: finalDescription,
+          analysis_summary: imageAnalysisData.analysis_summary,
+          overall_confidence: imageAnalysisData.overall_confidence,
+          total_estimated_weight: imageAnalysisData.total_estimated_weight,
+          cuisine_analysis: imageAnalysisData.cuisine_analysis,
+          foods_identified: imageAnalysisData.foods_identified,
+          comprehensive_observations: imageAnalysisData.comprehensive_observations,
+          dietary_compatibility: imageAnalysisData.dietary_compatibility,
+          serving_context: imageAnalysisData.serving_context
+        };
+        
+        // Map the detailed foods_identified to elements with nutrition
+        if (imageAnalysisData.foods_identified && parsedResult.elements) {
+          response.elements = parsedResult.elements.map((element, index) => {
+            const detailedFood = imageAnalysisData.foods_identified[index];
+            if (detailedFood) {
+              return {
+                ...element,
+                detailed_description: detailedFood.detailed_description,
+                category: detailedFood.category,
+                preparation_analysis: detailedFood.preparation_analysis,
+                texture_analysis: detailedFood.texture_analysis,
+                color_analysis: detailedFood.color_analysis,
+                size_reference: detailedFood.size_reference,
+                quantity_analysis: detailedFood.quantity_analysis,
+                seasoning_analysis: detailedFood.seasoning_analysis,
+                quality_indicators: detailedFood.quality_indicators,
+                nutritional_preview: detailedFood.nutritional_preview,
+                confidence_level: detailedFood.confidence_level,
+                observations: detailedFood.observations
+              };
+            }
+            return element;
+          });
+        }
+        
+      } catch (parseError) {
+        console.error('Error parsing image analysis:', parseError);
+        // Fallback to simple format if parsing fails
+        response = {
+          description: finalDescription,
+          ...parsedResult
+        };
+      }
+    }
 
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
