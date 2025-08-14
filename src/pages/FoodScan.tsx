@@ -221,8 +221,85 @@ const FoodScan = () => {
 
   const extractDescription = (data: any, text: string): string => {
     if (data && typeof data === 'object') {
-      return data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.";
+      // Construir descrição rica com todas as informações disponíveis
+      let richDescription = "";
+      
+      // 1. Análise resumida (Item 1)
+      if (data.analysis_summary) {
+        richDescription += `**ANÁLISE RESUMIDA:** ${data.analysis_summary}\n\n`;
+      }
+      
+      // 2. Alimentos identificados com métodos de preparo (Items 1 & 2)
+      if (data.foods_identified && Array.isArray(data.foods_identified)) {
+        richDescription += "**ALIMENTOS IDENTIFICADOS:**\n";
+        data.foods_identified.forEach((food: any, index: number) => {
+          richDescription += `${index + 1}. **${food.name}**`;
+          if (food.detailed_description) {
+            richDescription += ` - ${food.detailed_description}`;
+          }
+          
+          // Métodos de preparo (Item 2)
+          if (food.preparation_analysis) {
+            const prep = food.preparation_analysis;
+            richDescription += `\n   *Preparo:* ${prep.primary_method || 'Não identificado'}`;
+            if (prep.cooking_tools && prep.cooking_tools.length > 0) {
+              richDescription += ` | Utensílios: ${prep.cooking_tools.join(', ')}`;
+            }
+            if (prep.estimated_cooking_time) {
+              richDescription += ` | Tempo: ${prep.estimated_cooking_time}`;
+            }
+          }
+          
+          // Indicadores de qualidade (Item 4)
+          if (food.quality_indicators) {
+            const quality = food.quality_indicators;
+            if (quality.freshness_signs) {
+              richDescription += `\n   *Qualidade:* ${quality.freshness_signs}`;
+            }
+            if (quality.cooking_quality) {
+              richDescription += ` | ${quality.cooking_quality}`;
+            }
+          }
+          
+          richDescription += "\n";
+        });
+        richDescription += "\n";
+      }
+      
+      // 3. Análise culinária (Item 5)
+      if (data.cuisine_analysis) {
+        const cuisine = data.cuisine_analysis;
+        richDescription += "**ANÁLISE CULINÁRIA:**\n";
+        
+        if (cuisine.estimated_total_weight) {
+          richDescription += `• Peso estimado: ${cuisine.estimated_total_weight}\n`;
+        }
+        if (cuisine.cooking_style) {
+          richDescription += `• Estilo de cozimento: ${cuisine.cooking_style}\n`;
+        }
+        if (cuisine.complexity_level) {
+          richDescription += `• Complexidade: ${cuisine.complexity_level}\n`;
+        }
+        if (cuisine.presentation_quality) {
+          richDescription += `• Apresentação: ${cuisine.presentation_quality}\n`;
+        }
+        richDescription += "\n";
+      }
+      
+      // 4. Observações abrangentes (todos os itens)
+      if (data.comprehensive_observations) {
+        richDescription += `**OBSERVAÇÕES:** ${data.comprehensive_observations}\n`;
+      }
+      
+      // Fallback para descrição simples se não houver dados robustos
+      if (!richDescription.trim()) {
+        return data.description || data.descricao || data.analysis || "Informações nutricionais do alimento analisado.";
+      }
+      
+      return richDescription.trim();
     }
+    
+    // Fallback para análise de texto
     const firstLine = text.split('\n')[0];
     return firstLine || "Informações nutricionais do alimento analisado.";
   };
