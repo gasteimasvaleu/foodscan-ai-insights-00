@@ -37,56 +37,114 @@ serve(async (req) => {
               content: [
                 {
                   type: 'text',
-                  text: `Analise esta imagem de comida e forneça uma análise estruturada em formato JSON.
+                  text: `Analise esta imagem de comida e forneça uma análise culinária completa e estruturada em formato JSON.
 
-INSTRUÇÕES DETALHADAS:
+INSTRUÇÕES PARA ANÁLISE ROBUSTA:
 
-1. IDENTIFICAÇÃO DOS ALIMENTOS:
-   - Identifique todos os alimentos visíveis na imagem
-   - Seja específico sobre tipos e cortes (ex: "filé de salmão grelhado" não apenas "peixe")
-   - Identifique temperos, molhos e guarnições visíveis
-   - Mencione método de preparo (grelhado, frito, assado, cozido, cru, etc.)
+1. IDENTIFICAÇÃO DETALHADA DOS ALIMENTOS:
+   - Identifique todos os alimentos visíveis com máxima precisão
+   - Seja específico sobre tipos, cortes e variedades (ex: "filé de salmão atlântico grelhado" não apenas "peixe")
+   - Identifique temperos, ervas, molhos, acompanhamentos e guarnições
+   - Detecte ingredientes parcialmente visíveis ou misturados
 
-2. ESTIMATIVAS DE QUANTIDADE:
-   - Use referências visuais (tamanho de talheres, pratos, mãos se visíveis)
-   - Estime peso aproximado em gramas quando possível
-   - Descreva porções usando medidas caseiras (colher, xícara, fatia, unidade)
-   - Para líquidos, estime volume em ml
+2. ANÁLISE PROFUNDA DE MÉTODOS DE PREPARO:
+   - Identifique todos os métodos de preparo utilizados para cada alimento
+   - Detecte sinais visuais específicos (marcas de grill, douração, crostas, caramelização)
+   - Analise equipamentos/utensílios provavelmente utilizados (grill, frigideira, forno, vapor, etc.)
+   - Estime tempo de preparo baseado na aparência visual
+   - Identifique técnicas culinárias específicas (refogado, braseado, salteado, etc.)
 
-3. DETALHES DE PREPARO E QUALIDADE:
-   - Estado de cocção (mal passado, ao ponto, bem passado)
-   - Temperos e condimentos visíveis
-   - Qualidade aparente dos alimentos
-   - Possíveis ingredientes ocultos ou misturas
+3. ESTIMATIVAS QUANTITATIVAS PRECISAS:
+   - Use múltiplas referências visuais (talheres, pratos, mãos, objetos conhecidos)
+   - Estime peso em gramas considerando densidade dos alimentos
+   - Calcule volume em ml para líquidos
+   - Descreva porções usando medidas caseiras precisas
+   - Considere contexto da porção (individual, para compartilhar, etc.)
 
-4. NÍVEL DE CONFIANÇA:
-   - Alto: Alimento claramente identificável
-   - Médio: Identificação provável mas com alguma incerteza
-   - Baixo: Difícil identificação, várias possibilidades
+4. ANÁLISE SENSORIAL E QUALITATIVA:
+   - Analise textura visual (crocante, macio, suculento, firme, etc.)
+   - Examine coloração e o que indica sobre o preparo
+   - Avalie sinais de frescor e qualidade
+   - Detecte indicadores de temperatura (vapor, derretimento, condensação)
+   - Analise apresentação e técnicas de emplatamento
 
-FORMATO DE RESPOSTA JSON:
+5. ANÁLISE CULINÁRIA COMPLETA:
+   - Identifique estilo culinário/origem (brasileiro, italiano, asiático, etc.)
+   - Detecte técnicas de cocção específicas
+   - Analise harmonização de sabores aparente
+   - Avalie complexidade do prato
+
+FORMATO DE RESPOSTA JSON ESTRUTURADO:
 {
-  "analysis_summary": "Breve resumo geral do prato",
-  "confidence_level": "Alto/Médio/Baixo",
-  "total_estimated_weight": "peso total aproximado em gramas",
+  "analysis_summary": "Resumo executivo da análise culinária completa",
+  "overall_confidence": "Alto/Médio/Baixo - confiança geral da análise",
+  "total_estimated_weight": "peso total aproximado com unidade",
+  "cuisine_analysis": {
+    "cooking_style": "estilo culinário identificado",
+    "complexity_level": "Simples/Moderado/Complexo",
+    "presentation_quality": "análise da apresentação",
+    "temperature_indicators": "sinais de temperatura observados"
+  },
   "foods_identified": [
     {
-      "name": "Nome específico do alimento",
-      "category": "categoria (proteína, carboidrato, vegetal, etc.)",
-      "preparation_method": "método de preparo",
-      "estimated_weight_grams": "peso estimado em gramas",
-      "portion_description": "descrição da porção (ex: 1 filé médio, 2 colheres de sopa)",
-      "confidence": "Alto/Médio/Baixo",
-      "visible_seasonings": ["temperos visíveis"],
-      "cooking_level": "nível de cocção se aplicável",
-      "observations": "observações específicas sobre este alimento"
+      "name": "Nome específico e detalhado do alimento",
+      "detailed_description": "Descrição completa com características específicas",
+      "category": "categoria nutricional principal",
+      "preparation_analysis": {
+        "primary_method": "método principal de preparo",
+        "secondary_methods": ["métodos adicionais utilizados"],
+        "cooking_tools": ["equipamentos/utensílios provavelmente usados"],
+        "cooking_indicators": "sinais visuais do preparo",
+        "estimated_cooking_time": "tempo estimado de preparo",
+        "cooking_level": "nível de cocção detalhado"
+      },
+      "texture_analysis": "análise da textura visual",
+      "color_analysis": "análise da coloração e significado",
+      "size_reference": "referência específica de tamanho",
+      "quantity_analysis": {
+        "estimated_weight_grams": "peso estimado em gramas",
+        "portion_description": "descrição detalhada da porção",
+        "volume_if_liquid": "volume em ml se aplicável",
+        "density_consideration": "considerações sobre densidade"
+      },
+      "seasoning_analysis": {
+        "visible_seasonings": ["temperos e ervas visíveis"],
+        "probable_seasonings": ["temperos prováveis mas não claramente visíveis"],
+        "sauce_analysis": "análise de molhos se presentes"
+      },
+      "quality_indicators": {
+        "freshness_signs": "sinais de frescor",
+        "cooking_quality": "qualidade aparente do preparo",
+        "visual_appeal": "apelo visual do item"
+      },
+      "nutritional_preview": {
+        "macronutrient_profile": "perfil principal de macronutrientes",
+        "caloric_density": "densidade calórica estimada",
+        "health_indicators": "indicadores visuais de saudabilidade"
+      },
+      "confidence_level": "Alto/Médio/Baixo",
+      "observations": "observações específicas e detalhadas"
     }
   ],
-  "general_observations": "observações gerais sobre o prato, possíveis ingredientes ocultos, qualidade visual",
-  "dietary_notes": "notas sobre dieta (vegano, sem glúten, etc.) se aplicável"
+  "comprehensive_observations": {
+    "hidden_ingredients": "possíveis ingredientes não claramente visíveis",
+    "cooking_sequence": "sequência provável de preparo do prato",
+    "flavor_harmony": "análise da harmonização de sabores",
+    "visual_composition": "composição visual do prato"
+  },
+  "dietary_compatibility": {
+    "dietary_restrictions": "restrições dietéticas compatíveis",
+    "allergen_analysis": "possíveis alérgenos identificados",
+    "nutritional_balance": "equilíbrio nutricional aparente"
+  },
+  "serving_context": {
+    "meal_type": "tipo de refeição provável",
+    "serving_style": "estilo de servir",
+    "cultural_context": "contexto cultural se identificável"
+  }
 }
 
-RESPONDA APENAS COM O JSON, SEM TEXTO ADICIONAL.`
+RESPONDA APENAS COM O JSON ESTRUTURADO, SEM TEXTO ADICIONAL.`
                 },
                 {
                   type: 'image_url',
