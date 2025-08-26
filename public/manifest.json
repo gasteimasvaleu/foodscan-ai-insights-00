@@ -12,20 +12,20 @@
   "categories": ["health", "food", "nutrition"],
   "icons": [
     {
-      "src": "/icons/icon-192x192-temp.png",
+      "src": "/icons/icon-192x192-foodscan.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512-new.png",
+      "src": "/icons/icon-512x512-foodscan.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/lovable-uploads/2f6b538e-e7c8-43c5-a21a-5e63902e489b.png",
-      "sizes": "420x420",
+      "src": "/icons/icon-512x512-foodscan.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
@@ -36,21 +36,21 @@
       "short_name": "Scan",
       "description": "Analise nutricionalmente qualquer alimento",
       "url": "/food-scan",
-      "icons": [{ "src": "/icons/icon-192x192-temp.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192-foodscan.png", "sizes": "192x192" }]
     },
     {
       "name": "Controle Diário",
       "short_name": "Controle",
       "description": "Acompanhe suas refeições e metas",
       "url": "/controle-diario",
-      "icons": [{ "src": "/icons/icon-192x192-temp.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192-foodscan.png", "sizes": "192x192" }]
     },
     {
       "name": "Fitness Tracker",
       "short_name": "Fitness",
       "description": "Registre e monitore exercícios",
       "url": "/fit-tracker",
-      "icons": [{ "src": "/icons/icon-192x192-temp.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192-foodscan.png", "sizes": "192x192" }]
     }
   ],
   "screenshots": [
