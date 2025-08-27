@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import foodscanLogo from '@/assets/foodscan-logo.png';
+import foodscanLogo from '@/assets/foodscan-logo-3d.png';
 
 interface SplashScreenProps {
   onComplete: () => void;
