@@ -76,8 +76,22 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    // Verificar se existe uma sessão válida antes de tentar logout
+    if (!session) {
+      // Se não há sessão, apenas limpar o estado local
+      setSession(null);
+      setUser(null);
+      return;
+    }
+
     const { error } = await supabase.auth.signOut();
-    if (error) {
+    
+    // Limpar estado local independentemente do resultado da API
+    setSession(null);
+    setUser(null);
+    
+    // Só mostrar erro se não for "Session not found" ou similar
+    if (error && !error.message.toLowerCase().includes('session')) {
       toast({
         title: "Erro ao sair",
         description: error.message,
