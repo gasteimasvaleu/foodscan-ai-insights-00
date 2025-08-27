@@ -7,7 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MotivationalModal } from './MotivationalModal';
-import foodscanLogo from '@/assets/foodscan-logo-main.png';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
@@ -114,17 +113,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   }
 
   return (
-    <>
-      {/* Logo */}
-      <div className="flex justify-center mb-8">
-        <img 
-          src={foodscanLogo} 
-          alt="FoodScan & Diet Logo" 
-          className="w-24 h-24 rounded-xl shadow-lg animate-pulse-glow hover:scale-105 transition-transform duration-300"
-        />
-      </div>
-      
-      <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+    <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
       <CardHeader>
         <CardTitle className="text-center text-gray-800">
           {isLogin ? 'Fazer Login' : 'Criar Conta'}
@@ -202,6 +191,5 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         </div>
       </CardContent>
     </Card>
-    </>
   );
 };
