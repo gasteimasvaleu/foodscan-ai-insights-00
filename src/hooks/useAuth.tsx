@@ -76,13 +76,29 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Erro ao sair",
-        description: error.message,
-        variant: "destructive",
-      });
+    // Limpar estado local primeiro
+    setSession(null);
+    setUser(null);
+
+    // Se não há sessão ativa, não tentar logout no servidor
+    if (!session) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      // Ignorar erro se a sessão já não existe no servidor
+      if (error && !error.message.toLowerCase().includes('session')) {
+        toast({
+          title: "Erro ao sair",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      // Estado local já foi limpo, então não mostrar erro crítico
+      console.warn('Logout error (estado local limpo):', err);
     }
   };
 
