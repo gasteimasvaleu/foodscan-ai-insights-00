@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
-import { SubscriptionRequired } from '@/components/SubscriptionRequired';
+
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -477,8 +477,7 @@ const ServiNUTRI = () => {
     return `R$ ${price.toFixed(2).replace('.', ',')}`;
   };
   return (
-    <SubscriptionRequired>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
         <Navbar />
         <div className="container mx-auto px-4 pt-20 pb-12">
           <div className="text-center mb-8">
@@ -734,6 +733,7 @@ const ServiNUTRI = () => {
             <p className="text-gray-500 text-lg">Nenhum anúncio encontrado.</p>
           </div>}
       </div>
-    </div>;
+    </div>
+  );
 };
 export default ServiNUTRI;
