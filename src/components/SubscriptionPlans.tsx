@@ -122,10 +122,6 @@ const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
   const { user, subscription } = useAuth();
 
   const handleSubscribe = () => {
-    if (!user) {
-      window.location.href = '/auth';
-      return;
-    }
     subscription.createCheckout(plan.priceId, plan.tier);
   };
 

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
+import { SubscriptionRequired } from '@/components/SubscriptionRequired';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -475,15 +476,17 @@ const ServiNUTRI = () => {
     if (!price) return 'Valor não informado';
     return `R$ ${price.toFixed(2).replace('.', ',')}`;
   };
-  return <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
-      <Navbar />
-      <div className="container mx-auto px-4 pt-20 pb-12">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">ServiNUTRI</h1>
-          <p className="text-lg text-gray-600">Encontre nutricionistas especializados na sua região</p>
-        </div>
+  return (
+    <SubscriptionRequired>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-20 pb-12">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">ServiNUTRI</h1>
+            <p className="text-lg text-gray-600">Encontre nutricionistas especializados na sua região</p>
+          </div>
 
-        {/* Card Informativo */}
+          {/* Card Informativo */}
         <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
           <CardContent className="p-3 sm:p-4 md:p-6">
             <div className="block lg:table w-full">

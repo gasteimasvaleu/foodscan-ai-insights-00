@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { SubscriptionRequired } from '@/components/SubscriptionRequired';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -355,7 +356,7 @@ const MasterCheFIT = () => {
   }
 
   return (
-    <>
+    <SubscriptionRequired>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-700 font-inter pt-16">
         <div className="container mx-auto px-4 py-8">
@@ -629,7 +630,7 @@ const MasterCheFIT = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </SubscriptionRequired>
   );
 };
 

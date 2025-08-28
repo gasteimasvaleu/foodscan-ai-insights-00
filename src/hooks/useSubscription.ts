@@ -41,18 +41,17 @@ export const useSubscription = (user: any) => {
   };
 
   const createCheckout = async (priceId: string, tier: string = 'Premium') => {
-    if (!user) {
-      toast({
-        title: "Erro",
-        description: "Você precisa estar logado para assinar",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      // For guest checkout, we don't require authentication
+      const body: any = { priceId, tier };
+      
+      // If user is logged in, we can pass their email for existing customer lookup
+      if (user?.email) {
+        body.customerEmail = user.email;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId, tier }
+        body
       });
 
       if (error) {

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, User, Mail, Lock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PaymentRegistrationFormProps {
   sessionId: string;
@@ -56,14 +57,39 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
     }
 
     setIsLoading(true);
-    const { error } = await signUp(formData.email, formData.password, formData.name);
     
-    if (!error) {
-      toast({
-        title: "Conta criada com sucesso!",
-        description: "Bem-vindo ao FoodScan & Diet! Você já pode começar a usar.",
+    try {
+      // First validate the Stripe session
+      const { data: validationData, error: validationError } = await supabase.functions.invoke('validate-session', {
+        body: { sessionId }
       });
-      navigate('/', { replace: true });
+
+      if (validationError || !validationData.valid) {
+        toast({
+          title: "Erro",
+          description: "Sessão de pagamento inválida ou não paga",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // If session is valid, create the account
+      const { error } = await signUp(formData.email, formData.password, formData.name);
+      
+      if (!error) {
+        toast({
+          title: "Conta criada com sucesso!",
+          description: "Bem-vindo ao FoodScan & Diet! Você já pode começar a usar.",
+        });
+        navigate('/', { replace: true });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao validar pagamento ou criar conta",
+        variant: "destructive",
+      });
     }
     
     setIsLoading(false);

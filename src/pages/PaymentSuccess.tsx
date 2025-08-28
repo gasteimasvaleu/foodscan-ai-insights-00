@@ -1,26 +1,46 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { PaymentRegistrationForm } from '@/components/PaymentRegistrationForm';
 
 const PaymentSuccess = () => {
-  const { subscription } = useAuth();
+  const { user, subscription } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    // Auto-check subscription after successful payment
-    if (subscription.checkSubscription) {
+    // Auto-check subscription after successful payment (only for logged users)
+    if (user && subscription.checkSubscription) {
       const timer = setTimeout(() => {
         subscription.checkSubscription();
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [subscription]);
+  }, [user, subscription]);
+
+  // If user is not logged in, show registration form
+  if (!user && sessionId) {
+    return (
+      <div className="min-h-screen bg-gradient-primary">
+        <Navbar />
+        
+        <div className="pt-32 pb-12 px-4">
+          <div className="container mx-auto max-w-md">
+            <PaymentRegistrationForm sessionId={sessionId} />
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-primary">

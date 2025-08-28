@@ -28,32 +28,27 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
     
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
-    
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
-
-    const { priceId, tier } = await req.json();
+    const { priceId, tier, customerEmail } = await req.json();
     if (!priceId) throw new Error("Price ID is required");
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    // Check if customer exists (optional - for guest checkout)
     let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
+    let email = customerEmail;
+    
+    if (email) {
+      const customers = await stripe.customers.list({ email, limit: 1 });
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+        logStep("Found existing customer", { customerId });
+      }
     }
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : email,
       line_items: [
         {
           price: priceId,
@@ -64,7 +59,6 @@ serve(async (req) => {
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/payment-cancel`,
       metadata: {
-        user_id: user.id,
         subscription_tier: tier || "Premium"
       }
     });
