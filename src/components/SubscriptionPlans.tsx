@@ -20,7 +20,7 @@ const plans: SubscriptionPlan[] = [
     name: "Plano Mensal",
     price: "R$ 47,90",
     monthlyPrice: "47,90",
-    priceId: "price_1QhTAQL0hxV2jhvUzBjCOsng", // Substitua pelo seu price ID do Stripe
+    priceId: "price_1S1DVHDRCKC0uz7XWvTY0A9Q",
     tier: "Premium",
     description: "Perfeito para começar sua jornada",
     features: [
@@ -37,7 +37,7 @@ const plans: SubscriptionPlan[] = [
     name: "Plano Anual",
     price: "R$ 429,90",
     monthlyPrice: "35,83",
-    priceId: "price_1QhTAQL0hxV2jhvUzBjCOsng", // Substitua pelo seu price ID do Stripe
+    priceId: "price_1S1DTGDRCKC0uz7XiI5I3WgL",
     tier: "Premium Plus",
     popular: true,
     isAnnual: true,
