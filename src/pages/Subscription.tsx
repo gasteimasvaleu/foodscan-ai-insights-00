@@ -2,7 +2,8 @@ import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Component as PricingComponent } from '@/components/ui/squishy-pricing';
+import { SubscriptionPlans } from '@/components/SubscriptionPlans';
+import { SubscriptionStatus } from '@/components/SubscriptionStatus';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, CreditCard, Clock } from 'lucide-react';
 const Subscription = () => {
   return <div className="min-h-screen bg-gradient-primary">
@@ -84,6 +85,9 @@ const Subscription = () => {
             </CardContent>
           </Card>
 
+          {/* Subscription Status */}
+          <SubscriptionStatus />
+
           {/* Payment Processing Time Cards */}
           <div className="grid md:grid-cols-2 gap-6 mb-8 animate-scale-in">
             {/* Credit Card Access Card */}
@@ -121,10 +125,8 @@ const Subscription = () => {
             </Card>
           </div>
 
-          {/* New Pricing Card Component */}
-          <div className="animate-scale-in">
-            <PricingComponent />
-          </div>
+          {/* Subscription Plans */}
+          <SubscriptionPlans />
 
           {/* Features List */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">

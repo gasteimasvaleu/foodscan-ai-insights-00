@@ -3,11 +3,14 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useSubscription } from './useSubscription';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const subscription = useSubscription(user);
 
   useEffect(() => {
     // Set up auth state listener
@@ -109,5 +112,6 @@ export const useAuth = () => {
     signUp,
     signIn,
     signOut,
+    subscription,
   };
 };

@@ -11,7 +11,7 @@ const PaymentCancel = () => {
   const navigate = useNavigate();
 
   const handleTryAgain = () => {
-    navigate('/quero-assinar');
+    navigate('/subscription');
   };
 
   const handleGoHome = () => {

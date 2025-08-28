@@ -17,6 +17,7 @@ import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,10 +36,12 @@ const App = () => (
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
           <Route path="/quero-assinar" element={<Subscription />} />
+          <Route path="/subscription" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
