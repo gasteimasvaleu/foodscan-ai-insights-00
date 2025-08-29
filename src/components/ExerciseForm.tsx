@@ -115,10 +115,13 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Dumbbell className="h-5 w-5" />
+    <Card className="w-full max-w-2xl mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 hover:shadow-2xl hover:shadow-gray-300/60 dark:hover:shadow-gray-800/60 transition-all duration-500 hover:scale-[1.01] animate-scale-in">
+      <CardHeader className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <CardTitle className="flex items-center gap-3 text-2xl font-bold relative z-10">
+          <div className="p-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <Dumbbell className="h-6 w-6" />
+          </div>
           Registrar Exercício
         </CardTitle>
       </CardHeader>
@@ -126,13 +129,13 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="activityType">Tipo de Atividade</Label>
+              <Label htmlFor="activityType" className="font-medium">Tipo de Atividade</Label>
               <Select 
                 value={formData.activityType} 
                 onValueChange={(value) => setFormData({...formData, activityType: value})}
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger className="hover:bg-accent/50 transition-colors duration-200 hover:shadow-md">
                   <SelectValue placeholder="Selecione a atividade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,19 +149,20 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="duration">Duração (minutos)</Label>
+              <Label htmlFor="duration" className="font-medium">Duração (minutos)</Label>
               <Input
                 id="duration"
                 type="number"
                 placeholder="Ex: 30"
                 value={formData.durationMinutes}
                 onChange={(e) => setFormData({...formData, durationMinutes: e.target.value})}
+                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="weight">Peso (kg)</Label>
+              <Label htmlFor="weight" className="font-medium">Peso (kg)</Label>
               <Input
                 id="weight"
                 type="number"
@@ -166,51 +170,53 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
                 placeholder="Ex: 70.5"
                 value={formData.weight}
                 onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="age">Idade</Label>
+              <Label htmlFor="age" className="font-medium">Idade</Label>
               <Input
                 id="age"
                 type="number"
                 placeholder="Ex: 25"
                 value={formData.age}
                 onChange={(e) => setFormData({...formData, age: e.target.value})}
+                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Label>Intensidade do Exercício</Label>
+          <div className="space-y-4 p-4 rounded-lg bg-accent/30 backdrop-blur-sm border border-accent/50">
+            <Label className="font-medium text-lg">Intensidade do Exercício</Label>
             <RadioGroup 
               value={formData.intensity} 
               onValueChange={(value) => setFormData({...formData, intensity: value})}
-              className="flex flex-col space-y-2"
+              className="flex flex-col space-y-3"
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
                 <RadioGroupItem value="Leve" id="leve" />
-                <Label htmlFor="leve">Leve - Respiração normal, conversa fácil</Label>
+                <Label htmlFor="leve" className="cursor-pointer">Leve - Respiração normal, conversa fácil</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
                 <RadioGroupItem value="Moderada" id="moderada" />
-                <Label htmlFor="moderada">Moderada - Respiração acelerada, conversa possível</Label>
+                <Label htmlFor="moderada" className="cursor-pointer">Moderada - Respiração acelerada, conversa possível</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
                 <RadioGroupItem value="Intensa" id="intensa" />
-                <Label htmlFor="intensa">Intensa - Respiração difícil, conversa limitada</Label>
+                <Label htmlFor="intensa" className="cursor-pointer">Intensa - Respiração difícil, conversa limitada</Label>
               </div>
             </RadioGroup>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full" 
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 py-6 text-lg font-semibold" 
             disabled={isLoading}
           >
-            <Calculator className="w-4 h-4 mr-2" />
+            <Calculator className="w-5 h-5 mr-2" />
             {isLoading ? "Calculando..." : "Calcular e Registrar"}
           </Button>
         </form>

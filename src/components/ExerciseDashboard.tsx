@@ -119,63 +119,75 @@ export function ExerciseDashboard() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-200 dark:border-orange-800">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Card className="bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/20 border-orange-200/50 dark:border-orange-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 animate-fade-in group">
+        <CardContent className="p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Hoje</p>
+              <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{stats.todayCalories}</p>
-                <Badge variant="secondary" className="text-xs">cal</Badge>
+                <p className="text-3xl font-bold bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent">{stats.todayCalories}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">cal</Badge>
               </div>
             </div>
-            <Flame className="h-8 w-8 text-orange-500" />
+            <div className="p-3 rounded-full bg-orange-500/20 backdrop-blur-sm group-hover:bg-orange-500/30 transition-colors">
+              <Flame className="h-8 w-8 text-orange-500 group-hover:scale-110 transition-transform" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-200 dark:border-blue-800">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+      <Card className="bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-indigo-500/20 border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.1s'}}>
+        <CardContent className="p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Últimos 7 Dias</p>
+              <p className="text-sm font-semibold text-muted-foreground mb-2">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{stats.weeklyCalories}</p>
-                <Badge variant="secondary" className="text-xs">cal</Badge>
+                <p className="text-3xl font-bold bg-gradient-to-br from-blue-600 to-cyan-600 bg-clip-text text-transparent">{stats.weeklyCalories}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">cal</Badge>
               </div>
             </div>
-            <Calendar className="h-8 w-8 text-blue-500" />
+            <div className="p-3 rounded-full bg-blue-500/20 backdrop-blur-sm group-hover:bg-blue-500/30 transition-colors">
+              <Calendar className="h-8 w-8 text-blue-500 group-hover:scale-110 transition-transform" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200 dark:border-green-800">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+      <Card className="bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/20 border-green-200/50 dark:border-green-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.2s'}}>
+        <CardContent className="p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Sequência</p>
+              <p className="text-sm font-semibold text-muted-foreground mb-2">Sequência</p>
               <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{stats.currentStreak}</p>
-                <Badge variant="secondary" className="text-xs">dias</Badge>
+                <p className="text-3xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">{stats.currentStreak}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">dias</Badge>
               </div>
             </div>
-            <Trophy className="h-8 w-8 text-green-500" />
+            <div className="p-3 rounded-full bg-green-500/20 backdrop-blur-sm group-hover:bg-green-500/30 transition-colors">
+              <Trophy className="h-8 w-8 text-green-500 group-hover:scale-110 transition-transform" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200 dark:border-purple-800">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+      <Card className="bg-gradient-to-br from-purple-500/20 via-pink-500/15 to-violet-500/20 border-purple-200/50 dark:border-purple-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.3s'}}>
+        <CardContent className="p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Atividade Favorita</p>
-              <p className="text-lg font-bold truncate">{stats.favoriteActivity}</p>
-              <Badge variant="secondary" className="text-xs mt-1">
+              <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
+              <p className="text-lg font-bold truncate bg-gradient-to-br from-purple-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>
+              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                 {stats.totalExercises} exercícios
               </Badge>
             </div>
-            <Target className="h-8 w-8 text-purple-500" />
+            <div className="p-3 rounded-full bg-purple-500/20 backdrop-blur-sm group-hover:bg-purple-500/30 transition-colors">
+              <Target className="h-8 w-8 text-purple-500 group-hover:scale-110 transition-transform" />
+            </div>
           </div>
         </CardContent>
       </Card>
