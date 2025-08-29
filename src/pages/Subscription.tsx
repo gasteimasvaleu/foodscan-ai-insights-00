@@ -4,7 +4,7 @@ import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { SubscriptionStatus } from '@/components/SubscriptionStatus';
-import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, CreditCard, Clock } from 'lucide-react';
+import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, CreditCard, Clock, Dumbbell, Play, Heart, TrendingUp, Calendar, BarChart3, Zap } from 'lucide-react';
 const Subscription = () => {
   return <div className="min-h-screen bg-gradient-primary">
       <Navbar />
@@ -130,50 +130,204 @@ const Subscription = () => {
 
           {/* Features List */}
           <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">
-            <CardContent className="p-8 py-[29px] px-[13px]">
-              <h3 className="text-2xl font-bold text-primary-600 mb-6 text-center">
+            <CardContent className="p-8">
+              <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-primary-600 to-orange-600 bg-clip-text text-transparent">
                 Incluído na Assinatura
               </h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700">Análise ilimitada de fotos</span>
+              
+              {/* Análise Nutricional */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-primary-100 rounded-full p-2 mr-3">
+                    <Camera className="w-6 h-6 text-primary-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-primary-700">Análise Nutricional Inteligente</h4>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700">Relatórios nutricionais detalhados</span>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Análise ilimitada de fotos com IA avançada</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Relatórios nutricionais completos e detalhados</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Reconhecimento de método de preparo e porções</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Cálculo automático de macros e micronutrientes</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700">Acompanhamento diário personalizado</span>
+              </div>
+
+              {/* Planejamento Alimentar */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-orange-100 rounded-full p-2 mr-3">
+                    <ChefHat className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-orange-700">MasterCheFIT - Planejamento Completo</h4>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700">Compartilhamento via WhatsApp</span>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Cardápios personalizados gerados por IA</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Receitas baseadas nas suas preferências</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Planejamento semanal de refeições</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Histórico completo de cardápios salvos</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Cardápios personalizados por IA</span>
+              </div>
+
+              {/* Fitness & Exercícios */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-green-100 rounded-full p-2 mr-3">
+                    <Dumbbell className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-green-700">Fitness & Exercícios</h4>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Receitas baseadas nos seus gostos</span>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">FitTracker completo para registro de exercícios</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Cálculo preciso de calorias queimadas</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Biblioteca de treinos profissionais em vídeo</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Dashboard de desempenho e estatísticas</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>MasterCheFIT:</strong> Planejamento semanal de refeições</span>
+              </div>
+
+              {/* Acompanhamento & Metas */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-purple-100 rounded-full p-2 mr-3">
+                    <Target className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-purple-700">Acompanhamento & Metas</h4>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Rede de nutricionistas especializados</span>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Definição de metas nutricionais personalizadas</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Acompanhamento diário com Truth Moment</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Histórico completo de progresso</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Relatórios semanais e mensais</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Busca inteligente por profissionais</span>
+              </div>
+
+              {/* Motivação & Comunidade */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-pink-100 rounded-full p-2 mr-3">
+                    <Heart className="w-6 h-6 text-pink-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-pink-700">Motivação & Comunidade</h4>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-success-500" />
-                  <span className="text-gray-700"><strong>ServiNUTRI:</strong> Contato direto via WhatsApp</span>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Coach motivacional com IA personalizada</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Comunidade de transformações inspiradoras</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Sistema de likes e comentários</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Análises motivacionais diárias</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acompanhamento Profissional */}
+              <div className="mb-8">
+                <div className="flex items-center mb-4">
+                  <div className="bg-blue-100 rounded-full p-2 mr-3">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-blue-700">ServiNUTRI - Rede Profissional</h4>
+                </div>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Rede de nutricionistas especializados</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Busca inteligente por localização e especialidade</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Contato direto via WhatsApp</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Compartilhamento de relatórios com profissionais</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recursos Avançados */}
+              <div>
+                <div className="flex items-center mb-4">
+                  <div className="bg-indigo-100 rounded-full p-2 mr-3">
+                    <Zap className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <h4 className="text-xl font-bold text-indigo-700">Recursos Avançados</h4>
+                </div>
+                <div className="grid gap-3 ml-12">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Compartilhamento via WhatsApp integrado</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Sincronização de dados em tempo real</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Backup automático de todos os dados</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span className="text-gray-700">Acesso prioritário a novos recursos</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
