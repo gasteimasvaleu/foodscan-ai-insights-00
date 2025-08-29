@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2 } from 'lucide-react';
+import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2, Target, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -358,32 +358,34 @@ const MasterCheFIT = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-700 font-inter pt-16">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950 dark:via-red-950 dark:to-pink-950 pt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             
             {/* Header */}
-            <div className="text-center mb-8 animate-fade-in">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <ChefHat className="w-8 h-8 text-white" />
-                <h1 className="text-3xl font-bold text-white">MasterCheFIT</h1>
-              </div>
-              <p className="text-white/80 text-lg">
-                Crie cardápios personalizados baseados nos seus gostos e necessidades
+            <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-orange-500/20 via-red-500/20 to-pink-500/20 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 animate-fade-in">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
+                🍳 MasterCheFIT
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Crie cardápios personalizados baseados nos seus gostos e necessidades alimentares
               </p>
             </div>
 
             {/* Preferences Card */}
-            <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 animate-fade-in">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <CardTitle className="text-white">Suas Preferências</CardTitle>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Users className="w-6 h-6 text-orange-500" />
+                  Suas Preferências Alimentares
+                </CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
                   {savedMenuPlans.length > 0 && (
                     <Button 
-                      variant="default"
+                      variant="outline"
                       size="sm"
                       onClick={() => setShowHistory(!showHistory)}
-                      className="bg-primary-500 hover:bg-primary-600 text-white"
+                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-red-500/50 transition-all duration-300 hover:scale-105"
                     >
                       <History className="w-4 h-4 mr-2" />
                       Histórico
@@ -391,10 +393,10 @@ const MasterCheFIT = () => {
                   )}
                   {!isEditing ? (
                     <Button 
-                      variant="default"
+                      variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(true)}
-                      className="bg-primary-500 hover:bg-primary-600 text-white"
+                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-orange-500/50 transition-all duration-300 hover:scale-105"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Editar
@@ -405,7 +407,7 @@ const MasterCheFIT = () => {
                         variant="ghost" 
                         size="sm"
                         onClick={() => setIsEditing(false)}
-                        className="text-white hover:bg-white/20"
+                        className="hover:bg-white/20 transition-all duration-300"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -413,7 +415,7 @@ const MasterCheFIT = () => {
                         variant="default" 
                         size="sm"
                         onClick={handleSavePreferences}
-                        className="bg-primary-500 hover:bg-primary-600"
+                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Salvar
@@ -425,8 +427,8 @@ const MasterCheFIT = () => {
               <CardContent className="space-y-6">
                 {isEditing ? (
                   <>
-                    <div>
-                      <Label htmlFor="ingredients" className="text-white mb-2 block">
+                    <div className="group">
+                      <Label htmlFor="ingredients" className="mb-2 block group-hover:text-orange-500 transition-colors">
                         Ingredientes/Alimentos Favoritos
                       </Label>
                       <Textarea
@@ -434,13 +436,13 @@ const MasterCheFIT = () => {
                         placeholder="Ex: frango, salmão, arroz integral, banana, aveia, brócolis..."
                         value={preferences.favoriteIngredients}
                         onChange={(e) => setPreferences(prev => ({ ...prev, favoriteIngredients: e.target.value }))}
-                        className="bg-white/20 border-white/30 text-white placeholder:text-white/60"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-orange-500/50 focus:border-orange-500 transition-all duration-300"
                         rows={3}
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="requirements" className="text-white mb-2 block">
+                    <div className="group">
+                      <Label htmlFor="requirements" className="mb-2 block group-hover:text-red-500 transition-colors">
                         Especificações Especiais
                       </Label>
                       <Textarea
@@ -448,13 +450,13 @@ const MasterCheFIT = () => {
                         placeholder="Ex: sem glúten, vegano, baixo sódio, rico em proteína..."
                         value={preferences.specificRequirements}
                         onChange={(e) => setPreferences(prev => ({ ...prev, specificRequirements: e.target.value }))}
-                        className="bg-white/20 border-white/30 text-white placeholder:text-white/60"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-red-500/50 focus:border-red-500 transition-all duration-300"
                         rows={2}
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="calories" className="text-white mb-2 block">
+                    <div className="group">
+                      <Label htmlFor="calories" className="mb-2 block group-hover:text-pink-500 transition-colors">
                         Máximo de Calorias do Cardápio Completo
                       </Label>
                       <Input
@@ -464,28 +466,36 @@ const MasterCheFIT = () => {
                         max="4000"
                         value={preferences.maxCalories}
                         onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
-                        className="bg-white/20 border-white/30 text-white placeholder:text-white/60 w-48"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-pink-500/50 focus:border-pink-500 transition-all duration-300 w-48"
                       />
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="text-white font-medium mb-2">Ingredientes Favoritos:</h4>
-                      <p className="text-white/80">{preferences.favoriteIngredients || 'Não definido'}</p>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-white/20 hover:bg-gradient-to-br hover:from-orange-500/20 hover:to-red-500/20 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-orange-500 mb-3 flex items-center gap-2">
+                          <ChefHat className="w-4 h-4" />
+                          INGREDIENTES FAVORITOS
+                        </h4>
+                        <p className="leading-relaxed">{preferences.favoriteIngredients || 'Não definido'}</p>
+                      </div>
+                      
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/20 hover:bg-gradient-to-br hover:from-red-500/20 hover:to-pink-500/20 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-red-500 mb-3 flex items-center gap-2">
+                          <Target className="w-4 h-4" />
+                          LIMITE CALÓRICO
+                        </h4>
+                        <p className="leading-relaxed">{preferences.maxCalories} calorias no total</p>
+                      </div>
                     </div>
                     
                     {preferences.specificRequirements && (
-                      <div>
-                        <h4 className="text-white font-medium mb-2">Especificações:</h4>
-                        <p className="text-white/80">{preferences.specificRequirements}</p>
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/20 hover:bg-white/10 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-muted-foreground mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
+                        <p className="text-sm leading-relaxed">{preferences.specificRequirements}</p>
                       </div>
                     )}
-                    
-                    <div>
-                      <h4 className="text-white font-medium mb-2">Máximo de Calorias do Cardápio:</h4>
-                      <p className="text-white/80">{preferences.maxCalories} calorias no total</p>
-                    </div>
                   </div>
                 )}
               </CardContent>
@@ -493,42 +503,56 @@ const MasterCheFIT = () => {
 
             {/* Menu History */}
             {showHistory && savedMenuPlans.length > 0 && (
-              <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+              <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-red-500/10 transition-all duration-500 animate-fade-in">
                 <CardHeader>
-                  <CardTitle className="text-white">Cardápios Anteriores</CardTitle>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <History className="w-6 h-6 text-red-500" />
+                    Histórico de Cardápios
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {savedMenuPlans.map((savedMenu) => (
+                  <div className="space-y-4">
+                    {savedMenuPlans.map((savedMenu, index) => (
                       <div 
                         key={savedMenu.id}
-                        className="flex items-center justify-between p-3 bg-white/10 rounded-lg"
+                        className="p-4 border border-white/20 rounded-xl bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                        style={{ animationDelay: `${index * 100}ms` }}
                       >
-                        <div>
-                          <p className="text-white font-medium">
-                            Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
-                          </p>
-                          <p className="text-white/60 text-sm">
-                            {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} calorias total
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => loadSavedMenu(savedMenu)}
-                            className="text-white hover:bg-white/20"
-                          >
-                            Carregar
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteSavedMenu(savedMenu.id)}
-                            className="text-red-300 hover:bg-red-500/20 hover:text-red-200"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h3 className="font-semibold text-lg">
+                              Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
+                            </h3>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
+                                <span>Total:</span>
+                                <span className="font-semibold text-orange-500">
+                                  {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} kcal
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => loadSavedMenu(savedMenu)}
+                              className="flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-green-500/20 hover:border-green-500/50 transition-all duration-300"
+                            >
+                              <Eye className="w-3 h-3" />
+                              Ver
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => deleteSavedMenu(savedMenu.id)}
+                              className="flex items-center gap-1 hover:scale-105 transition-transform duration-200"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              Excluir
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -543,17 +567,18 @@ const MasterCheFIT = () => {
                 <Button
                   onClick={generateMenuPlan}
                   disabled={isGenerating}
-                  className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 text-base sm:px-8 sm:text-lg"
+                  size="lg"
+                  className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 hover:scale-105 animate-pulse hover:animate-none"
                 >
                   {isGenerating ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      <span className="hidden sm:inline">Gerando Cardápio...</span>
+                      <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+                      <span className="hidden sm:inline">Gerando seu cardápio personalizado...</span>
                       <span className="sm:hidden">Gerando...</span>
                     </>
                   ) : (
                     <>
-                      <ChefHat className="w-5 h-5 mr-2" />
+                      <ChefHat className="w-5 h-5 mr-2 animate-bounce" />
                       <span className="hidden sm:inline">Gerar Cardápio Personalizado</span>
                       <span className="sm:hidden">Gerar Cardápio</span>
                     </>
@@ -564,67 +589,72 @@ const MasterCheFIT = () => {
 
             {/* Menu Plan */}
             {menuPlan && (
-              <div className="space-y-6 animate-fade-in">
-                <h2 className="text-2xl font-bold text-white text-center mb-6">
-                  Seu Cardápio Personalizado
-                </h2>
-                
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Object.entries(menuPlan).map(([mealType, meal]) => (
-                    <Card key={mealType} className="bg-white/10 backdrop-blur-sm border-white/20">
-                      <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
-                          <span className="text-2xl">{getMealIcon(mealType)}</span>
-                          {getMealName(mealType)}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold text-white mb-1">{meal.name}</h4>
-                          <p className="text-white/70 text-sm">{meal.recipe}</p>
+              <Card className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
+                <CardHeader>
+                  <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                    🍽️ Seu Cardápio Personalizado
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6">
+                    {Object.entries(menuPlan).map(([mealType, meal], index) => (
+                      <div 
+                        key={mealType} 
+                        className="border border-white/20 rounded-xl p-6 bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-xl group"
+                        style={{ animationDelay: `${index * 150}ms` }}
+                      >
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{getMealIcon(mealType)}</span>
+                          <h3 className="text-xl font-semibold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{getMealName(mealType)}</h3>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-sm text-white/80">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {meal.time}
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium text-lg mb-2 group-hover:text-orange-500 transition-colors">{meal.name}</h4>
+                            <p className="text-muted-foreground mb-3 leading-relaxed">{meal.recipe}</p>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            {meal.servings} porção
+                          
+                          <div className="bg-white/5 backdrop-blur p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <h5 className="font-medium mb-2 text-orange-500">Modo de Preparo:</h5>
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{meal.instructions}</p>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-4 text-sm">
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30">
+                              <span className="font-medium">Calorias:</span>
+                              <span className="text-orange-500 font-bold">{meal.calories} kcal</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-200">
+                              <Clock className="w-4 h-4 text-blue-400" />
+                              <span>{meal.time}</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-200">
+                              <Users className="w-4 h-4 text-green-400" />
+                              <span>{meal.servings} porções</span>
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="bg-primary-500/20 rounded-lg p-3">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-white">{meal.calories}</div>
-                            <div className="text-white/80 text-sm">calorias</div>
-                          </div>
+                      </div>
+                    ))}
+                    
+                    {/* Summary */}
+                    <div className="mt-8 p-6 bg-gradient-to-r from-orange-500/20 via-red-500/20 to-pink-500/20 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl animate-fade-in hover:shadow-orange-500/20 transition-all duration-500">
+                      <div className="text-center">
+                        <h3 className="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
+                          <span className="text-2xl">📊</span>
+                          Resumo Nutricional do Dia
+                        </h3>
+                        <div className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                          <p className="text-3xl font-bold mb-1">
+                            {Object.values(menuPlan).reduce((total, meal) => total + meal.calories, 0)} kcal
+                          </p>
+                          <p className="text-sm opacity-80">Total do cardápio completo</p>
                         </div>
-                        
-                        <div>
-                          <h5 className="font-medium text-white mb-2">Modo de Preparo:</h5>
-                          <div className="text-white/80 text-sm whitespace-pre-line">
-                            {meal.instructions}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                  <h3 className="text-xl font-bold text-white mb-4 text-center">
-                    Resumo Nutricional do Dia
-                  </h3>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-white mb-2">
-                      {Object.values(menuPlan).reduce((total, meal) => total + meal.calories, 0)} calorias
+                      </div>
                     </div>
-                    <p className="text-white/80">Total do cardápio completo</p>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
