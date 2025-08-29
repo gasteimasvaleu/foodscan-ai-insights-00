@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AuthCard } from '@/components/AuthCard';
-import { SubscriptionRequired } from '@/components/SubscriptionRequired';
+
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
@@ -371,7 +371,7 @@ const FoodScan = () => {
   };
 
   return (
-    <SubscriptionRequired>
+    <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16">
         <div className="container mx-auto px-4 py-8">
@@ -443,7 +443,7 @@ const FoodScan = () => {
         </div>
       </div>
       <Footer />
-    </SubscriptionRequired>
+    </>
   );
 };
 

@@ -7,7 +7,7 @@ import { MealsList } from '@/components/MealsList';
 import { GoalsForm } from '@/components/GoalsForm';
 import { DietAnalysis } from '@/components/DietAnalysis';
 import { AuthCard } from '@/components/AuthCard';
-import { SubscriptionRequired } from '@/components/SubscriptionRequired';
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -314,7 +314,7 @@ const DailyControl = () => {
       </>;
   }
   return (
-    <SubscriptionRequired>
+    <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto py-8 px-[6px]">
@@ -411,7 +411,7 @@ const DailyControl = () => {
         </div>
       </div>
       <Footer />
-    </SubscriptionRequired>
+    </>
   );
 };
 export default DailyControl;

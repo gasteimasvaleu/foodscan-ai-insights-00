@@ -8,7 +8,7 @@ import { ExerciseDashboard } from "@/components/ExerciseDashboard";
 import { ExerciseHistory } from "@/components/ExerciseHistory";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { SubscriptionRequired } from "@/components/SubscriptionRequired";
+
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
 
@@ -50,8 +50,7 @@ export default function FitTracker() {
   }
 
   return (
-    <SubscriptionRequired>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <Navbar />
         <div className="container mx-auto px-4 py-8 pt-16">
           <div className="mb-6">
@@ -99,6 +98,5 @@ export default function FitTracker() {
         </div>
         <Footer />
       </div>
-    </SubscriptionRequired>
   );
 }
