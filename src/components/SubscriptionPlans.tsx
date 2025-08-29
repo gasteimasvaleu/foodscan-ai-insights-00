@@ -140,7 +140,7 @@ const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
       </div>
 
       {plan.popular && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1">
             <Sparkles className="w-4 h-4" />
             Mais Popular
@@ -199,7 +199,7 @@ const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
 
 export const SubscriptionPlans = () => {
   return (
-    <div className="grid md:grid-cols-2 gap-8 mb-8">
+    <div className="grid md:grid-cols-2 gap-8 mb-8 pt-4">
       {plans.map((plan) => (
         <PricingCard key={plan.name} plan={plan} />
       ))}

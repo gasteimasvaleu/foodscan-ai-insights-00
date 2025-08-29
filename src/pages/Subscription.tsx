@@ -88,10 +88,10 @@ const Subscription = () => {
           {/* Subscription Status */}
           <SubscriptionStatus />
 
-          {/* Payment Processing Time Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8 animate-scale-in">
+          {/* Payment Processing Time Card */}
+          <div className="flex justify-center mb-8 animate-scale-in">
             {/* Credit Card Access Card */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
+            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 max-w-md">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-success-100 rounded-full p-3">
@@ -103,23 +103,6 @@ const Subscription = () => {
                 </h3>
                 <p className="text-gray-700">
                   Para pagamento com cartão de crédito, acesso liberado imediatamente
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* PIX Access Card */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
-              <CardContent className="p-6 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-orange-100 rounded-full p-3">
-                    <Clock className="w-6 h-6 text-orange-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-orange-600 mb-2">
-                  Processamento PIX
-                </h3>
-                <p className="text-gray-700">
-                  Acesso liberado em até 24hrs para pagamento com PIX
                 </p>
               </CardContent>
             </Card>
