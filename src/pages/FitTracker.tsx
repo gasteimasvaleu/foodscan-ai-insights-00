@@ -72,15 +72,15 @@ export default function FitTracker() {
 
           <Tabs defaultValue="register" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
-              <TabsTrigger value="register" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-white">
+              <TabsTrigger value="register" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-gray-200">
                 <Activity className="h-4 w-4" />
                 Registrar
               </TabsTrigger>
-              <TabsTrigger value="dashboard" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-white">
+              <TabsTrigger value="dashboard" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-gray-200">
                 <BarChart3 className="h-4 w-4" />
                 Dashboard
               </TabsTrigger>
-              <TabsTrigger value="history" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-white">
+              <TabsTrigger value="history" className="flex items-center gap-2 data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-gray-200">
                 <Activity className="h-4 w-4" />
                 Histórico
               </TabsTrigger>
