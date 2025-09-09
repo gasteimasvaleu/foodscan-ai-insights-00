@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
+import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
+import { Home, Scan, Calendar, Activity, Dumbbell } from "lucide-react";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
@@ -22,6 +24,14 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const navItems = [
+  { name: 'Home', url: '/', icon: Home },
+  { name: 'FoodScan', url: '/foodscan', icon: Scan },
+  { name: 'Controle', url: '/controle-diario', icon: Calendar },
+  { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
+  { name: 'Treinos', url: '/treinos', icon: Dumbbell }
+];
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -29,6 +39,7 @@ const App = () => (
       <Sonner />
       <PWAUpdateNotification />
       <BrowserRouter>
+        <TubelightNavbar items={navItems} />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/foodscan" element={<FoodScan />} />
