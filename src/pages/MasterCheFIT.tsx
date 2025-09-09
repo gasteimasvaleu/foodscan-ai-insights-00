@@ -568,7 +568,7 @@ const MasterCheFIT = () => {
                   onClick={generateMenuPlan}
                   disabled={isGenerating}
                   size="lg"
-                  className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 hover:scale-105 animate-pulse hover:animate-none"
+                  className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 hover:from-primary-600 hover:via-primary-700 hover:to-primary-800 shadow-2xl hover:shadow-primary-500/25 transition-all duration-500 hover:scale-105 animate-pulse hover:animate-none"
                 >
                   {isGenerating ? (
                     <>
