@@ -19,7 +19,7 @@ const Index = () => {
 
   return <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-24">
+      <div className="min-h-screen bg-gradient-primary font-inter pt-24 pb-12">
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Auth Card */}
