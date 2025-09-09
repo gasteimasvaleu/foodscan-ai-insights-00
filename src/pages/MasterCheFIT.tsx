@@ -358,13 +358,13 @@ const MasterCheFIT = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-950 dark:via-red-950 dark:to-pink-950 pt-16">
+      <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             
             {/* Header */}
-            <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-orange-500/20 via-red-500/20 to-pink-500/20 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 animate-fade-in">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
+            <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
                 🍳 MasterCheFIT
               </h1>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -373,10 +373,10 @@ const MasterCheFIT = () => {
             </div>
 
             {/* Preferences Card */}
-            <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 animate-fade-in">
+            <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  <Users className="w-6 h-6 text-orange-500" />
+                  <Users className="w-6 h-6 text-primary" />
                   Suas Preferências Alimentares
                 </CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -428,7 +428,7 @@ const MasterCheFIT = () => {
                 {isEditing ? (
                   <>
                     <div className="group">
-                      <Label htmlFor="ingredients" className="mb-2 block group-hover:text-orange-500 transition-colors">
+                      <Label htmlFor="ingredients" className="mb-2 block group-hover:text-primary transition-colors">
                         Ingredientes/Alimentos Favoritos
                       </Label>
                       <Textarea
@@ -442,7 +442,7 @@ const MasterCheFIT = () => {
                     </div>
 
                     <div className="group">
-                      <Label htmlFor="requirements" className="mb-2 block group-hover:text-red-500 transition-colors">
+                      <Label htmlFor="requirements" className="mb-2 block group-hover:text-primary transition-colors">
                         Especificações Especiais
                       </Label>
                       <Textarea
@@ -456,7 +456,7 @@ const MasterCheFIT = () => {
                     </div>
 
                     <div className="group">
-                      <Label htmlFor="calories" className="mb-2 block group-hover:text-pink-500 transition-colors">
+                      <Label htmlFor="calories" className="mb-2 block group-hover:text-primary transition-colors">
                         Máximo de Calorias do Cardápio Completo
                       </Label>
                       <Input
@@ -473,16 +473,16 @@ const MasterCheFIT = () => {
                 ) : (
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-white/20 hover:bg-gradient-to-br hover:from-orange-500/20 hover:to-red-500/20 transition-all duration-300">
-                        <h4 className="font-semibold text-sm text-orange-500 mb-3 flex items-center gap-2">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2">
                           <ChefHat className="w-4 h-4" />
                           INGREDIENTES FAVORITOS
                         </h4>
                         <p className="leading-relaxed">{preferences.favoriteIngredients || 'Não definido'}</p>
                       </div>
                       
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-white/20 hover:bg-gradient-to-br hover:from-red-500/20 hover:to-pink-500/20 transition-all duration-300">
-                        <h4 className="font-semibold text-sm text-red-500 mb-3 flex items-center gap-2">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2">
                           <Target className="w-4 h-4" />
                           LIMITE CALÓRICO
                         </h4>
@@ -503,10 +503,10 @@ const MasterCheFIT = () => {
 
             {/* Menu History */}
             {showHistory && savedMenuPlans.length > 0 && (
-              <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-red-500/10 transition-all duration-500 animate-fade-in">
+              <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-2xl">
-                    <History className="w-6 h-6 text-red-500" />
+                    <History className="w-6 h-6 text-primary" />
                     Histórico de Cardápios
                   </CardTitle>
                 </CardHeader>
@@ -525,9 +525,9 @@ const MasterCheFIT = () => {
                             </h3>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-primary"></div>
                                 <span>Total:</span>
-                                <span className="font-semibold text-orange-500">
+                                <span className="font-semibold text-primary">
                                   {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} kcal
                                 </span>
                               </div>
@@ -591,7 +591,7 @@ const MasterCheFIT = () => {
             {menuPlan && (
               <Card className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
                 <CardHeader>
-                  <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                  <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4">
                     🍽️ Seu Cardápio Personalizado
                   </CardTitle>
                 </CardHeader>
@@ -605,24 +605,24 @@ const MasterCheFIT = () => {
                       >
                         <div className="flex items-center gap-3 mb-4">
                           <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{getMealIcon(mealType)}</span>
-                          <h3 className="text-xl font-semibold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{getMealName(mealType)}</h3>
+                          <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">{getMealName(mealType)}</h3>
                         </div>
                         
                         <div className="space-y-4">
                           <div>
-                            <h4 className="font-medium text-lg mb-2 group-hover:text-orange-500 transition-colors">{meal.name}</h4>
+                            <h4 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors">{meal.name}</h4>
                             <p className="text-muted-foreground mb-3 leading-relaxed">{meal.recipe}</p>
                           </div>
                           
                           <div className="bg-white/5 backdrop-blur p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
-                            <h5 className="font-medium mb-2 text-orange-500">Modo de Preparo:</h5>
+                            <h5 className="font-medium mb-2 text-primary">Modo de Preparo:</h5>
                             <p className="text-sm leading-relaxed whitespace-pre-line">{meal.instructions}</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-4 text-sm">
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30">
+                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary/20 to-primary/25 border border-primary/30">
                               <span className="font-medium">Calorias:</span>
-                              <span className="text-orange-500 font-bold">{meal.calories} kcal</span>
+                              <span className="text-primary font-bold">{meal.calories} kcal</span>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-200">
                               <Clock className="w-4 h-4 text-blue-400" />
@@ -638,13 +638,13 @@ const MasterCheFIT = () => {
                     ))}
                     
                     {/* Summary */}
-                    <div className="mt-8 p-6 bg-gradient-to-r from-orange-500/20 via-red-500/20 to-pink-500/20 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl animate-fade-in hover:shadow-orange-500/20 transition-all duration-500">
+                    <div className="mt-8 p-6 bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl animate-fade-in hover:shadow-primary/20 transition-all duration-500">
                       <div className="text-center">
                         <h3 className="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
                           <span className="text-2xl">📊</span>
                           Resumo Nutricional do Dia
                         </h3>
-                        <div className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                        <div className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
                           <p className="text-3xl font-bold mb-1">
                             {Object.values(menuPlan).reduce((total, meal) => total + meal.calories, 0)} kcal
                           </p>
