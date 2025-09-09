@@ -41,7 +41,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   return (
     <div
       className={cn(
-        "fixed bottom-6 sm:top-20 left-1/2 -translate-x-1/2 z-40",
+        "fixed bottom-0 sm:top-20 left-1/2 -translate-x-1/2 z-40",
         className,
       )}
     >
