@@ -364,10 +364,10 @@ const MasterCheFIT = () => {
             
             {/* Header */}
             <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
                 🍳 MasterCheFIT
               </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
                 Crie cardápios personalizados baseados nos seus gostos e necessidades alimentares
               </p>
             </div>
@@ -478,7 +478,7 @@ const MasterCheFIT = () => {
                           <ChefHat className="w-4 h-4" />
                           INGREDIENTES FAVORITOS
                         </h4>
-                        <p className="leading-relaxed">{preferences.favoriteIngredients || 'Não definido'}</p>
+                        <p className="leading-relaxed text-white/90">{preferences.favoriteIngredients || 'Não definido'}</p>
                       </div>
                       
                       <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
@@ -486,14 +486,14 @@ const MasterCheFIT = () => {
                           <Target className="w-4 h-4" />
                           LIMITE CALÓRICO
                         </h4>
-                        <p className="leading-relaxed">{preferences.maxCalories} calorias no total</p>
+                        <p className="leading-relaxed text-white/90">{preferences.maxCalories} calorias no total</p>
                       </div>
                     </div>
                     
                     {preferences.specificRequirements && (
                       <div className="p-4 rounded-xl bg-white/5 border border-white/20 hover:bg-white/10 transition-all duration-300">
-                        <h4 className="font-semibold text-sm text-muted-foreground mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
-                        <p className="text-sm leading-relaxed">{preferences.specificRequirements}</p>
+                        <h4 className="font-semibold text-sm text-white/80 mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
+                        <p className="text-sm leading-relaxed text-white/90">{preferences.specificRequirements}</p>
                       </div>
                     )}
                   </div>
@@ -520,10 +520,10 @@ const MasterCheFIT = () => {
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h3 className="font-semibold text-lg">
-                              Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
-                            </h3>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                             <h3 className="font-semibold text-lg text-white/95">
+                               Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
+                             </h3>
+                            <div className="flex items-center gap-4 text-sm text-white/80">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-primary"></div>
                                 <span>Total:</span>
@@ -610,13 +610,13 @@ const MasterCheFIT = () => {
                         
                         <div className="space-y-4">
                           <div>
-                            <h4 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors">{meal.name}</h4>
-                            <p className="text-muted-foreground mb-3 leading-relaxed">{meal.recipe}</p>
+                            <h4 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors text-white/95">{meal.name}</h4>
+                            <p className="text-white/80 mb-3 leading-relaxed">{meal.recipe}</p>
                           </div>
                           
                           <div className="bg-white/5 backdrop-blur p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
                             <h5 className="font-medium mb-2 text-primary">Modo de Preparo:</h5>
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{meal.instructions}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line text-white/85">{meal.instructions}</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-4 text-sm">
