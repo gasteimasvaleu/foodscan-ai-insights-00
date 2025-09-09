@@ -45,7 +45,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="flex items-center gap-1 sm:gap-3 bg-background/80 border border-border backdrop-blur-lg py-1 px-1 sm:px-1 rounded-full shadow-lg">
+      <div className="flex items-center gap-2 sm:gap-3 bg-background/80 border border-border backdrop-blur-lg py-1 px-2 sm:px-1 rounded-full shadow-lg">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.url
@@ -56,14 +56,14 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               to={item.url}
               onClick={() => setActiveTab(item.name)}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-3 sm:px-6 py-2 rounded-full transition-colors",
+                "relative cursor-pointer text-sm font-semibold px-4 sm:px-6 py-2 rounded-full transition-colors",
                 "text-foreground/80 hover:text-primary",
                 isActive && "bg-muted text-primary",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
               <span className="md:hidden">
-                <Icon size={18} strokeWidth={2.5} />
+                <Icon size={20} strokeWidth={2.5} />
               </span>
               {isActive && (
                 <motion.div
