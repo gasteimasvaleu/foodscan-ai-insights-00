@@ -396,7 +396,7 @@ const MasterCheFIT = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(true)}
-                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-orange-500/50 transition-all duration-300 hover:scale-105"
+                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-primary/50 transition-all duration-300 hover:scale-105"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Editar
@@ -415,7 +415,7 @@ const MasterCheFIT = () => {
                         variant="default" 
                         size="sm"
                         onClick={handleSavePreferences}
-                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105"
+                        className="bg-gradient-to-r from-primary to-primary hover:from-primary/80 hover:to-primary/80 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:scale-105"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Salvar
@@ -436,7 +436,7 @@ const MasterCheFIT = () => {
                         placeholder="Ex: frango, salmão, arroz integral, banana, aveia, brócolis..."
                         value={preferences.favoriteIngredients}
                         onChange={(e) => setPreferences(prev => ({ ...prev, favoriteIngredients: e.target.value }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-orange-500/50 focus:border-orange-500 transition-all duration-300"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
                         rows={3}
                       />
                     </div>
@@ -450,7 +450,7 @@ const MasterCheFIT = () => {
                         placeholder="Ex: sem glúten, vegano, baixo sódio, rico em proteína..."
                         value={preferences.specificRequirements}
                         onChange={(e) => setPreferences(prev => ({ ...prev, specificRequirements: e.target.value }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-red-500/50 focus:border-red-500 transition-all duration-300"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
                         rows={2}
                       />
                     </div>
@@ -466,7 +466,7 @@ const MasterCheFIT = () => {
                         max="4000"
                         value={preferences.maxCalories}
                         onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-pink-500/50 focus:border-pink-500 transition-all duration-300 w-48"
+                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
                       />
                     </div>
                   </>
