@@ -386,7 +386,6 @@ const FoodScan = () => {
               </div>
             ) : (
               <div className="space-y-8">
-                <EmptyState />
                 <ImageUpload onImageSelect={handleImageAnalysis} />
                 
                 {(selectedImage || imageDescription) && (
