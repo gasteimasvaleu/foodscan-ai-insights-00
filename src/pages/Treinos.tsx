@@ -168,21 +168,6 @@ const Treinos = () => {
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                   Descubra treinos personalizados e dicas profissionais para alcançar seus objetivos fitness
                 </p>
-                
-                <div className="flex items-center justify-center space-x-6 mt-6">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm text-muted-foreground">Treinos Profissionais</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
-                    <span className="text-sm text-muted-foreground">Dicas Exclusivas</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm text-muted-foreground">Resultados Garantidos</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
