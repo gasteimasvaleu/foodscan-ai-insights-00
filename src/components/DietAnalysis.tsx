@@ -120,6 +120,7 @@ export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading,
           <Button
             onClick={handleWhatsAppShare}
             className="bg-green-500 hover:bg-green-600 text-white rounded-xl px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            style={{ minWidth: "150px" }}
           >
             <MessageCircle className="w-5 h-5 mr-2" />
             Enviar pelo Whatsapp
