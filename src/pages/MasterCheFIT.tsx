@@ -364,7 +364,7 @@ const MasterCheFIT = () => {
             
             {/* Header */}
             <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4 hover:scale-105 transition-transform duration-300">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
                 🍳 MasterCheFIT
               </h1>
               <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
