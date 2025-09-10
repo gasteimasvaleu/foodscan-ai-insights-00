@@ -144,32 +144,26 @@ const Treinos = () => {
       
       <main className="pt-16 px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* Hero Header */}
-          <div className="text-center mb-12">
-            <Card className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-primary/20 shadow-xl backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-xl opacity-30 animate-pulse"></div>
-                    <div className="relative bg-gradient-to-br from-primary to-secondary p-4 rounded-full">
-                      <Dumbbell className="w-8 h-8 text-white" />
-                    </div>
+          {/* Header Card */}
+          <div className="text-center mb-12 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8 max-w-4xl mx-auto">
+              <div className="flex items-center justify-center mb-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                  <div className="relative bg-gradient-to-br from-indigo-400 to-purple-500 p-4 rounded-full">
+                    <Dumbbell className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                
-                <GradientText 
-                  colors={["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--primary))"]} 
-                  animationSpeed={4}
-                  className="text-4xl md:text-5xl font-bold mb-4"
-                >
-                  Central de Treinos
-                </GradientText>
-                
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  Descubra treinos personalizados e dicas profissionais para alcançar seus objetivos fitness
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+              
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
+                Central de Treinos
+              </h1>
+              
+              <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                Descubra treinos personalizados e dicas profissionais para alcançar seus objetivos fitness
+              </p>
+            </div>
           </div>
 
           {/* Filters Section */}

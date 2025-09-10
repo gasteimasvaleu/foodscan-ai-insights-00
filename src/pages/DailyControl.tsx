@@ -321,13 +321,26 @@ const DailyControl = () => {
           <WelcomeMessage />
           
           <div className="max-w-4xl mx-auto space-y-8">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4 text-slate-50">
-                Controle Diário
-              </h1>
-              <p className="text-slate-50">
-                Acompanhe suas metas nutricionais e registre suas refeições
-              </p>
+            {/* Header Card */}
+            <div className="text-center mb-12 animate-fade-in">
+              <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                    <div className="relative bg-gradient-to-br from-blue-400 to-cyan-500 p-4 rounded-full">
+                      <div className="text-white text-3xl">📊</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
+                  Controle Diário
+                </h1>
+                
+                <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                  Acompanhe suas metas nutricionais e registre suas refeições diárias
+                </p>
+              </div>
             </div>
 
             {goals ? (
