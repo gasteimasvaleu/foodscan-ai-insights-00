@@ -15,13 +15,6 @@ export const Navbar = () => {
   const { user, signOut } = useAuth();
 
   const menuItems = [
-    { label: 'Início', href: '/' },
-    { label: 'FoodScan', href: '/foodscan' },
-    { label: 'Controle Diário', href: '/controle-diario' },
-    { label: 'FitTracker', href: '/fit-tracker' },
-    { label: 'Treinos', href: '/treinos' },
-    { label: 'MasterCheFIT', href: '/masterchef' },
-    { label: 'ServiNUTRI', href: '/servinutri' },
     { label: 'Quero Assinar', href: '/quero-assinar' },
     { label: 'Sobre', href: '/sobre' }
   ];
