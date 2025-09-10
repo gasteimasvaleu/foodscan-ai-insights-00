@@ -50,9 +50,9 @@ export default function FitTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 pt-16">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-16">
+        <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="text-center mb-12 animate-fade-in">
             <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8 max-w-4xl mx-auto">

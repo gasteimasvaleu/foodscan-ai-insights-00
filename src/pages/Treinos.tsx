@@ -139,10 +139,10 @@ const Treinos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary">
+    <div className="min-h-screen bg-gradient-primary pt-16">
       <Navbar />
       
-      <main className="pt-16 px-4 py-8">
+      <main className="px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Header Card */}
           <div className="text-center mb-12 animate-fade-in">
