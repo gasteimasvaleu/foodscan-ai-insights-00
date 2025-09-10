@@ -85,6 +85,7 @@ export interface NutritionData {
   nutriscore?: string; // Nutri-Score do Open Food Facts
   brands?: string; // Marcas do Open Food Facts
   barcode?: string; // Código de barras
+  hasNutritionalData?: boolean; // Se tem dados nutricionais completos
   nutrition: {
     calories: number;
     carbohydrates: number;

@@ -23,6 +23,8 @@ const FoodScan = () => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [imageDescription, setImageDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [analysisMode, setAnalysisMode] = useState<'fresh' | 'packaged'>('fresh');
+  const [incompleteProductData, setIncompleteProductData] = useState<NutritionData | null>(null);
   
   // Removed exposed API key - now using secure Edge Functions
 
@@ -384,24 +386,24 @@ const FoodScan = () => {
 
       console.log("Dados do Open Food Facts:", data);
 
+      // Verificar se os dados nutricionais estão completos
+      if (!data.hasNutritionalData) {
+        console.log('Dados nutricionais incompletos, oferecendo fallback para IA');
+        setIncompleteProductData(data);
+        return;
+      }
+
       // Converter os dados para o formato NutritionData
       const nutritionResult: NutritionData = {
-        foodName: data.name,
+        foodName: data.foodName,
         name: data.name,
         description: data.description,
-        quantity: `${data.portionGrams || 100}g`,
+        quantity: data.quantity,
         source: 'open-food-facts',
         nutriscore: data.nutriscore,
         brands: data.brands,
         barcode: data.barcode,
-        nutrition: {
-          calories: data.calories,
-          carbohydrates: data.carbohydrates,
-          proteins: data.proteins,
-          fats: data.fats,
-          fiber: data.fiber || 0,
-          sodium: data.sodium || 0
-        }
+        nutrition: data.nutrition
       };
 
       setNutritionData(nutritionResult);
@@ -429,6 +431,64 @@ const FoodScan = () => {
     setSelectedImage(null);
     setIsAnalyzing(false);
     setIsDescribing(false);
+    setIncompleteProductData(null);
+  };
+
+  const handleFallbackToAI = async () => {
+    if (!incompleteProductData) return;
+    
+    try {
+      setIsAnalyzing(true);
+      setIncompleteProductData(null);
+      
+      // Criar uma descrição baseada nos dados do Open Food Facts
+      const description = `${incompleteProductData.foodName}${incompleteProductData.brands ? ` da marca ${incompleteProductData.brands}` : ''}`;
+      
+      // Chamar análise por IA usando os dados disponíveis
+      const { data, error: functionError } = await supabase.functions.invoke('analyze-nutrition', {
+        body: { 
+          description,
+          isFromBarcode: true,
+          productName: incompleteProductData.foodName,
+          brand: incompleteProductData.brands
+        }
+      });
+
+      if (functionError) {
+        throw new Error(functionError.message);
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      const aiNutritionData = processOpenAIResponse(JSON.stringify(data));
+      
+      // Combinar dados do Open Food Facts com análise IA
+      const combinedData: NutritionData = {
+        ...aiNutritionData,
+        source: 'ai' as const,
+        barcode: incompleteProductData.barcode,
+        brands: incompleteProductData.brands,
+        nutriscore: incompleteProductData.nutriscore,
+        foodName: incompleteProductData.foodName
+      };
+
+      setNutritionData(combinedData);
+      toast({
+        title: "Análise complementada com IA!",
+        description: "Dados nutricionais calculados usando inteligência artificial",
+      });
+    } catch (error) {
+      console.error('Erro no fallback para IA:', error);
+      toast({
+        title: "Erro ao completar análise",
+        description: "Não foi possível completar os dados com IA",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -463,6 +523,50 @@ const FoodScan = () => {
               <div data-results-section>
                 <LoadingState />
               </div>
+            ) : incompleteProductData ? (
+              <div data-results-section className="space-y-6">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
+                  <div className="text-center mb-4">
+                    <Badge variant="outline" className="gap-2 border-amber-300 text-amber-700">
+                      <BarChart3 className="w-3 h-3" />
+                      Produto identificado - Dados incompletos
+                    </Badge>
+                  </div>
+                  
+                  <div className="text-center space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {incompleteProductData.foodName}
+                    </h3>
+                    
+                    {incompleteProductData.brands && (
+                      <p className="text-sm text-gray-600">
+                        Marca: {incompleteProductData.brands}
+                      </p>
+                    )}
+                    
+                    <p className="text-amber-700 text-sm">
+                      O produto foi encontrado no Open Food Facts, mas não possui dados nutricionais completos.
+                    </p>
+                    
+                    <div className="flex gap-3 justify-center">
+                      <Button 
+                        onClick={handleFallbackToAI}
+                        className="bg-green-600 hover:bg-green-700"
+                        disabled={isAnalyzing}
+                      >
+                        {isAnalyzing ? "Analisando..." : "Completar com IA"}
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        onClick={handleReset}
+                      >
+                        Nova Análise
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : nutritionData ? (
               <div data-results-section className="space-y-4">
                 {nutritionData.source === 'open-food-facts' && (
@@ -470,6 +574,14 @@ const FoodScan = () => {
                     <Badge variant="secondary" className="gap-2">
                       <BarChart3 className="w-3 h-3" />
                       Dados do Open Food Facts
+                    </Badge>
+                  </div>
+                )}
+                {nutritionData.source === 'ai' && nutritionData.barcode && (
+                  <div className="text-center">
+                    <Badge variant="outline" className="gap-2 border-purple-300 text-purple-700">
+                      <BarChart3 className="w-3 h-3" />
+                      IA + Open Food Facts
                     </Badge>
                   </div>
                 )}

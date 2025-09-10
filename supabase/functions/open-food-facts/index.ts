@@ -68,22 +68,31 @@ serve(async (req) => {
     const product = data.product;
     const nutriments = product.nutriments || {};
 
-    // Converter para o formato NutritionData usado pela aplicação
-    const nutritionData = {
-      name: product.product_name || 'Produto não identificado',
-      description: `${product.brands ? `Marca: ${product.brands}. ` : ''}${product.ingredients_text ? `Ingredientes: ${product.ingredients_text}` : 'Ingredientes não disponíveis'}`,
+    // Processar dados nutricionais
+    const nutrition = {
       calories: nutriments['energy-kcal_100g'] || 0,
       carbohydrates: nutriments['carbohydrates_100g'] || 0,
       proteins: nutriments['proteins_100g'] || 0,
       fats: nutriments['fat_100g'] || 0,
       fiber: nutriments['fiber_100g'] || 0,
-      sugars: nutriments['sugars_100g'] || 0,
       sodium: (nutriments['salt_100g'] || 0) * 1000 * 0.4, // Converter sal para sódio (mg)
-      portionGrams: 100, // Open Food Facts sempre retorna valores por 100g
+    };
+
+    // Verificar se os dados nutricionais estão completos
+    const hasNutritionalData = Object.values(nutrition).some(value => value > 0);
+    
+    // Converter para o formato NutritionData usado pela aplicação
+    const nutritionData = {
+      foodName: product.product_name || product.brands || 'Produto não identificado',
+      name: product.product_name || product.brands || 'Produto não identificado',
+      description: `${product.brands ? `Marca: ${product.brands}. ` : ''}${product.ingredients_text ? `Ingredientes: ${product.ingredients_text}` : 'Ingredientes não disponíveis'}`,
+      quantity: "100g",
       source: 'open-food-facts',
       nutriscore: product.nutriscore_grade?.toUpperCase(),
       brands: product.brands,
-      barcode: barcode
+      barcode: barcode,
+      hasNutritionalData,
+      nutrition
     };
 
     console.log('Dados nutricionais processados:', nutritionData);
