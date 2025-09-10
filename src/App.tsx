@@ -17,6 +17,7 @@ import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
+import AdminNotifications from "./pages/AdminNotifications";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import Auth from "./pages/Auth";
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
+          <Route path="/admin/notificacoes" element={<AdminNotifications />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-cancel" element={<PaymentCancel />} />
