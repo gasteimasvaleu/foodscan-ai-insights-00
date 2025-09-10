@@ -6,6 +6,8 @@ import { encode as base64urlEncode } from "https://deno.land/std@0.168.0/encodin
 
 // JWT signing for VAPID
 async function signJWT(payload: object, privateKey: string): Promise<string> {
+  console.log('Starting JWT signing process...')
+  
   const header = { typ: "JWT", alg: "ES256" }
   
   const encodedHeader = base64urlEncode(JSON.stringify(header))
@@ -13,24 +15,38 @@ async function signJWT(payload: object, privateKey: string): Promise<string> {
   
   const signingInput = `${encodedHeader}.${encodedPayload}`
   
-  // Import the private key
-  const keyData = new TextEncoder().encode(privateKey.replace(/-----BEGIN EC PRIVATE KEY-----|\n|-----END EC PRIVATE KEY-----/g, ''))
-  const key = await crypto.subtle.importKey(
-    "pkcs8",
-    Uint8Array.from(atob(new TextDecoder().decode(keyData)), c => c.charCodeAt(0)),
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["sign"]
-  )
-  
-  const signature = await crypto.subtle.sign(
-    { name: "ECDSA", hash: "SHA-256" },
-    key,
-    new TextEncoder().encode(signingInput)
-  )
-  
-  const encodedSignature = base64urlEncode(new Uint8Array(signature))
-  return `${signingInput}.${encodedSignature}`
+  try {
+    // Clean the private key and convert from base64
+    const cleanedKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----|\n|-----END PRIVATE KEY-----|\r/g, '')
+    console.log('Cleaned key length:', cleanedKey.length)
+    
+    // Decode from base64 to get the raw key bytes
+    const keyBytes = Uint8Array.from(atob(cleanedKey), c => c.charCodeAt(0))
+    console.log('Key bytes length:', keyBytes.length)
+    
+    const key = await crypto.subtle.importKey(
+      "pkcs8",
+      keyBytes,
+      { name: "ECDSA", namedCurve: "P-256" },
+      false,
+      ["sign"]
+    )
+    
+    console.log('Key imported successfully')
+    
+    const signature = await crypto.subtle.sign(
+      { name: "ECDSA", hash: "SHA-256" },
+      key,
+      new TextEncoder().encode(signingInput)
+    )
+    
+    const encodedSignature = base64urlEncode(new Uint8Array(signature))
+    console.log('JWT signed successfully')
+    return `${signingInput}.${encodedSignature}`
+  } catch (error) {
+    console.error('JWT signing error:', error)
+    throw new Error(`Failed to sign JWT: ${error.message}`)
+  }
 }
 
 // Send push notification using native fetch
