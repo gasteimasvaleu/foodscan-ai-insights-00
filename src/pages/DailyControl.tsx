@@ -7,6 +7,7 @@ import { MealsList } from '@/components/MealsList';
 import { GoalsForm } from '@/components/GoalsForm';
 import { DietAnalysis } from '@/components/DietAnalysis';
 import { AuthCard } from '@/components/AuthCard';
+import { WeeklySummary, saveWeeklySummary } from '@/components/WeeklySummary';
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -55,6 +56,7 @@ const DailyControl = () => {
     goals: any;
     consumed: any;
   } | null>(null);
+  const [weeklyDataUpdateKey, setWeeklyDataUpdateKey] = useState(0);
   useEffect(() => {
     if (!authLoading && user) {
       loadUserData();
@@ -218,6 +220,13 @@ const DailyControl = () => {
           goals: payload.goals,
           consumed: payload.consumed
         });
+
+        // Salvar dados do resumo semanal
+        if (user) {
+          await saveWeeklySummary(user.id, consumed);
+          setWeeklyDataUpdateKey(prev => prev + 1); // Força atualização do componente semanal
+        }
+
         toast({
           title: "Sucesso",
           description: "Análise do dia concluída!"
@@ -360,6 +369,11 @@ const DailyControl = () => {
                   Configurar Metas
                 </button>
               </div>
+            )}
+
+            {/* Resumo Semanal - posicionado logo após as metas diárias */}
+            {goals && (
+              <WeeklySummary key={weeklyDataUpdateKey} className="shadow-xl" />
             )}
 
             {showGoalsForm && (
