@@ -611,12 +611,12 @@ const MasterCheFIT = () => {
                         <div className="space-y-4">
                           <div>
                             <h4 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors text-white/95">{meal.name}</h4>
-                            <p className="text-white/80 mb-3 leading-relaxed">{meal.recipe}</p>
+                            <p className="text-black mb-3 leading-relaxed">{meal.recipe}</p>
                           </div>
                           
                           <div className="bg-white/5 backdrop-blur p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
                             <h5 className="font-medium mb-2 text-primary">Modo de Preparo:</h5>
-                            <p className="text-sm leading-relaxed whitespace-pre-line text-white/85">{meal.instructions}</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line text-black">{meal.instructions}</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-4 text-sm">
