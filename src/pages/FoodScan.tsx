@@ -6,6 +6,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AuthCard } from '@/components/AuthCard';
+import { Badge } from '@/components/ui/badge';
+import { BarChart3 } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -362,6 +364,65 @@ const FoodScan = () => {
     });
   };
 
+  const handleBarcodeAnalysis = async (barcode: string) => {
+    setIsAnalyzing(true);
+    console.log("=== INICIANDO ANÁLISE POR CÓDIGO DE BARRAS ===");
+    console.log("Código de barras:", barcode);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('open-food-facts', {
+        body: { barcode }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        throw new Error('Nenhum dado foi retornado');
+      }
+
+      console.log("Dados do Open Food Facts:", data);
+
+      // Converter os dados para o formato NutritionData
+      const nutritionResult: NutritionData = {
+        foodName: data.name,
+        name: data.name,
+        description: data.description,
+        quantity: `${data.portionGrams || 100}g`,
+        source: 'open-food-facts',
+        nutriscore: data.nutriscore,
+        brands: data.brands,
+        barcode: data.barcode,
+        nutrition: {
+          calories: data.calories,
+          carbohydrates: data.carbohydrates,
+          proteins: data.proteins,
+          fats: data.fats,
+          fiber: data.fiber || 0,
+          sodium: data.sodium || 0
+        }
+      };
+
+      setNutritionData(nutritionResult);
+      toast({
+        title: "Produto encontrado!",
+        description: `Análise completa de ${data.name}`,
+        variant: "default",
+      });
+
+    } catch (error) {
+      console.error("Erro na análise por código de barras:", error);
+      toast({
+        title: "Erro na análise",
+        description: error instanceof Error ? error.message : "Erro desconhecido ao analisar produto",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleReset = () => {
     setNutritionData(null);
     setImageDescription('');
@@ -403,12 +464,24 @@ const FoodScan = () => {
                 <LoadingState />
               </div>
             ) : nutritionData ? (
-              <div data-results-section>
+              <div data-results-section className="space-y-4">
+                {nutritionData.source === 'open-food-facts' && (
+                  <div className="text-center">
+                    <Badge variant="secondary" className="gap-2">
+                      <BarChart3 className="w-3 h-3" />
+                      Dados do Open Food Facts
+                    </Badge>
+                  </div>
+                )}
                 <FoodNutritionResults data={nutritionData} onReset={handleReset} />
               </div>
             ) : (
               <div className="space-y-8">
-                <ImageUpload onImageSelect={handleImageAnalysis} />
+                <ImageUpload 
+                  onImageSelect={handleImageAnalysis} 
+                  onBarcodeAnalysis={handleBarcodeAnalysis}
+                  isAnalyzing={isAnalyzing}
+                />
                 
                 {(selectedImage || imageDescription) && (
                   <div data-description-section className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">

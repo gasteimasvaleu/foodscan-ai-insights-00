@@ -69,6 +69,7 @@ export interface ServingContext {
 
 export interface NutritionData {
   foodName: string;
+  name?: string; // Para compatibilidade com Open Food Facts
   description: string;
   quantity: string;
   elements?: FoodElement[]; // Array de elementos quando há múltiplos
@@ -80,6 +81,10 @@ export interface NutritionData {
   comprehensive_observations?: ComprehensiveObservations;
   dietary_compatibility?: DietaryCompatibility;
   serving_context?: ServingContext;
+  source?: 'ai' | 'open-food-facts'; // Fonte dos dados
+  nutriscore?: string; // Nutri-Score do Open Food Facts
+  brands?: string; // Marcas do Open Food Facts
+  barcode?: string; // Código de barras
   nutrition: {
     calories: number;
     carbohydrates: number;

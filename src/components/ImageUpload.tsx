@@ -1,13 +1,17 @@
-
 import React, { useState, useRef } from 'react';
-import { Upload, Camera, X, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Camera, Upload, X, RotateCcw, Brain, BarChart3 } from "lucide-react";
+import { BarcodeScanner } from "./BarcodeScanner";
 
 interface ImageUploadProps {
   onImageSelect: (file: File) => void;
+  onBarcodeAnalysis?: (barcode: string) => void;
+  isAnalyzing?: boolean;
 }
 
-export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
+export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, isAnalyzing = false }: ImageUploadProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,80 +68,100 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
   };
 
   return (
-    <div className="space-y-6 animate-scale-in">
-      {/* Upload Area */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-        {!selectedImage ? (
-          <div
-            onClick={handleUploadClick}
-            className="border-2 border-dashed border-primary-300 rounded-2xl p-12 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50/50 transition-all duration-300 group"
-          >
-            <div className="space-y-4">
-              <div className="bg-primary-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                <Upload className="w-10 h-10 text-primary-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Faça upload da sua foto
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Clique aqui ou arraste uma imagem do seu prato ou alimento
-                </p>
-                <p className="text-sm text-gray-500">
-                  Formatos suportados: JPG, PNG, WebP (máx. 10MB)
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="relative">
-              <img
-                src={selectedImage}
-                alt="Preview"
-                className="w-full max-w-md mx-auto rounded-2xl shadow-lg"
-              />
-              <button
-                onClick={handleRemoveImage}
-                className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-200 shadow-lg"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="text-center space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Imagem selecionada
-              </h3>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-                  onClick={handleUploadClick}
-                  variant="outline"
-                  className="rounded-xl w-full sm:w-auto"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Trocar Imagem
-                </Button>
-                <Button
-                  onClick={handleAnalyze}
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Analisar Alimento
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+    <div className="w-full max-w-2xl mx-auto p-6">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        ref={fileInputRef}
+        className="hidden"
+      />
+      
+      <Tabs defaultValue="fresh" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="fresh" className="gap-2">
+            <Brain className="w-4 h-4" />
+            Comida Fresca
+          </TabsTrigger>
+          <TabsTrigger value="barcode" className="gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Industrializada
+          </TabsTrigger>
+        </TabsList>
         
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-      </div>
+        <TabsContent value="fresh" className="space-y-4">
+          {!selectedImage ? (
+            <Card 
+              className="border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors cursor-pointer min-h-[300px] flex items-center justify-center"
+              onClick={handleUploadClick}
+            >
+              <CardContent className="flex flex-col items-center justify-center text-center p-8">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Camera className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Adicionar Foto do Alimento</h3>
+                <p className="text-muted-foreground mb-4">
+                  Tire uma foto ou selecione uma imagem da galeria para análise com IA
+                </p>
+                <Button variant="secondary" className="gap-2">
+                  <Upload className="w-4 h-4" />
+                  Selecionar Imagem
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <img 
+                    src={selectedImage} 
+                    alt="Alimento selecionado" 
+                    className="w-full h-64 object-cover"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    onClick={handleRemoveImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="p-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-center">Imagem Carregada</h3>
+                  <p className="text-muted-foreground text-center text-sm">
+                    Sua imagem está pronta para análise nutricional com IA
+                  </p>
+                  <div className="flex gap-3">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 gap-2"
+                      onClick={handleRemoveImage}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Trocar
+                    </Button>
+                    <Button 
+                      className="flex-1"
+                      onClick={handleAnalyze}
+                      disabled={isAnalyzing}
+                    >
+                      {isAnalyzing ? "Analisando..." : "Analisar"}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="barcode" className="space-y-4">
+          <BarcodeScanner 
+            onBarcodeAnalysis={onBarcodeAnalysis || (() => {})}
+            isAnalyzing={isAnalyzing}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
