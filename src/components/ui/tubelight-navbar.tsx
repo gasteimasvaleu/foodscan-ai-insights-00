@@ -41,11 +41,11 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-1/2 -translate-x-1/2 z-40",
+        "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] md:max-w-none mx-2",
         className,
       )}
     >
-      <div className="flex items-center gap-2 sm:gap-3 bg-background/80 border border-border backdrop-blur-lg py-1 px-2 sm:px-1 rounded-full shadow-lg">
+      <div className="flex items-center gap-1 sm:gap-2 bg-background/80 border border-border backdrop-blur-lg py-1 px-1 sm:px-2 rounded-2xl shadow-lg">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.url
@@ -56,7 +56,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               to={item.url}
               onClick={() => setActiveTab(item.name)}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-4 sm:px-6 py-2 rounded-full transition-colors",
+                "relative cursor-pointer text-sm font-semibold px-2 sm:px-4 py-2 rounded-2xl transition-colors",
                 "text-foreground/80 hover:text-primary",
                 isActive && "bg-muted text-primary",
               )}
@@ -68,7 +68,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                  className="absolute inset-0 w-full bg-primary/5 rounded-2xl -z-10"
                   initial={false}
                   transition={{
                     type: "spring",
