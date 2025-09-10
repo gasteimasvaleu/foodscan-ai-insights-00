@@ -477,7 +477,7 @@ const ServiNUTRI = () => {
     return `R$ ${price.toFixed(2).replace('.', ',')}`;
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-primary">
         <Navbar />
         <div className="container mx-auto px-4 pt-20 pb-12">
           <div className="text-center mb-8">
