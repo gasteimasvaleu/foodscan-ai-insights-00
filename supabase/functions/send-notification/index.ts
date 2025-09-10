@@ -1,8 +1,72 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// Web Push library for sending push notifications
-const webpush = await import('https://esm.sh/web-push@3.6.7')
+// Native Web Push implementation for Deno
+import { encode as base64urlEncode } from "https://deno.land/std@0.168.0/encoding/base64url.ts"
+
+// JWT signing for VAPID
+async function signJWT(payload: object, privateKey: string): Promise<string> {
+  const header = { typ: "JWT", alg: "ES256" }
+  
+  const encodedHeader = base64urlEncode(JSON.stringify(header))
+  const encodedPayload = base64urlEncode(JSON.stringify(payload))
+  
+  const signingInput = `${encodedHeader}.${encodedPayload}`
+  
+  // Import the private key
+  const keyData = new TextEncoder().encode(privateKey.replace(/-----BEGIN EC PRIVATE KEY-----|\n|-----END EC PRIVATE KEY-----/g, ''))
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    Uint8Array.from(atob(new TextDecoder().decode(keyData)), c => c.charCodeAt(0)),
+    { name: "ECDSA", namedCurve: "P-256" },
+    false,
+    ["sign"]
+  )
+  
+  const signature = await crypto.subtle.sign(
+    { name: "ECDSA", hash: "SHA-256" },
+    key,
+    new TextEncoder().encode(signingInput)
+  )
+  
+  const encodedSignature = base64urlEncode(new Uint8Array(signature))
+  return `${signingInput}.${encodedSignature}`
+}
+
+// Send push notification using native fetch
+async function sendPushNotification(
+  endpoint: string,
+  p256dh: string,
+  auth: string,
+  payload: string,
+  vapidPublicKey: string,
+  vapidPrivateKey: string
+): Promise<void> {
+  const url = new URL(endpoint)
+  const audience = `${url.protocol}//${url.host}`
+  
+  const vapidClaims = {
+    aud: audience,
+    exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60, // 12 hours
+    sub: "mailto:admin@foodscanai.com"
+  }
+  
+  const vapidToken = await signJWT(vapidClaims, vapidPrivateKey)
+  
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `vapid t=${vapidToken}, k=${vapidPublicKey}`,
+      'Content-Type': 'application/octet-stream',
+      'TTL': '86400'
+    },
+    body: payload
+  })
+  
+  if (!response.ok) {
+    throw new Error(`Push service responded with status ${response.status}`)
+  }
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -72,11 +136,6 @@ serve(async (req) => {
       throw new Error('VAPID keys not configured')
     }
 
-    webpush.default.setVapidDetails(
-      'mailto:admin@foodscanai.com',
-      vapidPublicKey,
-      vapidPrivateKey
-    )
 
     // Buscar todas as subscriptions ativas
     const { data: subscriptions, error: subscriptionsError } = await supabaseClient
@@ -108,23 +167,22 @@ serve(async (req) => {
     if (subscriptions && subscriptions.length > 0) {
       const sendPromises = subscriptions.map(async (subscription) => {
         try {
-          const pushSubscription = {
-            endpoint: subscription.endpoint,
-            keys: {
-              p256dh: subscription.p256dh_key,
-              auth: subscription.auth_key
-            }
-          }
-
-          await webpush.default.sendNotification(pushSubscription, notificationPayload)
+          await sendPushNotification(
+            subscription.endpoint,
+            subscription.p256dh_key,
+            subscription.auth_key,
+            notificationPayload,
+            vapidPublicKey,
+            vapidPrivateKey
+          )
           successful_notifications++
           console.log(`Notification sent successfully to user ${subscription.user_id}`)
         } catch (error) {
           failed_notifications++
           console.error(`Failed to send notification to user ${subscription.user_id}:`, error)
           
-          // Se a subscription é inválida (410 Gone), desativar ela
-          if (error.statusCode === 410) {
+          // Se a subscription é inválida (410 Gone ou outros erros de endpoint), desativar ela
+          if (error.message.includes('status 410') || error.message.includes('status 404')) {
             await supabaseClient
               .from('push_subscriptions')
               .update({ is_active: false })
