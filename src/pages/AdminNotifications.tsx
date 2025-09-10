@@ -70,11 +70,21 @@ const AdminNotifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      // Por enquanto, usar array vazio até a tabela ser criada
-      setNotifications([]);
-      console.log('Notifications feature ready for setup');
+      const { data, error } = await supabase.functions.invoke('get-notifications-sent');
+      
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
+      }
+      
+      setNotifications(data || []);
     } catch (error) {
-      console.log('Notifications feature not yet ready:', error);
+      console.error('Error fetching notifications:', error);
+      toast({
+        title: "Aviso",
+        description: "Não foi possível carregar o histórico de notificações",
+        variant: "destructive",
+      });
       setNotifications([]);
     }
   };
@@ -119,11 +129,12 @@ const AdminNotifications = () => {
 
       setFormData({ title: '', message: '', type: 'update' });
       fetchNotifications();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending notification:', error);
+      const errorMessage = error?.message || error?.error || 'Erro desconhecido ao enviar notificação';
       toast({
         title: "Erro",
-        description: "Erro ao enviar notificação",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

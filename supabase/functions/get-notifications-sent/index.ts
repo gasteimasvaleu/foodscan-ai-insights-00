@@ -32,12 +32,16 @@ serve(async (req) => {
 
     // Verificar se é admin
     const { data: isAdmin, error: roleError } = await supabaseClient.rpc('has_role', { 
-      role_name: 'admin' 
-    }, {
-      headers: { Authorization: authHeader }
+      _user_id: user.id,
+      _role: 'admin' 
     })
 
-    if (roleError || !isAdmin) {
+    if (roleError) {
+      console.error('Role check error:', roleError)
+      throw new Error('Failed to verify admin role')
+    }
+
+    if (!isAdmin) {
       throw new Error('Access denied: Admin role required')
     }
 
