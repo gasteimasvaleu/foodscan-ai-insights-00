@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MotivationalModal } from './MotivationalModal';
+import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
@@ -23,6 +24,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   });
   const [showMotivationalModal, setShowMotivationalModal] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(false);
+  const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
 
   // Detect when user just logged in to show motivational modal
   useEffect(() => {
@@ -59,6 +61,13 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleNotificationPermissionGranted = async () => {
+    console.log('User granted notification permission, setting up push notifications...');
+    if (pushNotificationRef.current) {
+      await pushNotificationRef.current.setupPushNotifications();
+    }
   };
 
   if (loading) {
@@ -107,7 +116,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           isOpen={showMotivationalModal}
           onClose={() => setShowMotivationalModal(false)}
           userName={userName}
+          onNotificationPermissionGranted={handleNotificationPermissionGranted}
         />
+        
+        <PushNotificationSetup ref={pushNotificationRef} />
       </>
     );
   }
