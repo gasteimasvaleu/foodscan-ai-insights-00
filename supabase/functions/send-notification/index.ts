@@ -51,13 +51,13 @@ serve(async (req) => {
       throw new Error('Title and message are required')
     }
 
-    // Buscar todos os usuários com PWA instalado (que têm subscription keys)
-    // Por simplicidade, vamos enviar para todos os usuários por enquanto
+    // Buscar todos os usuários para contar destinatários
     const { data: profiles, error: profilesError } = await supabaseClient
       .from('profiles')
-      .select('id, email')
+      .select('id')
 
     if (profilesError) {
+      console.error('Error fetching profiles:', profilesError)
       throw new Error('Failed to fetch users')
     }
 
