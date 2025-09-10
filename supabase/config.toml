@@ -1,1 +1,4 @@
 project_id = "zyhmwcsfifdepqnnrguo"
+
+[functions.register-push-subscription]
+verify_jwt = true

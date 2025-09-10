@@ -89,6 +89,16 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
 
       // Registrar a subscription no backend
       console.log('💾 Registering subscription with backend...');
+      
+      // Verificar se temos uma sessão ativa
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        console.error('❌ No active session for registration:', sessionError);
+        return;
+      }
+      
+      console.log('✅ Active session found for user:', session.user.id);
       console.log('📤 Subscription data being sent:', {
         endpoint: subscription.endpoint,
         keys: subscription.getKey ? {
