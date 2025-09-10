@@ -12,74 +12,106 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
   const setupPushNotifications = async () => {
     // Só configurar se o usuário estiver logado
     if (!user) {
-      console.log('User not logged in, skipping push notification setup');
+      console.log('🚫 User not logged in, skipping push notification setup');
       return;
     }
 
     try {
-      console.log('Setting up push notifications for user:', user.id);
+      console.log('🔧 Setting up push notifications for user:', user.id);
+      console.log('📊 Current notification permission:', Notification.permission);
       
       // Verificar se o browser suporta notificações
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.log('Push notifications not supported by browser');
+        console.log('❌ Push notifications not supported by browser');
         return;
       }
 
       // Verificar se a permissão já foi concedida
       if (Notification.permission !== 'granted') {
-        console.log('Notification permission not granted:', Notification.permission);
+        console.log('⚠️ Notification permission not granted:', Notification.permission);
         return;
       }
 
-      console.log('Notification permission granted, proceeding with setup');
+      console.log('✅ Notification permission granted, proceeding with setup');
+
+      // Verificar se Service Worker existe
+      console.log('🔍 Checking service worker...');
+      if (!navigator.serviceWorker) {
+        console.log('❌ Service Worker not available');
+        return;
+      }
 
       // Aguardar o Service Worker estar pronto
+      console.log('⏳ Waiting for Service Worker to be ready...');
       const registration = await navigator.serviceWorker.ready;
-      console.log('Service Worker ready');
+      console.log('✅ Service Worker ready:', registration);
 
       // Verificar se já tem uma subscription ativa
+      console.log('🔍 Checking for existing subscription...');
       let subscription = await registration.pushManager.getSubscription();
+      console.log('📋 Existing subscription:', subscription ? 'Found' : 'None');
 
       if (!subscription) {
-        console.log('No existing subscription, creating new one...');
+        console.log('🔑 No existing subscription, creating new one...');
         
         // Buscar a VAPID public key do backend
+        console.log('🔑 Fetching VAPID public key...');
         const { data: vapidData, error: vapidError } = await supabase.functions.invoke('get-vapid-public-key');
         
-        if (vapidError || !vapidData?.publicKey) {
-          console.error('Error getting VAPID public key:', vapidError);
+        if (vapidError) {
+          console.error('❌ Error getting VAPID public key:', vapidError);
           return;
         }
 
-        console.log('VAPID public key retrieved, creating subscription...');
+        if (!vapidData?.publicKey) {
+          console.error('❌ No VAPID public key in response:', vapidData);
+          return;
+        }
+
+        console.log('✅ VAPID public key retrieved successfully');
+        console.log('🔑 VAPID key length:', vapidData.publicKey.length);
 
         // Criar nova subscription
         const vapidPublicKey = vapidData.publicKey;
         
+        console.log('📱 Creating push subscription...');
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: vapidPublicKey
         });
 
-        console.log('New subscription created');
+        console.log('✅ New subscription created successfully');
+        console.log('📋 Subscription endpoint:', subscription.endpoint);
       } else {
-        console.log('Using existing subscription');
+        console.log('♻️ Using existing subscription');
+        console.log('📋 Existing endpoint:', subscription.endpoint);
       }
 
       // Registrar a subscription no backend
-      console.log('Registering subscription with backend...');
-      const { error } = await supabase.functions.invoke('register-push-subscription', {
+      console.log('💾 Registering subscription with backend...');
+      console.log('📤 Subscription data being sent:', {
+        endpoint: subscription.endpoint,
+        keys: subscription.getKey ? {
+          p256dh: subscription.getKey('p256dh'),
+          auth: subscription.getKey('auth')
+        } : 'Keys not available'
+      });
+
+      const { data: registerData, error: registerError } = await supabase.functions.invoke('register-push-subscription', {
         body: { subscription }
       });
 
-      if (error) {
-        console.error('Error registering push subscription:', error);
+      if (registerError) {
+        console.error('❌ Error registering push subscription:', registerError);
+        console.error('❌ Error details:', registerError.message);
       } else {
-        console.log('Push subscription registered successfully');
+        console.log('🎉 Push subscription registered successfully!');
+        console.log('📋 Registration response:', registerData);
       }
 
     } catch (error) {
-      console.error('Error setting up push notifications:', error);
+      console.error('💥 Error setting up push notifications:', error);
+      console.error('💥 Error stack:', error.stack);
     }
   };
 

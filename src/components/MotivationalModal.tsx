@@ -56,29 +56,46 @@ export const MotivationalModal: React.FC<MotivationalModalProps> = ({
   };
 
   const handleRequestNotifications = async () => {
+    console.log('🔔 Iniciando solicitação de permissão de notificação...');
     setNotificationLoading(true);
     try {
       // Verificar se o browser suporta notificações
       if (!('Notification' in window)) {
-        console.log('Este browser não suporta notificações');
+        console.log('❌ Este browser não suporta notificações');
         onClose();
         return;
       }
 
+      console.log('📱 Browser suporta notificações, solicitando permissão...');
+      console.log('🔍 Status atual da permissão:', Notification.permission);
+
       // Solicitar permissão
       const permission = await Notification.requestPermission();
+      console.log('✅ Resultado da solicitação de permissão:', permission);
       
       if (permission === 'granted') {
-        console.log('Permissão de notificação concedida');
+        console.log('🎉 Permissão de notificação concedida! Aguardando antes de configurar...');
+        
+        // Aguardar um momento para garantir que a permissão foi processada
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('🔧 Chamando callback para configurar as notificações...');
+        console.log('📋 onNotificationPermissionGranted existe?', !!onNotificationPermissionGranted);
+        
         // Chamar callback para configurar as notificações
-        onNotificationPermissionGranted?.();
+        if (onNotificationPermissionGranted) {
+          await onNotificationPermissionGranted();
+          console.log('✅ Callback de configuração executado');
+        } else {
+          console.log('⚠️ Callback não definido');
+        }
       } else {
-        console.log('Permissão de notificação negada ou não concedida');
+        console.log('❌ Permissão de notificação negada ou não concedida:', permission);
       }
       
       onClose();
     } catch (error) {
-      console.error('Erro ao solicitar permissão de notificação:', error);
+      console.error('💥 Erro ao solicitar permissão de notificação:', error);
       onClose();
     } finally {
       setNotificationLoading(false);
