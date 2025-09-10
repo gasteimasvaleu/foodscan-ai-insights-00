@@ -184,28 +184,74 @@ async function signJWT(payload: object, privateKey: string): Promise<string> {
   const signingInput = `${encodedHeader}.${encodedPayload}`
   
   try {
-    // Clean the private key - remove headers and whitespace
-    let cleanedKey = privateKey.trim()
-    cleanedKey = cleanedKey.replace(/-----BEGIN[^-]+-----/g, '')
-    cleanedKey = cleanedKey.replace(/-----END[^-]+-----/g, '')
-    cleanedKey = cleanedKey.replace(/\s/g, '')
+    let key: CryptoKey
     
-    console.log('Cleaned key length:', cleanedKey.length)
+    // Detect key format
+    const trimmedKey = privateKey.trim()
+    const isPEM = trimmedKey.includes('-----BEGIN') || trimmedKey.includes('-----END')
+    const isBase64URL = !isPEM && trimmedKey.length >= 40 && trimmedKey.length <= 50
     
-    // Decode from base64
-    const keyBytes = Uint8Array.from(atob(cleanedKey), c => c.charCodeAt(0))
-    console.log('Key bytes length:', keyBytes.length)
+    console.log('Key format detection:', {
+      isPEM,
+      isBase64URL,
+      keyLength: trimmedKey.length,
+      startsWithPEM: trimmedKey.startsWith('-----'),
+      format: isPEM ? 'PKCS#8' : isBase64URL ? 'Base64URL VAPID' : 'Unknown'
+    })
     
-    // Import the private key
-    const key = await crypto.subtle.importKey(
-      "pkcs8",
-      keyBytes,
-      { name: "ECDSA", namedCurve: "P-256" },
-      false,
-      ["sign"]
-    )
-    
-    console.log('Private key imported successfully')
+    if (isBase64URL) {
+      // Handle Base64URL VAPID private key (43-44 characters)
+      console.log('Processing Base64URL VAPID private key...')
+      
+      // Decode Base64URL to bytes
+      const keyBytes = base64urlDecode(trimmedKey)
+      console.log('Decoded key bytes length:', keyBytes.length)
+      
+      if (keyBytes.length !== 32) {
+        throw new Error(`Invalid VAPID private key length: expected 32 bytes, got ${keyBytes.length}`)
+      }
+      
+      // Import as raw EC private key
+      key = await crypto.subtle.importKey(
+        "raw",
+        keyBytes,
+        { name: "ECDSA", namedCurve: "P-256" },
+        false,
+        ["sign"]
+      )
+      
+      console.log('Base64URL VAPID private key imported successfully')
+      
+    } else if (isPEM) {
+      // Handle PKCS#8 PEM format
+      console.log('Processing PKCS#8 PEM private key...')
+      
+      // Clean the private key - remove headers and whitespace
+      let cleanedKey = trimmedKey
+      cleanedKey = cleanedKey.replace(/-----BEGIN[^-]+-----/g, '')
+      cleanedKey = cleanedKey.replace(/-----END[^-]+-----/g, '')
+      cleanedKey = cleanedKey.replace(/\s/g, '')
+      
+      console.log('Cleaned PKCS#8 key length:', cleanedKey.length)
+      
+      // Decode from base64
+      const keyBytes = Uint8Array.from(atob(cleanedKey), c => c.charCodeAt(0))
+      console.log('PKCS#8 key bytes length:', keyBytes.length)
+      
+      // Import the private key
+      key = await crypto.subtle.importKey(
+        "pkcs8",
+        keyBytes,
+        { name: "ECDSA", namedCurve: "P-256" },
+        false,
+        ["sign"]
+      )
+      
+      console.log('PKCS#8 private key imported successfully')
+      
+    } else {
+      throw new Error(`Unsupported private key format. Key length: ${trimmedKey.length}, starts with: ${trimmedKey.substring(0, 10)}`)
+    }
     
     // Sign the JWT
     const signature = await crypto.subtle.sign(
