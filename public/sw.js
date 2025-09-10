@@ -35,6 +35,82 @@ self.addEventListener('message', event => {
   }
 });
 
+// Push notification event listener
+self.addEventListener('push', event => {
+  console.log('Push notification received:', event);
+  
+  let notificationData = {};
+  
+  if (event.data) {
+    try {
+      notificationData = event.data.json();
+    } catch (e) {
+      console.log('Error parsing push data:', e);
+      notificationData = {
+        title: 'Nova Notificação',
+        message: event.data.text()
+      };
+    }
+  } else {
+    notificationData = {
+      title: 'Nova Notificação',
+      message: 'Você tem uma nova notificação do FoodScan AI'
+    };
+  }
+
+  const options = {
+    body: notificationData.message || notificationData.body,
+    icon: '/icons/icon-192x192-foodscan.png',
+    badge: '/icons/icon-192x192-foodscan.png',
+    tag: 'foodscan-notification',
+    requireInteraction: false,
+    actions: [
+      {
+        action: 'view',
+        title: 'Ver',
+        icon: '/icons/icon-192x192-foodscan.png'
+      }
+    ],
+    data: {
+      url: '/',
+      ...notificationData
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title || 'FoodScan AI', options)
+  );
+});
+
+// Notification click event listener
+self.addEventListener('notificationclick', event => {
+  console.log('Notification clicked:', event);
+  
+  event.notification.close();
+  
+  const urlToOpen = event.notification.data?.url || '/';
+  
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(clientList => {
+      // Check if there's already a window/tab open with the target URL
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      
+      // If no existing window/tab was found, open a new one
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
   event.respondWith(

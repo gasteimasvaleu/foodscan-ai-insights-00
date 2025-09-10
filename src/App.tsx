@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
+import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Apple } from "lucide-react";
 import Index from "./pages/Index";
@@ -41,6 +42,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <PWAUpdateNotification />
+      <PushNotificationSetup />
       <BrowserRouter>
         <TubelightNavbar items={navItems} />
         <Routes>

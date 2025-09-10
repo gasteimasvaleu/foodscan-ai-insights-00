@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Web Push library for sending push notifications
+const webpush = await import('https://esm.sh/web-push@3.6.7')
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -61,7 +64,78 @@ serve(async (req) => {
       throw new Error('Failed to fetch users')
     }
 
+    // Configurar Web Push com VAPID keys
+    const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY')
+    const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY')
+    
+    if (!vapidPublicKey || !vapidPrivateKey) {
+      throw new Error('VAPID keys not configured')
+    }
+
+    webpush.default.setVapidDetails(
+      'mailto:admin@foodscanai.com',
+      vapidPublicKey,
+      vapidPrivateKey
+    )
+
+    // Buscar todas as subscriptions ativas
+    const { data: subscriptions, error: subscriptionsError } = await supabaseClient
+      .from('push_subscriptions')
+      .select('*')
+      .eq('is_active', true)
+
+    if (subscriptionsError) {
+      console.error('Error fetching push subscriptions:', subscriptionsError)
+      throw new Error('Failed to fetch push subscriptions')
+    }
+
     const recipients_count = profiles?.length || 0
+    let successful_notifications = 0
+    let failed_notifications = 0
+
+    // Preparar payload da notificação
+    const notificationPayload = JSON.stringify({
+      title,
+      message,
+      body: message,
+      type,
+      icon: '/icons/icon-192x192-foodscan.png',
+      badge: '/icons/icon-192x192-foodscan.png',
+      timestamp: new Date().toISOString()
+    })
+
+    // Enviar notificações para todas as subscriptions
+    if (subscriptions && subscriptions.length > 0) {
+      const sendPromises = subscriptions.map(async (subscription) => {
+        try {
+          const pushSubscription = {
+            endpoint: subscription.endpoint,
+            keys: {
+              p256dh: subscription.p256dh_key,
+              auth: subscription.auth_key
+            }
+          }
+
+          await webpush.default.sendNotification(pushSubscription, notificationPayload)
+          successful_notifications++
+          console.log(`Notification sent successfully to user ${subscription.user_id}`)
+        } catch (error) {
+          failed_notifications++
+          console.error(`Failed to send notification to user ${subscription.user_id}:`, error)
+          
+          // Se a subscription é inválida (410 Gone), desativar ela
+          if (error.statusCode === 410) {
+            await supabaseClient
+              .from('push_subscriptions')
+              .update({ is_active: false })
+              .eq('id', subscription.id)
+            console.log(`Deactivated invalid subscription for user ${subscription.user_id}`)
+          }
+        }
+      })
+
+      await Promise.allSettled(sendPromises)
+    }
 
     // Salvar a notificação no histórico
     const { error: insertError } = await supabaseClient
@@ -71,7 +145,7 @@ serve(async (req) => {
         message,
         type,
         sent_by: user.id,
-        recipients_count
+        recipients_count: successful_notifications
       })
 
     if (insertError) {
@@ -79,15 +153,18 @@ serve(async (req) => {
       // Não vamos falhar a requisição por erro no histórico
     }
 
-    // TODO: Implementar envio real de Web Push notifications
-    // Por enquanto, apenas simulamos o envio
-    console.log(`Notification sent: ${title} to ${recipients_count} users`)
+    console.log(`Notification processing complete: ${successful_notifications} successful, ${failed_notifications} failed`)
+    console.log(`Total subscriptions found: ${subscriptions?.length || 0}`)
+    console.log(`Total users in database: ${recipients_count}`)
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        recipients_count,
-        message: 'Notification sent successfully'
+        recipients_count: successful_notifications,
+        total_subscriptions: subscriptions?.length || 0,
+        successful_notifications,
+        failed_notifications,
+        message: `Notification sent successfully to ${successful_notifications} devices`
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

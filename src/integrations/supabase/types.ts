@@ -199,6 +199,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications_sent: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          recipients_count: number | null
+          sent_at: string | null
+          sent_by: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          sent_by?: string | null
+          title: string
+          type?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          recipients_count?: number | null
+          sent_at?: string | null
+          sent_by?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       nutritionist_ads: {
         Row: {
           city: string
@@ -323,6 +356,42 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          p256dh_key: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          p256dh_key: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          p256dh_key?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
