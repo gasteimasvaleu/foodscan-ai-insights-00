@@ -224,7 +224,7 @@ async function signJWT(payload: object, privateKey: string): Promise<string> {
   }
 }
 
-// Send push notification with proper encryption
+// Send push notification with proper encryption and detailed Apple debugging
 async function sendPushNotification(
   endpoint: string,
   p256dh: string,
@@ -235,15 +235,39 @@ async function sendPushNotification(
 ): Promise<void> {
   console.log(`Preparing to send notification to: ${endpoint.substring(0, 50)}...`)
   
+  // Detect Apple Push Service
+  const isApplePush = endpoint.includes('web.push.apple.com')
+  if (isApplePush) {
+    console.log('🍎 [APPLE PUSH] Detected Apple Push Service endpoint')
+    console.log('🍎 [APPLE PUSH] Full endpoint:', endpoint)
+  }
+  
   try {
     // Validate subscription keys
     if (!p256dh || !auth) {
       throw new Error('Missing p256dh or auth keys in subscription')
     }
     
+    if (isApplePush) {
+      console.log('🍎 [APPLE PUSH] Key validation:', {
+        p256dhLength: p256dh.length,
+        authLength: auth.length,
+        p256dhValid: p256dh.length === 87, // Standard length for p256dh
+        authValid: auth.length === 22 // Standard length for auth
+      })
+    }
+    
     // Encrypt the payload
     console.log('Encrypting payload...')
     const encryptedPayload = await encryptPayload(payload, p256dh, auth)
+    
+    if (isApplePush) {
+      console.log('🍎 [APPLE PUSH] Payload encrypted:', {
+        originalSize: payload.length,
+        encryptedSize: encryptedPayload.length,
+        payloadPreview: payload.substring(0, 100) + '...'
+      })
+    }
     
     // Create VAPID JWT
     const jwtPayload = {
@@ -255,30 +279,106 @@ async function sendPushNotification(
     console.log('Signing VAPID JWT...')
     const jwt = await signJWT(jwtPayload, vapidPrivateKey)
     
-    // Send the push notification
-    console.log('Sending HTTP request to push service...')
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `vapid t=${jwt}, k=${vapidPublicKey}`,
-        'Content-Type': 'application/octet-stream',
-        'Content-Encoding': 'aes128gcm',
-        'Content-Length': encryptedPayload.length.toString(),
-        'TTL': '86400'
-      },
-      body: encryptedPayload
-    })
-    
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Push service error: ${response.status} - ${errorText}`)
-      throw new Error(`Push service responded with status ${response.status}: ${errorText}`)
+    // Prepare headers
+    const headers = {
+      'Authorization': `vapid t=${jwt}, k=${vapidPublicKey}`,
+      'Content-Type': 'application/octet-stream',
+      'Content-Encoding': 'aes128gcm',
+      'Content-Length': encryptedPayload.length.toString(),
+      'TTL': '86400'
     }
     
-    console.log('Push notification sent successfully')
+    if (isApplePush) {
+      console.log('🍎 [APPLE PUSH] Request headers:', JSON.stringify(headers, null, 2))
+      console.log('🍎 [APPLE PUSH] JWT payload used:', JSON.stringify(jwtPayload, null, 2))
+    }
+    
+    // Send the push notification with timeout for Apple
+    console.log('Sending HTTP request to push service...')
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), isApplePush ? 30000 : 10000) // 30s for Apple, 10s for others
+    
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: encryptedPayload,
+        signal: controller.signal
+      })
+      
+      clearTimeout(timeoutId)
+      
+      if (isApplePush) {
+        console.log('🍎 [APPLE PUSH] Response received:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries())
+        })
+      }
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        
+        if (isApplePush) {
+          console.error('🍎 [APPLE PUSH] Error response body:', errorText)
+          
+          // Apple-specific error handling
+          switch (response.status) {
+            case 400:
+              console.error('🍎 [APPLE PUSH] Bad Request - Invalid payload or headers')
+              break
+            case 403:
+              console.error('🍎 [APPLE PUSH] Forbidden - Invalid VAPID token or expired')
+              break
+            case 410:
+              console.error('🍎 [APPLE PUSH] Gone - Subscription is no longer valid')
+              break
+            case 413:
+              console.error('🍎 [APPLE PUSH] Payload Too Large - Reduce notification content')
+              break
+            case 429:
+              console.error('🍎 [APPLE PUSH] Too Many Requests - Rate limited')
+              break
+            default:
+              console.error(`🍎 [APPLE PUSH] Unexpected status: ${response.status}`)
+          }
+        }
+        
+        console.error(`Push service error: ${response.status} - ${errorText}`)
+        throw new Error(`Push service responded with status ${response.status}: ${errorText}`)
+      }
+      
+      if (isApplePush) {
+        console.log('🍎 [APPLE PUSH] ✅ Notification sent successfully to Apple Push Service!')
+      } else {
+        console.log('Push notification sent successfully')
+      }
+      
+    } catch (fetchError) {
+      clearTimeout(timeoutId)
+      
+      if (fetchError.name === 'AbortError') {
+        const errorMsg = `Request timeout after ${isApplePush ? 30 : 10} seconds`
+        if (isApplePush) {
+          console.error('🍎 [APPLE PUSH] ⏰ Timeout error:', errorMsg)
+        }
+        throw new Error(errorMsg)
+      }
+      
+      throw fetchError
+    }
     
   } catch (error) {
-    console.error('Error in sendPushNotification:', error)
+    if (isApplePush) {
+      console.error('🍎 [APPLE PUSH] ❌ Error in sendPushNotification:', error)
+      console.error('🍎 [APPLE PUSH] Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack?.substring(0, 500)
+      })
+    } else {
+      console.error('Error in sendPushNotification:', error)
+    }
     throw error
   }
 }
