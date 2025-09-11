@@ -55,16 +55,19 @@ export const BarcodeScanner = ({ onBarcodeAnalysis, isAnalyzing = false }: Barco
   const startCamera = async () => {
     try {
       setIsScanning(true);
+      console.log("Iniciando câmera...");
       
       // Verificar se o navegador suporta Barcode Detection API
       if ('BarcodeDetector' in window) {
+        console.log("Usando Barcode Detection API");
         await startBarcodeDetection();
       } else {
+        console.log("Usando ZXing fallback");
         await startZXingScanner();
       }
     } catch (error) {
       console.error("Erro ao iniciar câmera:", error);
-      toast.error("Erro ao acessar a câmera. Verifique as permissões.");
+      toast.error(`Erro ao acessar a câmera: ${error.message}`);
       setIsScanning(false);
     }
   };
@@ -111,32 +114,44 @@ export const BarcodeScanner = ({ onBarcodeAnalysis, isAnalyzing = false }: Barco
   };
 
   const startZXingScanner = async () => {
+    console.log("Iniciando ZXing scanner...");
+    
     const stream = await navigator.mediaDevices.getUserMedia({ 
       video: { facingMode: 'environment' } 
     });
+    
+    console.log("Stream da câmera obtido:", stream);
     
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       streamRef.current = stream;
       
       readerRef.current = new BrowserMultiFormatReader();
+      console.log("ZXing reader criado");
       
       try {
-        const result = await readerRef.current.decodeFromVideoDevice(
+        readerRef.current.decodeFromVideoDevice(
           undefined, 
           videoRef.current,
           (result, error) => {
             if (result) {
+              console.log("Código de barras detectado:", result.getText());
               const detectedBarcode = result.getText();
               if (validateBarcode(detectedBarcode)) {
                 setBarcode(detectedBarcode);
                 stopCamera();
                 onBarcodeAnalysis(detectedBarcode);
                 toast.success("Código de barras detectado!");
+              } else {
+                console.log("Código de barras inválido:", detectedBarcode);
               }
+            }
+            if (error && error.name !== 'NotFoundException') {
+              console.error("Erro no scanner:", error);
             }
           }
         );
+        console.log("ZXing scanner iniciado com sucesso");
       } catch (error) {
         console.error("Erro no ZXing scanner:", error);
         toast.error("Erro ao inicializar o scanner");
@@ -163,7 +178,12 @@ export const BarcodeScanner = ({ onBarcodeAnalysis, isAnalyzing = false }: Barco
   };
 
   useEffect(() => {
+    console.log("BarcodeScanner montado");
+    console.log("Suporte BarcodeDetector:", 'BarcodeDetector' in window);
+    console.log("Suporte getUserMedia:", !!navigator.mediaDevices?.getUserMedia);
+    
     return () => {
+      console.log("BarcodeScanner desmontado");
       stopCamera();
     };
   }, []);
@@ -201,7 +221,10 @@ export const BarcodeScanner = ({ onBarcodeAnalysis, isAnalyzing = false }: Barco
         {!isScanning && (
           <div className="space-y-3">
             <Button 
-              onClick={startCamera}
+              onClick={() => {
+                console.log("Botão da câmera clicado");
+                startCamera();
+              }}
               disabled={isAnalyzing}
               variant="outline"
               className="w-full"
