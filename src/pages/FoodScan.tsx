@@ -415,11 +415,21 @@ const FoodScan = () => {
 
     } catch (error) {
       console.error("Erro na análise por código de barras:", error);
-      toast({
-        title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Erro desconhecido ao analisar produto",
-        variant: "destructive",
-      });
+      
+      // Verificar se é erro 404 (produto não encontrado)
+      if (error instanceof Error && error.message.includes('404')) {
+        toast({
+          title: "Produto não encontrado",
+          description: "Código de barras não localizado. Verifique o código ou tente análise por imagem.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro na análise",
+          description: error instanceof Error ? error.message : "Erro desconhecido ao analisar produto",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsAnalyzing(false);
     }

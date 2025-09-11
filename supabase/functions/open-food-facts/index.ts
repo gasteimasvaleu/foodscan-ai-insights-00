@@ -48,7 +48,20 @@ serve(async (req) => {
       },
     });
 
+    console.log('Status da resposta da API:', response.status);
+    
     if (!response.ok) {
+      // Tratar 404 como produto não encontrado ao invés de erro interno
+      if (response.status === 404) {
+        console.log('Produto não encontrado na API do Open Food Facts');
+        return new Response(JSON.stringify({ 
+          error: 'Produto não encontrado',
+          message: 'O código de barras não foi encontrado na base de dados do Open Food Facts'
+        }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
       throw new Error(`Erro na API do Open Food Facts: ${response.status}`);
     }
 
