@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { FoodNutritionResults } from '@/components/FoodNutritionResults';
 import { LoadingState } from '@/components/LoadingState';
+import { OpenFoodFactsLoadingState } from '@/components/OpenFoodFactsLoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
@@ -19,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 const FoodScan = () => {
   const { user, loading } = useAuth();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isBarcodeAnalyzing, setIsBarcodeAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [imageDescription, setImageDescription] = useState('');
@@ -367,7 +369,7 @@ const FoodScan = () => {
   };
 
   const handleBarcodeAnalysis = async (barcode: string) => {
-    setIsAnalyzing(true);
+    setIsBarcodeAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE POR CÓDIGO DE BARRAS ===");
     console.log("Código de barras:", barcode);
     
@@ -480,7 +482,7 @@ const FoodScan = () => {
         });
       }
     } finally {
-      setIsAnalyzing(false);
+      setIsBarcodeAnalyzing(false);
     }
   };
 
@@ -489,6 +491,7 @@ const FoodScan = () => {
     setImageDescription('');
     setSelectedImage(null);
     setIsAnalyzing(false);
+    setIsBarcodeAnalyzing(false);
     setIsDescribing(false);
     setIncompleteProductData(null);
   };
@@ -578,7 +581,11 @@ const FoodScan = () => {
           </div>
           
           <div className="max-w-4xl mx-auto space-y-8">
-            {isAnalyzing ? (
+            {isBarcodeAnalyzing ? (
+              <div data-results-section>
+                <OpenFoodFactsLoadingState />
+              </div>
+            ) : (isAnalyzing || isDescribing) ? (
               <div data-results-section>
                 <LoadingState />
               </div>
@@ -651,7 +658,7 @@ const FoodScan = () => {
                 <ImageUpload 
                   onImageSelect={handleImageAnalysis} 
                   onBarcodeAnalysis={handleBarcodeAnalysis}
-                  isAnalyzing={isAnalyzing}
+                  isAnalyzing={isAnalyzing || isBarcodeAnalyzing}
                 />
                 
                 {(selectedImage || imageDescription) && (
