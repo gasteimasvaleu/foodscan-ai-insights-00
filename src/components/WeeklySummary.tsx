@@ -43,13 +43,13 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
     }
   }, [user]);
 
-  // Recarregar dados a cada 10 segundos para pegar mudanças nas refeições
+  // Recarregar dados a cada 30 segundos para pegar mudanças nas refeições
   useEffect(() => {
     if (!user) return;
     
     const interval = setInterval(() => {
       loadWeeklyData();
-    }, 10000); // 10 segundos
+    }, 30000); // 30 segundos - otimizado
 
     return () => clearInterval(interval);
   }, [user]);
@@ -88,14 +88,22 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
             { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
           );
 
-          weekData.push({
+          // Salvar/atualizar automaticamente no Supabase
+          const dailyData = {
             user_id: user.id,
             date,
             calories: dayTotals.calories,
             carbohydrates: dayTotals.carbohydrates,
             proteins: dayTotals.proteins,
             fats: dayTotals.fats
-          });
+          };
+
+          // Salvar no weekly_summaries para persistência
+          await supabase
+            .from('weekly_summaries')
+            .upsert(dailyData, { onConflict: 'user_id,date' });
+
+          weekData.push(dailyData);
         }
       }
 
