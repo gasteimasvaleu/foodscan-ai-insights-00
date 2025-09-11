@@ -506,6 +506,42 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_summaries: {
+        Row: {
+          calories: number
+          carbohydrates: number
+          created_at: string | null
+          date: string
+          fats: number
+          id: string
+          proteins: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbohydrates?: number
+          created_at?: string | null
+          date: string
+          fats?: number
+          id?: string
+          proteins?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbohydrates?: number
+          created_at?: string | null
+          date?: string
+          fats?: number
+          id?: string
+          proteins?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       workout_content: {
         Row: {
           activity_type: string

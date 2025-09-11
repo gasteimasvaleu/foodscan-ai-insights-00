@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface WeeklySummaryData {
   id?: string;
@@ -42,22 +43,63 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
     }
   }, [user]);
 
+  // Recarregar dados a cada 10 segundos para pegar mudanças nas refeições
+  useEffect(() => {
+    if (!user) return;
+    
+    const interval = setInterval(() => {
+      loadWeeklyData();
+    }, 10000); // 10 segundos
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   const loadWeeklyData = async () => {
     if (!user) return;
 
     try {
-      // Por enquanto, carregar dados do localStorage até configurarmos a tabela no Supabase
-      const storedData = localStorage.getItem(`weekly_summaries_${user.id}`);
-      if (storedData) {
-        const data = JSON.parse(storedData);
-        // Filtrar apenas dados da semana atual
-        const today = new Date();
-        const currentWeek = getCurrentWeekDates(today);
-        const weekData = data.filter((item: WeeklySummaryData) => 
-          item.date >= currentWeek[0] && item.date <= currentWeek[6]
-        );
-        setWeeklyData(weekData);
+      // Calcular dados dos últimos 7 dias a partir das refeições registradas
+      const weekDates = getCurrentWeekDates(new Date());
+      const weekData: WeeklySummaryData[] = [];
+
+      for (const date of weekDates) {
+        // Buscar todas as refeições do dia
+        const { data: mealRecords, error } = await supabase
+          .from('meal_records')
+          .select('calories, carbohydrates, proteins, fats')
+          .eq('user_id', user.id)
+          .gte('meal_time', `${date}T00:00:00.000Z`)
+          .lt('meal_time', `${date}T23:59:59.999Z`);
+
+        if (error) {
+          console.error('Erro ao buscar refeições:', error);
+          continue;
+        }
+
+        if (mealRecords && mealRecords.length > 0) {
+          // Calcular totais do dia
+          const dayTotals = mealRecords.reduce(
+            (acc, meal) => ({
+              calories: acc.calories + (meal.calories || 0),
+              carbohydrates: acc.carbohydrates + (meal.carbohydrates || 0),
+              proteins: acc.proteins + (meal.proteins || 0),
+              fats: acc.fats + (meal.fats || 0)
+            }),
+            { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
+          );
+
+          weekData.push({
+            user_id: user.id,
+            date,
+            calories: dayTotals.calories,
+            carbohydrates: dayTotals.carbohydrates,
+            proteins: dayTotals.proteins,
+            fats: dayTotals.fats
+          });
+        }
       }
+
+      setWeeklyData(weekData);
     } catch (error) {
       console.error('Erro ao carregar dados semanais:', error);
     } finally {
@@ -256,42 +298,30 @@ export const saveWeeklySummary = async (
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    // Por enquanto, usar localStorage até configurarmos a tabela no Supabase
-    const storedData = localStorage.getItem(`weekly_summaries_${userId}`);
-    let weeklyData: WeeklySummaryData[] = storedData ? JSON.parse(storedData) : [];
-
-    // Verificar se já existe um registro para hoje
-    const existingIndex = weeklyData.findIndex(item => item.date === today);
-
-    const newRecord: WeeklySummaryData = {
+    const newRecord = {
       user_id: userId,
       date: today,
       calories: Math.round(data.calories),
       carbohydrates: Math.round(data.carbohydrates),
       proteins: Math.round(data.proteins),
-      fats: Math.round(data.fats),
-      created_at: new Date().toISOString()
+      fats: Math.round(data.fats)
     };
 
-    if (existingIndex >= 0) {
-      // Atualizar registro existente
-      weeklyData[existingIndex] = newRecord;
-    } else {
-      // Adicionar novo registro
-      weeklyData.push(newRecord);
+    // Usar upsert para inserir ou atualizar o registro
+    const { error } = await supabase
+      .from('weekly_summaries')
+      .upsert(newRecord, {
+        onConflict: 'user_id,date'
+      });
+
+    if (error) {
+      console.error('Erro ao salvar no Supabase:', error);
+      throw error;
     }
 
-    // Limpar dados antigos (mais de 7 dias)
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekAgoString = weekAgo.toISOString().split('T')[0];
-
-    weeklyData = weeklyData.filter(item => item.date >= weekAgoString);
-
-    // Salvar no localStorage
-    localStorage.setItem(`weekly_summaries_${userId}`, JSON.stringify(weeklyData));
-
+    console.log('Resumo semanal salvo com sucesso');
   } catch (error) {
     console.error('Erro ao salvar resumo semanal:', error);
+    throw error;
   }
 };
