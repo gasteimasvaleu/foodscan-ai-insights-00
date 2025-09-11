@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MotivationalModal } from './MotivationalModal';
 import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
 
 interface AuthCardProps {
@@ -22,14 +21,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     email: '',
     password: ''
   });
-  const [showMotivationalModal, setShowMotivationalModal] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(false);
   const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
 
-  // Detect when user just logged in to show motivational modal
+  // Detect when user just logged in (preserved for future features)
   useEffect(() => {
     if (user && justLoggedIn) {
-      setShowMotivationalModal(true);
       setJustLoggedIn(false);
     }
   }, [user, justLoggedIn]);
@@ -110,14 +107,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </div>
           </CardContent>
         </Card>
-        
-        {/* Motivational Modal */}
-        <MotivationalModal
-          isOpen={showMotivationalModal}
-          onClose={() => setShowMotivationalModal(false)}
-          userName={userName}
-          onNotificationPermissionGranted={handleNotificationPermissionGranted}
-        />
         
         <PushNotificationSetup ref={pushNotificationRef} />
       </>
