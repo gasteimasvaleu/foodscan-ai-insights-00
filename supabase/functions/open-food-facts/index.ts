@@ -25,6 +25,64 @@ interface OpenFoodFactsProduct {
   status?: number;
 }
 
+const fetchWithRetry = async (url: string, options: any, maxRetries = 3) => {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Tentativa ${attempt} de ${maxRetries} para ${url}`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      // Se sucesso, retornar resposta
+      if (response.ok) {
+        return response;
+      }
+      
+      // Se 404, não tentar novamente
+      if (response.status === 404) {
+        return response;
+      }
+      
+      // Para outros erros, continuar tentando
+      lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
+      console.log(`Tentativa ${attempt} falhou:`, lastError.message);
+      
+      if (attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // backoff exponencial
+        console.log(`Aguardando ${delay}ms antes da próxima tentativa...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      
+    } catch (error) {
+      lastError = error;
+      console.log(`Tentativa ${attempt} falhou:`, error.message);
+      
+      if (attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`Aguardando ${delay}ms antes da próxima tentativa...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw lastError;
+};
+
+const validateBarcode = (barcode: string): boolean => {
+  // Validar se é um código de barras válido (8, 12, 13 ou 14 dígitos)
+  const cleanBarcode = barcode.replace(/\D/g, '');
+  return /^(\d{8}|\d{12}|\d{13}|\d{14})$/.test(cleanBarcode);
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -38,31 +96,59 @@ serve(async (req) => {
       throw new Error('Código de barras é obrigatório');
     }
 
+    // Validar formato do código de barras
+    if (!validateBarcode(barcode)) {
+      console.log('Código de barras com formato inválido:', barcode);
+      return new Response(JSON.stringify({ 
+        error: 'Código de barras inválido',
+        message: 'O código de barras deve ter 8, 12, 13 ou 14 dígitos'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log('Buscando produto com código de barras:', barcode);
 
-    // Fazer requisição para Open Food Facts com User-Agent correto
-    const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`, {
-      headers: {
-        'User-Agent': 'FoodScan/1.0 (https://app2.dietainteligente.app)',
-        'Accept': 'application/json',
-      },
-    });
+    // Fazer requisição para Open Food Facts com retry e timeout
+    const response = await fetchWithRetry(
+      `https://world.openfoodfacts.org/api/v2/product/${barcode}.json`,
+      {
+        headers: {
+          'User-Agent': 'FoodScan/1.0 (https://app2.dietainteligente.app)',
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
+      }
+    );
 
     console.log('Status da resposta da API:', response.status);
     
     if (!response.ok) {
-      // Tratar 404 como produto não encontrado ao invés de erro interno
+      // Tratar 404 como produto não encontrado
       if (response.status === 404) {
         console.log('Produto não encontrado na API do Open Food Facts');
         return new Response(JSON.stringify({ 
           error: 'Produto não encontrado',
-          message: 'O código de barras não foi encontrado na base de dados do Open Food Facts'
+          message: 'O código de barras não foi encontrado na base de dados do Open Food Facts',
+          canRetry: false,
+          suggestAI: true
         }), {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      throw new Error(`Erro na API do Open Food Facts: ${response.status}`);
+      
+      // Para outros erros, sugerir retry
+      return new Response(JSON.stringify({ 
+        error: 'Erro de conectividade',
+        message: 'Problemas temporários com o servidor do Open Food Facts. Tente novamente em alguns momentos.',
+        canRetry: true,
+        suggestAI: true
+      }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data: OpenFoodFactsProduct = await response.json();

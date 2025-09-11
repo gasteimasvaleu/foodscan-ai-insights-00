@@ -413,21 +413,70 @@ const FoodScan = () => {
         variant: "default",
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro na análise por código de barras:", error);
       
-      // Verificar se é erro 404 (produto não encontrado)
-      if (error instanceof Error && error.message.includes('404')) {
+      // Tentar extrair informações do erro da resposta
+      let errorInfo = { canRetry: false, suggestAI: false };
+      try {
+        if (error.message) {
+          const errorData = JSON.parse(error.message);
+          errorInfo = {
+            canRetry: errorData.canRetry || false,
+            suggestAI: errorData.suggestAI || false
+          };
+        }
+      } catch {
+        // Se não conseguir parsear, manter valores padrão
+      }
+      
+      // Armazenar código de barras para retry
+      const barcodeForRetry = barcode;
+      
+      // Tratar diferentes tipos de erro
+      if (error.message?.includes('404')) {
         toast({
           title: "Produto não encontrado",
-          description: "Código de barras não localizado. Verifique o código ou tente análise por imagem.",
+          description: "Este código de barras não está na nossa base de dados. Que tal tentar uma análise por foto?",
+          variant: "destructive",
+        });
+      } else if (error.message?.includes('503') || error.message?.includes('Erro de conectividade') || error.message?.includes('504')) {
+        toast({
+          title: "Problemas de conectividade",
+          description: "Problemas temporários com o servidor. Tente novamente em alguns momentos.",
+          variant: "destructive",
+          action: (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                setTimeout(() => handleBarcodeAnalysis(barcodeForRetry), 2000);
+              }}
+            >
+              Tentar novamente
+            </Button>
+          )
+        });
+      } else if (error.message?.includes('Código de barras inválido')) {
+        toast({
+          title: "Código inválido",
+          description: "O código de barras escaneado não é válido. Tente escanear novamente.",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Erro na análise",
-          description: error instanceof Error ? error.message : "Erro desconhecido ao analisar produto",
+          description: "Ocorreu um erro inesperado. Tente novamente ou use análise por foto.",
           variant: "destructive",
+          action: (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleBarcodeAnalysis(barcodeForRetry)}
+            >
+              Tentar novamente
+            </Button>
+          )
         });
       }
     } finally {
