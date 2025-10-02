@@ -35,11 +35,7 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <img 
-                src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logonavbar.png" 
-                alt="FoodScan & Diet" 
-                className="h-10 w-auto object-contain"
-              />
+              <h1 className="text-xl font-bold text-primary-600">FoodScan & Diet</h1>
             </Link>
           </div>
 
