@@ -237,43 +237,49 @@ export type Database = {
           city: string
           consultation_price: number | null
           created_at: string
+          email: string
           id: string
           logo_url: string | null
+          name: string
           phone_ddd: string
           phone_number: string
           photo_url: string | null
           specialty: Database["public"]["Enums"]["nutrition_specialty"]
           state: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           city: string
           consultation_price?: number | null
           created_at?: string
+          email: string
           id?: string
           logo_url?: string | null
+          name: string
           phone_ddd: string
           phone_number: string
           photo_url?: string | null
           specialty: Database["public"]["Enums"]["nutrition_specialty"]
           state: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           city?: string
           consultation_price?: number | null
           created_at?: string
+          email?: string
           id?: string
           logo_url?: string | null
+          name?: string
           phone_ddd?: string
           phone_number?: string
           photo_url?: string | null
           specialty?: Database["public"]["Enums"]["nutrition_specialty"]
           state?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }

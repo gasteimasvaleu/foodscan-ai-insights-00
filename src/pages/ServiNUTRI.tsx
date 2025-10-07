@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign } from 'lucide-react';
+import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign, Mail } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +34,8 @@ const ServiNUTRI = () => {
 
   // Form state
   const [formData, setFormData] = useState({
+    name: '',
+    email: '',
     state: '',
     city: '',
     specialties: [] as string[],
@@ -316,9 +318,9 @@ const ServiNUTRI = () => {
     }
   };
   const uploadFile = async (file: File, folder: string): Promise<string | null> => {
-    if (!user) return null;
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${folder}/${Date.now()}.${fileExt}`;
+    const uniqueId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const fileName = `${folder}/${uniqueId}.${fileExt}`;
     const {
       error: uploadError
     } = await supabase.storage.from('nutritionist-ads').upload(fileName, file);
@@ -335,14 +337,6 @@ const ServiNUTRI = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast({
-        title: "Erro",
-        description: "Você precisa estar logado para cadastrar um anúncio.",
-        variant: "destructive"
-      });
-      return;
-    }
     if (formData.specialties.length === 0) {
       toast({
         title: "Erro",
@@ -368,7 +362,9 @@ const ServiNUTRI = () => {
 
       // Criar um anúncio para cada especialidade selecionada
       const insertPromises = formData.specialties.map(specialty => supabase.from('nutritionist_ads').insert({
-        user_id: user.id,
+        user_id: user?.id || null,
+        name: formData.name,
+        email: formData.email,
         state: formData.state,
         city: formData.city,
         specialty: specialty as any,
@@ -392,6 +388,8 @@ const ServiNUTRI = () => {
 
       // Reset form
       setFormData({
+        name: '',
+        email: '',
         state: '',
         city: '',
         specialties: [],
@@ -555,7 +553,7 @@ const ServiNUTRI = () => {
                             <ImageIcon className="w-6 h-6 text-gray-400" />
                           </div>}
                         <div className="flex-1">
-                          <h4 className="font-medium text-sm">{ad.profile_name}</h4>
+                          <h4 className="font-medium text-sm">{ad.name || 'Nutricionista'}</h4>
                           {ad.logo_url && <img src={ad.logo_url} alt="Logo" className="w-8 h-8 object-contain mt-1" />}
                         </div>
                         <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteAd(ad.id)} disabled={deleteLoading === ad.id}>
@@ -610,6 +608,29 @@ const ServiNUTRI = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <Label htmlFor="name">Nome Completo *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Seu nome completo"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="seu@email.com"
+                    required
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="state">Estado</Label>
@@ -711,7 +732,7 @@ const ServiNUTRI = () => {
                       <ImageIcon className="w-8 h-8 text-gray-400" />
                     </div>}
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{ad.profile_name || 'Nutricionista'}</h3>
+                    <h3 className="font-semibold text-lg">{ad.name || 'Nutricionista'}</h3>
                     {ad.logo_url && <img src={ad.logo_url} alt="Logo" className="w-12 h-12 object-contain mt-2" />}
                   </div>
                 </div>
@@ -733,15 +754,30 @@ const ServiNUTRI = () => {
                     <DollarSign className="w-4 h-4" />
                     {formatPrice(ad.consultation_price)}
                   </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Mail className="w-4 h-4" />
+                    {ad.email}
+                  </div>
                 </div>
 
-                <Button className="w-full mt-4 bg-green-600 hover:bg-green-700" onClick={() => {
-              const message = encodeURIComponent("Oi, ví seu anúncio no FoodScan & Diet, tenho interesse no atendimento");
-              window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}?text=${message}`, '_blank');
-            }}>
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  WhatsApp
-                </Button>
+                <div className="flex gap-2 mt-4">
+                  <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => {
+                const message = encodeURIComponent("Oi, ví seu anúncio no FoodScan & Diet, tenho interesse no atendimento");
+                window.open(`https://wa.me/55${ad.phone_ddd}${ad.phone_number}?text=${message}`, '_blank');
+              }}>
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => window.location.href = `mailto:${ad.email}`}
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
+                  </Button>
+                </div>
               </CardContent>
             </Card>)}
         </div>
