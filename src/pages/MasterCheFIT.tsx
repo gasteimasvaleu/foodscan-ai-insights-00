@@ -374,24 +374,12 @@ const MasterCheFIT = () => {
 
             {/* Preferences Card */}
             <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
-              <div className="p-6">
-                {/* Custom Header with centered icon */}
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-600 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                      <div className="relative bg-gradient-to-br from-primary to-primary-600 p-3 rounded-full">
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    Suas Preferências Alimentares
-                  </h2>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex justify-center gap-2 mb-6">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Users className="w-6 h-6 text-primary" />
+                  Suas Preferências Alimentares
+                </CardTitle>
+                <div className="flex flex-col sm:flex-row gap-2">
                   {savedMenuPlans.length > 0 && (
                     <Button 
                       variant="outline"
@@ -435,8 +423,8 @@ const MasterCheFIT = () => {
                     </div>
                   )}
                 </div>
-              </div>
-              <CardContent className="space-y-6 pt-0">
+              </CardHeader>
+              <CardContent className="space-y-6">
                 {isEditing ? (
                   <>
                     <div className="group">
