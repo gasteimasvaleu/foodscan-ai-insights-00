@@ -364,8 +364,16 @@ const MasterCheFIT = () => {
             
             {/* Header */}
             <div className="text-center mb-12 p-8 rounded-3xl bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-accent/40 blur-2xl opacity-70 animate-pulse rounded-full" />
+                  <div className="relative bg-gradient-to-br from-primary to-accent p-6 rounded-3xl shadow-2xl">
+                    <ChefHat className="w-12 h-12 text-white" />
+                  </div>
+                </div>
+              </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
-                🍳 MasterCheFIT
+                MasterCheFIT
               </h1>
               <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
                 Crie cardápios personalizados baseados nos seus gostos e necessidades alimentares
