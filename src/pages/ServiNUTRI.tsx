@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign, Mail } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
+import { Badge } from '@/components/ui/badge';
 
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
 type NutritionistAd = Database['public']['Tables']['nutritionist_ads']['Row'] & {
   profile_name?: string;
+  specialties?: string[];
 };
 const ServiNUTRI = () => {
   const {
@@ -360,30 +362,26 @@ const ServiNUTRI = () => {
         logoUrl = (await uploadFile(logoFile, 'logos')) || '';
       }
 
-      // Criar um anúncio para cada especialidade selecionada
-      const insertPromises = formData.specialties.map(specialty => supabase.from('nutritionist_ads').insert({
+      // Criar apenas UM anúncio com múltiplas especialidades
+      const { error } = await supabase.from('nutritionist_ads').insert({
         user_id: user?.id || null,
         name: formData.name,
         email: formData.email,
         state: formData.state,
         city: formData.city,
-        specialty: specialty as any,
+        specialty: formData.specialties[0] as any, // Especialidade principal
+        specialties: formData.specialties,          // Array com todas as especialidades
         phone_ddd: formData.phone_ddd,
         phone_number: formData.phone_number,
         consultation_price: formData.consultation_price ? parseFloat(formData.consultation_price) : null,
         photo_url: photoUrl,
         logo_url: logoUrl
-      }));
-      const results = await Promise.all(insertPromises);
+      });
 
-      // Verificar se houve erros
-      const errors = results.filter(result => result.error);
-      if (errors.length > 0) {
-        throw errors[0].error;
-      }
+      if (error) throw error;
       toast({
         title: "Sucesso!",
-        description: "Seus anúncios foram cadastrados com sucesso."
+        description: "Seu anúncio foi cadastrado com sucesso."
       });
 
       // Reset form
@@ -461,7 +459,16 @@ const ServiNUTRI = () => {
     } catch (error) {
       console.error('Erro na busca:', error);
       // Fallback para busca simples
-      const filtered = ads.filter(ad => ad.city.toLowerCase().includes(searchTerm.toLowerCase()) || ad.state.toLowerCase().includes(searchTerm.toLowerCase()) || specialties.find(s => s.value === ad.specialty)?.label.toLowerCase().includes(searchTerm.toLowerCase()) || ad.profile_name && ad.profile_name.toLowerCase().includes(searchTerm.toLowerCase()));
+      const filtered = ads.filter(ad => {
+        const matchesCity = ad.city.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesState = ad.state.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesName = ad.profile_name && ad.profile_name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSpecialty = ad.specialties?.some(spec => 
+          getSpecialtyLabel(spec).toLowerCase().includes(searchTerm.toLowerCase())
+        ) || getSpecialtyLabel(ad.specialty).toLowerCase().includes(searchTerm.toLowerCase());
+        
+        return matchesCity || matchesState || matchesName || matchesSpecialty;
+      });
       setAds(filtered);
     } finally {
       setSearchLoading(false);
@@ -561,14 +568,24 @@ const ServiNUTRI = () => {
                         </Button>
                       </div>
 
-                      <div className="space-y-1 text-xs">
+                       <div className="space-y-1 text-xs">
                         <div className="flex items-center gap-2 text-gray-600">
                           <MapPin className="w-3 h-3" />
                           {ad.city}, {ad.state}
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Stethoscope className="w-3 h-3" />
-                          {getSpecialtyLabel(ad.specialty)}
+                        <div className="flex items-start gap-2 text-gray-600">
+                          <Stethoscope className="w-3 h-3 mt-0.5" />
+                          <div className="flex flex-wrap gap-1">
+                            {ad.specialties && ad.specialties.length > 0 ? (
+                              ad.specialties.map((spec, idx) => (
+                                <Badge key={idx} variant="secondary" className="text-[10px] px-1.5 py-0">
+                                  {getSpecialtyLabel(spec)}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span>{getSpecialtyLabel(ad.specialty)}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
                           <Phone className="w-3 h-3" />
@@ -713,7 +730,7 @@ const ServiNUTRI = () => {
 
                 <div className="flex gap-4">
                   <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700">
-                    {loading ? 'Cadastrando...' : 'Cadastrar Anúncios'}
+                    {loading ? 'Cadastrando...' : 'Cadastrar Anúncio'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                     Cancelar
@@ -742,9 +759,19 @@ const ServiNUTRI = () => {
                     <MapPin className="w-4 h-4" />
                     {ad.city}, {ad.state}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Stethoscope className="w-4 h-4" />
-                    {getSpecialtyLabel(ad.specialty)}
+                  <div className="flex items-start gap-2 text-sm text-gray-600">
+                    <Stethoscope className="w-4 h-4 mt-1" />
+                    <div className="flex flex-wrap gap-1.5">
+                      {ad.specialties && ad.specialties.length > 0 ? (
+                        ad.specialties.map((spec, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {getSpecialtyLabel(spec)}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span>{getSpecialtyLabel(ad.specialty)}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Phone className="w-4 h-4" />

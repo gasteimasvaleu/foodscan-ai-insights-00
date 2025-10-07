@@ -244,6 +244,7 @@ export type Database = {
           phone_ddd: string
           phone_number: string
           photo_url: string | null
+          specialties: string[] | null
           specialty: Database["public"]["Enums"]["nutrition_specialty"]
           state: string
           updated_at: string
@@ -260,6 +261,7 @@ export type Database = {
           phone_ddd: string
           phone_number: string
           photo_url?: string | null
+          specialties?: string[] | null
           specialty: Database["public"]["Enums"]["nutrition_specialty"]
           state: string
           updated_at?: string
@@ -276,6 +278,7 @@ export type Database = {
           phone_ddd?: string
           phone_number?: string
           photo_url?: string | null
+          specialties?: string[] | null
           specialty?: Database["public"]["Enums"]["nutrition_specialty"]
           state?: string
           updated_at?: string
