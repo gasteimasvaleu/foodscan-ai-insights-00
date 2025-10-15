@@ -22,39 +22,37 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY não está configurada');
     }
 
-    // Calcular proximidade às metas
-    const calorieProximity = Math.abs(consumed.calories - goals.calories) / goals.calories;
-    const carbProximity = goals.carbohydrates > 0 ? Math.abs(consumed.carbohydrates - goals.carbohydrates) / goals.carbohydrates : 0;
-    const proteinProximity = goals.proteins > 0 ? Math.abs(consumed.proteins - goals.proteins) / goals.proteins : 0;
-    const fatProximity = Math.abs(consumed.fats - goals.fats) / goals.fats;
+    const prompt = `Você é o JUIZ SUPREMO da nutrição - direto, sem papas na língua, mas sempre motivacional.
 
-    const prompt = `Você é um nutricionista divertido e motivacional. Analise o desempenho nutricional do usuário e dê uma avaliação honesta mas encorajadora.
-
-DADOS DO USUÁRIO:
+📊 DADOS DO USUÁRIO:
 - Objetivo: ${goals.diet_objective}
-- Metas: ${goals.calories} kcal, ${goals.carbohydrates}g carbs, ${goals.proteins}g proteínas, ${goals.fats}g gorduras
-- Consumido: ${consumed.calories} kcal, ${consumed.carbohydrates}g carbs, ${consumed.proteins}g proteínas, ${consumed.fats}g gorduras
+- Metas: ${goals.calories} kcal | ${goals.carbohydrates}g carbs | ${goals.proteins}g proteínas | ${goals.fats}g gorduras
+- Consumido: ${consumed.calories} kcal | ${consumed.carbohydrates}g carbs | ${consumed.proteins}g proteínas | ${consumed.fats}g gorduras
 
-ANÁLISE PRÉVIA:
-${analysis}
+🎯 SUA MISSÃO:
+Dê uma NOTA de 0 a 10 e um feedback CURTÍSSIMO e IMPACTANTE (máximo 150 palavras).
 
-INSTRUÇÕES:
-1. Dê uma nota de 0 a 10 baseada na proximidade às metas e qualidade nutricional
-2. Se muito abaixo das calorias (>50% deficit) = nota baixa
-3. Se muito acima das calorias (>30% excess) = nota baixa  
-4. Quanto mais próximo das metas, melhor a nota
-5. Considere também o equilíbrio nutricional
+📏 CRITÉRIOS DE NOTA:
+- 9-10: Bateu 90-110% das metas (GUERREIRO!)
+- 7-8: Entre 80-120% das metas (BOM TRABALHO)
+- 5-6: Entre 70-130% das metas (DÁ PRA MELHORAR)
+- 3-4: Muito longe das metas (ATENÇÃO)
+- 0-2: Ignorou completamente as metas (CRÍTICO)
 
-RESPONDA APENAS com um JSON VÁLIDO no formato:
-{"score": número_de_0_a_10, "feedback": "feedback_motivacional_divertido_e_específico_max_300_palavras"}
+🎭 ESTILO DO FEEDBACK:
+- Use analogias divertidas (ex: "Você treinou igual Rocky Balboa!")
+- Seja específico sobre OS NÚMEROS (ex: "bateu 97% das proteínas")
+- Tom: 70% motivacional + 30% realista
+- Para notas altas: Celebre mas desafie a manter
+- Para notas baixas: Seja duro mas termine com esperança
+- Use emojis estrategicamente (2-4 no máximo)
+- NÃO repita informações da análise anterior
+- Seja DIRETO e CURTO (máximo 150 palavras)
+
+RETORNE APENAS JSON VÁLIDO:
+{"score": 0-10, "feedback": "texto_impactante_max_150_palavras"}
 
 IMPORTANTE:
-- Para notas 8-10: Seja festivo mas alerte para não se acomodar
-- Para notas 6-7: Seja encorajador e dê dicas específicas
-- Para notas 4-5: Seja firme mas motivacional
-- Para notas 0-3: Seja duro mas sempre termine com encorajamento
-- Use emojis e seja bem específico sobre os números
-- Fale sobre as consequências reais do que aconteceu
 - NÃO USE markdown, apenas JSON puro
 - NÃO adicione \`\`\`json ou \`\`\` na resposta`;
 
@@ -65,12 +63,12 @@ IMPORTANTE:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
+          { role: 'system', content: 'Você é um coach de nutrição gamificado. Seja direto, impactante e motivacional.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
-        max_tokens: 500
+        max_completion_tokens: 300
       }),
     });
 
