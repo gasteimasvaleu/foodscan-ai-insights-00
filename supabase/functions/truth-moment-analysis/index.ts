@@ -52,9 +52,11 @@ Dê uma NOTA de 0 a 10 e um feedback CURTÍSSIMO e IMPACTANTE (máximo 150 palav
 RETORNE APENAS JSON VÁLIDO:
 {"score": 0-10, "feedback": "texto_impactante_max_150_palavras"}
 
-IMPORTANTE:
-- NÃO USE markdown, apenas JSON puro
-- NÃO adicione \`\`\`json ou \`\`\` na resposta`;
+RETORNE APENAS JSON VÁLIDO:
+{"score": 0-10, "feedback": "texto_impactante_max_150_palavras"}
+
+Exemplo de resposta válida:
+{"score": 8, "feedback": "💪 GUERREIRO! Bateu 97% das proteínas mas ficou 153 kcal abaixo. Continue assim! 🔥"}`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -63,20 +65,24 @@ IMPORTANTE:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
+        model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Você é um coach de nutrição gamificado. Seja direto, impactante e motivacional.' },
+          { role: 'system', content: 'Você é um coach de nutrição gamificado. Retorne APENAS JSON válido.' },
           { role: 'user', content: prompt }
         ],
-        max_completion_tokens: 300
+        response_format: { type: "json_object" },
+        max_tokens: 300
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('OpenAI response:', JSON.stringify(data));
     let content = data.choices[0].message.content;
     
     // Limpar markdown se houver
