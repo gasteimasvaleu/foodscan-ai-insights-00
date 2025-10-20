@@ -28,7 +28,8 @@ interface HotmartWebhook {
   event: string;
   data: {
     product?: {
-      id: string;
+      id: number | string;
+      ucode?: string;
       name: string;
     };
     buyer?: {
@@ -145,7 +146,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Processar eventos de compra aprovada
     if (event === 'PURCHASE_COMPLETE' || event === 'PURCHASE_APPROVED') {
       // Validar campos obrigatórios para eventos de compra
-      if (!data.product?.id || !data.buyer?.email || !data.buyer?.name) {
+      // Aceitar product.id = 0 (enviado pela Hotmart em testes)
+      if ((data.product?.id === undefined && !data.product?.ucode) || !data.buyer?.email || !data.buyer?.name) {
         console.error('❌ Campos obrigatórios ausentes para evento de compra');
         return new Response(
           JSON.stringify({ error: 'Dados de compra incompletos' }),
@@ -153,7 +155,8 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      const productId = data.product.id;
+      // Usar ucode se disponível, senão usar id
+      const productId = String(data.product.ucode || data.product.id);
       const buyerEmail = data.buyer.email;
       const buyerName = data.buyer.name;
       
