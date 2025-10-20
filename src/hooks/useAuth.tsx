@@ -33,7 +33,7 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -49,7 +49,7 @@ export const useAuth = () => {
         description: error.message,
         variant: "destructive",
       });
-      return { error };
+      return { error, data: null };
     }
 
     toast({
@@ -57,7 +57,7 @@ export const useAuth = () => {
       description: "Você já pode fazer login.",
     });
 
-    return { error: null };
+    return { error: null, data };
   };
 
   const signIn = async (email: string, password: string) => {

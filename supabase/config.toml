@@ -2,3 +2,12 @@ project_id = "zyhmwcsfifdepqnnrguo"
 
 [functions.register-push-subscription]
 verify_jwt = true
+
+[functions.hotmart-webhook]
+verify_jwt = false
+
+[functions.validate-token]
+verify_jwt = false
+
+[functions.activate-subscription]
+verify_jwt = false

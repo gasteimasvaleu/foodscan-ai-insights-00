@@ -404,11 +404,64 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_tokens: {
+        Row: {
+          created_at: string
+          created_user_id: string | null
+          email: string
+          expires_at: string
+          hotmart_product_id: string
+          hotmart_transaction_id: string
+          id: string
+          is_used: boolean
+          name: string
+          plan_months: number
+          plan_type: string
+          subscription_end: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_user_id?: string | null
+          email: string
+          expires_at: string
+          hotmart_product_id: string
+          hotmart_transaction_id: string
+          id?: string
+          is_used?: boolean
+          name: string
+          plan_months: number
+          plan_type: string
+          subscription_end: string
+          token?: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_user_id?: string | null
+          email?: string
+          expires_at?: string
+          hotmart_product_id?: string
+          hotmart_transaction_id?: string
+          id?: string
+          is_used?: boolean
+          name?: string
+          plan_months?: number
+          plan_type?: string
+          subscription_end?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
           email: string
+          hotmart_transaction_id: string | null
           id: string
+          payment_provider: string | null
           stripe_customer_id: string | null
           subscribed: boolean
           subscription_end: string | null
@@ -419,7 +472,9 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          hotmart_transaction_id?: string | null
           id?: string
+          payment_provider?: string | null
           stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
@@ -430,7 +485,9 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          hotmart_transaction_id?: string | null
           id?: string
+          payment_provider?: string | null
           stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
