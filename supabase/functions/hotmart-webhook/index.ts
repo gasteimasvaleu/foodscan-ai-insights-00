@@ -104,7 +104,30 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('🔑 Transaction ID:', transactionId);
 
-    // Verificar idempotência
+    // Processar eventos de cancelamento/reembolso PRIMEIRO (não requer validação de campos)
+    if (event === 'SUBSCRIPTION_CANCELLATION' || event === 'PURCHASE_REFUNDED') {
+      const { error: updateError } = await supabase
+        .from('subscribers')
+        .update({ 
+          subscribed: false,
+          subscription_end: new Date().toISOString()
+        })
+        .eq('hotmart_transaction_id', transactionId);
+
+      if (updateError) {
+        console.error('❌ Erro ao cancelar assinatura:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ Assinatura cancelada:', transactionId);
+
+      return new Response(
+        JSON.stringify({ success: true, message: 'Assinatura cancelada' }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verificar idempotência (apenas para eventos de compra)
     const { data: existingToken } = await supabase
       .from('registration_tokens')
       .select('id')
@@ -300,29 +323,6 @@ const handler = async (req: Request): Promise<Response> => {
           token: newToken.token,
           message: 'Token criado e email enviado'
         }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Processar eventos de cancelamento/reembolso
-    if (event === 'SUBSCRIPTION_CANCELLATION' || event === 'PURCHASE_REFUNDED') {
-      const { error: updateError } = await supabase
-        .from('subscribers')
-        .update({ 
-          subscribed: false,
-          subscription_end: new Date().toISOString()
-        })
-        .eq('hotmart_transaction_id', transactionId);
-
-      if (updateError) {
-        console.error('❌ Erro ao cancelar assinatura:', updateError);
-        throw updateError;
-      }
-
-      console.log('✅ Assinatura cancelada:', transactionId);
-
-      return new Response(
-        JSON.stringify({ success: true, message: 'Assinatura cancelada' }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
