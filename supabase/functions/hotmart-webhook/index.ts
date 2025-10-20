@@ -27,19 +27,44 @@ const HOTMART_PRODUCTS = {
 interface HotmartWebhook {
   event: string;
   data: {
-    product: {
+    product?: {
       id: string;
       name: string;
     };
-    buyer: {
+    buyer?: {
       name: string;
       email: string;
     };
-    purchase: {
+    purchase?: {
       transaction: string;
       status: string;
     };
+    subscription?: {
+      subscriber?: {
+        code: string;
+      };
+    };
+    subscriber?: {
+      code: string;
+    };
   };
+}
+
+// Função auxiliar para extrair transaction ID de forma segura
+function extractTransactionId(webhook: HotmartWebhook): string | null {
+  const locations = [
+    webhook.data?.purchase?.transaction,
+    webhook.data?.subscription?.subscriber?.code,
+    webhook.data?.subscriber?.code,
+  ];
+  
+  for (const location of locations) {
+    if (location && typeof location === 'string') {
+      return location;
+    }
+  }
+  
+  return null;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -56,11 +81,28 @@ const handler = async (req: Request): Promise<Response> => {
     const webhook: HotmartWebhook = await req.json();
     console.log('📨 Webhook recebido:', JSON.stringify(webhook, null, 2));
 
+    // Validar estrutura básica do webhook
+    if (!webhook.event || !webhook.data) {
+      console.error('❌ Payload inválido: estrutura básica ausente');
+      return new Response(
+        JSON.stringify({ error: 'Payload inválido' }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { event, data } = webhook;
-    const productId = data.product.id;
-    const transactionId = data.purchase.transaction;
-    const buyerEmail = data.buyer.email;
-    const buyerName = data.buyer.name;
+    
+    // Extrair transaction ID de forma segura
+    const transactionId = extractTransactionId(webhook);
+    if (!transactionId) {
+      console.error('❌ Transaction ID não encontrado no payload');
+      return new Response(
+        JSON.stringify({ error: 'Transaction ID ausente' }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log('🔑 Transaction ID:', transactionId);
 
     // Verificar idempotência
     const { data: existingToken } = await supabase
@@ -77,8 +119,21 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Processar evento PURCHASE_COMPLETE
-    if (event === 'PURCHASE_COMPLETE') {
+    // Processar eventos de compra aprovada
+    if (event === 'PURCHASE_COMPLETE' || event === 'PURCHASE_APPROVED') {
+      // Validar campos obrigatórios para eventos de compra
+      if (!data.product?.id || !data.buyer?.email || !data.buyer?.name) {
+        console.error('❌ Campos obrigatórios ausentes para evento de compra');
+        return new Response(
+          JSON.stringify({ error: 'Dados de compra incompletos' }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const productId = data.product.id;
+      const buyerEmail = data.buyer.email;
+      const buyerName = data.buyer.name;
+      
       const planConfig = HOTMART_PRODUCTS[productId as keyof typeof HOTMART_PRODUCTS];
       
       if (!planConfig) {
