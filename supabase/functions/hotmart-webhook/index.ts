@@ -155,15 +155,25 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      // Usar ucode se disponível, senão usar id
+      // Tentar usar ucode primeiro
       const productId = String(data.product.ucode || data.product.id);
       const buyerEmail = data.buyer.email;
       const buyerName = data.buyer.name;
       
-      const planConfig = HOTMART_PRODUCTS[productId as keyof typeof HOTMART_PRODUCTS];
+      let planConfig = HOTMART_PRODUCTS[productId as keyof typeof HOTMART_PRODUCTS];
+      
+      // Se não encontrou pelo ucode, tentar pelo ID numérico como fallback
+      if (!planConfig && data.product.id !== undefined && data.product.id !== null) {
+        const numericId = String(data.product.id);
+        planConfig = HOTMART_PRODUCTS[numericId as keyof typeof HOTMART_PRODUCTS];
+        console.log(`🔄 Produto não encontrado por ucode, tentando por ID numérico: ${numericId}`);
+      }
       
       if (!planConfig) {
-        console.error('❌ Produto desconhecido:', productId);
+        console.error('❌ Produto desconhecido:', { 
+          ucode: data.product.ucode, 
+          id: data.product.id 
+        });
         return new Response(
           JSON.stringify({ error: 'Produto não configurado' }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
