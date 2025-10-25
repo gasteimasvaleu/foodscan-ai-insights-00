@@ -608,6 +608,78 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_messages: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          direction: string
+          error_message: string | null
+          id: string
+          media_url: string | null
+          message_type: string
+          metadata: Json | null
+          phone_number: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          direction: string
+          error_message?: string | null
+          id?: string
+          media_url?: string | null
+          message_type: string
+          metadata?: Json | null
+          phone_number: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          direction?: string
+          error_message?: string | null
+          id?: string
+          media_url?: string | null
+          message_type?: string
+          metadata?: Json | null
+          phone_number?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_subscriptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          phone_number: string
+          preferences: Json | null
+          updated_at: string | null
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          phone_number: string
+          preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          phone_number?: string
+          preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       workout_content: {
         Row: {
           activity_type: string

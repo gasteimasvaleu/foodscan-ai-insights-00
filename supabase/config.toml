@@ -11,3 +11,18 @@ verify_jwt = false
 
 [functions.activate-subscription]
 verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.whatsapp-send]
+verify_jwt = true
+
+[functions.whatsapp-process-text]
+verify_jwt = true
+
+[functions.whatsapp-process-image]
+verify_jwt = true
+
+[functions.whatsapp-scheduled-reminders]
+verify_jwt = true
