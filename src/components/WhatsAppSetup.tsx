@@ -18,6 +18,24 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
     weekly_summary: true
   });
 
+  // Normalize Brazilian phone numbers to match Twilio format
+  const normalizePhoneNumber = (phone: string): string => {
+    // Remove whatsapp: prefix if present
+    let normalized = phone.replace('whatsapp:', '').trim();
+    
+    // Brazilian mobile numbers: +55 (DDD with 2 digits) + 9 + 8 digits
+    // Twilio sends without the extra 9, so we remove it
+    const brazilMobilePattern = /^\+55(\d{2})9(\d{8})$/;
+    const match = normalized.match(brazilMobilePattern);
+    
+    if (match) {
+      // Remove the extra 9: +5583999187322 -> +558399187322
+      normalized = `+55${match[1]}${match[2]}`;
+    }
+    
+    return normalized;
+  };
+
   const handleConnect = async () => {
     if (!phoneNumber) {
       toast.error("Digite seu número de WhatsApp");
@@ -25,12 +43,13 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
     }
 
     setIsLoading(true);
+    const normalizedPhone = normalizePhoneNumber(phoneNumber);
     try {
       const { error } = await supabase
         .from('whatsapp_subscriptions')
         .upsert({
           user_id: userId,
-          phone_number: phoneNumber,
+          phone_number: normalizedPhone,
           verified: true,
           preferences
         });
@@ -53,12 +72,13 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
 
   const handleUpdatePreferences = async () => {
     setIsLoading(true);
+    const normalizedPhone = normalizePhoneNumber(phoneNumber);
     try {
       const { error } = await supabase
         .from('whatsapp_subscriptions')
         .update({ preferences })
         .eq('user_id', userId)
-        .eq('phone_number', phoneNumber);
+        .eq('phone_number', normalizedPhone);
 
       if (error) throw error;
 
