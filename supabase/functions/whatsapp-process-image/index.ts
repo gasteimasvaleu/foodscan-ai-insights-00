@@ -45,7 +45,14 @@ serve(async (req) => {
     }
 
     const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+    
+    // Convert to base64 safely for large images
+    const uint8Array = new Uint8Array(imageBuffer);
+    let binaryString = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binaryString += String.fromCharCode(uint8Array[i]);
+    }
+    const base64Image = btoa(binaryString);
 
     // Call analyze-image function
     const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-image', {
