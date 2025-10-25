@@ -22,7 +22,7 @@ serve(async (req) => {
       throw new Error('Twilio credentials not configured');
     }
 
-    // Normalize phone numbers
+    // Normalize phone numbers - BOTH must have whatsapp: prefix
     // To: must have whatsapp: prefix
     let toNumber = to;
     if (!toNumber.startsWith('whatsapp:')) {
@@ -31,8 +31,12 @@ serve(async (req) => {
       toNumber = `whatsapp:${cleanNumber}`;
     }
 
-    // From: must NOT have whatsapp: prefix (Twilio adds it automatically)
-    const fromNumber = twilioWhatsAppNumber.replace('whatsapp:', '');
+    // From: must also have whatsapp: prefix
+    let fromNumber = twilioWhatsAppNumber;
+    if (!fromNumber.startsWith('whatsapp:')) {
+      const cleanNumber = fromNumber.startsWith('+') ? fromNumber : `+${fromNumber}`;
+      fromNumber = `whatsapp:${cleanNumber}`;
+    }
 
     console.log('Sending WhatsApp message:', { from: fromNumber, to: toNumber });
 
