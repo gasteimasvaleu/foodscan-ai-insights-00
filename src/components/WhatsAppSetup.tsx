@@ -28,10 +28,10 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
     try {
       const { error } = await supabase
         .from('whatsapp_subscriptions')
-        .insert({
+        .upsert({
           user_id: userId,
           phone_number: phoneNumber,
-          verified: false,
+          verified: true,
           preferences
         });
 
