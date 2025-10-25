@@ -22,15 +22,26 @@ serve(async (req) => {
       throw new Error('Twilio credentials not configured');
     }
 
-    // Format phone number
-    const toNumber = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`;
+    // Normalize phone numbers
+    // To: must have whatsapp: prefix
+    let toNumber = to;
+    if (!toNumber.startsWith('whatsapp:')) {
+      // Add + if not present
+      const cleanNumber = toNumber.startsWith('+') ? toNumber : `+${toNumber}`;
+      toNumber = `whatsapp:${cleanNumber}`;
+    }
+
+    // From: must NOT have whatsapp: prefix (Twilio adds it automatically)
+    const fromNumber = twilioWhatsAppNumber.replace('whatsapp:', '');
+
+    console.log('Sending WhatsApp message:', { from: fromNumber, to: toNumber });
 
     // Send message via Twilio
     const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
 
     const formBody = new URLSearchParams({
-      From: twilioWhatsAppNumber,
+      From: fromNumber,
       To: toNumber,
       Body: message
     });
