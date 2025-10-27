@@ -70,6 +70,15 @@ serve(async (req) => {
     const mediaUrl = numMedia > 0 ? formData.get('MediaUrl0') as string : null;
     const messageType = numMedia > 0 ? 'image' : 'text';
 
+    // Filter out Twilio internal commands (sandbox activation messages)
+    const twilioInternalCommands = ['join', 'stop', 'start', 'unstop'];
+    const firstWord = body?.toLowerCase().trim().split(' ')[0] || '';
+    
+    if (twilioInternalCommands.includes(firstWord)) {
+      console.log('🚫 Ignoring Twilio internal command:', body);
+      return new Response('', { status: 200, headers: { ...corsHeaders, 'Content-Type': 'text/plain' } });
+    }
+
     console.log('Received WhatsApp message:', { from, body, numMedia, mediaUrl, messageType });
 
     // Normalize the incoming phone number

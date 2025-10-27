@@ -152,7 +152,10 @@ serve(async (req) => {
     }
 
     // Send response via whatsapp-send function
-    await supabase.functions.invoke('whatsapp-send', {
+    console.log('📤 Sending response to:', phoneNumber);
+    console.log('📝 Message preview:', responseMessage.substring(0, 100) + '...');
+    
+    const { data: sendResult, error: sendError } = await supabase.functions.invoke('whatsapp-send', {
       body: {
         to: phoneNumber,
         message: responseMessage,
@@ -160,7 +163,19 @@ serve(async (req) => {
       }
     });
 
-    return new Response(JSON.stringify({ success: true, command }), {
+    if (sendError) {
+      console.error('❌ Error calling whatsapp-send:', sendError);
+      throw new Error(`Failed to send WhatsApp message: ${sendError.message}`);
+    }
+
+    console.log('✅ Message sent result:', sendResult);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      command,
+      messageSent: !!sendResult?.success,
+      sid: sendResult?.sid
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 

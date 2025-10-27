@@ -61,27 +61,47 @@ serve(async (req) => {
 
     const twilioData = await twilioResponse.json();
 
+    // Log resposta completa do Twilio
+    console.log('📬 Twilio response status:', twilioResponse.status);
+    console.log('📬 Twilio response data:', JSON.stringify(twilioData, null, 2));
+
     if (!twilioResponse.ok) {
-      console.error('Twilio error:', twilioData);
+      console.error('❌ Twilio error response:', twilioData);
       throw new Error(twilioData.message || 'Failed to send WhatsApp message');
     }
+
+    // Log detalhes da mensagem
+    console.log('✅ Message SID:', twilioData.sid);
+    console.log('📊 Message status:', twilioData.status);
+    console.log('💰 Price:', twilioData.price, twilioData.price_unit);
+    console.log('🔢 Segments:', twilioData.num_segments);
 
     // Log outgoing message
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    await supabase.from('whatsapp_messages').insert({
+    const { error: insertError } = await supabase.from('whatsapp_messages').insert({
       user_id: userId,
       phone_number: to.replace('whatsapp:', ''),
       direction: 'outbound',
       message_type: 'text',
       content: message,
-      status: 'sent',
-      metadata: { sid: twilioData.sid }
+      status: twilioData.status || 'sent',
+      metadata: { 
+        sid: twilioData.sid,
+        status: twilioData.status,
+        price: twilioData.price,
+        num_segments: twilioData.num_segments,
+        date_created: twilioData.date_created
+      }
     });
 
-    console.log('WhatsApp message sent successfully:', twilioData.sid);
+    if (insertError) {
+      console.error('⚠️ Failed to log message to database:', insertError);
+    }
+
+    console.log('✅ WhatsApp message sent successfully:', twilioData.sid);
 
     return new Response(JSON.stringify({ success: true, sid: twilioData.sid }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
