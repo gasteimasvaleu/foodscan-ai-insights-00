@@ -1,6 +1,40 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
+// Normalize Brazilian phone numbers to international format
+const normalizePhoneNumber = (phone: string): string => {
+  // Remove all non-numeric characters except +
+  let cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // Remove whatsapp: prefix if present
+  cleaned = cleaned.replace('whatsapp:', '').trim();
+  
+  // If already has country code with +, return as is
+  if (cleaned.startsWith('+55') && cleaned.length === 13) {
+    return cleaned;
+  }
+  
+  // If has 55 prefix without +, add it
+  if (cleaned.startsWith('55') && cleaned.length === 12) {
+    return '+' + cleaned;
+  }
+  
+  // If has only DDD + number (11 digits), add +55
+  if (cleaned.length === 11 && !cleaned.startsWith('+')) {
+    return '+55' + cleaned;
+  }
+  
+  // If has 10 digits (old format without 9), add +55 and 9
+  if (cleaned.length === 10 && !cleaned.startsWith('+')) {
+    const ddd = cleaned.substring(0, 2);
+    const number = cleaned.substring(2);
+    return `+55${ddd}9${number}`;
+  }
+  
+  // Return as is if format is unrecognized
+  return cleaned.startsWith('+') ? cleaned : '+55' + cleaned;
+};
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -25,8 +59,9 @@ serve(async (req) => {
 
     console.log('Received WhatsApp message:', { from, body, numMedia, mediaUrl, messageType });
 
-    // Extract phone number (remove whatsapp: prefix)
-    const phoneNumber = from.replace('whatsapp:', '');
+    // Normalize the incoming phone number
+    const phoneNumber = normalizePhoneNumber(from);
+    console.log('Normalized phone number:', phoneNumber);
 
     // Find user by phone number
     const { data: subscription } = await supabase
