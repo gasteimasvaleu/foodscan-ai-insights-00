@@ -18,22 +18,38 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
     weekly_summary: true
   });
 
-  // Normalize Brazilian phone numbers to match Twilio format
+  // Normalize Brazilian phone numbers to international format
   const normalizePhoneNumber = (phone: string): string => {
+    // Remove all non-numeric characters except +
+    let cleaned = phone.replace(/[^\d+]/g, '');
+    
     // Remove whatsapp: prefix if present
-    let normalized = phone.replace('whatsapp:', '').trim();
+    cleaned = cleaned.replace('whatsapp:', '').trim();
     
-    // Brazilian mobile numbers: +55 (DDD with 2 digits) + 9 + 8 digits
-    // Twilio sends without the extra 9, so we remove it
-    const brazilMobilePattern = /^\+55(\d{2})9(\d{8})$/;
-    const match = normalized.match(brazilMobilePattern);
-    
-    if (match) {
-      // Remove the extra 9: +5583999187322 -> +558399187322
-      normalized = `+55${match[1]}${match[2]}`;
+    // If already has country code with +, return as is
+    if (cleaned.startsWith('+55') && cleaned.length === 13) {
+      return cleaned;
     }
     
-    return normalized;
+    // If has 55 prefix without +, add it
+    if (cleaned.startsWith('55') && cleaned.length === 12) {
+      return '+' + cleaned;
+    }
+    
+    // If has only DDD + number (11 digits), add +55
+    if (cleaned.length === 11 && !cleaned.startsWith('+')) {
+      return '+55' + cleaned;
+    }
+    
+    // If has 10 digits (old format without 9), add +55 and 9
+    if (cleaned.length === 10 && !cleaned.startsWith('+')) {
+      const ddd = cleaned.substring(0, 2);
+      const number = cleaned.substring(2);
+      return `+55${ddd}9${number}`;
+    }
+    
+    // Return as is if format is unrecognized
+    return cleaned.startsWith('+') ? cleaned : '+55' + cleaned;
   };
 
   const handleConnect = async () => {
