@@ -18,25 +18,27 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
     weekly_summary: true
   });
 
-  // Normalize Brazilian phone numbers to international format
+  // Normalize Brazilian phone numbers to international format (14 chars: +55 + 11 digits)
   const normalizePhoneNumber = (phone: string): string => {
     // Remove all non-numeric characters except +
     let cleaned = phone.replace(/[^\d+]/g, '');
     
     // Remove whatsapp: prefix if present
-    cleaned = cleaned.replace('whatsapp:', '').trim();
+    if (phone.includes('whatsapp:')) {
+      cleaned = phone.split('whatsapp:')[1].replace(/[^\d+]/g, '');
+    }
     
-    // If already has country code with +, return as is
-    if (cleaned.startsWith('+55') && cleaned.length === 13) {
+    // If already has country code with + and 11 digits after (modern format: 14 chars total)
+    if (cleaned.startsWith('+55') && cleaned.length === 14) {
       return cleaned;
     }
     
-    // If has 55 prefix without +, add it
-    if (cleaned.startsWith('55') && cleaned.length === 12) {
+    // If has 55 prefix without + and 11 digits after (13 chars total)
+    if (cleaned.startsWith('55') && cleaned.length === 13) {
       return '+' + cleaned;
     }
     
-    // If has only DDD + number (11 digits), add +55
+    // If has only 11 digits (DDD + 9 + number), add +55
     if (cleaned.length === 11 && !cleaned.startsWith('+')) {
       return '+55' + cleaned;
     }

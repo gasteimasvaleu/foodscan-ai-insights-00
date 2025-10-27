@@ -1,38 +1,51 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
-// Normalize Brazilian phone numbers to international format
+// Normalize Brazilian phone numbers to international format (14 chars: +55 + 11 digits)
 const normalizePhoneNumber = (phone: string): string => {
   // Remove all non-numeric characters except +
   let cleaned = phone.replace(/[^\d+]/g, '');
   
   // Remove whatsapp: prefix if present
-  cleaned = cleaned.replace('whatsapp:', '').trim();
+  if (phone.includes('whatsapp:')) {
+    cleaned = phone.split('whatsapp:')[1].replace(/[^\d+]/g, '');
+  }
   
-  // If already has country code with +, return as is
-  if (cleaned.startsWith('+55') && cleaned.length === 13) {
+  console.log('🔄 Normalizing phone:', phone, '→', cleaned);
+  
+  // If already has country code with + and 11 digits after (modern format: 14 chars total)
+  if (cleaned.startsWith('+55') && cleaned.length === 14) {
+    console.log('✅ Already in correct format (14 chars):', cleaned);
     return cleaned;
   }
   
-  // If has 55 prefix without +, add it
-  if (cleaned.startsWith('55') && cleaned.length === 12) {
-    return '+' + cleaned;
+  // If has 55 prefix without + and 11 digits after (13 chars total)
+  if (cleaned.startsWith('55') && cleaned.length === 13) {
+    const result = '+' + cleaned;
+    console.log('✅ Added + prefix:', result);
+    return result;
   }
   
-  // If has only DDD + number (11 digits), add +55
+  // If has only 11 digits (DDD + 9 + number), add +55
   if (cleaned.length === 11 && !cleaned.startsWith('+')) {
-    return '+55' + cleaned;
+    const result = '+55' + cleaned;
+    console.log('✅ Added +55 prefix:', result);
+    return result;
   }
   
   // If has 10 digits (old format without 9), add +55 and 9
   if (cleaned.length === 10 && !cleaned.startsWith('+')) {
     const ddd = cleaned.substring(0, 2);
     const number = cleaned.substring(2);
-    return `+55${ddd}9${number}`;
+    const result = `+55${ddd}9${number}`;
+    console.log('✅ Converted old format (added 9):', result);
+    return result;
   }
   
   // Return as is if format is unrecognized
-  return cleaned.startsWith('+') ? cleaned : '+55' + cleaned;
+  const result = cleaned.startsWith('+') ? cleaned : '+55' + cleaned;
+  console.log('⚠️ Unrecognized format, using fallback:', result);
+  return result;
 };
 
 const corsHeaders = {
@@ -60,16 +73,23 @@ serve(async (req) => {
     console.log('Received WhatsApp message:', { from, body, numMedia, mediaUrl, messageType });
 
     // Normalize the incoming phone number
+    console.log('📱 Original from Twilio:', from);
     const phoneNumber = normalizePhoneNumber(from);
-    console.log('Normalized phone number:', phoneNumber);
+    console.log('📱 After normalization:', phoneNumber);
 
     // Find user by phone number
-    const { data: subscription } = await supabase
+    console.log('🔍 Looking up subscription in database...');
+    const { data: subscription, error: subscriptionError } = await supabase
       .from('whatsapp_subscriptions')
       .select('user_id, verified')
       .eq('phone_number', phoneNumber)
       .eq('verified', true)
       .single();
+    
+    console.log('🔍 Subscription lookup result:', subscription ? `Found user: ${subscription.user_id}` : 'NOT FOUND');
+    if (subscriptionError) {
+      console.log('❌ Subscription lookup error:', subscriptionError.message);
+    }
 
     const userId = subscription?.user_id || null;
 
