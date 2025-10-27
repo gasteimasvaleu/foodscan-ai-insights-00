@@ -151,30 +151,98 @@ serve(async (req) => {
         `📸 Você também pode enviar uma foto da sua comida!`;
     }
 
-    // Send response via whatsapp-send function
+    // Send response via Twilio directly
     console.log('📤 Sending response to:', phoneNumber);
     console.log('📝 Message preview:', responseMessage.substring(0, 100) + '...');
     
-    const { data: sendResult, error: sendError } = await supabase.functions.invoke('whatsapp-send', {
-      body: {
-        to: phoneNumber,
-        message: responseMessage,
-        userId
+    const twilioAccountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+    const twilioAuthToken = Deno.env.get('TWILIO_AUTH_TOKEN');
+    const twilioWhatsAppNumber = Deno.env.get('TWILIO_WHATSAPP_NUMBER');
+
+    if (!twilioAccountSid || !twilioAuthToken || !twilioWhatsAppNumber) {
+      throw new Error('Twilio credentials not configured');
+    }
+
+    // Normalize phone numbers - BOTH must have whatsapp: prefix
+    let toNumber = phoneNumber;
+    if (!toNumber.startsWith('whatsapp:')) {
+      const cleanNumber = toNumber.startsWith('+') ? toNumber : `+${toNumber}`;
+      toNumber = `whatsapp:${cleanNumber}`;
+    }
+
+    let fromNumber = twilioWhatsAppNumber;
+    if (!fromNumber.startsWith('whatsapp:')) {
+      const cleanNumber = fromNumber.startsWith('+') ? fromNumber : `+${fromNumber}`;
+      fromNumber = `whatsapp:${cleanNumber}`;
+    }
+
+    console.log('🔄 Sending WhatsApp message:', { from: fromNumber, to: toNumber });
+
+    // Send message via Twilio
+    const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
+
+    const formBody = new URLSearchParams({
+      From: fromNumber,
+      To: toNumber,
+      Body: responseMessage
+    });
+
+    const twilioResponse = await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formBody
+    });
+
+    const twilioData = await twilioResponse.json();
+
+    // Log resposta completa do Twilio
+    console.log('📬 Twilio response status:', twilioResponse.status);
+    console.log('📬 Twilio response data:', JSON.stringify(twilioData, null, 2));
+
+    if (!twilioResponse.ok) {
+      console.error('❌ Twilio error response:', twilioData);
+      throw new Error(twilioData.message || 'Failed to send WhatsApp message');
+    }
+
+    // Log detalhes da mensagem
+    console.log('✅ Message SID:', twilioData.sid);
+    console.log('📊 Message status:', twilioData.status);
+    console.log('💰 Price:', twilioData.price, twilioData.price_unit);
+    console.log('🔢 Segments:', twilioData.num_segments);
+
+    // Log outgoing message to database
+    const { error: insertError } = await supabase.from('whatsapp_messages').insert({
+      user_id: userId,
+      phone_number: phoneNumber.replace('whatsapp:', ''),
+      direction: 'outbound',
+      message_type: 'text',
+      content: responseMessage,
+      status: twilioData.status || 'sent',
+      metadata: { 
+        sid: twilioData.sid,
+        status: twilioData.status,
+        price: twilioData.price,
+        num_segments: twilioData.num_segments,
+        date_created: twilioData.date_created
       }
     });
 
-    if (sendError) {
-      console.error('❌ Error calling whatsapp-send:', sendError);
-      throw new Error(`Failed to send WhatsApp message: ${sendError.message}`);
+    if (insertError) {
+      console.error('⚠️ Failed to log message to database:', insertError);
     }
 
-    console.log('✅ Message sent result:', sendResult);
+    console.log('✅ WhatsApp message sent successfully:', twilioData.sid);
 
     return new Response(JSON.stringify({ 
       success: true, 
       command,
-      messageSent: !!sendResult?.success,
-      sid: sendResult?.sid
+      messageSent: true,
+      sid: twilioData.sid,
+      status: twilioData.status
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
