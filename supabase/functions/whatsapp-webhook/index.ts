@@ -77,17 +77,41 @@ serve(async (req) => {
     const phoneNumber = normalizePhoneNumber(from);
     console.log('📱 After normalization:', phoneNumber);
 
-    // Find user by phone number
+    // Find user by phone number with flexible format lookup
     console.log('🔍 Looking up subscription in database...');
-    const { data: subscription, error: subscriptionError } = await supabase
+    
+    // First attempt: exact format
+    let { data: subscription, error: subscriptionError } = await supabase
       .from('whatsapp_subscriptions')
       .select('user_id, verified')
       .eq('phone_number', phoneNumber)
       .eq('verified', true)
       .single();
     
+    // If not found and number has 13 chars (missing the '9'), try alternative format
+    if (!subscription && phoneNumber.length === 13 && phoneNumber.startsWith('+55')) {
+      const ddd = phoneNumber.substring(3, 5); // Extract DDD (area code)
+      const number = phoneNumber.substring(5); // Rest of the number
+      const alternativeFormat = `+55${ddd}9${number}`; // Add the '9'
+      
+      console.log('🔄 Trying alternative format (adding 9):', alternativeFormat);
+      
+      const { data: altSubscription, error: altError } = await supabase
+        .from('whatsapp_subscriptions')
+        .select('user_id, verified')
+        .eq('phone_number', alternativeFormat)
+        .eq('verified', true)
+        .single();
+      
+      if (altSubscription) {
+        console.log('✅ Found with alternative format!');
+        subscription = altSubscription;
+        subscriptionError = altError;
+      }
+    }
+    
     console.log('🔍 Subscription lookup result:', subscription ? `Found user: ${subscription.user_id}` : 'NOT FOUND');
-    if (subscriptionError) {
+    if (subscriptionError && !subscription) {
       console.log('❌ Subscription lookup error:', subscriptionError.message);
     }
 
