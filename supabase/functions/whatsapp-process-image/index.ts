@@ -77,16 +77,38 @@ serve(async (req) => {
     
     console.log(`📏 Original description length: ${description.length} chars`);
 
-    // Extract nutrition info first
-    const caloriesMatch = description.match(/(\d+)\s*(?:kcal|calorias)/i);
-    const proteinsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:proteínas|proteina|protein)/i);
-    const carbsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:carboidratos|carbs)/i);
-    const fatsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:gorduras|gordura|fat)/i);
+    // Extract nutrition info with improved regex for new format
+    const nutritionLine = description.match(/NUTRIÇÃO:\s*(\d+)\s*kcal\s*\|\s*(\d+(?:\.\d+)?)g?\s*proteínas\s*\|\s*(\d+(?:\.\d+)?)g?\s*carboidratos\s*\|\s*(\d+(?:\.\d+)?)g?\s*gorduras/i);
 
-    const calories = caloriesMatch ? parseInt(caloriesMatch[1]) : 500;
-    const proteins = proteinsMatch ? parseFloat(proteinsMatch[1]) : 25;
-    const carbs = carbsMatch ? parseFloat(carbsMatch[1]) : 50;
-    const fats = fatsMatch ? parseFloat(fatsMatch[1]) : 15;
+    let calories = 500;  // default fallback
+    let proteins = 25;
+    let carbs = 50;
+    let fats = 15;
+
+    if (nutritionLine) {
+      calories = parseInt(nutritionLine[1]);
+      proteins = parseFloat(nutritionLine[2]);
+      carbs = parseFloat(nutritionLine[3]);
+      fats = parseFloat(nutritionLine[4]);
+      
+      console.log(`✅ Nutrition info extracted from AI: ${calories} kcal, ${proteins}g proteins, ${carbs}g carbs, ${fats}g fats`);
+      
+      // Remove the nutrition line from description so it doesn't appear twice
+      description = description.replace(/NUTRIÇÃO:.*$/im, '').trim();
+    } else {
+      console.log(`⚠️ No nutrition info found in AI response, using defaults`);
+      
+      // Fallback: try old regex patterns
+      const caloriesMatch = description.match(/(\d+)\s*(?:kcal|calorias)/i);
+      const proteinsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:proteínas|proteina|protein)/i);
+      const carbsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:carboidratos|carbs)/i);
+      const fatsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:gorduras|gordura|fat)/i);
+
+      if (caloriesMatch) calories = parseInt(caloriesMatch[1]);
+      if (proteinsMatch) proteins = parseFloat(proteinsMatch[1]);
+      if (carbsMatch) carbs = parseFloat(carbsMatch[1]);
+      if (fatsMatch) fats = parseFloat(fatsMatch[1]);
+    }
 
     // Build message components
     const header = `📸 *Análise da Imagem*\n\n`;

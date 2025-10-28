@@ -49,7 +49,7 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Analise esta imagem de comida e forneça uma descrição detalhada mas objetiva.
+                text: `Analise esta imagem de comida e forneça uma descrição detalhada mas objetiva com informações nutricionais.
 
 INSTRUÇÕES:
 - Identifique todos os alimentos visíveis
@@ -59,14 +59,28 @@ INSTRUÇÕES:
 - Se houver múltiplos itens, liste cada um separadamente
 - Seja específico (ex: "peito de frango grelhado" ao invés de apenas "frango")
 
+CÁLCULO NUTRICIONAL OBRIGATÓRIO:
+Após listar os alimentos, adicione uma seção com o cálculo nutricional TOTAL da refeição:
+- Calorias (kcal)
+- Proteínas (g)
+- Carboidratos (g)
+- Gorduras (g)
+
+Use valores nutricionais típicos dos alimentos identificados e suas porções estimadas.
+
 FORMATO DA RESPOSTA:
 Liste cada alimento em uma linha, com porção e preparo.
+Depois adicione uma linha em branco e as informações nutricionais no formato exato:
+
+NUTRIÇÃO: X kcal | Yg proteínas | Zg carboidratos | Wg gorduras
 
 Exemplo:
 - Peito de frango grelhado (~150g)
 - Arroz branco cozido (1 xícara, ~150g)
 - Salada verde com tomate (1 porção)
-- Molho de tomate caseiro (2 colheres de sopa)`
+- Molho de tomate caseiro (2 colheres de sopa)
+
+NUTRIÇÃO: 450 kcal | 35g proteínas | 55g carboidratos | 8g gorduras`
               },
               {
                 type: 'image_url',
