@@ -73,7 +73,14 @@ serve(async (req) => {
       });
     }
 
-    const description = analysisData.description;
+    let description = analysisData.description;
+
+    // Truncate description if too long (max 600 chars to leave room for the rest)
+    const maxDescriptionLength = 600;
+    if (description.length > maxDescriptionLength) {
+      description = description.substring(0, maxDescriptionLength) + '...';
+      console.log('⚠️ Description truncated to fit character limit');
+    }
 
     // Extract nutrition info (simplified parsing)
     const caloriesMatch = description.match(/(\d+)\s*(?:kcal|calorias)/i);
@@ -86,25 +93,43 @@ serve(async (req) => {
     const carbs = carbsMatch ? parseFloat(carbsMatch[1]) : 50;
     const fats = fatsMatch ? parseFloat(fatsMatch[1]) : 15;
 
-    // Format response message
+    // Format response message - keep it under 1500 characters total
     const responseMessage = `📸 *Análise da Imagem*\n\n` +
       `${description}\n\n` +
-      `📊 *Informações Nutricionais:*\n` +
-      `🔥 Calorias: ~${calories} kcal\n` +
-      `💪 Proteínas: ~${proteins}g\n` +
-      `🍞 Carboidratos: ~${carbs}g\n` +
-      `🥑 Gorduras: ~${fats}g\n\n` +
-      `✅ Quer registrar esta refeição?\n` +
-      `Responda "SIM" para registrar ou "NÃO" para cancelar.`;
+      `📊 *Nutrição Estimada:*\n` +
+      `🔥 ${calories} kcal\n` +
+      `💪 ${proteins}g proteínas\n` +
+      `🍞 ${carbs}g carboidratos\n` +
+      `🥑 ${fats}g gorduras\n\n` +
+      `Registrar? Responda SIM ou NÃO`;
 
-    // Send analysis result
-    await supabase.functions.invoke('whatsapp-send', {
-      body: {
-        to: phoneNumber,
-        message: responseMessage,
-        userId
-      }
-    });
+    // Final safety check - should never exceed 1500 chars now
+    if (responseMessage.length > 1500) {
+      console.error('⚠️ Message still too long after truncation:', responseMessage.length);
+      // Emergency truncation
+      const emergencyMessage = `📸 Imagem analisada!\n\n` +
+        `${description.substring(0, 400)}...\n\n` +
+        `📊 Nutrição: ${calories}kcal | ${proteins}g prot\n\n` +
+        `Registrar? SIM ou NÃO`;
+      
+      await supabase.functions.invoke('whatsapp-send', {
+        body: {
+          to: phoneNumber,
+          message: emergencyMessage,
+          userId
+        }
+      });
+    } else {
+
+      // Send analysis result
+      await supabase.functions.invoke('whatsapp-send', {
+        body: {
+          to: phoneNumber,
+          message: responseMessage,
+          userId
+        }
+      });
+    }
 
     // Store pending meal for confirmation
     await supabase.from('whatsapp_messages').insert({

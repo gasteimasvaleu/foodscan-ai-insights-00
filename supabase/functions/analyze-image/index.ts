@@ -49,17 +49,18 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Analise esta imagem de comida e forneça uma descrição detalhada. 
+                text: `Analise esta imagem de comida de forma CONCISA.
 
-INSTRUÇÕES IMPORTANTES:
-- Identifique todos os alimentos visíveis na imagem
-- Descreva os ingredientes principais de cada item
-- Estime as quantidades/porções aproximadas
-- Mencione o método de preparo quando possível (grelhado, frito, assado, etc.)
-- Se houver múltiplos itens, liste cada um separadamente
-- Seja específico sobre tipos de alimentos (ex: "peito de frango grelhado" ao invés de apenas "frango")
+RESPONDA EM NO MÁXIMO 400 CARACTERES.
 
-Formato da resposta: Descrição clara e detalhada dos alimentos identificados.`
+Liste apenas:
+1. Nome dos alimentos
+2. Porção aproximada (ex: "1 prato", "200g")
+3. Método de preparo se visível (grelhado, frito, etc.)
+
+Formato: Liste cada alimento em uma linha. Seja direto e objetivo.
+
+Exemplo: "Frango grelhado (~150g), Arroz branco (1 xícara), Salada verde"`
               },
               {
                 type: 'image_url',
@@ -70,7 +71,7 @@ Formato da resposta: Descrição clara e detalhada dos alimentos identificados.`
             ]
           }
         ],
-        max_tokens: 1000
+        max_tokens: 300
       })
     })
 
