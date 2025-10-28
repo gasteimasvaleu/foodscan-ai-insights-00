@@ -74,43 +74,72 @@ serve(async (req) => {
     }
 
     let description = analysisData.description;
+    
+    console.log(`📏 Original description length: ${description.length} chars`);
 
-    // Truncate description if too long (max 600 chars to leave room for the rest)
-    const maxDescriptionLength = 600;
-    if (description.length > maxDescriptionLength) {
-      description = description.substring(0, maxDescriptionLength) + '...';
-      console.log('⚠️ Description truncated to fit character limit');
-    }
-
-    // Extract nutrition info (simplified parsing)
+    // Extract nutrition info first
     const caloriesMatch = description.match(/(\d+)\s*(?:kcal|calorias)/i);
-    const proteinsMatch = description.match(/proteínas?:\s*(\d+(?:\.\d+)?)\s*g/i);
-    const carbsMatch = description.match(/carboidratos?:\s*(\d+(?:\.\d+)?)\s*g/i);
-    const fatsMatch = description.match(/gorduras?:\s*(\d+(?:\.\d+)?)\s*g/i);
+    const proteinsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:proteínas|proteina|protein)/i);
+    const carbsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:carboidratos|carbs)/i);
+    const fatsMatch = description.match(/(\d+)\s*g?\s*(?:de\s+)?(?:gorduras|gordura|fat)/i);
 
     const calories = caloriesMatch ? parseInt(caloriesMatch[1]) : 500;
     const proteins = proteinsMatch ? parseFloat(proteinsMatch[1]) : 25;
     const carbs = carbsMatch ? parseFloat(carbsMatch[1]) : 50;
     const fats = fatsMatch ? parseFloat(fatsMatch[1]) : 15;
 
-    // Format response message - keep it under 1500 characters total
-    const responseMessage = `📸 *Análise da Imagem*\n\n` +
-      `${description}\n\n` +
-      `📊 *Nutrição Estimada:*\n` +
-      `🔥 ${calories} kcal\n` +
-      `💪 ${proteins}g proteínas\n` +
-      `🍞 ${carbs}g carboidratos\n` +
-      `🥑 ${fats}g gorduras\n\n` +
-      `Registrar? Responda SIM ou NÃO`;
+    // Build message components
+    const header = `📸 *Análise da Imagem*\n\n`;
+    const nutritionInfo = `📊 *Informações Nutricionais:*\n` +
+      `🔥 Calorias: ~${calories} kcal\n` +
+      `💪 Proteínas: ~${proteins}g\n` +
+      `🍞 Carboidratos: ~${carbs}g\n` +
+      `🥑 Gorduras: ~${fats}g\n\n`;
+    const footer = `✅ Quer registrar esta refeição?\n` +
+      `Responda "SIM" para registrar ou "NÃO" para cancelar.`;
 
-    // Final safety check - should never exceed 1500 chars now
-    if (responseMessage.length > 1500) {
-      console.error('⚠️ Message still too long after truncation:', responseMessage.length);
-      // Emergency truncation
-      const emergencyMessage = `📸 Imagem analisada!\n\n` +
-        `${description.substring(0, 400)}...\n\n` +
-        `📊 Nutrição: ${calories}kcal | ${proteins}g prot\n\n` +
-        `Registrar? SIM ou NÃO`;
+    // Calculate available space for description
+    const fixedPartsLength = header.length + nutritionInfo.length + footer.length;
+    const maxTotalLength = 1500;
+    const maxDescriptionLength = maxTotalLength - fixedPartsLength - 10; // 10 chars buffer
+
+    console.log(`📊 Message size calculation:
+      - Fixed parts: ${fixedPartsLength} chars
+      - Max description: ${maxDescriptionLength} chars
+      - Total limit: ${maxTotalLength} chars`);
+
+    // Intelligent truncation: keep full paragraphs when possible
+    if (description.length > maxDescriptionLength) {
+      console.log(`⚠️ Description too long (${description.length} chars), truncating to ${maxDescriptionLength}`);
+      
+      // Try to break at last complete line/paragraph
+      const truncated = description.substring(0, maxDescriptionLength);
+      const lines = truncated.split('\n');
+      
+      // Remove last incomplete line and add indicator
+      description = lines.slice(0, -1).join('\n') + '\n\n[...análise resumida]';
+      
+      // If still too long, hard cut
+      if (description.length > maxDescriptionLength) {
+        description = description.substring(0, maxDescriptionLength - 3) + '...';
+      }
+      
+      console.log(`✂️ Description truncated to ${description.length} chars`);
+    }
+
+    // Assemble final message
+    const responseMessage = header + description + '\n\n' + nutritionInfo + footer;
+
+    console.log(`📏 Final message length: ${responseMessage.length} chars`);
+
+    // Final safety check
+    if (responseMessage.length > maxTotalLength) {
+      console.error(`🚨 Message STILL too long (${responseMessage.length}), emergency truncation!`);
+      // This should never happen, but just in case
+      const emergencyDesc = description.substring(0, 400) + '...';
+      const emergencyMessage = header + emergencyDesc + '\n\n' + nutritionInfo + footer;
+      
+      console.log(`🆘 Emergency message length: ${emergencyMessage.length} chars`);
       
       await supabase.functions.invoke('whatsapp-send', {
         body: {
@@ -120,8 +149,8 @@ serve(async (req) => {
         }
       });
     } else {
-
-      // Send analysis result
+      // Send normal message
+      console.log(`✅ Sending message within limits`);
       await supabase.functions.invoke('whatsapp-send', {
         body: {
           to: phoneNumber,
