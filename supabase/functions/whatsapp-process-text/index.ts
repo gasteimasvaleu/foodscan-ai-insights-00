@@ -31,6 +31,104 @@ serve(async (req) => {
         `• "ajuda" - Ver esta mensagem\n\n` +
         `📸 *Envie uma foto da sua comida* para análise nutricional automática!`;
     }
+    // Confirmação de refeição
+    else if (['sim', 's', 'yes', 'confirmar'].includes(command)) {
+      if (!userId) {
+        responseMessage = '❌ Você precisa estar cadastrado no app.';
+      } else {
+        // Buscar última mensagem com pending_meal
+        const { data: lastMessage } = await supabase
+          .from('whatsapp_messages')
+          .select('id, metadata')
+          .eq('user_id', userId)
+          .eq('direction', 'outbound')
+          .not('metadata->pending_meal', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!lastMessage?.metadata?.pending_meal) {
+          responseMessage = '❌ Não encontrei nenhuma refeição pendente para confirmar.\n\n' +
+            'Envie uma foto da sua comida primeiro!';
+        } else {
+          const meal = lastMessage.metadata.pending_meal;
+
+          // Inserir na tabela meal_records
+          const { error: insertError } = await supabase
+            .from('meal_records')
+            .insert({
+              user_id: userId,
+              food_name: meal.food_name,
+              calories: meal.calories,
+              proteins: meal.proteins,
+              carbohydrates: meal.carbohydrates,
+              fats: meal.fats,
+              portion: meal.portion,
+              meal_time: meal.meal_time
+            });
+
+          if (insertError) {
+            console.error('Error inserting meal:', insertError);
+            responseMessage = '❌ Erro ao registrar refeição. Tente novamente.';
+          } else {
+            // Limpar pending_meal da mensagem
+            await supabase
+              .from('whatsapp_messages')
+              .update({ 
+                metadata: { 
+                  ...lastMessage.metadata, 
+                  pending_meal: null,
+                  confirmed: true,
+                  confirmed_at: new Date().toISOString()
+                } 
+              })
+              .eq('id', lastMessage.id);
+
+            responseMessage = `✅ *Refeição registrada com sucesso!*\n\n` +
+              `🔥 ${meal.calories} kcal adicionadas ao seu dia!\n\n` +
+              `📊 Digite "resumo" para ver seu progresso.`;
+          }
+        }
+      }
+    }
+    // Cancelamento de refeição
+    else if (['nao', 'não', 'n', 'no', 'cancelar'].includes(command)) {
+      if (!userId) {
+        responseMessage = '❌ Você precisa estar cadastrado no app.';
+      } else {
+        // Buscar última mensagem com pending_meal
+        const { data: lastMessage } = await supabase
+          .from('whatsapp_messages')
+          .select('id, metadata')
+          .eq('user_id', userId)
+          .eq('direction', 'outbound')
+          .not('metadata->pending_meal', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!lastMessage?.metadata?.pending_meal) {
+          responseMessage = '❌ Não encontrei nenhuma refeição pendente para cancelar.\n\n' +
+            'Envie uma foto da sua comida quando quiser!';
+        } else {
+          // Limpar pending_meal sem registrar
+          await supabase
+            .from('whatsapp_messages')
+            .update({ 
+              metadata: { 
+                ...lastMessage.metadata, 
+                pending_meal: null,
+                cancelled: true,
+                cancelled_at: new Date().toISOString()
+              } 
+            })
+            .eq('id', lastMessage.id);
+
+          responseMessage = `❌ *Refeição cancelada.*\n\n` +
+            `📸 Envie outra foto quando quiser fazer uma nova análise!`;
+        }
+      }
+    }
     // Resumo do dia
     else if (['resumo', 'hoje', 'dia'].includes(command)) {
       if (!userId) {

@@ -73,6 +73,37 @@ serve(async (req) => {
       });
     }
 
+    // Function to extract food items from description
+    function extractFoodItems(description: string): { foodName: string, portion: string } {
+      // Extract bullet points or food items from description
+      const foodLines = description
+        .split('\n')
+        .filter(line => line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*'))
+        .map(line => line.replace(/^[•\-*]\s*/, '').trim())
+        .filter(line => line.length > 0);
+
+      if (foodLines.length > 0) {
+        // If multiple items, join them
+        const foodName = foodLines.join(', ');
+        
+        // Try to extract total weight/portion info
+        const weightMatches = description.matchAll(/~?(\d+)\s*g/gi);
+        const weights = Array.from(weightMatches).map(m => parseInt(m[1]));
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        
+        const portion = totalWeight > 0 ? `${totalWeight}g` : '1 porção';
+        
+        return { foodName, portion };
+      }
+      
+      // Fallback: use first line or generic
+      const firstLine = description.split('\n')[0]?.trim();
+      return {
+        foodName: firstLine || 'Refeição analisada via WhatsApp',
+        portion: '1 porção'
+      };
+    }
+
     let description = analysisData.description;
     
     console.log(`📏 Original description length: ${description.length} chars`);
@@ -182,6 +213,10 @@ serve(async (req) => {
       });
     }
 
+    // Extract food name and portion from description
+    const { foodName, portion } = extractFoodItems(description);
+    console.log(`📝 Extracted food info: "${foodName}" (${portion})`);
+
     // Store pending meal for confirmation
     await supabase.from('whatsapp_messages').insert({
       user_id: userId,
@@ -192,12 +227,12 @@ serve(async (req) => {
       status: 'sent',
       metadata: {
         pending_meal: {
-          food_name: 'Refeição analisada via WhatsApp',
+          food_name: foodName,
           calories,
           proteins,
           carbohydrates: carbs,
           fats,
-          portion: '1 porção',
+          portion: portion,
           meal_time: new Date().toISOString()
         }
       }
