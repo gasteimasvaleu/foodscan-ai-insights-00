@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, Activity, Dumbbell, ChefHat } from 'lucide-react';
+import { Camera, Activity, Dumbbell, ChefHat, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const QuickActions = () => {
@@ -54,23 +54,41 @@ export const QuickActions = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickActions.map((action, index) => (
-            <Button
-              key={index}
-              onClick={() => navigate(action.path)}
-              className={`h-auto p-4 bg-gradient-to-br ${action.color} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0`}
-              variant="default"
-            >
-              <div className="flex flex-col items-center space-y-2 text-center">
-                <action.icon className="w-6 h-6" />
-                <div>
-                  <div className="font-semibold text-sm">{action.title}</div>
-                  <div className="text-xs opacity-90">{action.description}</div>
+        <div className="space-y-4">
+          {/* Grid original 2x2 (mobile) e 1x4 (desktop) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <Button
+                key={index}
+                onClick={() => navigate(action.path)}
+                className={`h-auto p-4 bg-gradient-to-br ${action.color} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0`}
+                variant="default"
+              >
+                <div className="flex flex-col items-center space-y-2 text-center">
+                  <action.icon className="w-6 h-6" />
+                  <div>
+                    <div className="font-semibold text-sm">{action.title}</div>
+                    <div className="text-xs opacity-90">{action.description}</div>
+                  </div>
                 </div>
+              </Button>
+            ))}
+          </div>
+
+          {/* Botão WhatsApp - largura total */}
+          <Button
+            onClick={() => navigate("/whatsapp-settings")}
+            className="w-full h-auto py-3 px-4 bg-gradient-to-br from-green-600 to-green-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0"
+            variant="default"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              <MessageCircle className="w-5 h-5" />
+              <div className="text-center">
+                <div className="font-semibold text-sm">Configurar WhatsApp</div>
+                <div className="text-xs opacity-90">Conecte e receba análises automáticas</div>
               </div>
-            </Button>
-          ))}
+            </div>
+          </Button>
         </div>
       </CardContent>
     </Card>
