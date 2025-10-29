@@ -75,7 +75,7 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
       if (error) throw error;
 
       toast.success("WhatsApp conectado! Envie uma mensagem para ativar.", {
-        description: `Envie "oi" para +1 415 523 8886 no WhatsApp`
+        description: `Envie "oi" para +1 555 886 8273 no WhatsApp`
       });
       setIsConnected(true);
     } catch (error: any) {
@@ -210,7 +210,7 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
           <h4 className="font-medium">📱 Como usar:</h4>
           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
             <li>Conecte seu número acima</li>
-            <li>Envie "oi" para +1 415 523 8886 no WhatsApp</li>
+            <li>Envie "oi" para +1 555 886 8273 no WhatsApp</li>
             <li>Envie fotos de comida para análise automática</li>
             <li>Use comandos como "resumo", "meta", "semanal"</li>
           </ol>
