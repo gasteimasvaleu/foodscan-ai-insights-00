@@ -4,6 +4,7 @@ import { WhatsAppSetup } from "@/components/WhatsAppSetup";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { MessageCircle } from "lucide-react";
 
 const WhatsAppSettings = () => {
   const navigate = useNavigate();
@@ -35,12 +36,26 @@ const WhatsAppSettings = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold">Configurações do WhatsApp</h1>
-              <p className="text-muted-foreground">
-                Configure notificações e análise de fotos via WhatsApp
-              </p>
+        <div className="max-w-2xl mx-auto space-y-6">
+            <div className="text-center mb-12 animate-fade-in">
+              <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8 max-w-4xl mx-auto">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                    <div className="relative bg-gradient-to-br from-green-400 to-green-500 p-4 rounded-full">
+                      <MessageCircle className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                </div>
+                
+                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
+                  Configurações WhatsApp
+                </h1>
+                
+                <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                  Configure notificações e análise de fotos via WhatsApp
+                </p>
+              </div>
             </div>
 
             {userId && <WhatsAppSetup userId={userId} />}
