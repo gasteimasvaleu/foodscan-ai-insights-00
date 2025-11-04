@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { RotateCcw, Save, Utensils, Info } from 'lucide-react';
+import { RotateCcw, Save, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
 import { MultipleElementsPortionSelector } from './MultipleElementsPortionSelector';
@@ -151,15 +151,10 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
 
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="bg-blue-100 rounded-full p-3">
-          <Utensils className="w-6 h-6 text-blue-600" />
-        </div>
-        <div>
-          <h3 className="text-2xl font-bold text-gray-800">{data.foodName}</h3>
+        <div className="text-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">{data.foodName}</h3>
           <p className="text-gray-600">{data.description}</p>
         </div>
-      </div>
 
       {hasMultipleElements && (
         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
