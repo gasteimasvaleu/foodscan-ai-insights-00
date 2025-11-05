@@ -138,7 +138,31 @@ serve(async (req) => {
       }
       logStep("Determined subscription tier", { priceId, amount, subscriptionTier });
     } else {
-      logStep("No active subscription found");
+      logStep("No active Stripe subscription found, checking for Hotmart");
+      
+      // Check if there's an active Hotmart subscription
+      if (existingSubscription?.payment_provider === 'hotmart') {
+        const subEnd = existingSubscription.subscription_end ? new Date(existingSubscription.subscription_end) : null;
+        const isActive = subEnd && subEnd > new Date();
+        
+        if (isActive) {
+          logStep("Active Hotmart subscription found, preserving it despite Stripe customer", {
+            tier: existingSubscription.subscription_tier,
+            end: existingSubscription.subscription_end
+          });
+          return new Response(JSON.stringify({
+            subscribed: true,
+            subscription_tier: existingSubscription.subscription_tier,
+            subscription_end: existingSubscription.subscription_end,
+            payment_provider: 'hotmart'
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        } else {
+          logStep("Hotmart subscription expired");
+        }
+      }
     }
 
     await supabaseClient.from("subscribers").upsert({
@@ -146,8 +170,10 @@ serve(async (req) => {
       user_id: user.id,
       stripe_customer_id: customerId,
       subscribed: hasActiveSub,
-      subscription_tier: subscriptionTier,
-      subscription_end: subscriptionEnd,
+      subscription_tier: hasActiveSub ? subscriptionTier : (existingSubscription?.subscription_tier || null),
+      subscription_end: hasActiveSub ? subscriptionEnd : (existingSubscription?.subscription_end || null),
+      payment_provider: hasActiveSub ? 'stripe' : (existingSubscription?.payment_provider || null),
+      hotmart_transaction_id: existingSubscription?.hotmart_transaction_id || null,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'email' });
 
