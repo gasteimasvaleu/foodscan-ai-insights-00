@@ -22,6 +22,7 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -113,8 +114,13 @@ const Auth = () => {
         });
       }
 
-      // SEMPRE redireciona para página de sucesso após signup bem-sucedido
-      navigate('/registration-success');
+      // Mostra tela de sucesso
+      setSignupSuccess(true);
+      
+      toast({
+        title: "Cadastro realizado com sucesso!",
+        description: "Bem-vindo ao FoodScan! Sua conta foi criada.",
+      });
       
     } catch (err) {
       console.error('❌ Erro geral no cadastro:', err);
@@ -156,41 +162,69 @@ const Auth = () => {
           {validatingToken && <LoadingState />}
 
           {isHotmartFlow && tokenData && !tokenError && (
-            <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-2xl text-primary">🎉 Complete seu Cadastro</CardTitle>
-                <p className="text-gray-700">
-                  Você adquiriu o <strong>{tokenData.plan_name}</strong> via Hotmart!
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Nome Completo</Label>
-                    <Input value={name} disabled className="bg-gray-100" />
+            signupSuccess ? (
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 shadow-2xl">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                    <span className="text-5xl">✅</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input value={email} disabled className="bg-gray-100" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Escolha uma Senha</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      placeholder="Mínimo 6 caracteres"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Criando conta...' : '✅ Finalizar Cadastro'}
+                  <CardTitle className="text-3xl text-green-700 mb-2">
+                    Cadastro Realizado com Sucesso!
+                  </CardTitle>
+                  <p className="text-green-600 text-lg">
+                    Sua assinatura <strong>{tokenData.plan_name}</strong> foi ativada
+                  </p>
+                </CardHeader>
+                <CardContent className="text-center space-y-6">
+                  <p className="text-gray-700">
+                    Bem-vindo ao <strong>FoodScan</strong>! Você já pode começar a usar todas as funcionalidades.
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/')} 
+                    size="lg"
+                    className="w-full text-lg py-6"
+                  >
+                    🚀 Começar a Usar
                   </Button>
-                </form>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-primary">🎉 Complete seu Cadastro</CardTitle>
+                  <p className="text-gray-700">
+                    Você adquiriu o <strong>{tokenData.plan_name}</strong> via Hotmart!
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Nome Completo</Label>
+                      <Input value={name} disabled className="bg-gray-100" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input value={email} disabled className="bg-gray-100" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Escolha uma Senha</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        placeholder="Mínimo 6 caracteres"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Criando conta...' : '✅ Finalizar Cadastro'}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            )
           )}
 
           {!isHotmartFlow && !validatingToken && (
