@@ -28,10 +28,11 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    // Só redirecionar se já tinha um usuário E não estamos no fluxo de sucesso
+    if (user && !signupSuccess) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, navigate, signupSuccess]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
