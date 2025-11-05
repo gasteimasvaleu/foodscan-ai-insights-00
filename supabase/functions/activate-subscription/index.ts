@@ -20,13 +20,14 @@ const handler = async (req: Request): Promise<Response> => {
     const { token, user_id } = await req.json();
 
     if (!token || !user_id) {
+      console.error('❌ Parâmetros faltando:', { token: !!token, user_id: !!user_id });
       return new Response(
         JSON.stringify({ success: false, error: 'Token e user_id são obrigatórios' }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log('🔄 Ativando assinatura para user_id:', user_id);
+    console.log('🔄 Iniciando ativação de assinatura para user_id:', user_id);
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -34,6 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     // Buscar token
+    console.log('📝 Buscando token no banco de dados...');
     const { data: tokenData, error: tokenError } = await supabase
       .from('registration_tokens')
       .select('*')
@@ -48,9 +50,17 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log('✅ Token encontrado:', {
+      id: tokenData.id,
+      email: tokenData.email,
+      plan_type: tokenData.plan_type,
+      is_used: tokenData.is_used,
+      subscription_end: tokenData.subscription_end
+    });
+
     // Verificar se já foi usado
     if (tokenData.is_used) {
-      console.log('❌ Token já utilizado');
+      console.log('❌ Token já utilizado em:', tokenData.used_at);
       return new Response(
         JSON.stringify({ success: false, error: 'Token já foi utilizado' }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -60,14 +70,65 @@ const handler = async (req: Request): Promise<Response> => {
     // Verificar expiração
     const expiresAt = new Date(tokenData.expires_at);
     if (expiresAt < new Date()) {
-      console.log('❌ Token expirado');
+      console.log('❌ Token expirado em:', tokenData.expires_at);
       return new Response(
         JSON.stringify({ success: false, error: 'Token expirado' }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Marcar token como usado
+    // Validar dados antes do upsert
+    if (!tokenData.subscription_end) {
+      console.error('⚠️ AVISO: subscription_end está NULL no token!');
+    }
+    if (!tokenData.hotmart_transaction_id) {
+      console.error('⚠️ AVISO: hotmart_transaction_id está NULL no token!');
+    }
+
+    // PASSO 1: Criar/atualizar assinatura PRIMEIRO (antes de marcar token como usado)
+    const tierName = TIER_NAMES[tokenData.plan_type as keyof typeof TIER_NAMES];
+    
+    const subscriptionData = {
+      user_id: user_id,
+      email: tokenData.email,
+      subscribed: true,
+      subscription_tier: tierName,
+      subscription_end: tokenData.subscription_end,
+      payment_provider: 'hotmart',
+      hotmart_transaction_id: tokenData.hotmart_transaction_id,
+      updated_at: new Date().toISOString()
+    };
+
+    console.log('💾 Tentando criar/atualizar assinatura com dados:', subscriptionData);
+
+    const { data: upsertData, error: upsertError } = await supabase
+      .from('subscribers')
+      .upsert(subscriptionData, {
+        onConflict: 'user_id'
+      })
+      .select();
+
+    if (upsertError) {
+      console.error('❌ Erro ao criar assinatura:', {
+        message: upsertError.message,
+        details: upsertError.details,
+        hint: upsertError.hint,
+        code: upsertError.code
+      });
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Erro ao ativar assinatura: ' + upsertError.message,
+          code: upsertError.code
+        }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log('✅ Assinatura criada/atualizada com sucesso:', upsertData);
+
+    // PASSO 2: Só agora marcar token como usado (após sucesso do upsert)
+    console.log('🔒 Marcando token como usado...');
     const { error: updateTokenError } = await supabase
       .from('registration_tokens')
       .update({
@@ -79,35 +140,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (updateTokenError) {
       console.error('❌ Erro ao marcar token como usado:', updateTokenError);
-      throw updateTokenError;
+      // Nota: não retornamos erro aqui pois a assinatura já foi criada com sucesso
+      console.error('⚠️ IMPORTANTE: Assinatura foi criada mas token não foi marcado como usado!');
+    } else {
+      console.log('✅ Token marcado como usado');
     }
 
-    console.log('✅ Token marcado como usado');
-
-    // Criar/atualizar assinatura
-    const tierName = TIER_NAMES[tokenData.plan_type as keyof typeof TIER_NAMES];
-
-    const { error: upsertError } = await supabase
-      .from('subscribers')
-      .upsert({
-        user_id: user_id,
-        email: tokenData.email,
-        subscribed: true,
-        subscription_tier: tierName,
-        subscription_end: tokenData.subscription_end,
-        payment_provider: 'hotmart',
-        hotmart_transaction_id: tokenData.hotmart_transaction_id,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id'
-      });
-
-    if (upsertError) {
-      console.error('❌ Erro ao criar assinatura:', upsertError);
-      throw upsertError;
-    }
-
-    console.log('✅ Assinatura ativada com sucesso');
+    console.log('🎉 Processo completo! Assinatura ativada com sucesso');
 
     return new Response(
       JSON.stringify({
