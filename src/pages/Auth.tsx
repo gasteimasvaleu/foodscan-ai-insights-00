@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/LoadingState';
+import confetti from 'canvas-confetti';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -42,6 +43,37 @@ const Auth = () => {
       validateHotmartToken(token);
     }
   }, []);
+
+  useEffect(() => {
+    if (signupSuccess) {
+      // Animação de confete celebrativa
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
+
+      (function frame() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    }
+  }, [signupSuccess]);
 
   const validateHotmartToken = async (token: string) => {
     setValidatingToken(true);
