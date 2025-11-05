@@ -23,16 +23,10 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
-  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [cadastroCompleto, setCadastroCompleto] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Só redirecionar se já tinha um usuário E não estamos no fluxo de sucesso
-    if (user && !signupSuccess) {
-      navigate('/');
-    }
-  }, [user, navigate, signupSuccess]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -46,7 +40,7 @@ const Auth = () => {
   }, []);
 
   useEffect(() => {
-    if (signupSuccess) {
+    if (cadastroCompleto) {
       // Animação de confete celebrativa
       const duration = 3000;
       const end = Date.now() + duration;
@@ -74,7 +68,7 @@ const Auth = () => {
         }
       }());
     }
-  }, [signupSuccess]);
+  }, [cadastroCompleto]);
 
   const validateHotmartToken = async (token: string) => {
     setValidatingToken(true);
@@ -148,7 +142,7 @@ const Auth = () => {
       }
 
       // Mostra tela de sucesso
-      setSignupSuccess(true);
+      setCadastroCompleto(true);
       
       toast({
         title: "Cadastro realizado com sucesso!",
@@ -195,7 +189,7 @@ const Auth = () => {
           {validatingToken && <LoadingState />}
 
           {isHotmartFlow && tokenData && !tokenError && (
-            signupSuccess ? (
+            cadastroCompleto ? (
               <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 shadow-2xl">
                 <CardHeader className="text-center pb-4">
                   <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
