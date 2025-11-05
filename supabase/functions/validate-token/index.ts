@@ -17,8 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const url = new URL(req.url);
-    const token = url.searchParams.get('token');
+    const { token } = await req.json();
 
     if (!token) {
       return new Response(
