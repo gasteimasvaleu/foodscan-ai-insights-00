@@ -89,6 +89,9 @@ const Auth = () => {
       }
       
       if (isHotmartFlow && hotmartToken && result.data?.user) {
+        // Aguardar sessão ser estabelecida
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const { data: subData, error: subError } = await supabase.functions.invoke(
           'activate-subscription',
           {
@@ -113,12 +116,18 @@ const Auth = () => {
           title: "🎉 Cadastro completo!",
           description: `Assinatura ${tokenData.plan_name} ativada com sucesso!`,
         });
+        
+        // Aguardar antes de redirecionar
+        await new Promise(resolve => setTimeout(resolve, 300));
         navigate('/');
       } else {
         toast({
           title: "Cadastro realizado",
           description: "Bem-vindo ao DietaInteligente!",
         });
+        
+        // Aguardar antes de redirecionar
+        await new Promise(resolve => setTimeout(resolve, 300));
         navigate('/');
       }
     } catch (err) {
