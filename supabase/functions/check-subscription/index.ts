@@ -90,15 +90,20 @@ serve(async (req) => {
         }
       }
       
-      // PROTEÇÃO CONTRA RACE CONDITION
-      // Se o registro foi atualizado recentemente (< 30s), não sobrescrever
+      // PROTEÇÃO CONTRA RACE CONDITION - DUPLA VERIFICAÇÃO
+      // Verificar se o registro foi criado OU atualizado recentemente (< 30s)
       if (existingSubscription) {
-        const updatedAt = new Date(existingSubscription.updated_at);
-        const now = new Date();
-        const secondsSinceUpdate = (now.getTime() - updatedAt.getTime()) / 1000;
+        const now = Date.now();
+        const createdTime = new Date(existingSubscription.created_at).getTime();
+        const updatedTime = new Date(existingSubscription.updated_at).getTime();
         
-        if (secondsSinceUpdate < 30) {
-          logStep("⚠️ RACE CONDITION PROTECTION: Record updated recently, preserving existing data", {
+        const secondsSinceCreation = (now - createdTime) / 1000;
+        const secondsSinceUpdate = (now - updatedTime) / 1000;
+        
+        // NOVA LÓGICA: Proteger se foi criado OU atualizado nos últimos 30 segundos
+        if (secondsSinceCreation < 30 || secondsSinceUpdate < 30) {
+          logStep("⚠️ RACE CONDITION PROTECTION: Record too recent", {
+            secondsSinceCreation: Math.floor(secondsSinceCreation),
             secondsSinceUpdate: Math.floor(secondsSinceUpdate),
             provider: existingSubscription.payment_provider,
             subscribed: existingSubscription.subscribed,
@@ -115,6 +120,25 @@ serve(async (req) => {
             status: 200,
           });
         }
+      }
+      
+      // PROTEÇÃO ADICIONAL: Verificar se já existe uma assinatura Hotmart válida
+      // Nunca sobrescrever dados Hotmart válidos com dados vazios
+      if (existingSubscription?.payment_provider === 'hotmart' && 
+          existingSubscription?.subscribed === true &&
+          existingSubscription?.subscription_end) {
+        
+        logStep("🛡️ PRESERVING VALID HOTMART SUBSCRIPTION - Não sobrescrever com dados vazios");
+        
+        return new Response(JSON.stringify({
+          subscribed: existingSubscription.subscribed,
+          subscription_tier: existingSubscription.subscription_tier,
+          subscription_end: existingSubscription.subscription_end,
+          payment_provider: 'hotmart'
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
       }
       
       // No active subscription from any provider
