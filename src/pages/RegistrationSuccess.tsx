@@ -7,8 +7,6 @@ import { Footer } from '@/components/Footer';
 
 export default function RegistrationSuccess() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { userName, planName, subscriptionEnd } = location.state || {};
 
   return (
     <div className="min-h-screen bg-gradient-primary">
@@ -27,26 +25,11 @@ export default function RegistrationSuccess() {
               </CardTitle>
               
               <p className="text-lg text-muted-foreground">
-                Bem-vindo ao FoodScan&Diet, <span className="font-semibold text-primary">{userName}</span>!
+                Bem-vindo ao FoodScan&Diet!
               </p>
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {planName && subscriptionEnd && (
-                <div className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 rounded-lg p-6 text-center">
-                  <p className="font-bold text-xl text-green-800 dark:text-green-400 mb-2">
-                    ✅ Assinatura {planName} Ativada
-                  </p>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    Válida até {new Date(subscriptionEnd).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  </p>
-                </div>
-              )}
-              
               <div className="space-y-3 text-center">
                 <p className="text-muted-foreground">
                   Sua conta está pronta! Agora você pode começar a usar todas as funcionalidades.

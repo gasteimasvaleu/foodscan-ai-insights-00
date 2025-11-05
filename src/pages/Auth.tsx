@@ -76,9 +76,12 @@ const Auth = () => {
     setLoading(true);
     
     try {
+      console.log('📝 Iniciando cadastro para:', email);
+      
       const result = await signUp(email, password, name);
       
       if (result.error) {
+        console.error('❌ Erro no signUp:', result.error);
         toast({
           title: "Erro no cadastro",
           description: result.error.message,
@@ -88,44 +91,33 @@ const Auth = () => {
         return;
       }
       
+      console.log('✅ Usuário criado com sucesso:', result.data);
+
+      // Se é fluxo Hotmart, tenta ativar assinatura em background (não aguarda)
       if (isHotmartFlow && hotmartToken && result.data?.user) {
-        const { data: subData, error: subError } = await supabase.functions.invoke(
-          'activate-subscription',
-          {
-            body: {
-              token: hotmartToken,
-              user_id: result.data.user.id
-            }
+        console.log('🎫 Ativando assinatura Hotmart em background...');
+        
+        supabase.functions.invoke('activate-subscription', {
+          body: {
+            token: hotmartToken,
+            user_id: result.data.user.id
           }
-        );
-        
-        if (subError || !subData?.success) {
-          toast({
-            title: "Erro ao ativar assinatura",
-            description: "Entre em contato com o suporte.",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
-        }
-        
-        // Redirecionar para página de sucesso com dados da assinatura
-        navigate('/registration-success', {
-          state: {
-            userName: name,
-            planName: tokenData.plan_name,
-            subscriptionEnd: subData.subscription_end
+        }).then(({ error: subError }) => {
+          if (subError) {
+            console.error('❌ Erro ao ativar assinatura:', subError);
+          } else {
+            console.log('✅ Assinatura ativada com sucesso');
           }
+        }).catch(err => {
+          console.error('❌ Erro ao ativar assinatura:', err);
         });
-      } else {
-        toast({
-          title: "Cadastro realizado",
-          description: "Bem-vindo ao DietaInteligente!",
-        });
-        
-        navigate('/');
       }
+
+      // SEMPRE redireciona para página de sucesso após signup bem-sucedido
+      navigate('/registration-success');
+      
     } catch (err) {
+      console.error('❌ Erro geral no cadastro:', err);
       toast({
         title: "Erro",
         description: "Ocorreu um erro no cadastro. Tente novamente.",
