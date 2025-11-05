@@ -90,6 +90,33 @@ serve(async (req) => {
         }
       }
       
+      // PROTEÇÃO CONTRA RACE CONDITION
+      // Se o registro foi atualizado recentemente (< 30s), não sobrescrever
+      if (existingSubscription) {
+        const updatedAt = new Date(existingSubscription.updated_at);
+        const now = new Date();
+        const secondsSinceUpdate = (now.getTime() - updatedAt.getTime()) / 1000;
+        
+        if (secondsSinceUpdate < 30) {
+          logStep("⚠️ RACE CONDITION PROTECTION: Record updated recently, preserving existing data", {
+            secondsSinceUpdate: Math.floor(secondsSinceUpdate),
+            provider: existingSubscription.payment_provider,
+            subscribed: existingSubscription.subscribed,
+            tier: existingSubscription.subscription_tier
+          });
+          
+          return new Response(JSON.stringify({
+            subscribed: existingSubscription.subscribed,
+            subscription_tier: existingSubscription.subscription_tier,
+            subscription_end: existingSubscription.subscription_end,
+            payment_provider: existingSubscription.payment_provider
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+      }
+      
       // No active subscription from any provider
       logStep("No active subscription found, updating to unsubscribed state");
       await supabaseClient.from("subscribers").upsert({
