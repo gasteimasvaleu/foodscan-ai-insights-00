@@ -165,6 +165,42 @@ serve(async (req) => {
       }
     }
 
+    // Verificação final: não sobrescrever assinatura Hotmart ativa
+    if (!hasActiveSub && existingSubscription?.payment_provider === 'hotmart') {
+      const subEnd = existingSubscription.subscription_end ? new Date(existingSubscription.subscription_end) : null;
+      const isActive = subEnd && subEnd > new Date();
+      
+      if (isActive) {
+        logStep("Preserving active Hotmart subscription in final check", {
+          tier: existingSubscription.subscription_tier,
+          end: existingSubscription.subscription_end
+        });
+        
+        // Atualizar apenas stripe_customer_id, mantendo dados Hotmart
+        await supabaseClient.from("subscribers").upsert({
+          email: user.email,
+          user_id: user.id,
+          stripe_customer_id: customerId,
+          subscribed: true,
+          subscription_tier: existingSubscription.subscription_tier,
+          subscription_end: existingSubscription.subscription_end,
+          payment_provider: 'hotmart',
+          hotmart_transaction_id: existingSubscription.hotmart_transaction_id,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'email' });
+        
+        return new Response(JSON.stringify({
+          subscribed: true,
+          subscription_tier: existingSubscription.subscription_tier,
+          subscription_end: existingSubscription.subscription_end,
+          payment_provider: 'hotmart'
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+    }
+
     await supabaseClient.from("subscribers").upsert({
       email: user.email,
       user_id: user.id,
