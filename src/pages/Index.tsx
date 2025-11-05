@@ -7,10 +7,26 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 import SplashScreen from '@/components/SplashScreen';
 const Index = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Detectar se está rodando como PWA
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  (window.navigator as any).standalone === true;
+    
+    // Se está no PWA, SEMPRE mostra o splash (experiência de app)
+    if (isPWA) return true;
+    
+    // Se está no navegador, verifica se já mostrou nesta sessão
+    const hasShownInSession = sessionStorage.getItem('splashShown');
+    
+    // Não mostra se já foi exibido nesta sessão (evita aparecer após redirects)
+    return !hasShownInSession;
+  });
 
   const handleSplashComplete = () => {
     setShowSplash(false);
+    // Marcar que já mostrou nesta sessão do navegador
+    // (não afeta PWA, pois ele sempre vai mostrar na próxima abertura)
+    sessionStorage.setItem('splashShown', 'true');
   };
 
   if (showSplash) {
