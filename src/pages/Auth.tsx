@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/LoadingState';
-import confetti from 'canvas-confetti';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -23,19 +22,8 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
-  const [cadastroCompleto, setCadastroCompleto] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
-
-  // 🔍 DEBUG: Log do estado de render
-  console.log('🎨 Auth render:', { 
-    isHotmartFlow, 
-    tokenData: !!tokenData, 
-    tokenError: !!tokenError, 
-    validatingToken, 
-    cadastroCompleto,
-    user: !!user 
-  });
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -48,36 +36,6 @@ const Auth = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (cadastroCompleto) {
-      // Animação de confete celebrativa
-      const duration = 3000;
-      const end = Date.now() + duration;
-
-      const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
-
-      (function frame() {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: colors
-        });
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: colors
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      }());
-    }
-  }, [cadastroCompleto]);
 
   const validateHotmartToken = async (token: string) => {
     setValidatingToken(true);
@@ -113,53 +71,31 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      console.log('📝 Iniciando cadastro para:', email);
-      
       const result = await signUp(email, password, name);
       
       if (result.error) {
-        console.error('❌ Erro no signUp:', result.error);
         toast({
           title: "Erro no cadastro",
           description: result.error.message,
           variant: "destructive",
         });
-        setLoading(false);
         return;
       }
-      
-      console.log('✅ Usuário criado com sucesso:', result.data);
 
-      // Se é fluxo Hotmart, tenta ativar assinatura em background (não aguarda)
+      // Ativar assinatura Hotmart em background (se aplicável)
       if (isHotmartFlow && hotmartToken && result.data?.user) {
-        console.log('🎫 Ativando assinatura Hotmart em background...');
-        
         supabase.functions.invoke('activate-subscription', {
-          body: {
-            token: hotmartToken,
-            user_id: result.data.user.id
-          }
-        }).then(({ error: subError }) => {
-          if (subError) {
-            console.error('❌ Erro ao ativar assinatura:', subError);
-          } else {
-            console.log('✅ Assinatura ativada com sucesso');
-          }
-        }).catch(err => {
-          console.error('❌ Erro ao ativar assinatura:', err);
-        });
+          body: { token: hotmartToken, user_id: result.data.user.id }
+        }).catch(err => console.error('Erro ao ativar assinatura:', err));
       }
 
-      // Mostra tela de sucesso
-      setCadastroCompleto(true);
-      
+      // APENAS MOSTRAR TOAST - SEM MUDANÇAS DE ESTADO
       toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Bem-vindo ao FoodScan! Sua conta foi criada.",
+        title: "✅ Cadastro realizado com sucesso!",
+        description: "Agora clique em 'Começar Agora' abaixo para acessar o app.",
       });
       
     } catch (err) {
-      console.error('❌ Erro geral no cadastro:', err);
       toast({
         title: "Erro",
         description: "Ocorreu um erro no cadastro. Tente novamente.",
@@ -198,33 +134,7 @@ const Auth = () => {
           {validatingToken && <LoadingState />}
 
           {isHotmartFlow && tokenData && !tokenError && (
-            cadastroCompleto ? (
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 shadow-2xl">
-                <CardHeader className="text-center pb-4">
-                  <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                    <span className="text-5xl">✅</span>
-                  </div>
-                  <CardTitle className="text-3xl text-green-700 mb-2">
-                    Cadastro Realizado com Sucesso!
-                  </CardTitle>
-                  <p className="text-green-600 text-lg">
-                    Sua assinatura <strong>{tokenData.plan_name}</strong> foi ativada
-                  </p>
-                </CardHeader>
-                <CardContent className="text-center space-y-6">
-                  <p className="text-gray-700">
-                    Bem-vindo ao <strong>FoodScan</strong>! Você já pode começar a usar todas as funcionalidades.
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/')} 
-                    size="lg"
-                    className="w-full text-lg py-6"
-                  >
-                    🚀 Começar a Usar
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
+            <>
               <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">🎉 Complete seu Cadastro</CardTitle>
@@ -260,7 +170,22 @@ const Auth = () => {
                   </form>
                 </CardContent>
               </Card>
-            )
+
+              <Card className="mt-4 bg-blue-50 border-blue-200">
+                <CardContent className="pt-6">
+                  <p className="text-center text-gray-700 mb-4">
+                    ℹ️ Após finalizar o cadastro, clique em <strong>Começar Agora</strong>
+                  </p>
+                  <Button 
+                    asChild
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <a href="/">🚀 Começar Agora</a>
+                  </Button>
+                </CardContent>
+              </Card>
+            </>
           )}
 
           {!isHotmartFlow && !validatingToken && (
