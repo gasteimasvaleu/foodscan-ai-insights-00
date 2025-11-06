@@ -96,6 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
       subscription_end: tokenData.subscription_end,
       payment_provider: 'hotmart',
       hotmart_transaction_id: tokenData.hotmart_transaction_id,
+      is_hotmart_managed: true, // 🛡️ PROTEÇÃO: Marca como gerenciado pelo Hotmart
       updated_at: new Date().toISOString()
     };
 

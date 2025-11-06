@@ -27,6 +27,15 @@ const Auth = () => {
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
+  // 🔍 DEBUG: Log do estado de render
+  console.log('🎨 Auth render:', { 
+    isHotmartFlow, 
+    tokenData: !!tokenData, 
+    tokenError: !!tokenError, 
+    validatingToken, 
+    cadastroCompleto,
+    user: !!user 
+  });
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

@@ -105,7 +105,23 @@ export const useSubscription = (user: any) => {
   // Auto-check subscription when user changes
   useEffect(() => {
     if (user) {
-      checkSubscription();
+      // 🛡️ PROTEÇÃO CONTRA RACE CONDITION: Delay para usuários recém-criados
+      const userCreatedAt = new Date(user.created_at).getTime();
+      const now = Date.now();
+      const secondsSinceCreation = (now - userCreatedAt) / 1000;
+      
+      if (secondsSinceCreation < 10) {
+        // Usuário muito novo - aguardar 10 segundos antes de checar
+        console.log('⏱️ Usuário recém-criado, aguardando 10s antes de checar subscription...');
+        const timer = setTimeout(() => {
+          console.log('✅ 10 segundos passados, checando subscription agora...');
+          checkSubscription();
+        }, 10000);
+        return () => clearTimeout(timer);
+      } else {
+        // Usuário antigo - pode checar imediatamente
+        checkSubscription();
+      }
     } else {
       setSubscriptionStatus({
         subscribed: false,

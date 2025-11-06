@@ -461,6 +461,7 @@ export type Database = {
           email: string
           hotmart_transaction_id: string | null
           id: string
+          is_hotmart_managed: boolean | null
           payment_provider: string | null
           stripe_customer_id: string | null
           subscribed: boolean
@@ -474,6 +475,7 @@ export type Database = {
           email: string
           hotmart_transaction_id?: string | null
           id?: string
+          is_hotmart_managed?: boolean | null
           payment_provider?: string | null
           stripe_customer_id?: string | null
           subscribed?: boolean
@@ -487,6 +489,7 @@ export type Database = {
           email?: string
           hotmart_transaction_id?: string | null
           id?: string
+          is_hotmart_managed?: boolean | null
           payment_provider?: string | null
           stripe_customer_id?: string | null
           subscribed?: boolean

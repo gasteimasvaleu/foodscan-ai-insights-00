@@ -57,8 +57,28 @@ serve(async (req) => {
       provider: existingSubscription?.payment_provider,
       subscribed: existingSubscription?.subscribed,
       tier: existingSubscription?.subscription_tier,
-      end: existingSubscription?.subscription_end
+      end: existingSubscription?.subscription_end,
+      is_hotmart_managed: existingSubscription?.is_hotmart_managed
     });
+
+    // 🛡️ PROTEÇÃO DEFINITIVA: Se é gerenciado pelo Hotmart, NUNCA sobrescrever
+    if (existingSubscription?.is_hotmart_managed) {
+      logStep("🛡️ HOTMART MANAGED SUBSCRIPTION - Skipping Stripe check completely", {
+        tier: existingSubscription.subscription_tier,
+        end: existingSubscription.subscription_end,
+        subscribed: existingSubscription.subscribed
+      });
+      
+      return new Response(JSON.stringify({
+        subscribed: existingSubscription.subscribed,
+        subscription_tier: existingSubscription.subscription_tier,
+        subscription_end: existingSubscription.subscription_end,
+        payment_provider: 'hotmart'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
