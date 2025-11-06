@@ -4,7 +4,6 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Check, Sparkles } from "lucide-react"
-import confetti from "canvas-confetti"
 import { cn } from "@/lib/utils"
 
 interface SaveButtonProps {
@@ -41,13 +40,6 @@ export function SaveButton({
         }
         setStatus("saved")
         setBounce(true)
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff"],
-          shapes: ["star", "circle"],
-        })
         setTimeout(() => {
           setStatus("idle")
           setBounce(false)
