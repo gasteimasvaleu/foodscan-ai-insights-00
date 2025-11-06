@@ -27,6 +27,27 @@ export function SaveButton({
 }: SaveButtonProps) {
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle")
   const [bounce, setBounce] = useState(false)
+  const [confettiParticles, setConfettiParticles] = useState<Array<{
+    id: number;
+    x: number;
+    y: number;
+    rotation: number;
+    color: string;
+  }>>([])
+
+  const generateConfetti = () => {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff', '#ffa500']
+    const particles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 200 - 100,
+      y: -(Math.random() * 200 + 100),
+      rotation: Math.random() * 720 - 360,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    }))
+    setConfettiParticles(particles)
+    
+    setTimeout(() => setConfettiParticles([]), 2000)
+  }
 
   const handleSave = async () => {
     if (status === "idle") {
@@ -40,6 +61,7 @@ export function SaveButton({
         }
         setStatus("saved")
         setBounce(true)
+        generateConfetti()
         setTimeout(() => {
           setStatus("idle")
           setBounce(false)
@@ -77,6 +99,24 @@ export function SaveButton({
     initial: { opacity: 0, scale: 0 },
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0 },
+  }
+
+  const confettiVariants = {
+    initial: { 
+      opacity: 1, 
+      scale: 0,
+      x: 0,
+      y: 0
+    },
+    animate: {
+      opacity: [1, 1, 0],
+      scale: [0, 1, 0.5],
+      transition: {
+        duration: 1.5,
+        ease: "easeOut" as const,
+        times: [0, 0.3, 1]
+      }
+    }
   }
 
   return (
@@ -167,6 +207,39 @@ export function SaveButton({
             <Sparkles className="w-6 h-6 text-yellow-400" />
           </motion.div>
         )}
+      </AnimatePresence>
+      
+      {/* Confete animado */}
+      <AnimatePresence>
+        {confettiParticles.map(particle => (
+          <motion.div
+            key={particle.id}
+            className="absolute top-1/2 left-1/2 w-3 h-3 rounded-sm pointer-events-none"
+            style={{ 
+              backgroundColor: particle.color,
+              zIndex: 1000
+            }}
+            initial={{ 
+              opacity: 1, 
+              scale: 0,
+              x: 0,
+              y: 0
+            }}
+            animate={{
+              opacity: [1, 1, 0],
+              scale: [0, 1, 0.5],
+              x: particle.x,
+              y: particle.y,
+              rotate: particle.rotation,
+              transition: {
+                duration: 1.5,
+                ease: "easeOut" as const,
+                times: [0, 0.3, 1]
+              }
+            }}
+            exit={{ opacity: 0 }}
+          />
+        ))}
       </AnimatePresence>
     </div>
   )
