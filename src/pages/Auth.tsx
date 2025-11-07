@@ -22,7 +22,6 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
-  const [justSignedUp, setJustSignedUp] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -90,13 +89,15 @@ const Auth = () => {
         }).catch(err => console.error('Erro ao ativar assinatura:', err));
       }
 
-      // Marcar que o usuário acabou de se cadastrar
-      setJustSignedUp(true);
-      
       toast({
         title: "✅ Cadastro realizado com sucesso!",
-        description: "Clique em 'Começar Agora' para acessar o app.",
+        description: "Redirecionando...",
       });
+
+      // Redirect IMEDIATO após sucesso - evita tela branca
+      setTimeout(() => {
+        window.location.href = '/?hotmart=success';
+      }, 500);
       
     } catch (err) {
       toast({
@@ -108,39 +109,6 @@ const Auth = () => {
       setLoading(false);
     }
   };
-
-  // Se acabou de se cadastrar no fluxo Hotmart, mostrar tela de confirmação
-  if (justSignedUp && isHotmartFlow) {
-    return (
-      <div className="min-h-screen bg-gradient-primary">
-        <Navbar />
-        <div className="pt-32 pb-12 px-4">
-          <div className="container mx-auto max-w-md">
-            <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-2xl text-primary text-center">
-                  ✅ Cadastro Concluído!
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-center text-gray-700">
-                  Sua conta foi criada com sucesso e sua assinatura está sendo ativada.
-                </p>
-                <Button 
-                  onClick={() => window.location.href = '/'}
-                  className="w-full"
-                  size="lg"
-                >
-                  🚀 Começar Agora
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-primary">
