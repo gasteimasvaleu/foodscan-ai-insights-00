@@ -22,6 +22,7 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
+  const [waitingAuth, setWaitingAuth] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -79,6 +80,7 @@ const Auth = () => {
           description: result.error.message,
           variant: "destructive",
         });
+        setLoading(false);
         return;
       }
 
@@ -89,15 +91,14 @@ const Auth = () => {
         }).catch(err => console.error('Erro ao ativar assinatura:', err));
       }
 
+      // Marcar que estamos aguardando autenticação
+      setWaitingAuth(true);
+      setLoading(false);
+      
       toast({
-        title: "✅ Cadastro realizado com sucesso!",
-        description: "Redirecionando...",
+        title: "✅ Cadastro realizado!",
+        description: "Finalizando autenticação...",
       });
-
-      // Redirect IMEDIATO após sucesso - evita tela branca
-      setTimeout(() => {
-        window.location.href = '/?hotmart=success';
-      }, 500);
       
     } catch (err) {
       toast({
@@ -105,10 +106,44 @@ const Auth = () => {
         description: "Ocorreu um erro no cadastro. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
+
+  // Detectar quando usuário está autenticado e redirecionar
+  useEffect(() => {
+    if (waitingAuth && user) {
+      window.location.href = '/?from=signup';
+    }
+  }, [waitingAuth, user]);
+
+  // Tela de aguardando autenticação após signup
+  if (waitingAuth && !user) {
+    return (
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center px-4">
+        <Card className="max-w-md w-full bg-gradient-to-br from-blue-50 to-green-50 border-blue-200">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-primary">
+              🔄 Finalizando Cadastro
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <div className="animate-pulse">
+              <div className="h-2 bg-primary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full animate-[shimmer_1.5s_infinite]" style={{ width: '60%' }}></div>
+              </div>
+            </div>
+            <p className="text-gray-700">
+              Aguarde enquanto configuramos sua conta...
+            </p>
+            <p className="text-sm text-gray-500">
+              Você será redirecionado automaticamente
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-primary">

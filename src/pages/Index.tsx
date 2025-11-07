@@ -8,7 +8,14 @@ import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 import SplashScreen from '@/components/SplashScreen';
 import { toast } from '@/hooks/use-toast';
 const Index = () => {
+  // Detectar se veio do signup
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromSignup = urlParams.get('from') === 'signup';
+
   const [showSplash, setShowSplash] = useState(() => {
+    // Se veio do signup, NUNCA mostrar splash
+    if (fromSignup) return false;
+    
     // Detectar se está rodando como PWA
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   (window.navigator as any).standalone === true;
@@ -23,19 +30,18 @@ const Index = () => {
     return !hasShownInSession;
   });
 
-  // Detectar sucesso do cadastro Hotmart via URL
+  // Detectar sucesso do cadastro via URL
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('hotmart') === 'success') {
+    if (fromSignup) {
       toast({
         title: "🎉 Bem-vindo ao FoodScan!",
-        description: "Sua conta foi criada e sua assinatura está ativa.",
+        description: "Sua conta foi criada com sucesso!",
       });
       
       // Limpar o parâmetro da URL
       window.history.replaceState({}, '', '/');
     }
-  }, []);
+  }, [fromSignup]);
 
   const handleSplashComplete = () => {
     setShowSplash(false);
