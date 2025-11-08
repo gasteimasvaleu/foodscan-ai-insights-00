@@ -22,7 +22,6 @@ const Auth = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [validatingToken, setValidatingToken] = useState(false);
-  const [waitingAuth, setWaitingAuth] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -84,20 +83,29 @@ const Auth = () => {
         return;
       }
 
-      // Ativar assinatura Hotmart em background (se aplicável)
-      if (isHotmartFlow && hotmartToken && result.data?.user) {
-        supabase.functions.invoke('activate-subscription', {
-          body: { token: hotmartToken, user_id: result.data.user.id }
-        }).catch(err => console.error('Erro ao ativar assinatura:', err));
+      // Ativar assinatura Hotmart se aplicável - AGUARDAR a conclusão
+      if (isHotmartFlow && tokenData && result.data?.user?.id) {
+        const { error: activationError } = await supabase.functions.invoke('activate-subscription', {
+          body: { 
+            token: tokenData.token, 
+            user_id: result.data.user.id 
+          }
+        });
+
+        if (activationError) {
+          console.error('Erro ao ativar assinatura:', activationError);
+          toast({
+            title: "⚠️ Atenção",
+            description: "Cadastro criado mas houve um problema ao ativar a assinatura. Entre em contato com suporte.",
+            variant: "destructive",
+          });
+        }
       }
 
-      // Marcar que estamos aguardando autenticação
-      setWaitingAuth(true);
-      setLoading(false);
-      
+      // Mostrar mensagem de sucesso
       toast({
         title: "✅ Cadastro realizado!",
-        description: "Finalizando autenticação...",
+        description: isHotmartFlow ? "Sua assinatura está ativa!" : "Você já pode fazer login.",
       });
       
     } catch (err) {
@@ -106,44 +114,10 @@ const Auth = () => {
         description: "Ocorreu um erro no cadastro. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
       setLoading(false);
     }
   };
-
-  // Detectar quando usuário está autenticado e redirecionar
-  useEffect(() => {
-    if (waitingAuth && user) {
-      window.location.href = '/?from=signup';
-    }
-  }, [waitingAuth, user]);
-
-  // Tela de aguardando autenticação após signup
-  if (waitingAuth && !user) {
-    return (
-      <div className="min-h-screen bg-gradient-primary flex items-center justify-center px-4">
-        <Card className="max-w-md w-full bg-gradient-to-br from-blue-50 to-green-50 border-blue-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-primary">
-              🔄 Finalizando Cadastro
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div className="animate-pulse">
-              <div className="h-2 bg-primary/20 rounded-full overflow-hidden">
-                <div className="h-full bg-primary rounded-full animate-[shimmer_1.5s_infinite]" style={{ width: '60%' }}></div>
-              </div>
-            </div>
-            <p className="text-gray-700">
-              Aguarde enquanto configuramos sua conta...
-            </p>
-            <p className="text-sm text-gray-500">
-              Você será redirecionado automaticamente
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-primary">
