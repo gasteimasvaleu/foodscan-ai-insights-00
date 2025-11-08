@@ -84,10 +84,10 @@ const Auth = () => {
       }
 
       // Ativar assinatura Hotmart se aplicável - AGUARDAR a conclusão
-      if (isHotmartFlow && tokenData && result.data?.user?.id) {
+      if (isHotmartFlow && hotmartToken && result.data?.user?.id) {
         const { error: activationError } = await supabase.functions.invoke('activate-subscription', {
           body: { 
-            token: tokenData.token, 
+            token: hotmartToken, 
             user_id: result.data.user.id 
           }
         });
