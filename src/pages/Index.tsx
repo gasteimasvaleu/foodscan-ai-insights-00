@@ -9,6 +9,13 @@ import SplashScreen from '@/components/SplashScreen';
 
 const Index = () => {
   const [showSplash, setShowSplash] = useState(() => {
+    // Se acabou de fazer signup/login, PULAR splash completamente
+    const shouldSkipSplash = sessionStorage.getItem('skipSplash');
+    if (shouldSkipSplash) {
+      sessionStorage.removeItem('skipSplash');
+      return false;
+    }
+    
     // Detectar se está rodando como PWA
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   (window.navigator as any).standalone === true;

@@ -36,6 +36,20 @@ const Auth = () => {
     }
   }, []);
 
+  // Redirect automático após autenticação bem-sucedida
+  useEffect(() => {
+    if (user) {
+      // Marcar para pular splash screen
+      sessionStorage.setItem('skipSplash', 'true');
+      
+      // Aguardar 1.5s para garantir que tudo foi processado
+      // (criação do usuário, ativação de subscription, etc.)
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 1500);
+    }
+  }, [user, navigate]);
+
 
   const validateHotmartToken = async (token: string) => {
     setValidatingToken(true);
@@ -184,20 +198,6 @@ const Auth = () => {
                 </CardContent>
               </Card>
 
-              <Card className="mt-4 bg-blue-50 border-blue-200">
-                <CardContent className="pt-6">
-                  <p className="text-center text-gray-700 mb-4">
-                    ℹ️ Após finalizar o cadastro, clique em <strong>Começar Agora</strong>
-                  </p>
-                  <Button 
-                    asChild
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <a href="/">🚀 Começar Agora</a>
-                  </Button>
-                </CardContent>
-              </Card>
             </>
           )}
 
