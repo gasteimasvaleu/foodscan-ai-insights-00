@@ -113,6 +113,25 @@ const Auth = () => {
             description: "Cadastro criado mas houve um problema ao ativar a assinatura. Entre em contato com suporte.",
             variant: "destructive",
           });
+        } else {
+          // Login automático após signup + ativação bem-sucedida
+          console.log('🔑 Fazendo login automático após signup Hotmart...');
+          
+          const { error: loginError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (loginError) {
+            console.error('❌ Erro no login automático:', loginError);
+            toast({
+              title: "⚠️ Atenção",
+              description: "Cadastro concluído! Por favor, faça login manualmente.",
+              variant: "destructive",
+            });
+          } else {
+            console.log('✅ Login automático realizado com sucesso!');
+          }
         }
       }
 
