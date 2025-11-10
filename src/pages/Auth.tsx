@@ -131,6 +131,20 @@ const Auth = () => {
             });
           } else {
             console.log('✅ Login automático realizado com sucesso!');
+            
+            // Marcar para pular splash screen na próxima navegação
+            sessionStorage.setItem('skipSplash', 'true');
+            
+            // Mostrar feedback ao usuário
+            toast({
+              title: "✅ Bem-vindo!",
+              description: "Sua assinatura está ativa. Redirecionando...",
+            });
+            
+            // Hard reload para garantir estado limpo e redirecionamento
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 800);
           }
         }
       }
