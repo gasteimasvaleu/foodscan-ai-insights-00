@@ -97,6 +97,40 @@ const Auth = () => {
         return;
       }
 
+      // Login automático para signup MANUAL (não-Hotmart)
+      if (!isHotmartFlow && result.data?.user) {
+        console.log('🔑 Fazendo login automático após signup manual...');
+        
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (!loginError) {
+          console.log('✅ Login automático realizado com sucesso!');
+          
+          // Marcar para pular splash screen
+          sessionStorage.setItem('skipSplash', 'true');
+          
+          // Mostrar feedback
+          toast({
+            title: "✅ Cadastro realizado!",
+            description: "Redirecionando...",
+          });
+          
+          // Hard reload garantido
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 800);
+          
+          setLoading(false);
+          return; // IMPORTANTE: não continuar para o toast genérico
+        }
+        
+        // Se deu erro no login automático, continua o fluxo normal
+        console.error('❌ Erro no login automático:', loginError);
+      }
+
       // Ativar assinatura Hotmart se aplicável - AGUARDAR a conclusão
       if (isHotmartFlow && hotmartToken && result.data?.user?.id) {
         const { error: activationError } = await supabase.functions.invoke('activate-subscription', {
