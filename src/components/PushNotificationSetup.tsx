@@ -10,14 +10,21 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
   const { user } = useAuth();
 
   const setupPushNotifications = async () => {
-    // Só configurar se o usuário estiver logado
-    if (!user) {
-      console.log('🚫 User not logged in, skipping push notification setup');
+    // Verificar ambiente antes de qualquer coisa
+    if (typeof window === 'undefined' || typeof Notification === 'undefined') {
+      console.log('❌ Notification API não disponível neste ambiente');
+      return;
+    }
+
+    // Verificar se o usuário estiver logado
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (!currentUser) {
+      console.log('❌ Usuário não autenticado');
       return;
     }
 
     try {
-      console.log('🔧 Setting up push notifications for user:', user.id);
+      console.log('🔧 Setting up push notifications for user:', currentUser.id);
       console.log('📊 Current notification permission:', Notification.permission);
       
       // Verificar se o browser suporta notificações
@@ -127,7 +134,14 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
 
   // Verificar automaticamente se já tem permissão ao carregar o componente
   useEffect(() => {
-    if (user && Notification.permission === 'granted') {
+    if (!user) return;
+    
+    if (typeof window === 'undefined' || typeof Notification === 'undefined') {
+      console.log('❌ Notification API não disponível, pulando auto-setup');
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
       console.log('User has permission, setting up notifications automatically');
       setupPushNotifications();
     }
