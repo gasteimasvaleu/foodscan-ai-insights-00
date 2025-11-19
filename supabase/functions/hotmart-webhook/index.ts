@@ -128,20 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Verificar idempotência (apenas para eventos de compra)
-    const { data: existingToken } = await supabase
-      .from('registration_tokens')
-      .select('id')
-      .eq('hotmart_transaction_id', transactionId)
-      .single();
-
-    if (existingToken) {
-      console.log('⚠️ Transação já processada:', transactionId);
-      return new Response(
-        JSON.stringify({ message: 'Transação já processada' }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // Removido: idempotência simples (substituída por lógica inteligente dentro dos eventos de compra)
 
     // Processar eventos de compra aprovada
     if (event === 'PURCHASE_COMPLETE' || event === 'PURCHASE_APPROVED') {
@@ -179,6 +166,83 @@ const handler = async (req: Request): Promise<Response> => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      // ============================================
+      // LÓGICA INTELIGENTE: Primeira Compra vs Renovação
+      // ============================================
+
+      // 1. Verificar se já existe um subscriber com esse transaction_id
+      const { data: existingSubscriber } = await supabase
+        .from('subscribers')
+        .select('*')
+        .eq('hotmart_transaction_id', transactionId)
+        .maybeSingle();
+
+      if (existingSubscriber) {
+        // É uma RENOVAÇÃO ou REATIVAÇÃO
+        console.log('🔄 Subscriber existente encontrado:', existingSubscriber.id);
+        
+        // Calcular nova data de expiração (adicionar meses ao fim atual ou ao hoje)
+        const baseDate = existingSubscriber.subscribed && 
+                       new Date(existingSubscriber.subscription_end) > new Date()
+          ? new Date(existingSubscriber.subscription_end) // Extender a partir do fim atual
+          : new Date(); // Reativar a partir de hoje
+        
+        baseDate.setMonth(baseDate.getMonth() + planConfig.months);
+        
+        const { error: renewError } = await supabase
+          .from('subscribers')
+          .update({
+            subscribed: true,
+            subscription_end: baseDate.toISOString(),
+            subscription_tier: planConfig.tier,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSubscriber.id);
+
+        if (renewError) {
+          console.error('❌ Erro ao renovar assinatura:', renewError);
+          throw renewError;
+        }
+
+        console.log('✅ Assinatura renovada:', {
+          subscriber_id: existingSubscriber.id,
+          new_end: baseDate.toISOString(),
+          added_months: planConfig.months
+        });
+
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: 'Assinatura renovada com sucesso',
+            subscriber_id: existingSubscriber.id,
+            new_subscription_end: baseDate.toISOString()
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // 2. Se não é subscriber existente, verificar se já tem token (idempotência)
+      const { data: existingToken } = await supabase
+        .from('registration_tokens')
+        .select('id, is_used')
+        .eq('hotmart_transaction_id', transactionId)
+        .maybeSingle();
+
+      if (existingToken && !existingToken.is_used) {
+        // Token já criado mas não usado - Primeira compra já processada
+        console.log('⚠️ Token já criado (não usado):', transactionId);
+        return new Response(
+          JSON.stringify({ 
+            message: 'Token de primeira compra já criado anteriormente',
+            token_id: existingToken.id
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // 3. Se chegou aqui: É PRIMEIRA COMPRA - Criar token e enviar email
+      console.log('🆕 Primeira compra detectada - Criando token...');
 
       // Calcular data de expiração da assinatura
       const subscriptionEnd = new Date();
