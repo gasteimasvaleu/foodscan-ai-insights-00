@@ -64,7 +64,7 @@ const hotmartPlans: SubscriptionPlan[] = [
     tier: "Premium",
     description: "Pagamento via PIX - Acesso em até 1 hora",
     paymentMethod: "hotmart",
-    checkoutUrl: "https://pay.hotmart.com/M102508523B",
+    checkoutUrl: "https://pay.hotmart.com/I103129840I",
     features: [
       "Análise ilimitada de fotos",
       "Relatórios nutricionais detalhados",
@@ -85,7 +85,7 @@ const hotmartPlans: SubscriptionPlan[] = [
     isAnnual: true,
     description: "PIX com 25% OFF - Acesso em até 1 hora",
     paymentMethod: "hotmart",
-    checkoutUrl: "https://pay.hotmart.com/I102508582U",
+    checkoutUrl: "https://pay.hotmart.com/F103130124N",
     features: [
       "Tudo do plano mensal",
       "25% de desconto (3 meses grátis)",
