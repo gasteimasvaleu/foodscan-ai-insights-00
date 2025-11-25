@@ -10,13 +10,13 @@ const corsHeaders = {
 };
 
 const HOTMART_PRODUCTS = {
-  '6471522': { 
+  '6708884': { 
     type: 'monthly', 
     months: 1, 
     name: 'Plano Mensal',
     tier: 'Premium Mensal'
   },
-  '6471543': { 
+  '6708959': { 
     type: 'annual', 
     months: 12, 
     name: 'Plano Anual',
