@@ -118,10 +118,7 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
     <Card className="w-full max-w-2xl mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 hover:shadow-2xl hover:shadow-gray-300/60 dark:hover:shadow-gray-800/60 transition-all duration-500 hover:scale-[1.01] animate-scale-in">
       <CardHeader className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
-        <CardTitle className="flex items-center gap-3 text-2xl font-bold relative z-10">
-          <div className="p-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
-            <Dumbbell className="h-6 w-6" />
-          </div>
+        <CardTitle className="text-2xl font-bold relative z-10">
           Registrar Exercício
         </CardTitle>
       </CardHeader>
