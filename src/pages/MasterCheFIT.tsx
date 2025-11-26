@@ -383,8 +383,8 @@ const MasterCheFIT = () => {
             {/* Preferences Card */}
             <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <CardTitle className="text-2xl">
-                  Suas Preferências Alimentares
+                <CardTitle className="text-2xl text-center w-full">
+                  Preferências Alimentares
                 </CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
                   {savedMenuPlans.length > 0 && (
