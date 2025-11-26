@@ -12,6 +12,7 @@ import { User, Upload, Utensils, Flame, Dumbbell, Calendar, Edit2, Settings, Cli
 import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
 
 interface ProfileData {
   id: string;
@@ -214,7 +215,9 @@ export default function Profile() {
   const memberSince = profile?.created_at ? new Date(profile.created_at).toLocaleDateString("pt-BR", { month: "short", year: "numeric" }) : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-28">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-28 pt-20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header do Perfil */}
         <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
@@ -442,6 +445,7 @@ export default function Profile() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
