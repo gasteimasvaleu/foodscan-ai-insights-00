@@ -519,9 +519,9 @@ const MasterCheFIT = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {savedMenuPlans.map((savedMenu, index) => (
-                      <div 
+                      <div
                         key={savedMenu.id}
-                        className="p-4 border border-white/20 rounded-xl bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                        className="p-4 border border-white/20 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
                         <div className="flex flex-col gap-4">
