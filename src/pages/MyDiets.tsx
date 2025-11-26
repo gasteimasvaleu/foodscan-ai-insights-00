@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, ArrowLeft, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -172,14 +172,14 @@ export default function MyDiets() {
   return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pb-24">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold">🍽️ Minhas Dietas</h1>
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Minhas Dietas</h1>
             <p className="text-muted-foreground">Monte sua dieta semanal</p>
           </div>
+          <Button className="w-full" onClick={() => navigate("/profile")}>
+            Voltar
+          </Button>
         </div>
 
         <Tabs defaultValue="manual" className="w-full">
