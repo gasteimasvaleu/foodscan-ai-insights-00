@@ -34,7 +34,7 @@ export const TruthMoment: React.FC<TruthMomentProps> = ({ score, feedback, isLoa
 
   if (isLoading) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 mt-6">
+      <div className="bg-white/90 backdrop-blur-sm rounded-3xl py-8 px-4 shadow-xl border border-white/20 mt-6">
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Analisando seu desempenho... 🤔</p>
@@ -46,7 +46,7 @@ export const TruthMoment: React.FC<TruthMomentProps> = ({ score, feedback, isLoa
   if (!feedback) return null;
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 mt-6 animate-scale-in">
+    <div className="bg-white/90 backdrop-blur-sm rounded-3xl py-8 px-4 shadow-xl border border-white/20 mt-6 animate-scale-in">
       <div className="text-center mb-6 animate-fade-in">
         <div className="flex justify-center mb-4 transform transition-transform duration-300 hover:scale-110">
           {getScoreIcon()}
