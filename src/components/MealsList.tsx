@@ -20,14 +20,9 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="bg-green-100 rounded-full p-3">
-            <Utensils className="w-6 h-6 text-green-600" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-800">Refeições de Hoje</h3>
-            <p className="text-gray-600">{meals.length} refeição(ões) registrada(s)</p>
-          </div>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-800">Refeições de Hoje</h3>
+          <p className="text-gray-600">{meals.length} refeição(ões) registrada(s)</p>
         </div>
         <Button
           onClick={onClearMeals}
