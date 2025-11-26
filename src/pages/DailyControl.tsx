@@ -371,11 +371,6 @@ const DailyControl = () => {
               </div>
             )}
 
-            {/* Resumo Semanal - posicionado logo após as metas diárias */}
-            {goals && (
-              <WeeklySummary key={weeklyDataUpdateKey} className="shadow-xl" />
-            )}
-
             {showGoalsForm && (
               <div ref={goalsFormRef}>
                 <GoalsForm 
@@ -423,6 +418,11 @@ const DailyControl = () => {
                   </Button>
                 )}
               </div>
+            )}
+
+            {/* Resumo Semanal - posicionado após os botões de ação */}
+            {goals && (
+              <WeeklySummary key={weeklyDataUpdateKey} className="shadow-xl" />
             )}
 
             {/* Componente de Análise */}
