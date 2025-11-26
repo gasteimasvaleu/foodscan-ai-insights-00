@@ -58,9 +58,9 @@ export default function FitTracker() {
             <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8 max-w-4xl mx-auto">
               <div className="flex items-center justify-center mb-6">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                  <div className="relative bg-gradient-to-br from-orange-400 to-red-500 p-4 rounded-full">
-                    <Activity className="w-8 h-8 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-2xl opacity-70 animate-pulse"></div>
+                  <div className="relative bg-gradient-to-br from-orange-400 to-red-500 p-6 rounded-3xl shadow-2xl">
+                    <Activity className="w-12 h-12 text-white" />
                   </div>
                 </div>
               </div>
