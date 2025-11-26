@@ -83,23 +83,17 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       <>
         <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="bg-primary-100 rounded-full w-10 h-10 flex items-center justify-center">
-                  <User className="w-5 h-5 text-primary-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800">
-                    Boas-vindas, {userName}!
-                  </h3>
-                  <p className="text-sm text-gray-600">Usuário logado</p>
-                </div>
+            <div className="flex flex-col gap-4">
+              <div className="text-center">
+                <h3 className="font-semibold text-gray-800">
+                  Boas-vindas, {userName}!
+                </h3>
+                <p className="text-sm text-gray-600">Usuário logado</p>
               </div>
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                size="sm"
-                className="flex items-center space-x-2"
+                className="w-full flex items-center justify-center space-x-2"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sair</span>
