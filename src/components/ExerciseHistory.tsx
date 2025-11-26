@@ -145,10 +145,7 @@ export function ExerciseHistory() {
     <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
       <CardHeader className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
-        <CardTitle className="flex items-center gap-3 text-xl font-bold relative z-10">
-          <div className="p-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
-            <Clock className="h-5 w-5" />
-          </div>
+        <CardTitle className="text-xl font-bold relative z-10">
           Histórico de Exercícios
         </CardTitle>
       </CardHeader>
