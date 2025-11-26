@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Exercise {
@@ -168,14 +168,14 @@ export default function WorkoutPlan() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">🏋️ Ficha de Treino</h1>
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Ficha de Treino</h1>
             <p className="text-muted-foreground">Monte seu treino semanal</p>
           </div>
+          <Button className="w-full" onClick={() => navigate("/profile")}>
+            Voltar
+          </Button>
         </div>
 
         <Tabs value={selectedDay} onValueChange={setSelectedDay}>
