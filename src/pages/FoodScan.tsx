@@ -669,7 +669,7 @@ const FoodScan = () => {
                     
                     {selectedImage && (
                       <div className="mb-4 flex flex-col md:flex-row gap-4">
-                        <img src={selectedImage} alt="Imagem selecionada" className="w-32 h-32 object-cover rounded-lg" />
+                        <img src={selectedImage} alt="Imagem selecionada" className="w-32 h-32 object-cover rounded-lg mx-auto md:mx-0" />
                         <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg flex-1">
                           <div className="flex">
                             <div className="ml-3">
