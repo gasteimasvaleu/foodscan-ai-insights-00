@@ -420,10 +420,10 @@ const MasterCheFIT = () => {
                         Salvar
                       </Button>
                       <Button 
-                        variant="ghost" 
+                        variant="default" 
                         size="sm"
                         onClick={() => setIsEditing(false)}
-                        className="flex-1 hover:bg-white/20 transition-all duration-300"
+                        className="flex-1 bg-gradient-to-r from-primary to-primary hover:from-primary/80 hover:to-primary/80 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:scale-105"
                       >
                         <X className="w-4 h-4" />
                       </Button>
