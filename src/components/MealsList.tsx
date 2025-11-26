@@ -1,6 +1,7 @@
 import React from 'react';
 import { Clock, Utensils, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { MealRecord } from '@/pages/DailyControl';
 
 interface MealsListProps {
@@ -54,19 +55,19 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
               key={meal.id || index}
               className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-200"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-800">
-                    {meal.food_name}
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Porção: {meal.portion}
-                  </p>
-                </div>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock className="w-4 h-4 mr-1" />
+              <div className="mb-4">
+                <Badge variant="secondary" className="mb-2">
+                  <Clock className="w-3 h-3 mr-1" />
                   {formatTime(meal.meal_time)}
-                </div>
+                </Badge>
+                
+                <h4 className="text-lg font-semibold text-gray-800">
+                  {meal.food_name}
+                </h4>
+                
+                <p className="text-sm text-gray-600">
+                  Porção: {meal.portion}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
