@@ -54,8 +54,10 @@ export default function MyDiets() {
 
   const [formData, setFormData] = useState({
     meal_type: "cafe_manha",
-    meal_name: "",
+    food_name: "",
     description: "",
+    portion: "",
+    calories: 0,
   });
 
   useEffect(() => {
@@ -93,25 +95,31 @@ export default function MyDiets() {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
 
-      const { error } = await supabase.from("user_custom_diets").insert({
+      const food: Food = {
+        name: formData.food_name,
+        portion: formData.portion,
+        calories: formData.calories,
+      };
+
+      const { error } = await supabase.from("user_custom_diets").insert([{
         user_id: user.user.id,
         day_of_week: selectedDay,
         meal_type: formData.meal_type,
-        meal_name: formData.meal_name,
-        description: formData.description,
-        foods: [],
-        total_calories: 0,
-      });
+        meal_name: formData.food_name,
+        description: formData.description || null,
+        foods: [food] as any,
+        total_calories: formData.calories,
+      }]);
 
       if (error) throw error;
 
-      toast.success("Refeição adicionada");
+      toast.success("Alimento adicionado");
       setDialogOpen(false);
-      setFormData({ meal_type: "cafe_manha", meal_name: "", description: "" });
+      setFormData({ meal_type: "cafe_manha", food_name: "", description: "", portion: "", calories: 0 });
       loadDiets();
     } catch (error) {
       console.error("Error saving diet:", error);
-      toast.error("Erro ao salvar refeição");
+      toast.error("Erro ao salvar alimento");
     }
   };
 
@@ -186,26 +194,51 @@ export default function MyDiets() {
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>Nova Refeição</DialogTitle>
+                              <DialogTitle>Adicionar Alimento</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
                               <div>
-                                <Label>Nome da Refeição</Label>
+                                <Label>Nome do Alimento</Label>
                                 <Input
-                                  value={formData.meal_name}
+                                  value={formData.food_name}
                                   onChange={(e) =>
-                                    setFormData({ ...formData, meal_name: e.target.value })
+                                    setFormData({ ...formData, food_name: e.target.value })
                                   }
                                   required
+                                  placeholder="Ex: Arroz integral"
                                 />
                               </div>
                               <div>
-                                <Label>Descrição</Label>
+                                <Label>Quantidade/Porção</Label>
+                                <Input
+                                  value={formData.portion}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, portion: e.target.value })
+                                  }
+                                  required
+                                  placeholder="Ex: 100g, 1 unidade, 200ml"
+                                />
+                              </div>
+                              <div>
+                                <Label>Calorias (kcal)</Label>
+                                <Input
+                                  type="number"
+                                  value={formData.calories}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, calories: Number(e.target.value) })
+                                  }
+                                  required
+                                  min="0"
+                                />
+                              </div>
+                              <div>
+                                <Label>Descrição (opcional)</Label>
                                 <Input
                                   value={formData.description}
                                   onChange={(e) =>
                                     setFormData({ ...formData, description: e.target.value })
                                   }
+                                  placeholder="Ex: Grelhado, cozido no vapor"
                                 />
                               </div>
                               <Button type="submit" className="w-full">
@@ -223,15 +256,24 @@ export default function MyDiets() {
                             key={meal.id}
                             className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
                           >
-                            <div>
+                            <div className="flex-1">
                               <p className="font-medium">{meal.meal_name}</p>
+                              {meal.foods && meal.foods.length > 0 && (
+                                <div className="mt-1 space-y-1">
+                                  {meal.foods.map((food, idx) => (
+                                    <p key={idx} className="text-sm text-muted-foreground">
+                                      {food.name} - {food.portion} - {food.calories} kcal
+                                    </p>
+                                  ))}
+                                </div>
+                              )}
                               {meal.description && (
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs text-muted-foreground italic mt-1">
                                   {meal.description}
                                 </p>
                               )}
-                              <p className="text-sm text-primary">
-                                {meal.total_calories} kcal
+                              <p className="text-sm font-medium text-primary mt-1">
+                                Total: {meal.total_calories} kcal
                               </p>
                             </div>
                             <Button
