@@ -663,9 +663,9 @@ const FoodScan = () => {
                 
                 {(selectedImage || imageDescription) && (
                   <div data-description-section className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                      Descrição da Imagem
-                    </h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+                          Descrição da Imagem
+                        </h3>
                     
                     {selectedImage && (
                       <div className="mb-4 flex flex-col md:flex-row gap-4">
