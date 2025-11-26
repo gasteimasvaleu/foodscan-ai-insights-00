@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Scale, Utensils } from 'lucide-react';
+import { Utensils } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { FoodElement, ElementPortion } from '@/types/nutrition';
@@ -66,10 +66,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
 
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6">
-      <div className="flex items-center justify-center space-x-3 mb-6">
-        <div className="bg-amber-100 rounded-full p-3">
-          <Scale className="w-6 h-6 text-amber-600" />
-        </div>
+      <div className="flex items-center justify-center mb-6">
         <div className="text-center">
           <h4 className="text-lg font-semibold text-amber-800">
             Ajustar Porções por Elemento
