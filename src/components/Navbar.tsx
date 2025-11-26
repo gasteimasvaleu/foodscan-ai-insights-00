@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Info, X, LogOut } from 'lucide-react';
+import { User, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useLocation } from 'react-router-dom';
@@ -15,6 +15,7 @@ export const Navbar = () => {
   const { user, signOut } = useAuth();
 
   const menuItems = [
+    { label: 'Meu Perfil', href: '/profile' },
     { label: 'Quero Assinar', href: '/quero-assinar' },
     { label: 'Sobre', href: '/sobre' }
   ];
@@ -52,17 +53,17 @@ export const Navbar = () => {
                   className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
                   onClick={() => setIsOpen(true)}
                 >
-                  INFO
+                  MEU PERFIL
                 </span>
                 <Button variant="ghost" size="icon" className="relative z-50">
-                  {isOpen ? <X className="h-5 w-5" /> : <Info className="h-5 w-5" />}
+                  {isOpen ? <X className="h-5 w-5" /> : <User className="h-5 w-5" />}
                 </Button>
               </div>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0 flex flex-col h-full">
               <SheetHeader className="p-6 border-b border-white/20 flex-shrink-0">
                 <SheetTitle className="text-white text-lg font-bold">
-                  Informações
+                  Meu Perfil
                 </SheetTitle>
               </SheetHeader>
               
