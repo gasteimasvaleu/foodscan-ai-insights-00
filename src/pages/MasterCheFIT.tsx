@@ -597,9 +597,9 @@ const MasterCheFIT = () => {
             {menuPlan && (
               <Card className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
                 <CardHeader>
-                  <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent mb-4">
-                    🍽️ Seu Cardápio Personalizado
-                  </CardTitle>
+              <CardTitle className="text-center text-3xl font-bold text-white mb-4">
+                Seu Cardápio Personalizado
+              </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
