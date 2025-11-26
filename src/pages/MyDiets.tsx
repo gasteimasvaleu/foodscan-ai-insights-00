@@ -190,7 +190,7 @@ export default function MyDiets() {
 
           <TabsContent value="manual" className="space-y-4">
             <Tabs value={selectedDay} onValueChange={setSelectedDay}>
-              <TabsList className="grid grid-cols-7 w-full">
+              <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full h-auto gap-1">
                 {DAYS.map((day) => (
                   <TabsTrigger key={day.value} value={day.value}>
                     {day.label}
