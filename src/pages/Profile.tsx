@@ -319,9 +319,6 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Gráfico de Evolução Física */}
-          <PhysicalEvolutionChart />
-
           {/* Estatísticas Gerais */}
         <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
           <CardHeader>
@@ -355,6 +352,9 @@ export default function Profile() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Gráfico de Evolução Física */}
+        <PhysicalEvolutionChart />
 
         {/* Metas Atuais */}
         {goals && (
