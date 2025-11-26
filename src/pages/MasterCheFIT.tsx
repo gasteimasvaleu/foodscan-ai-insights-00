@@ -616,15 +616,15 @@ const MasterCheFIT = () => {
                         
                         <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
                           <h4 className="font-semibold text-white mb-2">{meal.name}</h4>
-                          <p className="text-sm text-gray-300 whitespace-pre-line">{meal.recipe}</p>
+                          <p className="text-sm text-black whitespace-pre-line">{meal.recipe}</p>
                         </div>
 
                         <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
                           <h4 className="font-semibold text-white mb-2">Modo de Preparo</h4>
-                          <p className="text-sm text-gray-300 whitespace-pre-line">{meal.instructions}</p>
+                          <p className="text-sm text-black whitespace-pre-line">{meal.instructions}</p>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-300">
+                        <div className="flex flex-wrap gap-4 text-sm text-black">
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
                             <span>{meal.time}</span>
