@@ -286,6 +286,60 @@ export type Database = {
         }
         Relationships: []
       }
+      physical_assessments: {
+        Row: {
+          after_photo_url: string | null
+          assessment_date: string
+          before_photo_url: string | null
+          body_fat_percentage: number | null
+          created_at: string | null
+          fat_mass: number | null
+          height: number | null
+          id: string
+          lean_mass: number | null
+          neck: number | null
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+          waist: number | null
+          weight: number | null
+        }
+        Insert: {
+          after_photo_url?: string | null
+          assessment_date?: string
+          before_photo_url?: string | null
+          body_fat_percentage?: number | null
+          created_at?: string | null
+          fat_mass?: number | null
+          height?: number | null
+          id?: string
+          lean_mass?: number | null
+          neck?: number | null
+          notes?: string | null
+          updated_at?: string | null
+          user_id: string
+          waist?: number | null
+          weight?: number | null
+        }
+        Update: {
+          after_photo_url?: string | null
+          assessment_date?: string
+          before_photo_url?: string | null
+          body_fat_percentage?: number | null
+          created_at?: string | null
+          fat_mass?: number | null
+          height?: number | null
+          id?: string
+          lean_mass?: number | null
+          neck?: number | null
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+          waist?: number | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           comment: string
@@ -500,6 +554,57 @@ export type Database = {
           subscription_tier?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_custom_diets: {
+        Row: {
+          created_at: string | null
+          day_of_week: string
+          description: string | null
+          foods: Json | null
+          id: string
+          is_active: boolean | null
+          meal_name: string
+          meal_type: string
+          total_calories: number | null
+          total_carbs: number | null
+          total_fats: number | null
+          total_proteins: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: string
+          description?: string | null
+          foods?: Json | null
+          id?: string
+          is_active?: boolean | null
+          meal_name: string
+          meal_type: string
+          total_calories?: number | null
+          total_carbs?: number | null
+          total_fats?: number | null
+          total_proteins?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: string
+          description?: string | null
+          foods?: Json | null
+          id?: string
+          is_active?: boolean | null
+          meal_name?: string
+          meal_type?: string
+          total_calories?: number | null
+          total_carbs?: number | null
+          total_fats?: number | null
+          total_proteins?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -728,6 +833,39 @@ export type Database = {
           title?: string
           updated_at?: string
           video_url?: string | null
+        }
+        Relationships: []
+      }
+      workout_plans: {
+        Row: {
+          created_at: string | null
+          day_of_week: string
+          exercises: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: string
+          exercises?: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: string
+          exercises?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }

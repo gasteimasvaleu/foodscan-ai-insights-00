@@ -25,6 +25,9 @@ import PaymentCancel from "./pages/PaymentCancel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import WorkoutPlan from "./pages/WorkoutPlan";
+import PhysicalAssessment from "./pages/PhysicalAssessment";
+import MyDiets from "./pages/MyDiets";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +53,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/workout" element={<WorkoutPlan />} />
+          <Route path="/profile/assessment" element={<PhysicalAssessment />} />
+          <Route path="/profile/diets" element={<MyDiets />} />
           <Route path="/foodscan" element={<FoodScan />} />
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
