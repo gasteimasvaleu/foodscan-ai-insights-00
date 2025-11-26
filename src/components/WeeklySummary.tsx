@@ -170,7 +170,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
   return (
     <Card className={`bg-white/90 backdrop-blur-sm border border-white/20 ${className}`}>
       <CardHeader className="pb-4">
-        <div>
+        <div className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-800">Resumo Semanal</CardTitle>
           <p className="text-gray-600">Acompanhe seu progresso da semana</p>
         </div>
