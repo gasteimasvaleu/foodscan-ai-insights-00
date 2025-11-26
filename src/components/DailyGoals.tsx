@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Target, Edit3 } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DailyGoal, MealRecord } from '@/pages/DailyControl';
 
@@ -60,14 +60,9 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="bg-primary-100 rounded-full p-3">
-            <Target className="w-6 h-6 text-primary-600" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-800">Metas Diárias</h3>
-            <p className="text-gray-600">{goals.diet_objective}</p>
-          </div>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-800">Metas Diárias</h3>
+          <p className="text-gray-600">{goals.diet_objective}</p>
         </div>
         <Button
           onClick={onEditGoals}
