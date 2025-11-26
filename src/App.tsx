@@ -24,6 +24,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
         <TubelightNavbar items={navItems} />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/foodscan" element={<FoodScan />} />
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
