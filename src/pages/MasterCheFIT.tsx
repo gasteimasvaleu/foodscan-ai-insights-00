@@ -409,23 +409,23 @@ const MasterCheFIT = () => {
                       Editar
                     </Button>
                   ) : (
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setIsEditing(false)}
-                        className="hover:bg-white/20 transition-all duration-300"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
+                    <div className="flex gap-2 w-full">
                       <Button 
                         variant="default" 
                         size="sm"
                         onClick={handleSavePreferences}
-                        className="bg-gradient-to-r from-primary to-primary hover:from-primary/80 hover:to-primary/80 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:scale-105"
+                        className="flex-1 bg-gradient-to-r from-primary to-primary hover:from-primary/80 hover:to-primary/80 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:scale-105"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Salvar
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setIsEditing(false)}
+                        className="flex-1 hover:bg-white/20 transition-all duration-300"
+                      >
+                        <X className="w-4 h-4" />
                       </Button>
                     </div>
                   )}
