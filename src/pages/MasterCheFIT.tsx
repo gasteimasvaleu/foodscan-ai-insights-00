@@ -498,8 +498,8 @@ const MasterCheFIT = () => {
                     </div>
                     
                     {preferences.specificRequirements && (
-                      <div className="p-4 rounded-xl bg-white/5 border border-white/20 hover:bg-white/10 transition-all duration-300">
-                        <h4 className="font-semibold text-sm text-white/80 mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
+                        <h4 className="font-semibold text-sm text-primary mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
                         <p className="text-sm leading-relaxed text-white/90">{preferences.specificRequirements}</p>
                       </div>
                     )}
