@@ -74,7 +74,7 @@ const PaymentSuccess = () => {
                 </Button>
                 
                 <Button 
-                  onClick={() => navigate('/subscription')}
+                  onClick={() => navigate('/quero-assinar')}
                   variant="outline"
                   className="w-full"
                 >

@@ -54,7 +54,6 @@ const App = () => (
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
           <Route path="/quero-assinar" element={<Subscription />} />
-          <Route path="/subscription" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/treinos" element={<Treinos />} />
