@@ -524,7 +524,7 @@ const MasterCheFIT = () => {
                         className="p-4 border border-white/20 rounded-xl bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
-                        <div className="flex items-center justify-between mb-3">
+                        <div className="flex flex-col gap-4">
                           <div>
                              <h3 className="font-semibold text-lg text-white/95">
                                Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
@@ -539,12 +539,12 @@ const MasterCheFIT = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 w-full">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => loadSavedMenu(savedMenu)}
-                              className="flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-green-500/20 hover:border-green-500/50 transition-all duration-300"
+                              className="flex-1 justify-center flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-green-500/20 hover:border-green-500/50 transition-all duration-300"
                             >
                               <Eye className="w-3 h-3" />
                               Ver
@@ -553,7 +553,7 @@ const MasterCheFIT = () => {
                               size="sm"
                               variant="destructive"
                               onClick={() => deleteSavedMenu(savedMenu.id)}
-                              className="flex items-center gap-1 hover:scale-105 transition-transform duration-200"
+                              className="flex-1 justify-center flex items-center gap-1 hover:scale-105 transition-transform duration-200"
                             >
                               <Trash2 className="w-3 h-3" />
                               Excluir
