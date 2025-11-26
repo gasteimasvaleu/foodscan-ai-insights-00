@@ -595,72 +595,50 @@ const MasterCheFIT = () => {
 
             {/* Menu Plan */}
             {menuPlan && (
-              <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
-                <CardHeader>
-              <CardTitle className="text-center text-3xl font-bold text-white mb-4">
-                Seu Cardápio Personalizado
-              </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-6">
-                    {Object.entries(menuPlan).map(([mealType, meal], index) => (
-                      <div 
-                        key={mealType} 
-                        className="border border-white/20 rounded-xl p-6 bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 transition-all duration-500 hover:scale-[1.02] hover:shadow-xl group"
-                        style={{ animationDelay: `${index * 150}ms` }}
-                      >
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="text-3xl group-hover:scale-110 transition-transform duration-300">{getMealIcon(mealType)}</span>
-                          <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">{getMealName(mealType)}</h3>
+              <div className="animate-fade-in">
+                <h2 className="text-center text-3xl font-bold text-white mb-8">
+                  Seu Cardápio Personalizado
+                </h2>
+                <div className="grid gap-6">
+                  {Object.entries(menuPlan).map(([mealType, meal]: [string, Meal]) => (
+                    <div key={mealType} className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+                      <div className="relative bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:border-primary/40 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                            {getMealIcon(mealType)}
+                            {getMealName(mealType)}
+                          </h3>
+                          <span className="px-3 py-1 bg-primary/20 text-primary-foreground rounded-full text-sm font-medium border border-primary/30">
+                            {meal.calories} kcal
+                          </span>
                         </div>
                         
-                        <div className="space-y-4">
-                          <div>
-                            <h4 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors text-white/95">{meal.name}</h4>
-                            <p className="text-black mb-3 leading-relaxed">{meal.recipe}</p>
-                          </div>
-                          
-                          <div className="bg-white/5 backdrop-blur p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
-                            <h5 className="font-medium mb-2 text-primary">Modo de Preparo:</h5>
-                            <p className="text-sm leading-relaxed whitespace-pre-line text-black">{meal.instructions}</p>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-4 text-sm">
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary/20 to-primary/25 border border-primary/30">
-                              <span className="font-medium">Calorias:</span>
-                              <span className="text-primary font-bold">{meal.calories} kcal</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-200">
-                              <Clock className="w-4 h-4 text-blue-400" />
-                              <span>{meal.time}</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-200">
-                              <Users className="w-4 h-4 text-green-400" />
-                              <span>{meal.servings} porções</span>
-                            </div>
-                          </div>
+                        <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
+                          <h4 className="font-semibold text-white mb-2">{meal.name}</h4>
+                          <p className="text-sm text-gray-300 whitespace-pre-line">{meal.recipe}</p>
                         </div>
-                      </div>
-                    ))}
-                    
-                    {/* Summary */}
-                    <div className="mt-8 p-6 bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl animate-fade-in hover:shadow-primary/20 transition-all duration-500">
-                      <div className="text-center">
-                        <h3 className="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
-                          <span className="text-2xl">📊</span>
-                          Resumo Nutricional do Dia
-                        </h3>
-                        <div className="bg-gradient-to-r from-primary to-primary bg-clip-text text-transparent">
-                          <p className="text-3xl font-bold mb-1">
-                            {Object.values(menuPlan).reduce((total, meal) => total + meal.calories, 0)} kcal
-                          </p>
-                          <p className="text-sm opacity-80">Total do cardápio completo</p>
+
+                        <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
+                          <h4 className="font-semibold text-white mb-2">Modo de Preparo</h4>
+                          <p className="text-sm text-gray-300 whitespace-pre-line">{meal.instructions}</p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-300">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span>{meal.time}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4" />
+                            <span>{meal.servings} {meal.servings === 1 ? 'porção' : 'porções'}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
