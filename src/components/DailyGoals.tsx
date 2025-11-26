@@ -59,8 +59,8 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
 
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+      <div className="flex flex-col items-center mb-6">
+        <div className="text-center">
           <h3 className="text-2xl font-bold text-gray-800">Metas Diárias</h3>
           <p className="text-gray-600">{goals.diet_objective}</p>
         </div>
@@ -68,7 +68,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
           onClick={onEditGoals}
           variant="outline"
           size="sm"
-          className="rounded-xl"
+          className="rounded-xl w-full mt-4"
         >
           <Edit3 className="w-4 h-4 mr-2" />
           Editar
