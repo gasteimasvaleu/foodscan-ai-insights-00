@@ -512,8 +512,7 @@ const MasterCheFIT = () => {
             {showHistory && savedMenuPlans.length > 0 && (
               <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-2xl">
-                    <History className="w-6 h-6 text-primary" />
+                  <CardTitle className="text-2xl text-center">
                     Histórico de Cardápios
                   </CardTitle>
                 </CardHeader>
