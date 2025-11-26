@@ -39,7 +39,7 @@ export const GoalsForm: React.FC<GoalsFormProps> = ({
   };
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl py-8 px-4 shadow-xl border border-white/20">
+    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-2xl font-bold text-gray-800">
           {initialGoals ? 'Editar Metas' : 'Configurar Metas Diárias'}

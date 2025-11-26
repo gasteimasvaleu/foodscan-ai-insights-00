@@ -355,7 +355,7 @@ const DailyControl = () => {
             {goals ? (
               <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} />
             ) : (
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl py-8 px-4 shadow-xl border border-white/20 text-center">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Configure suas Metas Diárias
                 </h3>
