@@ -485,7 +485,7 @@ const MasterCheFIT = () => {
                           <ChefHat className="w-4 h-4" />
                           INGREDIENTES FAVORITOS
                         </h4>
-                        <p className="leading-relaxed text-white/90">{preferences.favoriteIngredients || 'Não definido'}</p>
+                        <p className="leading-relaxed text-gray-800">{preferences.favoriteIngredients || 'Não definido'}</p>
                       </div>
                       
                       <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
@@ -493,14 +493,14 @@ const MasterCheFIT = () => {
                           <Target className="w-4 h-4" />
                           LIMITE CALÓRICO
                         </h4>
-                        <p className="leading-relaxed text-white/90">{preferences.maxCalories} calorias no total</p>
+                        <p className="leading-relaxed text-gray-800">{preferences.maxCalories} calorias no total</p>
                       </div>
                     </div>
                     
                     {preferences.specificRequirements && (
                       <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
                         <h4 className="font-semibold text-sm text-primary mb-2">ESPECIFICAÇÕES ESPECIAIS</h4>
-                        <p className="text-sm leading-relaxed text-white/90">{preferences.specificRequirements}</p>
+                        <p className="text-sm leading-relaxed text-gray-800">{preferences.specificRequirements}</p>
                       </div>
                     )}
                   </div>
