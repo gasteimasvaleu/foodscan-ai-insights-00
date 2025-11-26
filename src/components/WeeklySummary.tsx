@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, TrendingUp } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -170,14 +170,9 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
   return (
     <Card className={`bg-white/90 backdrop-blur-sm border border-white/20 ${className}`}>
       <CardHeader className="pb-4">
-        <div className="flex items-center space-x-3">
-          <div className="bg-purple-100 rounded-full p-3">
-            <TrendingUp className="w-6 h-6 text-purple-600" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold text-gray-800">Resumo Semanal</CardTitle>
-            <p className="text-gray-600">Acompanhe seu progresso da semana</p>
-          </div>
+        <div>
+          <CardTitle className="text-2xl font-bold text-gray-800">Resumo Semanal</CardTitle>
+          <p className="text-gray-600">Acompanhe seu progresso da semana</p>
         </div>
       </CardHeader>
 
