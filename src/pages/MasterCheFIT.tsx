@@ -595,7 +595,7 @@ const MasterCheFIT = () => {
 
             {/* Menu Plan */}
             {menuPlan && (
-              <Card className="p-6 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
+              <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl animate-fade-in">
                 <CardHeader>
               <CardTitle className="text-center text-3xl font-bold text-white mb-4">
                 Seu Cardápio Personalizado
