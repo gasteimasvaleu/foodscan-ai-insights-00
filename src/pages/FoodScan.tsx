@@ -655,7 +655,7 @@ const FoodScan = () => {
               </div>
             ) : (
               <div className="space-y-8">
-                <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8 max-w-4xl mx-auto">
+                <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-4 max-w-4xl mx-auto">
                   <ImageUpload 
                     onImageSelect={handleImageAnalysis} 
                     onBarcodeAnalysis={handleBarcodeAnalysis}
