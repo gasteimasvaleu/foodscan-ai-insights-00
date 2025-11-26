@@ -275,7 +275,7 @@ export default function Profile() {
           </Card>
 
           {/* Ações Rápidas */}
-          <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+          <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
             <CardHeader>
               <CardTitle className="text-xl font-bold">🚀 Ações Rápidas</CardTitle>
               <CardDescription>Acesse suas ferramentas de acompanhamento</CardDescription>

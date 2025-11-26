@@ -44,7 +44,7 @@ export const PhysicalEvolutionChart = () => {
 
   if (loading) {
     return (
-      <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+      <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Evolução Física</CardTitle>
           <CardDescription>Carregando dados...</CardDescription>
@@ -55,7 +55,7 @@ export const PhysicalEvolutionChart = () => {
 
   if (data.length === 0) {
     return (
-      <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+      <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Evolução Física</CardTitle>
           <CardDescription>Nenhuma avaliação registrada ainda</CardDescription>
@@ -73,7 +73,7 @@ export const PhysicalEvolutionChart = () => {
   }));
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+    <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">📊 Evolução Física</CardTitle>
         <CardDescription>Acompanhe sua evolução ao longo do tempo</CardDescription>
