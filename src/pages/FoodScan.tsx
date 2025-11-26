@@ -698,12 +698,14 @@ const FoodScan = () => {
                         />
                         
                         {imageDescription && (
-                          <Button
-                            onClick={handleNutritionAnalysis}
-                            className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
-                          >
-                            Analisar Nutrição
-                          </Button>
+                          <div className="flex justify-center">
+                            <Button
+                              onClick={handleNutritionAnalysis}
+                              className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
+                            >
+                              Analisar Nutrição
+                            </Button>
+                          </div>
                         )}
                       </>
                     )}
