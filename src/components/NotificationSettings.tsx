@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 export function NotificationSettings() {
   const { user } = useAuth();
   const [notificationStatus, setNotificationStatus] = useState<"granted" | "denied" | "default" | "unsupported">("default");
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [loading, setLoading] = useState(false);
   const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
 
@@ -17,13 +18,25 @@ export function NotificationSettings() {
     checkNotificationStatus();
   }, []);
 
-  const checkNotificationStatus = () => {
+  const checkNotificationStatus = async () => {
     if (!("Notification" in window)) {
       setNotificationStatus("unsupported");
       return;
     }
 
     setNotificationStatus(Notification.permission);
+
+    // Verificar se existe subscription ativa no navegador
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        setHasActiveSubscription(!!subscription);
+      } catch (error) {
+        console.error("Erro ao verificar subscription:", error);
+        setHasActiveSubscription(false);
+      }
+    }
   };
 
   const handleEnableNotifications = async () => {
@@ -60,6 +73,7 @@ export function NotificationSettings() {
         console.log("📋 Resultado do setup:", result);
         
         if (result?.success) {
+          setHasActiveSubscription(true);
           toast({
             title: "Notificações ativadas! 🔔",
             description: "Você receberá notificações sobre novidades e lembretes.",
@@ -126,7 +140,8 @@ export function NotificationSettings() {
       }
 
       // 3. Resetar o status
-      checkNotificationStatus();
+      setHasActiveSubscription(false);
+      await checkNotificationStatus();
 
       toast({
         title: "Notificações removidas! 🗑️",
@@ -216,21 +231,28 @@ export function NotificationSettings() {
             </div>
           )}
 
-          {notificationStatus === "granted" && (
+          {notificationStatus === "granted" && !hasActiveSubscription && (
+            <>
+              <div className="text-sm text-muted-foreground bg-yellow-500/10 p-3 rounded-md">
+                <p>⚠️ Permissão concedida, mas notificações não estão configuradas.</p>
+              </div>
+              <Button 
+                onClick={handleEnableNotifications} 
+                disabled={loading}
+                className="w-full"
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                {loading ? "Configurando..." : "Configurar Notificações"}
+              </Button>
+            </>
+          )}
+
+          {notificationStatus === "granted" && hasActiveSubscription && (
             <>
               <div className="text-sm text-muted-foreground bg-green-500/10 p-3 rounded-md">
                 <p>✅ Suas notificações estão configuradas e ativas!</p>
               </div>
               <div className="flex flex-col gap-2">
-                <Button 
-                  onClick={handleEnableNotifications} 
-                  disabled={loading}
-                  variant="outline"
-                  className="w-full"
-                >
-                  <Bell className="h-4 w-4 mr-2" />
-                  {loading ? "Verificando..." : "Verificar/Reativar Notificações"}
-                </Button>
                 <Button 
                   onClick={handleRemoveNotifications} 
                   disabled={loading}
