@@ -204,6 +204,27 @@ export default function Profile() {
     }
   };
 
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto text-center space-y-6">
+              <h1 className="text-3xl font-bold text-gray-800">Acesso Restrito</h1>
+              <p className="text-gray-600">
+                Você precisa estar logado para acessar o seu perfil, retorne a página Inicial e faça seu login.
+              </p>
+              <Button onClick={() => navigate("/")} className="mt-4">
+                Retornar à Página Inicial
+              </Button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
