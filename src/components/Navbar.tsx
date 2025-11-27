@@ -16,7 +16,7 @@ export const Navbar = () => {
 
   const menuItems = [
     { label: 'Meu Perfil', href: '/profile' },
-    { label: 'Quero Assinar', href: '/quero-assinar' },
+    { label: 'Assinatura', href: '/quero-assinar' },
     { label: 'Sobre', href: '/sobre' }
   ];
 
