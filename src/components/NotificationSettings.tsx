@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, BellOff, AlertCircle } from "lucide-react";
+import { Bell, BellOff, AlertCircle, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { PushNotificationSetup, PushNotificationSetupRef } from "@/components/PushNotificationSetup";
+import { supabase } from "@/integrations/supabase/client";
 
 export function NotificationSettings() {
   const { user } = useAuth();
@@ -81,6 +82,60 @@ export function NotificationSettings() {
       console.error("❌ Erro ao ativar notificações:", error);
       toast({
         title: "Erro ao ativar notificações",
+        description: error instanceof Error ? error.message : "Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveNotifications = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Remover subscription do navegador
+      if ("serviceWorker" in navigator && "PushManager" in window) {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        
+        if (subscription) {
+          await subscription.unsubscribe();
+          console.log("✅ Subscription removida do navegador");
+        }
+      }
+
+      // 2. Deletar registros do banco
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error("Erro ao deletar subscriptions do banco:", error);
+      } else {
+        console.log("✅ Subscriptions removidas do banco");
+      }
+
+      // 3. Resetar o status
+      checkNotificationStatus();
+
+      toast({
+        title: "Notificações removidas! 🗑️",
+        description: "Você pode agora configurar as notificações novamente.",
+      });
+    } catch (error) {
+      console.error("❌ Erro ao remover notificações:", error);
+      toast({
+        title: "Erro ao remover notificações",
         description: error instanceof Error ? error.message : "Tente novamente mais tarde.",
         variant: "destructive",
       });
@@ -166,15 +221,26 @@ export function NotificationSettings() {
               <div className="text-sm text-muted-foreground bg-green-500/10 p-3 rounded-md">
                 <p>✅ Suas notificações estão configuradas e ativas!</p>
               </div>
-              <Button 
-                onClick={handleEnableNotifications} 
-                disabled={loading}
-                variant="outline"
-                className="w-full"
-              >
-                <Bell className="h-4 w-4 mr-2" />
-                {loading ? "Verificando..." : "Verificar/Reativar Notificações"}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={handleEnableNotifications} 
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Bell className="h-4 w-4 mr-2" />
+                  {loading ? "Verificando..." : "Verificar/Reativar Notificações"}
+                </Button>
+                <Button 
+                  onClick={handleRemoveNotifications} 
+                  disabled={loading}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {loading ? "Removendo..." : "Remover Notificações"}
+                </Button>
+              </div>
             </>
           )}
         </CardContent>
