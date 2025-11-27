@@ -89,37 +89,19 @@ const Subscription = () => {
           <SubscriptionStatus />
 
           {/* Payment Methods Info */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8 animate-scale-in">
-            {/* Credit Card Access */}
+          <div className="mb-8 animate-scale-in">
             <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-4">
-                  <div className="bg-success-100 rounded-full p-3">
-                    <CreditCard className="w-6 h-6 text-success-600" />
+                  <div className="bg-primary-100 rounded-full p-3">
+                    <CreditCard className="w-6 h-6 text-primary-600" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-success-600 mb-2">
-                  Cartão de Crédito
+                <h3 className="text-xl font-bold text-primary-600 mb-2">
+                  💳 Pagamento com PIX ou Cartão
                 </h3>
                 <p className="text-gray-700">
-                  Acesso liberado <strong>imediatamente</strong> após confirmação
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* PIX Access */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
-              <CardContent className="p-6 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-blue-100 rounded-full p-3">
-                    <Clock className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-blue-600 mb-2">
-                  PIX
-                </h3>
-                <p className="text-gray-700">
-                  Acesso liberado em <strong>até 1 hora</strong> após confirmação
+                  Acesso liberado em <strong>até 1 hora</strong> após confirmação do pagamento
                 </p>
               </CardContent>
             </Card>
