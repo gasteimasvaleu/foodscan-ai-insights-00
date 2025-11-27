@@ -17,14 +17,55 @@ interface SubscriptionPlan {
   checkoutUrl?: string;
 }
 
-const plans: SubscriptionPlan[] = [
+// Planos Stripe comentados (mantidos para futura reativação se necessário)
+// const plans: SubscriptionPlan[] = [
+//   {
+//     name: "Plano Mensal",
+//     price: "R$ 47,90",
+//     monthlyPrice: "47,90",
+//     priceId: "price_1S1DVHDRCKC0uz7XWvTY0A9Q",
+//     tier: "Premium",
+//     description: "Perfeito para começar sua jornada",
+//     features: [
+//       "Análise ilimitada de fotos",
+//       "Relatórios nutricionais detalhados",
+//       "Acompanhamento diário",
+//       "Compartilhamento WhatsApp",
+//       "MasterCheFIT completo",
+//       "ServiNUTRI completo",
+//       "Suporte prioritário"
+//     ]
+//   },
+//   {
+//     name: "Plano Anual",
+//     price: "R$ 429,90",
+//     monthlyPrice: "35,83",
+//     priceId: "price_1S1DTGDRCKC0uz7XiI5I3WgL",
+//     tier: "Premium Plus",
+//     popular: true,
+//     isAnnual: true,
+//     description: "Melhor custo-benefício + 25% de desconto",
+//     features: [
+//       "Tudo do plano mensal",
+//       "25% de desconto (equivale a 3 meses grátis)",
+//       "Consultoria nutricional gratuita",
+//       "Planos alimentares exclusivos",
+//       "Acesso beta a novos recursos",
+//       "Suporte VIP 24/7"
+//     ]
+//   }
+// ];
+
+const hotmartPlans: SubscriptionPlan[] = [
   {
     name: "Plano Mensal",
     price: "R$ 47,90",
     monthlyPrice: "47,90",
-    priceId: "price_1S1DVHDRCKC0uz7XWvTY0A9Q",
+    priceId: "",
     tier: "Premium",
-    description: "Perfeito para começar sua jornada",
+    description: "Pagamento via PIX ou Cartão de Crédito",
+    paymentMethod: "hotmart",
+    checkoutUrl: "https://pay.hotmart.com/I103129840I",
     features: [
       "Análise ilimitada de fotos",
       "Relatórios nutricionais detalhados",
@@ -39,51 +80,11 @@ const plans: SubscriptionPlan[] = [
     name: "Plano Anual",
     price: "R$ 429,90",
     monthlyPrice: "35,83",
-    priceId: "price_1S1DTGDRCKC0uz7XiI5I3WgL",
-    tier: "Premium Plus",
-    popular: true,
-    isAnnual: true,
-    description: "Melhor custo-benefício + 25% de desconto",
-    features: [
-      "Tudo do plano mensal",
-      "25% de desconto (equivale a 3 meses grátis)",
-      "Consultoria nutricional gratuita",
-      "Planos alimentares exclusivos",
-      "Acesso beta a novos recursos",
-      "Suporte VIP 24/7"
-    ]
-  }
-];
-
-const hotmartPlans: SubscriptionPlan[] = [
-  {
-    name: "Plano Mensal - PIX",
-    price: "R$ 47,90",
-    monthlyPrice: "47,90",
-    priceId: "",
-    tier: "Premium",
-    description: "Pagamento via PIX - Acesso em até 1 hora",
-    paymentMethod: "hotmart",
-    checkoutUrl: "https://pay.hotmart.com/I103129840I",
-    features: [
-      "Análise ilimitada de fotos",
-      "Relatórios nutricionais detalhados",
-      "Acompanhamento diário",
-      "Compartilhamento WhatsApp",
-      "MasterCheFIT completo",
-      "ServiNUTRI completo",
-      "Suporte prioritário"
-    ]
-  },
-  {
-    name: "Plano Anual - PIX",
-    price: "R$ 429,90",
-    monthlyPrice: "35,83",
     priceId: "",
     tier: "Premium Plus",
     popular: true,
     isAnnual: true,
-    description: "PIX com 25% OFF - Acesso em até 1 hora",
+    description: "25% de desconto - PIX ou Cartão de Crédito",
     paymentMethod: "hotmart",
     checkoutUrl: "https://pay.hotmart.com/F103130124N",
     features: [
@@ -248,31 +249,14 @@ const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
 export const SubscriptionPlans = () => {
   return (
     <div className="space-y-12 mb-8">
-      {/* Seção Stripe - Cartão de Crédito */}
+      {/* Seção Hotmart - PIX ou Cartão */}
       <div>
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-white mb-2">
-            💳 Pagamento com Cartão de Crédito
+            💳 Pagamento com PIX ou Cartão
           </h2>
           <p className="text-white/90">
-            Acesso imediato após confirmação do pagamento
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          {plans.map((plan) => (
-            <PricingCard key={plan.name} plan={plan} />
-          ))}
-        </div>
-      </div>
-
-      {/* Seção Hotmart - PIX */}
-      <div>
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
-            🔐 Pagamento com PIX
-          </h2>
-          <p className="text-white/90">
-            Acesso liberado em até 1 hora após confirmação
+            Acesso liberado em até 1 hora após confirmação do pagamento
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
