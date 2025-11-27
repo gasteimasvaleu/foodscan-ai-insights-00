@@ -129,11 +129,18 @@ const Treinos = () => {
 
   if (!user) {
     return (
-    <div className="min-h-screen bg-gradient-primary">
+      <div className="min-h-screen bg-gradient-primary">
         <Navbar />
-        <div className="pt-16">
-          <AuthCard />
+        <div className="container mx-auto px-4 py-8 pt-16">
+          <div className="max-w-md mx-auto space-y-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
+              <p className="text-gray-600 mb-8">Você precisa estar logado para acessar a Central de Treinos</p>
+            </div>
+            <AuthCard mode="login" />
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
