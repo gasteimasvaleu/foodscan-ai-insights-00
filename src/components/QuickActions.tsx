@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, Activity, Dumbbell, ChefHat, MessageCircle } from 'lucide-react';
+import { Camera, Activity, Dumbbell, ChefHat, MessageCircle, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const QuickActions = () => {
@@ -55,6 +55,21 @@ export const QuickActions = () => {
         </div>
         
         <div className="space-y-4">
+          {/* Botão Meu Perfil - largura total */}
+          <Button
+            onClick={() => navigate("/profile")}
+            className="w-full h-auto py-3 px-4 bg-gradient-to-br from-indigo-500 to-purple-600 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0"
+            variant="default"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              <User className="w-5 h-5" />
+              <div className="text-center">
+                <div className="font-semibold text-sm">Meu Perfil</div>
+                <div className="text-xs opacity-90">Veja seu progresso e balanço calórico</div>
+              </div>
+            </div>
+          </Button>
+
           {/* Grid original 2x2 (mobile) e 1x4 (desktop) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
