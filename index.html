@@ -58,6 +58,24 @@
     <link rel="preload" href="/sw.js" as="script">
     <link rel="preload" href="/assets/foodscan-logo.png" as="image">
     <link rel="preload" href="/icons/icon-512x512-v4.png" as="image">
+    
+    <!-- Aimtell Push Notifications -->
+    <script type='text/javascript'>
+      var _at = {};
+      window._at.track = window._at.track || function(){
+        (window._at.track.q = window._at.track.q || []).push(arguments);
+      };
+      _at.owner = '019808ed6f0e';
+      _at.idSite = '33322';
+      _at.attributes = {};
+      (function() {
+        var u='//cdn.aimtell.com/trackpush/';
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true;
+        g.src=u+'trackpush.min.js';
+        s.parentNode.insertBefore(g,s);
+      })();
+    </script>
   </head>
 
   <body>
