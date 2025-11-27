@@ -163,14 +163,19 @@ const BGComponent2 = () => (
   </svg>
 );
 
-const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
+const PricingCard = ({ plan, allPlans }: { plan: SubscriptionPlan; allPlans: SubscriptionPlan[] }) => {
   const { user, subscription } = useAuth();
 
   const handleSubscribe = () => {
-    if (plan.paymentMethod === 'hotmart' && plan.checkoutUrl) {
-      window.open(plan.checkoutUrl, '_blank');
+    // Se o usuário está inscrito, direciona para o plano alternativo
+    const targetPlan = subscription.subscriptionStatus.subscribed
+      ? allPlans.find(p => p.isAnnual !== plan.isAnnual) || plan
+      : plan;
+    
+    if (targetPlan.paymentMethod === 'hotmart' && targetPlan.checkoutUrl) {
+      window.open(targetPlan.checkoutUrl, '_blank');
     } else {
-      subscription.createCheckout(plan.priceId, plan.tier);
+      subscription.createCheckout(targetPlan.priceId, targetPlan.tier);
     }
   };
 
@@ -239,7 +244,9 @@ const PricingCard = ({ plan }: { plan: SubscriptionPlan }) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          {subscription.subscriptionStatus.subscribed ? 'Trocar Plano' : 'Assinar Agora'}
+          {subscription.subscriptionStatus.subscribed 
+            ? (plan.isAnnual ? 'Trocar para Mensal' : 'Fazer Upgrade Anual') 
+            : 'Assinar Agora'}
         </motion.button>
       </div>
     </motion.div>
@@ -261,7 +268,7 @@ export const SubscriptionPlans = () => {
         </div>
         <div className="grid md:grid-cols-2 gap-8">
           {hotmartPlans.map((plan) => (
-            <PricingCard key={plan.name} plan={plan} />
+            <PricingCard key={plan.name} plan={plan} allPlans={hotmartPlans} />
           ))}
         </div>
       </div>
