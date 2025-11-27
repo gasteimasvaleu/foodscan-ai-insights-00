@@ -13,6 +13,7 @@ import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { NotificationSettings } from "@/components/NotificationSettings";
 
 interface ProfileData {
   id: string;
@@ -776,6 +777,9 @@ export default function Profile() {
             </CardContent>
           </Card>
         )}
+
+        {/* Notificações Push */}
+        <NotificationSettings />
 
         {/* Configurações */}
         <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
