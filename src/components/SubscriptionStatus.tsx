@@ -72,7 +72,7 @@ export const SubscriptionStatus = () => {
           {subscriptionStatus.subscribed && (
             <div className="pt-4 border-t">
               <Button
-                onClick={openCustomerPortal}
+                onClick={() => window.open('https://hotmart.com.br', '_blank')}
                 variant="outline"
                 className="flex items-center gap-2"
               >
