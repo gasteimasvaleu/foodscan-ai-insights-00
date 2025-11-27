@@ -51,13 +51,25 @@ export function NotificationSettings() {
       setNotificationStatus(permission);
 
       if (permission === "granted") {
-        // Chamar o setup para registrar no banco
-        await pushNotificationRef.current?.setupPushNotifications();
+        console.log("✅ Permissão concedida, iniciando setup...");
         
-        toast({
-          title: "Notificações ativadas! 🔔",
-          description: "Você receberá notificações sobre novidades e lembretes.",
-        });
+        // Chamar o setup para registrar no banco
+        const result = await pushNotificationRef.current?.setupPushNotifications();
+        
+        console.log("📋 Resultado do setup:", result);
+        
+        if (result?.success) {
+          toast({
+            title: "Notificações ativadas! 🔔",
+            description: "Você receberá notificações sobre novidades e lembretes.",
+          });
+        } else {
+          toast({
+            title: "Erro ao ativar notificações",
+            description: result?.error || "Não foi possível registrar a notificação. Tente novamente.",
+            variant: "destructive",
+          });
+        }
       } else if (permission === "denied") {
         toast({
           title: "Permissão negada",
@@ -66,10 +78,10 @@ export function NotificationSettings() {
         });
       }
     } catch (error) {
-      console.error("Erro ao ativar notificações:", error);
+      console.error("❌ Erro ao ativar notificações:", error);
       toast({
         title: "Erro ao ativar notificações",
-        description: "Tente novamente mais tarde.",
+        description: error instanceof Error ? error.message : "Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
@@ -150,9 +162,20 @@ export function NotificationSettings() {
           )}
 
           {notificationStatus === "granted" && (
-            <div className="text-sm text-muted-foreground bg-green-500/10 p-3 rounded-md">
-              <p>✅ Suas notificações estão configuradas e ativas!</p>
-            </div>
+            <>
+              <div className="text-sm text-muted-foreground bg-green-500/10 p-3 rounded-md">
+                <p>✅ Suas notificações estão configuradas e ativas!</p>
+              </div>
+              <Button 
+                onClick={handleEnableNotifications} 
+                disabled={loading}
+                variant="outline"
+                className="w-full"
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                {loading ? "Verificando..." : "Verificar/Reativar Notificações"}
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>

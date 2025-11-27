@@ -3,24 +3,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
 export interface PushNotificationSetupRef {
-  setupPushNotifications: () => Promise<void>;
+  setupPushNotifications: () => Promise<{ success: boolean; error?: string }>;
 }
 
 export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, ref) => {
   const { user } = useAuth();
 
-  const setupPushNotifications = async () => {
+  const setupPushNotifications = async (): Promise<{ success: boolean; error?: string }> => {
     // Verificar ambiente antes de qualquer coisa
     if (typeof window === 'undefined' || typeof Notification === 'undefined') {
       console.log('❌ Notification API não disponível neste ambiente');
-      return;
+      return { success: false, error: 'Notification API não disponível neste ambiente' };
     }
 
     // Verificar se o usuário estiver logado
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (!currentUser) {
       console.log('❌ Usuário não autenticado');
-      return;
+      return { success: false, error: 'Usuário não autenticado' };
     }
 
     try {
@@ -30,13 +30,13 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
       // Verificar se o browser suporta notificações
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         console.log('❌ Push notifications not supported by browser');
-        return;
+        return { success: false, error: 'Seu navegador não suporta notificações push' };
       }
 
       // Verificar se a permissão já foi concedida
       if (Notification.permission !== 'granted') {
         console.log('⚠️ Notification permission not granted:', Notification.permission);
-        return;
+        return { success: false, error: 'Permissão de notificações não concedida' };
       }
 
       console.log('✅ Notification permission granted, proceeding with setup');
@@ -45,7 +45,7 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
       console.log('🔍 Checking service worker...');
       if (!navigator.serviceWorker) {
         console.log('❌ Service Worker not available');
-        return;
+        return { success: false, error: 'Service Worker não disponível' };
       }
 
       // Aguardar o Service Worker estar pronto
@@ -67,12 +67,12 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
         
         if (vapidError) {
           console.error('❌ Error getting VAPID public key:', vapidError);
-          return;
+          return { success: false, error: 'Erro ao obter chave VAPID: ' + vapidError.message };
         }
 
         if (!vapidData?.publicKey) {
           console.error('❌ No VAPID public key in response:', vapidData);
-          return;
+          return { success: false, error: 'Chave VAPID não disponível' };
         }
 
         console.log('✅ VAPID public key retrieved successfully');
@@ -102,7 +102,7 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
       
       if (sessionError || !session) {
         console.error('❌ No active session for registration:', sessionError);
-        return;
+        return { success: false, error: 'Sessão não ativa. Faça login novamente.' };
       }
       
       console.log('✅ Active session found for user:', session.user.id);
@@ -121,14 +121,17 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
       if (registerError) {
         console.error('❌ Error registering push subscription:', registerError);
         console.error('❌ Error details:', registerError.message);
-      } else {
-        console.log('🎉 Push subscription registered successfully!');
-        console.log('📋 Registration response:', registerData);
+        return { success: false, error: 'Erro ao registrar notificação: ' + registerError.message };
       }
+      
+      console.log('🎉 Push subscription registered successfully!');
+      console.log('📋 Registration response:', registerData);
+      return { success: true };
 
     } catch (error) {
       console.error('💥 Error setting up push notifications:', error);
-      console.error('💥 Error stack:', error.stack);
+      console.error('💥 Error stack:', error instanceof Error ? error.stack : error);
+      return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido ao configurar notificações' };
     }
   };
 
