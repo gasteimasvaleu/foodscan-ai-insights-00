@@ -524,9 +524,6 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Gráfico de Evolução Física */}
-        <PhysicalEvolutionChart />
-
         {/* Gráfico de Balanço Calórico */}
         {calorieBalanceData.length > 0 && (
           <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
@@ -708,6 +705,9 @@ export default function Profile() {
             </CardContent>
           </Card>
         )}
+
+        {/* Gráfico de Evolução Física */}
+        <PhysicalEvolutionChart />
 
         {/* Metas Atuais */}
         {goals && (
