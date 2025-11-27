@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import { User, Upload, Utensils, Flame, Dumbbell, Calendar, Edit2, Settings, ClipboardList, Salad } from "lucide-react";
 import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 
@@ -42,6 +42,13 @@ interface WeeklyData {
   goal: number;
 }
 
+interface CalorieBalanceData {
+  day: string;
+  consumed: number;
+  burned: number;
+  balance: number;
+}
+
 export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -49,6 +56,7 @@ export default function Profile() {
   const [stats, setStats] = useState<Stats>({ totalMeals: 0, totalCaloriesBurned: 0, totalExercises: 0, activeDays: 0 });
   const [goals, setGoals] = useState<Goals | null>(null);
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
+  const [calorieBalanceData, setCalorieBalanceData] = useState<CalorieBalanceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [editName, setEditName] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -59,6 +67,7 @@ export default function Profile() {
       loadStats();
       loadGoals();
       loadWeeklyData();
+      loadCalorieBalance();
     }
   }, [user]);
 
@@ -148,6 +157,82 @@ export default function Profile() {
       setWeeklyData(chartData);
     } catch (error) {
       console.error("Erro ao carregar dados semanais:", error);
+    }
+  };
+
+  const loadCalorieBalance = async () => {
+    try {
+      // Get the last 7 days
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 6);
+
+      // Fetch meals from last 7 days
+      const { data: mealsData, error: mealsError } = await supabase
+        .from("meal_records")
+        .select("calories, created_at")
+        .eq("user_id", user?.id)
+        .gte("created_at", sevenDaysAgo.toISOString())
+        .lte("created_at", today.toISOString());
+
+      if (mealsError) throw mealsError;
+
+      // Fetch exercises from last 7 days
+      const { data: exercisesData, error: exercisesError } = await supabase
+        .from("exercise_records")
+        .select("calories_burned, date")
+        .eq("user_id", user?.id)
+        .gte("date", sevenDaysAgo.toISOString().split('T')[0])
+        .lte("date", today.toISOString().split('T')[0]);
+
+      if (exercisesError) throw exercisesError;
+
+      // Group data by day
+      const balanceMap = new Map<string, { consumed: number; burned: number }>();
+
+      // Initialize all 7 days
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateKey = date.toISOString().split('T')[0];
+        balanceMap.set(dateKey, { consumed: 0, burned: 0 });
+      }
+
+      // Sum consumed calories by day
+      mealsData?.forEach((meal) => {
+        const dateKey = new Date(meal.created_at).toISOString().split('T')[0];
+        if (balanceMap.has(dateKey)) {
+          const current = balanceMap.get(dateKey)!;
+          current.consumed += Number(meal.calories);
+        }
+      });
+
+      // Sum burned calories by day
+      exercisesData?.forEach((exercise) => {
+        const dateKey = exercise.date;
+        if (balanceMap.has(dateKey)) {
+          const current = balanceMap.get(dateKey)!;
+          current.burned += Number(exercise.calories_burned);
+        }
+      });
+
+      // Convert to chart data
+      const chartData: CalorieBalanceData[] = Array.from(balanceMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, data]) => {
+          const dayDate = new Date(date);
+          const dayName = dayDate.toLocaleDateString("pt-BR", { weekday: "short" });
+          return {
+            day: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+            consumed: Math.round(data.consumed),
+            burned: Math.round(data.burned),
+            balance: Math.round(data.consumed - data.burned),
+          };
+        });
+
+      setCalorieBalanceData(chartData);
+    } catch (error) {
+      console.error("Erro ao carregar balanço calórico:", error);
     }
   };
 
@@ -379,6 +464,86 @@ export default function Profile() {
 
         {/* Gráfico de Evolução Física */}
         <PhysicalEvolutionChart />
+
+        {/* Gráfico de Balanço Calórico */}
+        {calorieBalanceData.length > 0 && (
+          <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Flame className="w-5 h-5 text-orange-500" />
+                Balanço Calórico
+              </CardTitle>
+              <CardDescription>Últimos 7 dias - Calorias consumidas vs gastas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={calorieBalanceData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="day" 
+                    className="text-xs"
+                    tick={{ fill: "hsl(var(--foreground))" }}
+                  />
+                  <YAxis 
+                    className="text-xs"
+                    tick={{ fill: "hsl(var(--foreground))" }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "hsl(var(--card))", 
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px"
+                    }}
+                    formatter={(value: number) => [`${value} kcal`, ""]}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: "20px" }}
+                    formatter={(value) => {
+                      if (value === "consumed") return "Consumidas";
+                      if (value === "burned") return "Gastas";
+                      return value;
+                    }}
+                  />
+                  <Bar 
+                    dataKey="consumed" 
+                    fill="hsl(142, 76%, 36%)" 
+                    radius={[8, 8, 0, 0]}
+                    name="consumed"
+                  />
+                  <Bar 
+                    dataKey="burned" 
+                    fill="hsl(24, 95%, 53%)" 
+                    radius={[8, 8, 0, 0]}
+                    name="burned"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              
+              {/* Summary */}
+              <div className="mt-6 grid grid-cols-3 gap-4">
+                <div className="text-center p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5">
+                  <p className="text-sm text-muted-foreground mb-1">Total Consumido</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {calorieBalanceData.reduce((sum, day) => sum + day.consumed, 0).toLocaleString()} kcal
+                  </p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5">
+                  <p className="text-sm text-muted-foreground mb-1">Total Gasto</p>
+                  <p className="text-xl font-bold text-orange-600">
+                    {calorieBalanceData.reduce((sum, day) => sum + day.burned, 0).toLocaleString()} kcal
+                  </p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
+                  <p className="text-sm text-muted-foreground mb-1">Saldo</p>
+                  <p className={`text-xl font-bold ${calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) > 0 ? 'text-primary' : 'text-red-600'}`}>
+                    {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) > 0 ? '+' : ''}
+                    {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0).toLocaleString()} kcal
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Metas Atuais */}
         {goals && (
