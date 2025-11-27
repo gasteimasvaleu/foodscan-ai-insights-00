@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { AuthCard } from '@/components/AuthCard';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -324,29 +325,14 @@ const MasterCheFIT = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+        <div className="min-h-screen bg-gradient-primary pt-16">
           <div className="container mx-auto px-4 py-8">
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <ChefHat className="w-8 h-8 text-white" />
-                <h1 className="text-3xl font-bold text-white">MasterCheFIT</h1>
+            <div className="max-w-md mx-auto space-y-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
+                <p className="text-gray-600 mb-8">Você precisa estar logado para acessar o MasterCheFIT</p>
               </div>
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                <CardContent className="p-8">
-                  <h2 className="text-xl font-semibold text-white mb-4">
-                    Acesso Restrito
-                  </h2>
-                  <p className="text-white/80 mb-6">
-                    Você precisa estar logado para acessar o MasterCheFIT e criar seus cardápios personalizados.
-                  </p>
-                  <Button 
-                    onClick={() => window.location.href = '/'}
-                    className="bg-primary-500 hover:bg-primary-600"
-                  >
-                    Fazer Login
-                  </Button>
-                </CardContent>
-              </Card>
+              <AuthCard mode="login" />
             </div>
           </div>
         </div>
