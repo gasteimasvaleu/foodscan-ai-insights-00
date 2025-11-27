@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
-import { User, Upload, Utensils, Flame, Dumbbell, Calendar, Edit2, Settings, ClipboardList, Salad } from "lucide-react";
+import { User, Upload, Utensils, Flame, Dumbbell, Calendar, Edit2, Settings, ClipboardList, Salad, Calculator } from "lucide-react";
 import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ interface ProfileData {
   name: string;
   avatar_url: string | null;
   created_at: string;
+  basal_metabolic_rate: number;
 }
 
 interface Stats {
@@ -60,6 +61,14 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [editName, setEditName] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [editBMR, setEditBMR] = useState<number>(0);
+  const [showBMRCalculator, setShowBMRCalculator] = useState(false);
+  const [bmrForm, setBmrForm] = useState({
+    sex: "male",
+    age: 30,
+    weight: 70,
+    height: 170,
+  });
 
   useEffect(() => {
     if (user) {
@@ -82,6 +91,7 @@ export default function Profile() {
       if (error) throw error;
       setProfile(data);
       setEditName(data.name);
+      setEditBMR(data.basal_metabolic_rate || 0);
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
     }
@@ -162,6 +172,15 @@ export default function Profile() {
 
   const loadCalorieBalance = async () => {
     try {
+      // Get user's BMR
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("basal_metabolic_rate")
+        .eq("id", user?.id)
+        .single();
+
+      const basalMetabolicRate = profileData?.basal_metabolic_rate || 0;
+
       // Get the last 7 days
       const today = new Date();
       const sevenDaysAgo = new Date(today);
@@ -207,13 +226,18 @@ export default function Profile() {
         }
       });
 
-      // Sum burned calories by day
+      // Sum burned calories by day (exercises + BMR)
       exercisesData?.forEach((exercise) => {
         const dateKey = exercise.date;
         if (balanceMap.has(dateKey)) {
           const current = balanceMap.get(dateKey)!;
           current.burned += Number(exercise.calories_burned);
         }
+      });
+
+      // Add BMR to all days
+      balanceMap.forEach((data) => {
+        data.burned += basalMetabolicRate;
       });
 
       // Convert to chart data
@@ -251,6 +275,44 @@ export default function Profile() {
       console.error("Erro ao atualizar nome:", error);
       toast({ title: "Erro ao atualizar nome", variant: "destructive" });
     }
+  };
+
+  const handleUpdateBMR = async () => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ basal_metabolic_rate: editBMR })
+        .eq("id", user?.id);
+
+      if (error) throw error;
+
+      setProfile((prev) => prev ? { ...prev, basal_metabolic_rate: editBMR } : null);
+      await loadCalorieBalance();
+      toast({ title: "Taxa Metabólica Basal atualizada com sucesso!" });
+    } catch (error) {
+      console.error("Erro ao atualizar TMB:", error);
+      toast({ title: "Erro ao atualizar TMB", variant: "destructive" });
+    }
+  };
+
+  const calculateBMR = () => {
+    const { sex, age, weight, height } = bmrForm;
+    let bmr: number;
+    
+    if (sex === "male") {
+      bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+    } else {
+      bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+    }
+    
+    return Math.round(bmr);
+  };
+
+  const handleUseBMR = () => {
+    const calculatedBMR = calculateBMR();
+    setEditBMR(calculatedBMR);
+    setShowBMRCalculator(false);
+    toast({ title: `TMB calculada: ${calculatedBMR} kcal/dia` });
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -520,24 +582,126 @@ export default function Profile() {
               </ResponsiveContainer>
               
               {/* Summary */}
-              <div className="mt-6 grid grid-cols-3 gap-4">
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Card TMB */}
+                <div className="text-center p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5">
+                  <p className="text-sm text-muted-foreground mb-2">TMB Diária</p>
+                  <div className="space-y-2">
+                    <Input
+                      type="number"
+                      value={editBMR}
+                      onChange={(e) => setEditBMR(Number(e.target.value))}
+                      className="text-center font-bold h-8"
+                      placeholder="0"
+                    />
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleUpdateBMR}
+                        className="flex-1 h-7 text-xs"
+                      >
+                        Salvar
+                      </Button>
+                      <Dialog open={showBMRCalculator} onOpenChange={setShowBMRCalculator}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="h-7 px-2">
+                            <Calculator className="w-3 h-3" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Calculadora de TMB</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label>Sexo</Label>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant={bmrForm.sex === "male" ? "default" : "outline"}
+                                  onClick={() => setBmrForm({ ...bmrForm, sex: "male" })}
+                                  className="flex-1"
+                                >
+                                  Masculino
+                                </Button>
+                                <Button
+                                  variant={bmrForm.sex === "female" ? "default" : "outline"}
+                                  onClick={() => setBmrForm({ ...bmrForm, sex: "female" })}
+                                  className="flex-1"
+                                >
+                                  Feminino
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="age">Idade (anos)</Label>
+                              <Input
+                                id="age"
+                                type="number"
+                                value={bmrForm.age}
+                                onChange={(e) => setBmrForm({ ...bmrForm, age: Number(e.target.value) })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="weight">Peso (kg)</Label>
+                              <Input
+                                id="weight"
+                                type="number"
+                                value={bmrForm.weight}
+                                onChange={(e) => setBmrForm({ ...bmrForm, weight: Number(e.target.value) })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="height">Altura (cm)</Label>
+                              <Input
+                                id="height"
+                                type="number"
+                                value={bmrForm.height}
+                                onChange={(e) => setBmrForm({ ...bmrForm, height: Number(e.target.value) })}
+                              />
+                            </div>
+                            <div className="p-4 bg-muted rounded-lg">
+                              <p className="text-sm text-muted-foreground mb-2">TMB Calculada:</p>
+                              <p className="text-2xl font-bold text-primary">{calculateBMR()} kcal/dia</p>
+                            </div>
+                            <Button onClick={handleUseBMR} className="w-full">
+                              Usar este valor
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Total Consumido */}
                 <div className="text-center p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5">
                   <p className="text-sm text-muted-foreground mb-1">Total Consumido</p>
                   <p className="text-xl font-bold text-green-600">
                     {calorieBalanceData.reduce((sum, day) => sum + day.consumed, 0).toLocaleString()} kcal
                   </p>
                 </div>
+
+                {/* Card Total Gasto */}
                 <div className="text-center p-3 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5">
                   <p className="text-sm text-muted-foreground mb-1">Total Gasto</p>
+                  <p className="text-sm text-muted-foreground">
+                    TMB: {(editBMR * 7).toLocaleString()} kcal
+                  </p>
                   <p className="text-xl font-bold text-orange-600">
                     {calorieBalanceData.reduce((sum, day) => sum + day.burned, 0).toLocaleString()} kcal
                   </p>
                 </div>
+
+                {/* Card Saldo */}
                 <div className="text-center p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
                   <p className="text-sm text-muted-foreground mb-1">Saldo</p>
                   <p className={`text-xl font-bold ${calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) > 0 ? 'text-primary' : 'text-red-600'}`}>
                     {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) > 0 ? '+' : ''}
                     {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0).toLocaleString()} kcal
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) < 0 ? 'Déficit' : 'Superávit'}
                   </p>
                 </div>
               </div>
