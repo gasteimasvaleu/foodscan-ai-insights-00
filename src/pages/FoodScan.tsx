@@ -486,6 +486,40 @@ const FoodScan = () => {
     }
   };
 
+  const handleManualInput = async (description: string) => {
+    setImageDescription(description);
+    setSelectedImage(null);
+    setIsAnalyzing(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-nutrition', {
+        body: { description }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      console.log("Dados da análise manual:", data);
+      const processedData = processOpenAIResponse(JSON.stringify(data));
+      setNutritionData(processedData);
+      
+      toast({
+        title: "Análise concluída!",
+        description: "Os dados nutricionais foram calculados com sucesso.",
+      });
+    } catch (error) {
+      console.error("Erro na análise manual:", error);
+      toast({
+        title: "Erro na análise",
+        description: "Não foi possível analisar os dados nutricionais. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleReset = () => {
     setNutritionData(null);
     setImageDescription('');
@@ -659,6 +693,7 @@ const FoodScan = () => {
                   <ImageUpload 
                     onImageSelect={handleImageAnalysis} 
                     onBarcodeAnalysis={handleBarcodeAnalysis}
+                    onManualInput={handleManualInput}
                     isAnalyzing={isAnalyzing || isBarcodeAnalyzing}
                   />
                 </div>

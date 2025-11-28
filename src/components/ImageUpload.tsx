@@ -2,18 +2,21 @@ import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Camera, Upload, X, RotateCcw, Brain, BarChart3 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Camera, Upload, X, RotateCcw, Brain, BarChart3, PenLine } from "lucide-react";
 import { BarcodeScanner } from "./BarcodeScanner";
 
 interface ImageUploadProps {
   onImageSelect: (file: File) => void;
   onBarcodeAnalysis?: (barcode: string) => void;
+  onManualInput?: (description: string) => void;
   isAnalyzing?: boolean;
 }
 
-export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, isAnalyzing = false }: ImageUploadProps) => {
+export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, onManualInput, isAnalyzing = false }: ImageUploadProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [manualDescription, setManualDescription] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,14 +81,18 @@ export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, isAnalyzing = fa
       />
       
       <Tabs defaultValue="fresh" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="fresh" className="gap-2">
             <Brain className="w-4 h-4" />
-            Comida Fresca
+            Fresca
           </TabsTrigger>
           <TabsTrigger value="barcode" className="gap-2">
             <BarChart3 className="w-4 h-4" />
-            Industrializada
+            Industrial
+          </TabsTrigger>
+          <TabsTrigger value="manual" className="gap-2">
+            <PenLine className="w-4 h-4" />
+            Manual
           </TabsTrigger>
         </TabsList>
         
@@ -160,6 +167,42 @@ export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, isAnalyzing = fa
             onBarcodeAnalysis={onBarcodeAnalysis || (() => {})}
             isAnalyzing={isAnalyzing}
           />
+        </TabsContent>
+
+        <TabsContent value="manual" className="space-y-4">
+          <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors min-h-[300px]">
+            <CardContent className="p-6">
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                  <PenLine className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Descrever Alimento</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Digite a descrição do que você comeu para análise nutricional
+                </p>
+              </div>
+              
+              <Textarea
+                value={manualDescription}
+                onChange={(e) => setManualDescription(e.target.value)}
+                placeholder="Ex: 1 prato de arroz branco com feijão preto, 1 bife grelhado de 150g e salada verde com tomate..."
+                className="min-h-[150px] mb-4"
+              />
+              
+              <Button
+                onClick={() => {
+                  if (manualDescription.trim() && onManualInput) {
+                    onManualInput(manualDescription.trim());
+                    setManualDescription('');
+                  }
+                }}
+                disabled={!manualDescription.trim() || isAnalyzing}
+                className="w-full"
+              >
+                {isAnalyzing ? "Analisando..." : "Analisar"}
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
