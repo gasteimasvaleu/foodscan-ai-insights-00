@@ -3,12 +3,33 @@ import React from 'react';
 import { Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DailyGoal, MealRecord } from '@/pages/DailyControl';
+import { motion } from 'framer-motion';
+import { useCountUp } from '@/hooks/useCountUp';
 
 interface DailyGoalsProps {
   goals: DailyGoal;
   meals: MealRecord[];
   onEditGoals: () => void;
 }
+
+const AnimatedCounter: React.FC<{ value: number; className?: string; delay?: number }> = ({ 
+  value, 
+  className,
+  delay = 0 
+}) => {
+  const animatedValue = useCountUp(value, 1500);
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay }}
+      className={className}
+    >
+      {Math.round(animatedValue)}
+    </motion.div>
+  );
+};
 
 export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoals }) => {
   // Calcular totais consumidos
@@ -76,38 +97,53 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {progressItems.map((item) => {
+        {progressItems.map((item, index) => {
           const percentage = Math.min((item.consumed / item.goal) * 100, 100);
           const remaining = Math.max(item.goal - item.consumed, 0);
+          const delay = index * 0.1;
 
           return (
-            <div key={item.label} className="bg-gray-50 rounded-2xl p-4">
+            <motion.div 
+              key={item.label} 
+              className="bg-gray-50 rounded-2xl p-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay }}
+            >
               <div className="text-center space-y-2">
                 <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                   {item.label}
                 </h4>
                 <div className="space-y-1">
-                  <div className={`text-2xl font-bold ${item.color}`}>
-                    {Math.round(item.consumed)}
-                  </div>
+                  <AnimatedCounter 
+                    value={item.consumed} 
+                    className={`text-2xl font-bold ${item.color}`}
+                    delay={delay}
+                  />
                   <div className="text-sm text-gray-500">
                     de {item.goal} {item.unit}
                   </div>
                 </div>
                 
-                {/* Barra de progresso */}
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`${item.bgColor.replace('bg-', 'bg-')} h-2 rounded-full transition-all duration-300`}
-                    style={{ width: `${percentage}%` }}
-                  ></div>
+                {/* Barra de progresso animada */}
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <motion.div
+                    className={`${item.bgColor.replace('bg-', 'bg-')} h-2 rounded-full`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${percentage}%` }}
+                    transition={{ 
+                      duration: 1.5, 
+                      ease: "easeOut",
+                      delay: delay + 0.2 
+                    }}
+                  />
                 </div>
                 
                 <div className="text-xs text-gray-500">
-                  Restam: {Math.round(remaining)} {item.unit}
+                  Restam: <AnimatedCounter value={remaining} delay={delay} /> {item.unit}
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
