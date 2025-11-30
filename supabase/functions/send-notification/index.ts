@@ -8,6 +8,7 @@ const corsHeaders = {
 
 const AIMTELL_API_URL = 'https://api.aimtell.com/prod/push'
 const AIMTELL_SITE_ID = '33322'
+const AIMTELL_SEGMENT_ID = '644851' // All Subscribers
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -85,11 +86,11 @@ serve(async (req) => {
     
     const aimtellPayload = {
       idSite: AIMTELL_SITE_ID,
+      segmentId: AIMTELL_SEGMENT_ID,
       title: title,
       body: message,
       link: 'https://foodscan-ai.lovable.app',
-      // Optional: add icon if needed
-      // icon: 'https://foodscan-ai.lovable.app/icons/icon-192x192-foodscan.png'
+      icon: 'https://foodscan-ai.lovable.app/icons/icon-192x192-foodscan.png'
     }
 
     console.log(`📦 [SEND-NOTIFICATION] Aimtell payload:`, JSON.stringify(aimtellPayload, null, 2))
