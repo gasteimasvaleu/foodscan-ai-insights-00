@@ -30,7 +30,7 @@ export function NotificationSettings() {
     if ("serviceWorker" in navigator && "PushManager" in window) {
       try {
         const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager.getSubscription();
         setHasActiveSubscription(!!subscription);
       } catch (error) {
         console.error("Erro ao verificar subscription:", error);
@@ -119,7 +119,7 @@ export function NotificationSettings() {
       // 1. Remover subscription do navegador
       if ("serviceWorker" in navigator && "PushManager" in window) {
         const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager.getSubscription();
         
         if (subscription) {
           await subscription.unsubscribe();

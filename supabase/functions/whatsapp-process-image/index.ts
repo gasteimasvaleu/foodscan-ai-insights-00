@@ -54,13 +54,13 @@ serve(async (req) => {
     }
     const base64Image = btoa(binaryString);
 
-    // Call analyze-image function
-    const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-image', {
+    // Call analyze-nutrition function (same AI used by FoodScan - two-step analysis)
+    const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-nutrition', {
       body: { base64Image }
     });
 
-    if (analysisError || !analysisData?.description) {
-      console.error('Analysis error:', analysisError);
+    if (analysisError || !analysisData?.foodName) {
+      console.error('Analysis error:', analysisError, 'Data:', analysisData);
       await supabase.functions.invoke('whatsapp-send', {
         body: {
           to: phoneNumber,
@@ -73,149 +73,62 @@ serve(async (req) => {
       });
     }
 
-    // Function to extract food items from description
-    function extractFoodItems(description: string): { foodName: string, portion: string } {
-      // Extract bullet points or food items from description
-      const foodLines = description
-        .split('\n')
-        .filter(line => line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*'))
-        .map(line => line.replace(/^[•\-*]\s*/, '').trim())
-        .filter(line => line.length > 0);
+    // Extract structured nutrition data directly from JSON (no regex needed!)
+    const calories = analysisData.nutrition?.calories || 0;
+    const proteins = analysisData.nutrition?.proteins || 0;
+    const carbs = analysisData.nutrition?.carbohydrates || 0;
+    const fats = analysisData.nutrition?.fats || 0;
+    const fiber = analysisData.nutrition?.fiber || 0;
 
-      if (foodLines.length > 0) {
-        // If multiple items, join them
-        const foodName = foodLines.join(', ');
-        
-        // Try to extract total weight/portion info
-        const weightMatches = description.matchAll(/~?(\d+)\s*g/gi);
-        const weights = Array.from(weightMatches).map(m => parseInt(m[1]));
-        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-        
-        const portion = totalWeight > 0 ? `${totalWeight}g` : '1 porção';
-        
-        return { foodName, portion };
-      }
-      
-      // Fallback: use first line or generic
-      const firstLine = description.split('\n')[0]?.trim();
-      return {
-        foodName: firstLine || 'Refeição analisada via WhatsApp',
-        portion: '1 porção'
-      };
+    const foodName = analysisData.foodName;
+    const description = analysisData.description || '';
+    const portion = analysisData.quantity || '1 porção';
+
+    console.log(`✅ Structured nutrition from analyze-nutrition: ${calories} kcal, ${proteins}g prot, ${carbs}g carbs, ${fats}g fats`);
+
+    // Build elements list if multiple items detected
+    let elementsText = '';
+    if (analysisData.elements && analysisData.elements.length > 0) {
+      elementsText = analysisData.elements.map((el: any) => 
+        `• ${el.name}: ${el.nutrition?.calories || 0} kcal`
+      ).join('\n');
+      elementsText = `\n\n🍽️ *Itens identificados:*\n${elementsText}\n`;
     }
 
-    let description = analysisData.description;
-    
-    console.log(`📏 Original description length: ${description.length} chars`);
-
-    // Extract nutrition info with improved regex for new format
-    const nutritionLine = description.match(/NUTRIÇÃO:\s*(\d+)\s*kcal\s*\|\s*(\d+(?:\.\d+)?)g?\s*proteínas\s*\|\s*(\d+(?:\.\d+)?)g?\s*carboidratos\s*\|\s*(\d+(?:\.\d+)?)g?\s*gorduras/i);
-
-    let calories = 500;  // default fallback
-    let proteins = 25;
-    let carbs = 50;
-    let fats = 15;
-
-    if (nutritionLine) {
-      calories = parseInt(nutritionLine[1]);
-      proteins = parseFloat(nutritionLine[2]);
-      carbs = parseFloat(nutritionLine[3]);
-      fats = parseFloat(nutritionLine[4]);
-      
-      console.log(`✅ Nutrition info extracted from AI: ${calories} kcal, ${proteins}g proteins, ${carbs}g carbs, ${fats}g fats`);
-      
-      // Remove the nutrition line from description so it doesn't appear twice
-      description = description.replace(/NUTRIÇÃO:.*$/im, '').trim();
-    } else {
-      console.log(`⚠️ No nutrition info found in AI response, using defaults`);
-      
-      // Fallback: try old regex patterns
-      const caloriesMatch = description.match(/(\d+)\s*(?:kcal|calorias)/i);
-      const proteinsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:proteínas|proteina|protein)/i);
-      const carbsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:carboidratos|carbs)/i);
-      const fatsMatch = description.match(/(\d+(?:\.\d+)?)\s*g?\s*(?:de\s+)?(?:gorduras|gordura|fat)/i);
-
-      if (caloriesMatch) calories = parseInt(caloriesMatch[1]);
-      if (proteinsMatch) proteins = parseFloat(proteinsMatch[1]);
-      if (carbsMatch) carbs = parseFloat(carbsMatch[1]);
-      if (fatsMatch) fats = parseFloat(fatsMatch[1]);
-    }
-
-    // Build message components
-    const header = `📸 *Análise da Imagem*\n\n`;
-    const nutritionInfo = `📊 *Informações Nutricionais:*\n` +
+    // Build message
+    const header = `📸 *Análise da Imagem*\n\n*${foodName}*\n`;
+    const nutritionInfo = `\n📊 *Informações Nutricionais:*\n` +
       `🔥 Calorias: ~${calories} kcal\n` +
       `💪 Proteínas: ~${proteins}g\n` +
       `🍞 Carboidratos: ~${carbs}g\n` +
-      `🥑 Gorduras: ~${fats}g\n\n`;
+      `🥑 Gorduras: ~${fats}g\n` +
+      (fiber > 0 ? `🥬 Fibras: ~${fiber}g\n` : '') +
+      `\n`;
     const footer = `✅ Quer registrar esta refeição?\n` +
       `Responda "SIM" para registrar ou "NÃO" para cancelar.`;
 
-    // Calculate available space for description
-    const fixedPartsLength = header.length + nutritionInfo.length + footer.length;
+    // Truncate description if needed
     const maxTotalLength = 1500;
-    const maxDescriptionLength = maxTotalLength - fixedPartsLength - 10; // 10 chars buffer
+    const fixedPartsLength = header.length + elementsText.length + nutritionInfo.length + footer.length;
+    const maxDescriptionLength = maxTotalLength - fixedPartsLength - 10;
 
-    console.log(`📊 Message size calculation:
-      - Fixed parts: ${fixedPartsLength} chars
-      - Max description: ${maxDescriptionLength} chars
-      - Total limit: ${maxTotalLength} chars`);
-
-    // Intelligent truncation: keep full paragraphs when possible
-    if (description.length > maxDescriptionLength) {
-      console.log(`⚠️ Description too long (${description.length} chars), truncating to ${maxDescriptionLength}`);
-      
-      // Try to break at last complete line/paragraph
-      const truncated = description.substring(0, maxDescriptionLength);
-      const lines = truncated.split('\n');
-      
-      // Remove last incomplete line and add indicator
-      description = lines.slice(0, -1).join('\n') + '\n\n[...análise resumida]';
-      
-      // If still too long, hard cut
-      if (description.length > maxDescriptionLength) {
-        description = description.substring(0, maxDescriptionLength - 3) + '...';
-      }
-      
-      console.log(`✂️ Description truncated to ${description.length} chars`);
+    let truncatedDesc = description;
+    if (truncatedDesc.length > maxDescriptionLength) {
+      truncatedDesc = truncatedDesc.substring(0, maxDescriptionLength - 3) + '...';
     }
 
-    // Assemble final message
-    const responseMessage = header + description + '\n\n' + nutritionInfo + footer;
+    const responseMessage = header + truncatedDesc + elementsText + nutritionInfo + footer;
 
     console.log(`📏 Final message length: ${responseMessage.length} chars`);
 
-    // Final safety check
-    if (responseMessage.length > maxTotalLength) {
-      console.error(`🚨 Message STILL too long (${responseMessage.length}), emergency truncation!`);
-      // This should never happen, but just in case
-      const emergencyDesc = description.substring(0, 400) + '...';
-      const emergencyMessage = header + emergencyDesc + '\n\n' + nutritionInfo + footer;
-      
-      console.log(`🆘 Emergency message length: ${emergencyMessage.length} chars`);
-      
-      await supabase.functions.invoke('whatsapp-send', {
-        body: {
-          to: phoneNumber,
-          message: emergencyMessage,
-          userId
-        }
-      });
-    } else {
-      // Send normal message
-      console.log(`✅ Sending message within limits`);
-      await supabase.functions.invoke('whatsapp-send', {
-        body: {
-          to: phoneNumber,
-          message: responseMessage,
-          userId
-        }
-      });
-    }
-
-    // Extract food name and portion from description
-    const { foodName, portion } = extractFoodItems(description);
-    console.log(`📝 Extracted food info: "${foodName}" (${portion})`);
+    // Send message
+    await supabase.functions.invoke('whatsapp-send', {
+      body: {
+        to: phoneNumber,
+        message: responseMessage,
+        userId
+      }
+    });
 
     // Store pending meal for confirmation
     await supabase.from('whatsapp_messages').insert({
@@ -232,13 +145,13 @@ serve(async (req) => {
           proteins,
           carbohydrates: carbs,
           fats,
-          portion: portion,
+          portion,
           meal_time: new Date().toISOString()
         }
       }
     });
 
-    return new Response(JSON.stringify({ success: true, analysis: description }), {
+    return new Response(JSON.stringify({ success: true, analysis: foodName }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 
