@@ -55,7 +55,7 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
 
       // Verificar se já tem uma subscription ativa
       console.log('🔍 Checking for existing subscription...');
-      let subscription = await registration.pushManager.getSubscription();
+      let subscription = await (registration as any).pushManager.getSubscription();
       console.log('📋 Existing subscription:', subscription ? 'Found' : 'None');
 
       if (!subscription) {
@@ -82,7 +82,7 @@ export const PushNotificationSetup = forwardRef<PushNotificationSetupRef>((_, re
         const vapidPublicKey = vapidData.publicKey;
         
         console.log('📱 Creating push subscription...');
-        subscription = await registration.pushManager.subscribe({
+        subscription = await (registration as any).pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: vapidPublicKey
         });
