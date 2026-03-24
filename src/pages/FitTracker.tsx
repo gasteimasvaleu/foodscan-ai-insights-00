@@ -7,7 +7,7 @@ import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
 import { ExerciseHistory } from "@/components/ExerciseHistory";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+
 
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";

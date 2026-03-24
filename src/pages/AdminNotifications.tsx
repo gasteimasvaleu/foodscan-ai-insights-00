@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { AuthCard } from '@/components/AuthCard';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+
 import { LoadingState } from '@/components/LoadingState';
 
 interface NotificationSent {
