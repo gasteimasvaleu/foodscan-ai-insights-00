@@ -41,7 +41,6 @@ const FoodScan = () => {
             <p className="mt-4 text-gray-600">Carregando...</p>
           </div>
         </div>
-        <Footer />
       </>
     );
   }
