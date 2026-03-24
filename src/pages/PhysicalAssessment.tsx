@@ -165,7 +165,7 @@ export default function PhysicalAssessment() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pb-28">
         <div className="max-w-4xl mx-auto">Carregando...</div>
       </div>
     );
