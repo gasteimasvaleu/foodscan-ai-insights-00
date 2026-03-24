@@ -514,7 +514,7 @@ const ServiNUTRI = () => {
               <div className="block lg:table-row">
                 <div className="block lg:table-cell w-full lg:w-2/3 p-3 sm:p-4 md:p-6 align-top">
                   <p className="text-gray-700 leading-relaxed text-justify text-sm sm:text-base">
-                    Aqui na FoodScan & Diet, acreditamos que tecnologia é uma aliada, mas jamais um substituto para o olhar humano. 
+                    Aqui na We Diet, acreditamos que tecnologia é uma aliada, mas jamais um substituto para o olhar humano. 
                     Por mais avançada que seja a inteligência artificial, nada supera o cuidado, a empatia e o atendimento personalizado 
                     que só um profissional de Nutrição pode oferecer. Por isso, criamos o ServiNUTRI, uma funcionalidade que conecta 
                     você diretamente com nutricionistas qualificados. Nosso objetivo é unir tecnologia e atendimento humanizado, 

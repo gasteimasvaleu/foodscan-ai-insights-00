@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
               </h1>
               
               <p className="text-gray-600 mb-8 text-lg">
-                Sua assinatura foi ativada e você já pode usar todos os recursos premium do FoodScan & Diet.
+                Sua assinatura foi ativada e você já pode usar todos os recursos premium do We Diet.
               </p>
 
               <div className="space-y-4">

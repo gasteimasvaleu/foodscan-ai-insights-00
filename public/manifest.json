@@ -1,6 +1,6 @@
 {
-  "name": "FoodScan AI - Análise Nutricional Inteligente",
-  "short_name": "FoodScan AI",
+  "name": "We Diet - Análise Nutricional Inteligente",
+  "short_name": "We Diet",
   "description": "Descubra informações nutricionais de qualquer alimento através de uma simples foto",
   "start_url": "/",
   "display": "standalone",

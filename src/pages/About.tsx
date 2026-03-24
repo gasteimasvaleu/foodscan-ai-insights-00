@@ -101,7 +101,7 @@ const About = () => {
                   <h3 className="text-lg font-semibold text-primary-600">Suporte ao Cliente</h3>
                   <p>
                     Nossa equipe de suporte está disponível para ajudá-lo com qualquer dúvida ou problema que você possa ter 
-                    ao usar o FoodScan AI.
+                    ao usar o We Diet.
                   </p>
                   
                   <div className="grid md:grid-cols-2 gap-4 mt-6">

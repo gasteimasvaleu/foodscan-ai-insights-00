@@ -386,7 +386,7 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       const emailResponse = await resend.emails.send({
-        from: 'FoodScan&Diet <contato@dietainteligente.app>',
+        from: 'We Diet <contato@dietainteligente.app>',
         to: [buyerEmail],
         subject: `🎉 Complete seu cadastro - ${planConfig.name}`,
         html: emailHtml,

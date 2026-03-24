@@ -190,7 +190,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
 
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-sm text-gray-600">
-              🎉 Parabéns! Você agora tem acesso completo ao FoodScan & Diet
+              🎉 Parabéns! Você agora tem acesso completo ao We Diet
             </p>
           </div>
         </form>

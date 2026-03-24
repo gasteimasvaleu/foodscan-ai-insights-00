@@ -56,7 +56,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               className="text-center"
             >
               <h1 className="text-3xl font-bold text-white mb-2">
-                FoodScan AI
+                We Diet
               </h1>
               <p className="text-white/80 text-lg">
                 Dieta Inteligente

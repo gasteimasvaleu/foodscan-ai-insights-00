@@ -111,7 +111,7 @@ const PWAInstallPrompt = () => {
             </div>
           ) : (
             <p className="text-xs text-muted-foreground mb-3">
-              Adicione o FoodScan AI à sua tela inicial para acesso rápido!
+              Adicione o We Diet à sua tela inicial para acesso rápido!
             </p>
           )}
           
