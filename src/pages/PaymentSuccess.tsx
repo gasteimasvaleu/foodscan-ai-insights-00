@@ -37,7 +37,6 @@ const PaymentSuccess = () => {
           </div>
         </div>
         
-        <Footer />
       </div>
     );
   }
