@@ -1,19 +1,19 @@
 
 
-## Remover Footer do app
+## Adicionar padding inferior global para evitar conteúdo atrás do menu
 
-Remover o componente `Footer` de todas as páginas onde é usado e deletar o arquivo do componente.
+A abordagem mais simples e consistente: adicionar `padding-bottom` global no `index.css` ao `body`, evitando editar cada página individualmente.
 
-### Páginas que importam e usam `<Footer />`:
-- `src/pages/Index.tsx`
-- `src/pages/FitTracker.tsx`
-- `src/pages/PaymentSuccess.tsx`
-- `src/pages/PaymentCancel.tsx`
-- `src/pages/WhatsAppSettings.tsx`
+### Alteração em `src/index.css`
 
-Além dessas, preciso verificar outras páginas.
+No bloco `@layer base` do `body`, adicionar `padding-bottom: 100px` para garantir que nenhum conteúdo fique escondido atrás do menu Tubelight (~80px de altura + margem).
 
-### Ações:
-1. Remover `import { Footer }` e `<Footer />` de todas as páginas que o utilizam
-2. Deletar `src/components/Footer.tsx`
+```css
+body {
+  /* regras existentes... */
+  padding-bottom: 100px;
+}
+```
+
+Isso aplica automaticamente a todas as páginas sem precisar editar cada uma.
 
