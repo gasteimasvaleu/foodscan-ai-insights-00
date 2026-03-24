@@ -1,19 +1,35 @@
 
 
-## Adicionar padding inferior global para evitar conteúdo atrás do menu
+## Redesign QuickActions como cards coloridos empilhados
 
-A abordagem mais simples e consistente: adicionar `padding-bottom` global no `index.css` ao `body`, evitando editar cada página individualmente.
+Transformar os botões de ações rápidas em cards grandes, coloridos, empilhados verticalmente (como no screenshot de referência), usando a paleta rosa/magenta do screenshot 2.
 
-### Alteração em `src/index.css`
+### Design dos cards
 
-No bloco `@layer base` do `body`, adicionar `padding-bottom: 100px` para garantir que nenhum conteúdo fique escondido atrás do menu Tubelight (~80px de altura + margem).
+Cada card será full-width, com ~100px de altura, cantos arredondados, contendo:
+- Icone + titulo em bold à esquerda
+- Tags/badges com as descrições
+- Botão circular com seta (→) à direita
+- Cards levemente sobrepostos (margin negativa entre eles)
 
-```css
-body {
-  /* regras existentes... */
-  padding-bottom: 100px;
-}
-```
+### Paleta de cores (baseada no screenshot 2 - gradiente rosa/magenta)
 
-Isso aplica automaticamente a todas as páginas sem precisar editar cada uma.
+1. Meu Perfil: `from-fuchsia-400 to-pink-500`
+2. Escanear Comida: `from-pink-400 to-rose-500`
+3. Registrar Exercício: `from-rose-400 to-pink-600`
+4. Ver Treinos: `from-pink-500 to-fuchsia-500`
+5. Gerar Cardápio: `from-fuchsia-500 to-pink-600`
+6. WhatsApp: `from-rose-500 to-fuchsia-600`
+
+### Alterações
+
+**`src/components/QuickActions.tsx`** - Reescrever completamente:
+- Remover Card wrapper externo, titulo "Ações Rápidas" e subtitulo
+- Cada ação vira um card grande full-width com layout horizontal (icone+texto à esquerda, seta à direita)
+- Adicionar badges/tags com palavras-chave (como no screenshot)
+- Cards com margin negativa entre si para efeito de sobreposição
+- Incluir "Meu Perfil" e "WhatsApp" como cards iguais aos demais
+- Botão circular escuro com icone ArrowRight à direita
+
+**`src/pages/Index.tsx`** - Ajustar para que QuickActions fique colado ao menu inferior removendo o `space-y-8` ou ajustando o espaçamento.
 
