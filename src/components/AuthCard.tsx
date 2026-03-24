@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
+import { AppleSignInButton } from './AppleSignInButton';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
