@@ -79,7 +79,7 @@ const About = () => {
                   
                   <h3 className="text-lg font-semibold text-primary-600">Assinatura e Pagamento</h3>
                   <p>
-                    O acesso completo ao FoodScan AI requer uma assinatura mensal. Os pagamentos são processados de forma segura 
+                    O acesso completo ao We Diet requer uma assinatura mensal. Os pagamentos são processados de forma segura 
                     e você pode cancelar sua assinatura a qualquer momento.
                   </p>
                 </div>
