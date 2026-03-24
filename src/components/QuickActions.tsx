@@ -15,28 +15,28 @@ export const QuickActions = () => {
       title: "Escanear Comida",
       tags: ["IA", "Foto", "Nutrição"],
       path: "/foodscan",
-      gradient: "from-pink-400 to-rose-500",
+      color: "#FA1690",
     },
     {
       icon: Activity,
       title: "Registrar Exercício",
       tags: ["Calorias", "Atividade"],
       path: "/fit-tracker",
-      gradient: "from-rose-400 to-pink-600",
+      color: "#E24989",
     },
     {
       icon: ChefHat,
       title: "Gerar Cardápio",
       tags: ["Receitas", "Personalizado"],
       path: "/masterchef",
-      gradient: "from-fuchsia-500 to-pink-600",
+      color: "#FA1690",
     },
     {
       icon: MessageCircle,
       title: "WhatsApp",
       tags: ["Automático", "Análises"],
       path: "/whatsapp-settings",
-      gradient: "from-rose-500 to-fuchsia-600",
+      color: "#E24989",
     },
   ];
 
@@ -48,7 +48,7 @@ export const QuickActions = () => {
           <button
             key={index}
             onClick={() => navigate(action.path)}
-            className={`relative w-full bg-gradient-to-r ${action.gradient} rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]`}
+            className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]"
             style={{
               zIndex: index,
               marginTop: index === 0 ? 0 : '-52px',
