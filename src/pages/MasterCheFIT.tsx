@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+
 import { AuthCard } from '@/components/AuthCard';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -315,7 +315,6 @@ const MasterCheFIT = () => {
         <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
-        <Footer />
       </>
     );
   }
@@ -336,7 +335,6 @@ const MasterCheFIT = () => {
             </div>
           </div>
         </div>
-        <Footer />
       </>
     );
   }
@@ -629,7 +627,7 @@ const MasterCheFIT = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

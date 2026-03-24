@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
-import { Footer } from '@/components/Footer';
+
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 import SplashScreen from '@/components/SplashScreen';
@@ -54,7 +54,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
       <PWAInstallPrompt />
       <PWAOfflineIndicator />
     </>;

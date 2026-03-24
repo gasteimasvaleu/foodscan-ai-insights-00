@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+
 
 import { DailyGoals } from '@/components/DailyGoals';
 import { MealsList } from '@/components/MealsList';
@@ -298,7 +298,6 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-        <Footer />
       </>;
   }
   if (!user) {
@@ -319,7 +318,6 @@ const DailyControl = () => {
             </div>
           </div>
         </div>
-        <Footer />
       </>;
   }
   return (
@@ -437,7 +435,7 @@ const DailyControl = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

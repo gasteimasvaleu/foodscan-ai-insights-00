@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GradientText } from '@/components/ui/gradient-text';
-import { Footer } from '@/components/Footer';
+
 import { VideoModal } from '@/components/VideoModal';
 import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
@@ -140,7 +140,6 @@ const Treinos = () => {
             <AuthCard mode="login" />
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -364,7 +363,7 @@ const Treinos = () => {
         workout={selectedWorkout}
       />
 
-      <Footer />
+      
     </div>
   );
 };

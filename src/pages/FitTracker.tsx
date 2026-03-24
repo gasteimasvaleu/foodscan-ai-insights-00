@@ -7,7 +7,7 @@ import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
 import { ExerciseHistory } from "@/components/ExerciseHistory";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+
 
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
@@ -30,7 +30,6 @@ export default function FitTracker() {
             <div className="h-96 bg-muted rounded"></div>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -48,7 +47,6 @@ export default function FitTracker() {
             <AuthCard mode="login" />
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -108,7 +106,7 @@ export default function FitTracker() {
             </TabsContent>
           </Tabs>
         </div>
-        <Footer />
+        
       </div>
   );
 }
