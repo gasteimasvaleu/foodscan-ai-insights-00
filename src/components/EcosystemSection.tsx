@@ -99,7 +99,7 @@ export const EcosystemSection = () => {
             <div className="block md:hidden w-px h-4 bg-gray-300"></div>
             
             <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-              <Users className="w-5 h-5 text-purple-600" />
+              <Users className="w-5 h-5 text-pink-600" />
               <span>Evolua com Profissionais</span>
             </div>
           </div>

@@ -128,10 +128,10 @@ export default {
 				},
 				'pulse-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 0 0 rgba(108, 99, 255, 0.4)'
+						boxShadow: '0 0 0 0 rgba(204, 0, 85, 0.4)'
 					},
 					'50%': {
-						boxShadow: '0 0 0 10px rgba(108, 99, 255, 0)'
+						boxShadow: '0 0 0 10px rgba(204, 0, 85, 0)'
 					}
 				},
 				gradient: {

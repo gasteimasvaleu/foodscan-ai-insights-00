@@ -83,7 +83,7 @@ export const FeaturesSection = () => {
       </Card>
 
       {/* Secondary Description */}
-      <Card className="bg-gradient-to-r from-primary-50/80 to-purple-50/80 backdrop-blur-sm border border-white/30 shadow-xl">
+      <Card className="bg-gradient-to-r from-primary-50/80 to-pink-50/80 backdrop-blur-sm border border-white/30 shadow-xl">
         <CardContent className="p-6">
           <div className="text-center">
             <p className="text-gray-700 leading-relaxed">
