@@ -81,8 +81,8 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'gradient-primary': 'linear-gradient(135deg, #6C63FF 0%, #FFFFFF 100%)',
-				'gradient-card': 'linear-gradient(145deg, #FFFFFF 0%, #F8F7FF 100%)',
+				'gradient-primary': 'linear-gradient(135deg, #CC0055 0%, #FFFFFF 100%)',
+				'gradient-card': 'linear-gradient(145deg, #FFFFFF 0%, #FFF5F8 100%)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
