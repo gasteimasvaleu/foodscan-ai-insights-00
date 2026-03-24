@@ -13,7 +13,7 @@ const About = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Sobre
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o FoodScan&amp;Diet</p>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o We Diet</p>
           </div>
 
           <div className="space-y-8">
