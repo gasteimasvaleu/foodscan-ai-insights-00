@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Camera, Activity, Dumbbell, ChefHat, MessageCircle, User, ArrowRight } from 'lucide-react';
+import { Camera, Activity, ChefHat, MessageCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const QuickActions = () => {
@@ -10,13 +10,6 @@ export const QuickActions = () => {
   if (!user) return null;
 
   const actions = [
-    {
-      icon: User,
-      title: "Meu Perfil",
-      tags: ["Progresso", "Balanço calórico"],
-      path: "/profile",
-      gradient: "from-fuchsia-400 to-pink-500",
-    },
     {
       icon: Camera,
       title: "Escanear Comida",
@@ -30,13 +23,6 @@ export const QuickActions = () => {
       tags: ["Calorias", "Atividade"],
       path: "/fit-tracker",
       gradient: "from-rose-400 to-pink-600",
-    },
-    {
-      icon: Dumbbell,
-      title: "Ver Treinos",
-      tags: ["Biblioteca", "Vídeos"],
-      path: "/treinos",
-      gradient: "from-pink-500 to-fuchsia-500",
     },
     {
       icon: ChefHat,
