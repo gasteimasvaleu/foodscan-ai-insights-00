@@ -30,13 +30,13 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#DB2174]/85 backdrop-blur-md border-b border-white/20 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <h1 className="text-xl font-bold text-primary-600">We Diet</h1>
+              <h1 className="text-xl font-bold text-white">We Diet</h1>
             </Link>
           </div>
 
@@ -49,13 +49,13 @@ export const Navbar = () => {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <div className="flex items-center space-x-2 cursor-pointer">
-                <span 
-                  className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+              <span 
+                  className="text-sm font-medium text-white/90 hover:text-white transition-colors"
                   onClick={() => setIsOpen(true)}
                 >
                   MEU PERFIL
                 </span>
-                <Button variant="ghost" size="icon" className="relative z-50">
+                <Button variant="ghost" size="icon" className="relative z-50 text-white hover:text-white/80">
                   {isOpen ? <X className="h-5 w-5" /> : <User className="h-5 w-5" />}
                 </Button>
               </div>
