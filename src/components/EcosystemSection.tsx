@@ -36,7 +36,7 @@ export const EcosystemSection = () => {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Ecossistema Completo de{' '}
-            <span className="bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-500 to-pink-500 bg-clip-text text-transparent">
               Saúde e Bem-Estar
             </span>
           </h2>
