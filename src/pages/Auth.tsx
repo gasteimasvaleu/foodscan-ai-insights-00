@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/LoadingState';
+import { AppleSignInButton } from '@/components/AppleSignInButton';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -307,6 +308,10 @@ const Auth = () => {
                       <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? 'Entrando...' : 'Entrar'}
                       </Button>
+                      
+                      <div className="mt-4">
+                        <AppleSignInButton />
+                      </div>
                     </form>
                   </TabsContent>
                   

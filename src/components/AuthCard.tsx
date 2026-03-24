@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
+import { AppleSignInButton } from './AppleSignInButton';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
@@ -173,6 +174,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           >
             {isLogin ? 'Entrar' : 'Criar Conta'}
           </Button>
+          
+          {isLogin && (
+            <div className="mt-4">
+              <AppleSignInButton />
+            </div>
+          )}
         </form>
         
         <div className="mt-4 text-center">
