@@ -43,7 +43,7 @@ export const FAQSection = () => {
     }} className="flex flex-col items-center justify-center max-w-4xl mx-auto">
         <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter mb-8 text-center">
           Perguntas mais{' '}
-          <span className="bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-primary-500 to-pink-500 bg-clip-text text-transparent">
             Frequentes
           </span>
         </h2>

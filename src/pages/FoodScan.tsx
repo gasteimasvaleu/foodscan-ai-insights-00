@@ -679,7 +679,7 @@ const FoodScan = () => {
                 )}
                 {nutritionData.source === 'ai' && nutritionData.barcode && (
                   <div className="text-center">
-                    <Badge variant="outline" className="gap-2 border-purple-300 text-purple-700">
+                    <Badge variant="outline" className="gap-2 border-pink-300 text-pink-700">
                       <BarChart3 className="w-3 h-3" />
                       IA + Open Food Facts
                     </Badge>

@@ -25,8 +25,8 @@ export const EcosystemSection = () => {
       icon: Users,
       features: ["ServiNUTRI"],
       description: "Conecte-se com nutricionistas qualificados",
-      color: "from-purple-500/10 to-violet-500/10",
-      iconColor: "text-purple-600"
+      color: "from-pink-500/10 to-rose-500/10",
+      iconColor: "text-pink-600"
     }
   ];
 
@@ -36,7 +36,7 @@ export const EcosystemSection = () => {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Ecossistema Completo de{' '}
-            <span className="bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary-500 to-pink-500 bg-clip-text text-transparent">
               Saúde e Bem-Estar
             </span>
           </h2>
@@ -99,7 +99,7 @@ export const EcosystemSection = () => {
             <div className="block md:hidden w-px h-4 bg-gray-300"></div>
             
             <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-              <Users className="w-5 h-5 text-purple-600" />
+              <Users className="w-5 h-5 text-pink-600" />
               <span>Evolua com Profissionais</span>
             </div>
           </div>

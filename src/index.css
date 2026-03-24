@@ -13,8 +13,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 336 100% 40%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -35,9 +35,9 @@
     --radius: 0.5rem;
 
     /* Splash Screen Colors */
-    --primary-glow: 270 75% 70%;
-    --gradient-primary: linear-gradient(135deg, hsl(270 75% 60%), hsl(270 75% 70%), hsl(280 80% 65%));
-    --gradient-animated: linear-gradient(135deg, hsl(270 75% 60%), hsl(270 75% 70%), hsl(280 80% 65%));
+    --primary-glow: 330 100% 50%;
+    --gradient-primary: linear-gradient(135deg, hsl(336 100% 40%), hsl(330 100% 50%), hsl(340 100% 45%));
+    --gradient-animated: linear-gradient(135deg, hsl(336 100% 40%), hsl(330 100% 50%), hsl(340 100% 45%));
 
     --sidebar-background: 0 0% 98%;
 
@@ -184,7 +184,7 @@
   }
 
   .bg-gradient-animated {
-    background: linear-gradient(135deg, hsl(270 75% 60%), hsl(270 75% 70%), hsl(280 80% 65%));
+    background: linear-gradient(135deg, hsl(336 100% 40%), hsl(330 100% 50%), hsl(340 100% 45%));
     background-size: 200% 200%;
     animation: gradient-shift 3s ease infinite;
   }

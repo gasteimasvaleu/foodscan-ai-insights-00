@@ -204,10 +204,10 @@ const Subscription = () => {
               {/* Acompanhamento & Metas */}
               <div className="mb-8">
                 <div className="flex items-center mb-4">
-                  <div className="bg-purple-100 rounded-full p-2 mr-3">
-                    <Target className="w-6 h-6 text-purple-600" />
+                  <div className="bg-pink-100 rounded-full p-2 mr-3">
+                    <Target className="w-6 h-6 text-pink-600" />
                   </div>
-                  <h4 className="text-xl font-bold text-purple-700">Acompanhamento & Metas</h4>
+                  <h4 className="text-xl font-bold text-pink-700">Acompanhamento & Metas</h4>
                 </div>
                 <div className="grid gap-3 ml-12">
                   <div className="flex items-center space-x-3">

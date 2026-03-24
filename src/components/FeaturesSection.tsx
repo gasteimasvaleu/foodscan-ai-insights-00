@@ -43,7 +43,7 @@ export const FeaturesSection = () => {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               Transforme sua saúde com{' '}
-              <span className="bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-500 to-pink-500 bg-clip-text text-transparent">
                 Inteligência Artificial
               </span>
             </h2>
@@ -75,7 +75,7 @@ export const FeaturesSection = () => {
 
           {/* Call to Action */}
           <div className="text-center">
-            <div className="inline-block bg-gradient-to-r from-primary-500/10 to-purple-600/10 px-6 py-3 rounded-sm">
+            <div className="inline-block bg-gradient-to-r from-primary-500/10 to-pink-500/10 px-6 py-3 rounded-sm">
               <p className="text-primary-700 font-medium"> Feedback diário personalizado • Resultados reais • Fácil e divertido</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export const FeaturesSection = () => {
       </Card>
 
       {/* Secondary Description */}
-      <Card className="bg-gradient-to-r from-primary-50/80 to-purple-50/80 backdrop-blur-sm border border-white/30 shadow-xl">
+      <Card className="bg-gradient-to-r from-primary-50/80 to-pink-50/80 backdrop-blur-sm border border-white/30 shadow-xl">
         <CardContent className="p-6">
           <div className="text-center">
             <p className="text-gray-700 leading-relaxed">

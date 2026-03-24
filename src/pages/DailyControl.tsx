@@ -402,7 +402,7 @@ const DailyControl = () => {
                   <Button 
                     onClick={handleEndDay} 
                     disabled={isAnalyzing} 
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-xs"
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-xs"
                   >
                     {isAnalyzing ? (
                       <div className="flex items-center">

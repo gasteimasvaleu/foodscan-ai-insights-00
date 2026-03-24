@@ -31,7 +31,7 @@ export const QuickActions = () => {
       title: "Ver Treinos",
       description: "Acesse biblioteca",
       path: "/treinos",
-      color: "from-purple-500 to-violet-600"
+      color: "from-pink-500 to-rose-600"
     },
     {
       icon: ChefHat,
@@ -58,7 +58,7 @@ export const QuickActions = () => {
           {/* Botão Meu Perfil - largura total */}
           <Button
             onClick={() => navigate("/profile")}
-            className="w-full h-auto py-3 px-4 bg-gradient-to-br from-indigo-500 to-purple-600 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0"
+            className="w-full h-auto py-3 px-4 bg-gradient-to-br from-primary-500 to-pink-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-white border-0"
             variant="default"
           >
             <div className="flex items-center justify-center space-x-3">

@@ -120,14 +120,14 @@ export function ExerciseHistory() {
     return (
       <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
       <CardHeader className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-pink-500/5"></div>
         <CardTitle className="text-xl font-bold relative z-10 text-center">
           Histórico de Exercícios
         </CardTitle>
       </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <div className="p-4 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 w-fit mx-auto mb-6">
+            <div className="p-4 rounded-full bg-gradient-to-br from-blue-500/10 to-pink-500/10 w-fit mx-auto mb-6">
               <Clock className="h-12 w-12 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground text-lg font-medium">Nenhum exercício registrado ainda.</p>
@@ -141,7 +141,7 @@ export function ExerciseHistory() {
   return (
     <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
       <CardHeader className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-pink-500/5"></div>
         <CardTitle className="text-xl font-bold relative z-10 text-center">
           Histórico de Exercícios
         </CardTitle>
@@ -151,7 +151,7 @@ export function ExerciseHistory() {
           {exercises.map((exercise, index) => (
             <div 
               key={exercise.id} 
-              className="flex items-center justify-between p-4 border border-white/20 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-sm group animate-fade-in"
+              className="flex items-center justify-between p-4 border border-white/20 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-pink-50/50 dark:hover:from-blue-900/20 dark:hover:to-pink-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-sm group animate-fade-in"
               style={{animationDelay: `${index * 0.1}s`}}
             >
               <div className="flex-1">

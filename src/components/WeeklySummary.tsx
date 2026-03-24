@@ -194,18 +194,18 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                   className={`
                     relative px-3 py-2 text-xs font-medium rounded-xl transition-all duration-200
                     ${isSelected 
-                      ? 'bg-purple-500 text-white shadow-md' 
+                      ? 'bg-primary-500 text-white shadow-md' 
                       : hasData 
                         ? 'text-gray-700 hover:bg-gray-200' 
                         : 'text-gray-400'
                     }
-                    ${isToday && !isSelected ? 'ring-2 ring-purple-300' : ''}
+                    ${isToday && !isSelected ? 'ring-2 ring-pink-300' : ''}
                   `}
                 >
                   {day.short}
                   {hasData && (
                     <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${
-                      isSelected ? 'bg-white' : 'bg-purple-500'
+                      isSelected ? 'bg-white' : 'bg-primary-500'
                     }`} />
                   )}
                 </Button>
@@ -257,7 +257,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
 
         {/* Médias semanais */}
         {weeklyData.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6">
+          <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
               Médias da Semana ({weeklyData.length} dias registrados)
             </h4>

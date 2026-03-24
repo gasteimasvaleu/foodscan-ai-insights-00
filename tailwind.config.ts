@@ -29,13 +29,13 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#6C63FF',
+					DEFAULT: '#CC0055',
 					foreground: 'hsl(var(--primary-foreground))',
-					50: '#F8F7FF',
-					100: '#EFECFF',
-					500: '#6C63FF',
-					600: '#5A52E6',
-					700: '#4941CC'
+					50: '#FFF5F8',
+					100: '#FFE4EF',
+					500: '#CC0055',
+					600: '#B3004B',
+					700: '#99003F'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -81,8 +81,8 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'gradient-primary': 'linear-gradient(135deg, #6C63FF 0%, #FFFFFF 100%)',
-				'gradient-card': 'linear-gradient(145deg, #FFFFFF 0%, #F8F7FF 100%)',
+				'gradient-primary': 'linear-gradient(135deg, #CC0055 0%, #FFFFFF 100%)',
+				'gradient-card': 'linear-gradient(145deg, #FFFFFF 0%, #FFF5F8 100%)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -128,10 +128,10 @@ export default {
 				},
 				'pulse-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 0 0 rgba(108, 99, 255, 0.4)'
+						boxShadow: '0 0 0 0 rgba(204, 0, 85, 0.4)'
 					},
 					'50%': {
-						boxShadow: '0 0 0 10px rgba(108, 99, 255, 0)'
+						boxShadow: '0 0 0 10px rgba(204, 0, 85, 0)'
 					}
 				},
 				gradient: {
