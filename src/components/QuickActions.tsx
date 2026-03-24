@@ -31,7 +31,7 @@ export const QuickActions = () => {
       title: "Ver Treinos",
       description: "Acesse biblioteca",
       path: "/treinos",
-      color: "from-purple-500 to-violet-600"
+      color: "from-pink-500 to-rose-600"
     },
     {
       icon: ChefHat,
