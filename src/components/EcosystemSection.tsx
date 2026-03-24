@@ -25,8 +25,8 @@ export const EcosystemSection = () => {
       icon: Users,
       features: ["ServiNUTRI"],
       description: "Conecte-se com nutricionistas qualificados",
-      color: "from-purple-500/10 to-violet-500/10",
-      iconColor: "text-purple-600"
+      color: "from-pink-500/10 to-rose-500/10",
+      iconColor: "text-pink-600"
     }
   ];
 
