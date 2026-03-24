@@ -1,15 +1,10 @@
 
 
-## Alterar cor da Navbar e Tubelight para #DB2174
+## Ajustes no menu Tubelight
 
-### Alterações
+### Alterações em `src/components/ui/tubelight-navbar.tsx`
 
-**1. `src/components/Navbar.tsx`** (linha 33)
-- Trocar `bg-white/80` por `bg-[#DB2174]/85 backdrop-blur-md` — mantém efeito vidro com a nova cor
-- Atualizar textos para branco (logo, "MEU PERFIL")
+**1. Remover sombra** (linha 50): Trocar `shadow-lg` por `shadow-none`
 
-**2. `src/components/ui/tubelight-navbar.tsx`** (linha 48)
-- Trocar `bg-background/80 border border-border` por `bg-[#DB2174]/85 border border-white/20` — mesma cor com efeito vidro
-- Atualizar cores do texto e ícones para branco
-- Adicionar faixa decorativa atrás do menu (div absoluto com `bg-[#DB2174]/40` e blur, mais largo que o menu)
+**2. Alterar faixa decorativa** (linha 49): Trocar `bg-[#DB2174]/40 rounded-3xl blur-xl` por `bg-white rounded-3xl` — faixa branca sólida atrás do menu, sem blur
 
