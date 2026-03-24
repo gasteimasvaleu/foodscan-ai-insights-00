@@ -11,13 +11,6 @@ export const QuickActions = () => {
 
   const actions = [
     {
-      icon: User,
-      title: "Meu Perfil",
-      tags: ["Progresso", "Balanço calórico"],
-      path: "/profile",
-      gradient: "from-fuchsia-400 to-pink-500",
-    },
-    {
       icon: Camera,
       title: "Escanear Comida",
       tags: ["IA", "Foto", "Nutrição"],
@@ -30,13 +23,6 @@ export const QuickActions = () => {
       tags: ["Calorias", "Atividade"],
       path: "/fit-tracker",
       gradient: "from-rose-400 to-pink-600",
-    },
-    {
-      icon: Dumbbell,
-      title: "Ver Treinos",
-      tags: ["Biblioteca", "Vídeos"],
-      path: "/treinos",
-      gradient: "from-pink-500 to-fuchsia-500",
     },
     {
       icon: ChefHat,
