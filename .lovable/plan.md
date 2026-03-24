@@ -1,22 +1,19 @@
 
 
-## Esconder barra de scroll vertical
+## Remover Footer do app
 
-### Alteração em `src/index.css`
+Remover o componente `Footer` de todas as páginas onde é usado e deletar o arquivo do componente.
 
-Adicionar regras CSS globais para esconder a scrollbar vertical em todos os navegadores, mantendo o scroll funcional:
+### Páginas que importam e usam `<Footer />`:
+- `src/pages/Index.tsx`
+- `src/pages/FitTracker.tsx`
+- `src/pages/PaymentSuccess.tsx`
+- `src/pages/PaymentCancel.tsx`
+- `src/pages/WhatsAppSettings.tsx`
 
-```css
-/* Hide scrollbar for native app feel */
-::-webkit-scrollbar {
-  display: none;
-}
+Além dessas, preciso verificar outras páginas.
 
-body {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-```
-
-Inserir dentro do bloco `@layer base`, junto às regras existentes do `body`.
+### Ações:
+1. Remover `import { Footer }` e `<Footer />` de todas as páginas que o utilizam
+2. Deletar `src/components/Footer.tsx`
 
