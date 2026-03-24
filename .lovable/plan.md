@@ -1,31 +1,33 @@
 
 
-## Simplificar card de boas-vindas no AuthCard
+## Separar banner e boas-vindas em dois cards distintos
 
-### Alteração em `src/components/AuthCard.tsx` (linhas 83-107)
+### Alteração em `src/components/AuthCard.tsx` (linhas 83-101)
 
-Substituir o bloco do usuário logado por um card simples com apenas o texto de boas-vindas em uma linha, fonte menor:
+Separar o card atual em dois cards: um só com a imagem e outro só com o texto.
 
 ```tsx
-if (user) {
-  const userName = user.user_metadata?.name || user.email;
-  return (
-    <>
-      <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
-        <CardContent className="p-4">
-          <h3 className="font-semibold text-gray-800 text-sm truncate text-center">
-            Boas-vindas, {userName}!
-          </h3>
-        </CardContent>
-      </Card>
-      <PushNotificationSetup ref={pushNotificationRef} />
-    </>
-  );
-}
+return (
+  <>
+    <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden">
+      <div className="aspect-video w-full">
+        <img
+          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/bannerapp2.png"
+          alt="Banner"
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    </Card>
+    <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-foreground text-sm truncate text-center">
+          Boas-vindas, {userName}!
+        </h3>
+      </CardContent>
+    </Card>
+    <PushNotificationSetup ref={pushNotificationRef} />
+  </>
+);
 ```
-
-- Remove "Usuário logado" text
-- Remove botão "Sair"
-- Reduz padding de `p-6` para `p-4`
-- Reduz fonte para `text-sm` com `truncate` para caber em uma linha
 
