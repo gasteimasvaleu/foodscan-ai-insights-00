@@ -112,6 +112,7 @@
     touch-action: manipulation;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    padding-bottom: 100px;
   }
 
   /* PWA safe area adjustments for notched devices */
