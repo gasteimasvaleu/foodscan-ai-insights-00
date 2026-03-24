@@ -100,11 +100,18 @@
     @apply border-border;
   }
 
+  /* Hide scrollbar for native app feel */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
     @apply bg-background text-foreground;
     /* PWA specific styles */
     overscroll-behavior: none;
     touch-action: manipulation;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   /* PWA safe area adjustments for notched devices */
