@@ -104,7 +104,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
         </CardTitle>
         <div className="space-y-2">
           <p className="text-gray-700">
-            Agora crie sua conta para começar a usar o FoodScan & Diet
+            Agora crie sua conta para começar a usar o We Diet
           </p>
           <p className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-lg inline-block">
             Session ID: {sessionId}
