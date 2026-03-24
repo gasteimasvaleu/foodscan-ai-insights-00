@@ -258,7 +258,6 @@ export default function AdminTreinos() {
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
     );
   }
