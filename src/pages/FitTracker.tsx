@@ -36,7 +36,7 @@ export default function FitTracker() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-primary">
+      <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8 pt-16">
           <div className="max-w-md mx-auto space-y-8">
