@@ -9,11 +9,13 @@ const About = () => {
       <div className="pt-20 pb-12 px-4">
         <div className="container mx-auto max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-12 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Sobre
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o We Diet</p>
+          <div className="mb-6 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-white">Sobre</h1>
+            </div>
           </div>
 
           <div className="space-y-8">

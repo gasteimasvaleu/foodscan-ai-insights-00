@@ -329,24 +329,12 @@ const DailyControl = () => {
           
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Header Card */}
-            <div className="text-center mb-12 animate-fade-in">
-              <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-primary/10 transition-all duration-500 rounded-3xl p-8">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full blur-2xl opacity-70 animate-pulse"></div>
-                    <div className="relative bg-gradient-to-br from-blue-400 to-cyan-500 p-6 rounded-3xl shadow-2xl">
-                      <BarChart3 className="w-12 h-12 text-white" />
-                    </div>
-                  </div>
+            <div className="mb-6 animate-fade-in">
+              <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+                <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                  <BarChart3 className="w-6 h-6 text-white" />
                 </div>
-                
-                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
-                  Controle Diário
-                </h1>
-                
-                <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                  Acompanhe suas metas nutricionais e registre suas refeições diárias
-                </p>
+                <h1 className="text-xl font-bold text-white">Controle Diário</h1>
               </div>
             </div>
 
