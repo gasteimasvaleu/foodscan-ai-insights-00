@@ -205,7 +205,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                   {day.short}
                   {hasData && (
                     <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${
-                      isSelected ? 'bg-white' : 'bg-purple-500'
+                      isSelected ? 'bg-white' : 'bg-primary-500'
                     }`} />
                   )}
                 </Button>
