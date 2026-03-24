@@ -47,7 +47,6 @@ export default function FitTracker() {
             <AuthCard mode="login" />
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
