@@ -22,7 +22,7 @@ export default function FitTracker() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-primary">
+      <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8 pt-16">
           <div className="animate-pulse space-y-6">
@@ -36,7 +36,7 @@ export default function FitTracker() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-primary">
+      <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8 pt-16">
           <div className="max-w-md mx-auto space-y-8">
@@ -52,7 +52,7 @@ export default function FitTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pt-16">
+    <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}

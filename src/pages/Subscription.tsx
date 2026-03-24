@@ -6,7 +6,7 @@ import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { SubscriptionStatus } from '@/components/SubscriptionStatus';
 import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, CreditCard, Clock, Dumbbell, Play, Heart, TrendingUp, Calendar, BarChart3, Zap } from 'lucide-react';
 const Subscription = () => {
-  return <div className="min-h-screen bg-gradient-primary">
+  return <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
       <div className="pt-20 pb-12 px-0">

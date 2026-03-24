@@ -19,7 +19,7 @@ const PaymentCancel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-primary">
+    <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
       <div className="pt-20 px-4">

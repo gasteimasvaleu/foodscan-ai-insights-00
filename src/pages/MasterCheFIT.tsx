@@ -312,7 +312,7 @@ const MasterCheFIT = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
       </>
@@ -324,7 +324,7 @@ const MasterCheFIT = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary pt-16">
+        <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
@@ -342,7 +342,7 @@ const MasterCheFIT = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary pt-16">
+      <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             

@@ -3,7 +3,7 @@ import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, FileText, Mail } from 'lucide-react';
 const About = () => {
-  return <div className="min-h-screen bg-gradient-primary">
+  return <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
       <div className="pt-20 pb-12 px-4">

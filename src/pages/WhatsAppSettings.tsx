@@ -34,7 +34,7 @@ const WhatsAppSettings = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary pt-16">
+      <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center mb-12 animate-fade-in">

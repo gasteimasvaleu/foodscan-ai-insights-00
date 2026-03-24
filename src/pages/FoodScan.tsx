@@ -35,7 +35,7 @@ const FoodScan = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary font-inter pt-16 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">Carregando...</p>
@@ -50,7 +50,7 @@ const FoodScan = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
@@ -588,7 +588,7 @@ const FoodScan = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+      <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="text-center mb-12 animate-fade-in">
