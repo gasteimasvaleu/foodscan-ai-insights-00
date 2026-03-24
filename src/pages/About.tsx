@@ -63,7 +63,7 @@ const About = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-4 text-gray-700">
                   <h3 className="text-lg font-semibold text-primary-600">Aceitação dos Termos</h3>
-                  <p>Ao usar o FoodScan&Diet, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer parte destes termos, não use nosso serviço.</p>
+                  <p>Ao usar o We Diet, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer parte destes termos, não use nosso serviço.</p>
                   
                   <h3 className="text-lg font-semibold text-primary-600">Uso Permitido</h3>
                   <p>
