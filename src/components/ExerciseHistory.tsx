@@ -127,7 +127,7 @@ export function ExerciseHistory() {
       </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <div className="p-4 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 w-fit mx-auto mb-6">
+            <div className="p-4 rounded-full bg-gradient-to-br from-blue-500/10 to-pink-500/10 w-fit mx-auto mb-6">
               <Clock className="h-12 w-12 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground text-lg font-medium">Nenhum exercício registrado ainda.</p>
