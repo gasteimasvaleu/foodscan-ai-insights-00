@@ -58,7 +58,7 @@ const PaymentCancel = () => {
         </div>
       </div>
       
-      <Footer />
+      
     </div>
   );
 };

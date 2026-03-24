@@ -92,7 +92,7 @@ const WhatsAppSettings = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

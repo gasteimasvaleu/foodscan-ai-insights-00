@@ -363,7 +363,7 @@ const Treinos = () => {
         workout={selectedWorkout}
       />
 
-      <Footer />
+      
     </div>
   );
 };

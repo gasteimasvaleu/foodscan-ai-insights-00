@@ -583,7 +583,7 @@ export default function AdminTreinos() {
         )}
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

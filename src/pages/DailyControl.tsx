@@ -435,7 +435,7 @@ const DailyControl = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

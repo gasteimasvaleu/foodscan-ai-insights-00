@@ -751,7 +751,7 @@ const FoodScan = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

@@ -316,7 +316,7 @@ const Subscription = () => {
           </Card>
         </div>
       </div>
-      <Footer />
+      
     </div>;
 };
 export default Subscription;

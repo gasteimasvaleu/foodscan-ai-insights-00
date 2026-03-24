@@ -627,7 +627,7 @@ const MasterCheFIT = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

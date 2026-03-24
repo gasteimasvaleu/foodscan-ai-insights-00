@@ -106,7 +106,7 @@ export default function FitTracker() {
             </TabsContent>
           </Tabs>
         </div>
-        <Footer />
+        
       </div>
   );
 }
