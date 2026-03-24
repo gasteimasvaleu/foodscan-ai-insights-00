@@ -324,7 +324,7 @@ const MasterCheFIT = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary pt-16">
+        <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
