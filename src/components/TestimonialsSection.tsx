@@ -77,7 +77,7 @@ export const TestimonialsSection = () => {
             </span>
           </h2>
           <p className="text-center mt-5 opacity-75 text-gray-600">
-            Veja o que nossos usuários têm a dizer sobre o FoodScan & Diet.
+            Veja o que nossos usuários têm a dizer sobre o We Diet.
           </p>
         </motion.div>
 

@@ -13,7 +13,7 @@ const About = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Sobre
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o FoodScan&amp;Diet</p>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">Conheça mais sobre o We Diet</p>
           </div>
 
           <div className="space-y-8">
@@ -63,7 +63,7 @@ const About = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-4 text-gray-700">
                   <h3 className="text-lg font-semibold text-primary-600">Aceitação dos Termos</h3>
-                  <p>Ao usar o FoodScan&Diet, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer parte destes termos, não use nosso serviço.</p>
+                  <p>Ao usar o We Diet, você concorda em cumprir estes termos de uso. Se você não concordar com qualquer parte destes termos, não use nosso serviço.</p>
                   
                   <h3 className="text-lg font-semibold text-primary-600">Uso Permitido</h3>
                   <p>
@@ -79,7 +79,7 @@ const About = () => {
                   
                   <h3 className="text-lg font-semibold text-primary-600">Assinatura e Pagamento</h3>
                   <p>
-                    O acesso completo ao FoodScan AI requer uma assinatura mensal. Os pagamentos são processados de forma segura 
+                    O acesso completo ao We Diet requer uma assinatura mensal. Os pagamentos são processados de forma segura 
                     e você pode cancelar sua assinatura a qualquer momento.
                   </p>
                 </div>
@@ -101,7 +101,7 @@ const About = () => {
                   <h3 className="text-lg font-semibold text-primary-600">Suporte ao Cliente</h3>
                   <p>
                     Nossa equipe de suporte está disponível para ajudá-lo com qualquer dúvida ou problema que você possa ter 
-                    ao usar o FoodScan AI.
+                    ao usar o We Diet.
                   </p>
                   
                   <div className="grid md:grid-cols-2 gap-4 mt-6">

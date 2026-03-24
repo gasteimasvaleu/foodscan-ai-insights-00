@@ -284,7 +284,7 @@ const handler = async (req: Request): Promise<Response> => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Complete seu cadastro - FoodScan&amp;Diet</title>
+  <title>Complete seu cadastro - We Diet</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px 0;">
@@ -295,7 +295,7 @@ const handler = async (req: Request): Promise<Response> => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">🎉 Bem-vindo ao FoodScan&amp;Diet!</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">🎉 Bem-vindo ao We Diet!</h1>
             </td>
           </tr>
           
@@ -369,7 +369,7 @@ const handler = async (req: Request): Promise<Response> => {
           <tr>
             <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="margin: 0 0 10px; color: #6b7280; font-size: 13px;">
-                FoodScan&amp;Diet - Sua jornada fitness começa aqui! 💪
+                We Diet - Sua jornada fitness começa aqui! 💪
               </p>
               <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                 Se você não realizou esta compra, ignore este email.
@@ -386,7 +386,7 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       const emailResponse = await resend.emails.send({
-        from: 'FoodScan&Diet <contato@dietainteligente.app>',
+        from: 'We Diet <contato@dietainteligente.app>',
         to: [buyerEmail],
         subject: `🎉 Complete seu cadastro - ${planConfig.name}`,
         html: emailHtml,

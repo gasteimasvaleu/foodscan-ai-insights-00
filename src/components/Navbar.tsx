@@ -36,7 +36,7 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <h1 className="text-xl font-bold text-primary-600">FoodScan & Diet</h1>
+              <h1 className="text-xl font-bold text-primary-600">We Diet</h1>
             </Link>
           </div>
 

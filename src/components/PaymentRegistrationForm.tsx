@@ -80,7 +80,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
       if (!error) {
         toast({
           title: "Conta criada com sucesso!",
-          description: "Bem-vindo ao FoodScan & Diet! Você já pode começar a usar.",
+          description: "Bem-vindo ao We Diet! Você já pode começar a usar.",
         });
         navigate('/', { replace: true });
       }
@@ -104,7 +104,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
         </CardTitle>
         <div className="space-y-2">
           <p className="text-gray-700">
-            Agora crie sua conta para começar a usar o FoodScan & Diet
+            Agora crie sua conta para começar a usar o We Diet
           </p>
           <p className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-lg inline-block">
             Session ID: {sessionId}
@@ -190,7 +190,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
 
           <div className="text-center pt-4 border-t border-gray-200">
             <p className="text-sm text-gray-600">
-              🎉 Parabéns! Você agora tem acesso completo ao FoodScan & Diet
+              🎉 Parabéns! Você agora tem acesso completo ao We Diet
             </p>
           </div>
         </form>

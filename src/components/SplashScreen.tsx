@@ -43,7 +43,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             >
               <img 
                 src={foodscanLogo} 
-                alt="FoodScan AI" 
+                alt="We Diet" 
                 className="w-24 h-24 mx-auto drop-shadow-lg"
               />
             </motion.div>
@@ -56,7 +56,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               className="text-center"
             >
               <h1 className="text-3xl font-bold text-white mb-2">
-                FoodScan AI
+                We Diet
               </h1>
               <p className="text-white/80 text-lg">
                 Dieta Inteligente

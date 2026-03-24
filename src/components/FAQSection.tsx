@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 export const FAQSection = () => {
   const faqs = [{
-    question: "Como funciona a análise por foto do FoodScan & Diet?",
+    question: "Como funciona a análise por foto do We Diet?",
     answer: "Nossa IA avançada analisa a foto da sua refeição e identifica automaticamente os alimentos, calcula calorias, macronutrientes e micronutrientes com alta precisão. O sistema também reconhece o método de preparo para dar informações ainda mais precisas."
   }, {
     question: "O que é o MasterCheFIT e como ele pode me ajudar?",
