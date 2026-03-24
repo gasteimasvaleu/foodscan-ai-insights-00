@@ -164,7 +164,6 @@ const AdminNotifications = () => {
             </CardHeader>
           </Card>
         </div>
-        <Footer />
       </div>
     );
   }
