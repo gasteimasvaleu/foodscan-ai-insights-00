@@ -1,11 +1,17 @@
 
 
-## Remover cards "Meu Perfil" e "Ver Treinos"
+## Alterar cores dos cards QuickActions
 
-Manter apenas 4 cards na ordem: Escanear Comida, Registrar Exercício, Gerar Cardápio, WhatsApp.
+Trocar os gradientes Tailwind por cores sólidas alternando entre `#E24989` e `#FA1690`.
+
+Ordem (último card = WhatsApp = na frente):
+1. Escanear Comida → `#FA1690`
+2. Registrar Exercício → `#E24989`
+3. Gerar Cardápio → `#FA1690`
+4. WhatsApp → `#E24989`
 
 ### Alteração em `src/components/QuickActions.tsx`
 
-- Remover o item "Meu Perfil" (linhas 13-18) e "Ver Treinos" (linhas 34-39) do array `actions`
-- Remover imports não utilizados: `User`, `Dumbbell`
+- Substituir a propriedade `gradient` por `color` com o hex correspondente
+- No botão, trocar `className` com `bg-gradient-to-r ${action.gradient}` por `style={{ backgroundColor: action.color }}` inline
 
