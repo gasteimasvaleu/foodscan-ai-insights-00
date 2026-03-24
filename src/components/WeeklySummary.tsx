@@ -194,7 +194,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                   className={`
                     relative px-3 py-2 text-xs font-medium rounded-xl transition-all duration-200
                     ${isSelected 
-                      ? 'bg-purple-500 text-white shadow-md' 
+                      ? 'bg-primary-500 text-white shadow-md' 
                       : hasData 
                         ? 'text-gray-700 hover:bg-gray-200' 
                         : 'text-gray-400'
