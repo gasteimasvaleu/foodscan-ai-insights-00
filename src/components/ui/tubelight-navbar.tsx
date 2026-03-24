@@ -46,8 +46,8 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
       )}
     >
       {/* Faixa decorativa atrás do menu */}
-      <div className="absolute -inset-x-6 -inset-y-3 bg-[#DB2174]/40 rounded-3xl blur-xl -z-10" />
-      <div className="flex items-center gap-2 sm:gap-3 bg-[#DB2174]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-lg">
+      <div className="absolute -inset-x-6 -inset-y-3 bg-white rounded-3xl -z-10" />
+      <div className="flex items-center gap-2 sm:gap-3 bg-[#DB2174]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-none">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.url
