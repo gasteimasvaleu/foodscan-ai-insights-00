@@ -1,14 +1,22 @@
 
 
-## Remover espaço inferior da faixa branca do Tubelight
+## Esconder barra de scroll vertical
 
-O menu está posicionado com `bottom-6` (24px do fundo da tela), e a faixa branca tem `-inset-y-3` (12px extra para cima e para baixo). Mesmo assim, sobra espaço entre a faixa e o fundo da tela.
+### Alteração em `src/index.css`
 
-### Alteração em `src/components/ui/tubelight-navbar.tsx`
+Adicionar regras CSS globais para esconder a scrollbar vertical em todos os navegadores, mantendo o scroll funcional:
 
-**1. Linha 44**: Trocar `bottom-6` por `bottom-0` — cola o menu no fundo da tela
+```css
+/* Hide scrollbar for native app feel */
+::-webkit-scrollbar {
+  display: none;
+}
 
-**2. Linha 49**: Ajustar a faixa branca para estender até o fundo da tela — trocar `-inset-y-3` por `-top-3 -bottom-0` e remover `rounded-3xl` em favor de `rounded-t-3xl` (arredondamento só em cima)
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+```
 
-Também adicionar padding-bottom no menu container para dar respiro do safe-area em dispositivos com notch.
+Inserir dentro do bloco `@layer base`, junto às regras existentes do `body`.
 
