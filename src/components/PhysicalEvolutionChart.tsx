@@ -92,7 +92,7 @@ export const PhysicalEvolutionChart = () => {
               }}
             />
             <Legend />
-            <Line type="monotone" dataKey="Peso (kg)" stroke="#6C63FF" strokeWidth={2} />
+            <Line type="monotone" dataKey="Peso (kg)" stroke="#CC0055" strokeWidth={2} />
             <Line type="monotone" dataKey="Gordura (%)" stroke="#f97316" strokeWidth={2} />
             <Line type="monotone" dataKey="Massa Magra (kg)" stroke="#10b981" strokeWidth={2} />
             <Line type="monotone" dataKey="Massa Gorda (kg)" stroke="#ef4444" strokeWidth={2} />

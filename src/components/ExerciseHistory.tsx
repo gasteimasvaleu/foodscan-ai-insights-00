@@ -141,7 +141,7 @@ export function ExerciseHistory() {
   return (
     <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
       <CardHeader className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-pink-500/5"></div>
         <CardTitle className="text-xl font-bold relative z-10 text-center">
           Histórico de Exercícios
         </CardTitle>

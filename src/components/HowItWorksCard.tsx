@@ -63,8 +63,8 @@ export const HowItWorksCard = () => {
             <p className="text-xs text-gray-600">IA identifica e calcula nutrientes</p>
           </div>
           
-          <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-            <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-2 text-sm font-bold">
+          <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg">
+            <div className="bg-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-2 text-sm font-bold">
               3
             </div>
             <h4 className="font-semibold text-gray-800 mb-1">Acompanhe</h4>
