@@ -140,7 +140,6 @@ const Treinos = () => {
             <AuthCard mode="login" />
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
