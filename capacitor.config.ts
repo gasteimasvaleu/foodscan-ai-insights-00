@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.7af51b51f57a4397be1bb371107e8a01',
+  appId: 'app.dietainteligente',
   appName: 'We Diet',
   webDir: 'dist',
   server: {
