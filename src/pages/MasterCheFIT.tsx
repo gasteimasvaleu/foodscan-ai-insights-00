@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+
 import { AuthCard } from '@/components/AuthCard';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
