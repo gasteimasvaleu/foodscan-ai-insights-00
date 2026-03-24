@@ -1,35 +1,23 @@
 
 
-## Redesign QuickActions como cards coloridos empilhados
+## Corrigir empilhamento dos cards QuickActions
 
-Transformar os botões de ações rápidas em cards grandes, coloridos, empilhados verticalmente (como no screenshot de referência), usando a paleta rosa/magenta do screenshot 2.
-
-### Design dos cards
-
-Cada card será full-width, com ~100px de altura, cantos arredondados, contendo:
-- Icone + titulo em bold à esquerda
-- Tags/badges com as descrições
-- Botão circular com seta (→) à direita
-- Cards levemente sobrepostos (margin negativa entre eles)
-
-### Paleta de cores (baseada no screenshot 2 - gradiente rosa/magenta)
-
-1. Meu Perfil: `from-fuchsia-400 to-pink-500`
-2. Escanear Comida: `from-pink-400 to-rose-500`
-3. Registrar Exercício: `from-rose-400 to-pink-600`
-4. Ver Treinos: `from-pink-500 to-fuchsia-500`
-5. Gerar Cardápio: `from-fuchsia-500 to-pink-600`
-6. WhatsApp: `from-rose-500 to-fuchsia-600`
+No screenshot de referência, o **ultimo card fica na frente** (z-index mais alto) e os primeiros ficam por trás. Atualmente o código faz o inverso (`zIndex: actions.length - index`).
 
 ### Alterações
 
-**`src/components/QuickActions.tsx`** - Reescrever completamente:
-- Remover Card wrapper externo, titulo "Ações Rápidas" e subtitulo
-- Cada ação vira um card grande full-width com layout horizontal (icone+texto à esquerda, seta à direita)
-- Adicionar badges/tags com palavras-chave (como no screenshot)
-- Cards com margin negativa entre si para efeito de sobreposição
-- Incluir "Meu Perfil" e "WhatsApp" como cards iguais aos demais
-- Botão circular escuro com icone ArrowRight à direita
+**`src/components/QuickActions.tsx`**:
+- Inverter z-index: `zIndex: index` (ultimo card = maior z-index)
+- Aumentar sobreposição negativa (`-space-y-6` ou similar) para que os cards fiquem bem sobrepostos, mostrando apenas o topo de cada um
+- Cada card precisa de altura maior (~120px via `min-h-[120px]`) e padding-top generoso para que o conteúdo visível fique no topo do card
+- Último card sem margin-bottom, colado ao menu inferior
 
-**`src/pages/Index.tsx`** - Ajustar para que QuickActions fique colado ao menu inferior removendo o `space-y-8` ou ajustando o espaçamento.
+**`src/pages/Index.tsx`**:
+- Remover padding-bottom do container ou ajustar para que o último card fique colado com a faixa branca do menu inferior
+
+**`src/index.css`**:
+- Remover o `padding-bottom: 100px` global do body (que foi adicionado antes) pois agora os cards devem ficar colados ao menu
+
+### Resultado visual
+Os cards ficam empilhados como um baralho de cartas, onde só se vê o topo de cada card (icone + titulo), exceto o último que fica totalmente visível na frente, encostado no menu inferior.
 
