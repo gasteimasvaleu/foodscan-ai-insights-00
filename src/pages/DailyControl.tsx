@@ -290,7 +290,7 @@ const DailyControl = () => {
   if (authLoading || isLoading) {
     return <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+        <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
           <div className="container mx-auto px-4 py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
