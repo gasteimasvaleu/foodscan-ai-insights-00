@@ -49,13 +49,13 @@ export const Navbar = () => {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <div className="flex items-center space-x-2 cursor-pointer">
-                <span 
-                  className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+              <span 
+                  className="text-sm font-medium text-white/90 hover:text-white transition-colors"
                   onClick={() => setIsOpen(true)}
                 >
                   MEU PERFIL
                 </span>
-                <Button variant="ghost" size="icon" className="relative z-50">
+                <Button variant="ghost" size="icon" className="relative z-50 text-white hover:text-white/80">
                   {isOpen ? <X className="h-5 w-5" /> : <User className="h-5 w-5" />}
                 </Button>
               </div>
