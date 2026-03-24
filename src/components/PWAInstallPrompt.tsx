@@ -98,7 +98,7 @@ const PWAInstallPrompt = () => {
         
         <div className="flex-1">
           <h3 className="font-semibold text-sm mb-1">
-            Instalar FoodScan AI
+            Instalar We Diet
           </h3>
           
           {isIOS ? (
