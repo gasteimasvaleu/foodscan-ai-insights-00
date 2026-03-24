@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthCard } from "@/components/AuthCard";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+
 import { LoadingState } from "@/components/LoadingState";
 import { VideoUpload } from "@/components/VideoUpload";
 import { ThumbnailUpload } from "@/components/ThumbnailUpload";
