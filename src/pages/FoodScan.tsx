@@ -5,7 +5,7 @@ import { LoadingState } from '@/components/LoadingState';
 import { OpenFoodFactsLoadingState } from '@/components/OpenFoodFactsLoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+
 import { AuthCard } from '@/components/AuthCard';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, Scan } from 'lucide-react';
