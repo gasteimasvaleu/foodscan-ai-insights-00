@@ -83,26 +83,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     return (
       <>
         <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-4">
-              <div className="text-center">
-                <h3 className="font-semibold text-gray-800">
-                  Boas-vindas, {userName}!
-                </h3>
-                <p className="text-sm text-gray-600">Usuário logado</p>
-              </div>
-              <Button
-                onClick={handleSignOut}
-                variant="outline"
-                className="w-full flex items-center justify-center space-x-2"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sair</span>
-              </Button>
-            </div>
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-gray-800 text-sm truncate text-center">
+              Boas-vindas, {userName}!
+            </h3>
           </CardContent>
         </Card>
-        
         <PushNotificationSetup ref={pushNotificationRef} />
       </>
     );
