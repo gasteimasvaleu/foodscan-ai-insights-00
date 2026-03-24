@@ -30,7 +30,6 @@ export default function FitTracker() {
             <div className="h-96 bg-muted rounded"></div>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
