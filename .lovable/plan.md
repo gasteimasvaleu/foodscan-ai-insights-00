@@ -1,57 +1,72 @@
 
 
-# Renomear App de "FoodScan & Diet" / "FoodScan AI" para "We Diet"
+# Transformar We Diet em App Nativo com Capacitor + Apple Sign In
 
-## Escopo
+## O que vamos fazer
 
-Trocar todas as ocorrencias visiveis do nome do app para "We Diet", mantendo rotas e nomes internos de componentes inalterados.
+Configurar o projeto We Diet para rodar como app nativo iOS/Android usando **Capacitor**, e adicionar suporte a **Sign in with Apple** nativo no iOS usando os arquivos Swift do seu repositório.
 
-## Arquivos a alterar
+## Etapas
 
-### 1. Frontend - Textos visiveis (12 arquivos)
+### 1. Instalar dependencias do Capacitor
 
-| Arquivo | O que muda |
-|---|---|
-| `src/components/Header.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/components/Navbar.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/components/Footer.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/components/SplashScreen.tsx` | "FoodScan AI" → "We Diet", alt da imagem |
-| `src/components/PWAInstallPrompt.tsx` | "FoodScan AI" → "We Diet" (2 ocorrencias) |
-| `src/components/FAQSection.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/components/TestimonialsSection.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/components/PaymentRegistrationForm.tsx` | "FoodScan & Diet" → "We Diet" (3 ocorrencias) |
-| `src/pages/About.tsx` | Todas as menções → "We Diet" |
-| `src/pages/Subscription.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/pages/PaymentSuccess.tsx` | "FoodScan & Diet" → "We Diet" |
-| `src/pages/FoodScan.tsx` | "FoodScan" (titulo da pagina) → manter pois é o nome da feature, nao do app. Apenas trocar "acessar o FoodScan" se referenciar o app |
-| `src/pages/ServiNUTRI.tsx` | "FoodScan & Diet" → "We Diet" |
+Adicionar ao `package.json`:
+- `@capacitor/core`
+- `@capacitor/cli` (dev)
+- `@capacitor/ios`
+- `@capacitor/android`
 
-### 2. PWA / HTML (3 arquivos)
+### 2. Criar arquivo de configuracao `capacitor.config.ts`
 
-| Arquivo | O que muda |
-|---|---|
-| `index.html` | title, meta tags (og, twitter, apple-mobile-web-app-title, application-name, author) |
-| `public/manifest.json` | name, short_name |
-| `public/offline.html` | title |
+```text
+appId:   app.lovable.7af51b51f57a4397be1bb371107e8a01
+appName: We Diet
+webDir:  dist
+server.url: https://7af51b51-f57a-4397-be1b-b371107e8a01.lovableproject.com?forceHideBadge=true
+server.cleartext: true
+```
 
-### 3. Backend - Edge Functions (1 arquivo)
+### 3. Copiar arquivos nativos iOS para o projeto
 
-| Arquivo | O que muda |
-|---|---|
-| `supabase/functions/hotmart-webhook/index.ts` | Textos de email: titulo, saudacao, rodape, remetente |
+Criar pasta `ios-native-backup/` na raiz com os 6 arquivos do repositorio:
+- `AppDelegate.swift` - Usa MyViewController customizado
+- `MyViewController.swift` - Registra plugin NativeAppleSignIn
+- `NativeAppleSignInPlugin.swift` - Plugin nativo de Apple Sign In
+- `NativeAppleSignInPlugin.m` - Bridge Objective-C
+- `App-Bridging-Header.h` - Header de bridging
+- `App.entitlements` - Entitlements com Sign in with Apple
 
-### O que NAO muda
+### 4. Criar plugin TypeScript para Apple Sign In
 
-- Rotas (`/foodscan`, `/food-scan`) - permanecem iguais
-- Nomes de componentes/arquivos (`FoodScan.tsx`, etc.)
-- Nome do feature "FoodScan" dentro da pagina de scan (é o nome da funcionalidade)
-- Assets/logos (continua usando a mesma imagem)
-- URLs do Supabase, dominio publicado
-- `send-notification/index.ts` - URLs hardcoded do dominio antigo (precisaria atualizar separadamente)
+Criar `src/plugins/NativeAppleSignIn.ts` que faz a ponte entre o JavaScript e o plugin nativo Swift via `Capacitor.registerPlugin`.
 
-## Ordem de execução
+### 5. Adicionar botao "Entrar com Apple" na tela de Auth
 
-1. Alterar todos os arquivos frontend de uma vez (substituicao de texto)
-2. Alterar `index.html`, `manifest.json`, `offline.html`
-3. Alterar edge function `hotmart-webhook` e fazer deploy
+Modificar `src/pages/Auth.tsx` e `src/components/AuthCard.tsx`:
+- Detectar se esta rodando no Capacitor nativo (`Capacitor.isNativePlatform()`)
+- Se sim, mostrar botao "Entrar com Apple"
+- Ao clicar, chamar o plugin nativo que retorna `identityToken`
+- Usar `supabase.auth.signInWithIdToken({ provider: 'apple', token: identityToken })` para autenticar
+
+### 6. Adicionar hook `useNativePlatform`
+
+Um hook simples que detecta se o app esta rodando como nativo (Capacitor) ou web.
+
+---
+
+## Passos que voce fara localmente (apos as mudancas no Lovable)
+
+1. Exportar projeto para GitHub (ou git pull se ja conectado)
+2. `npm install`
+3. `npx cap add ios`
+4. `npx cap update ios`
+5. Copiar os arquivos de `ios-native-backup/` para `ios/App/App/`
+6. Abrir `ios/App/App.xcworkspace` no Xcode
+7. Arrastar os arquivos Swift/m/h para o target App no Xcode
+8. Em Signing & Capabilities, adicionar "Sign in with Apple"
+9. Atualizar o Bundle ID conforme necessario
+10. `npm run build && npx cap sync`
+11. `npx cap run ios`
+
+Para mais detalhes, leia: https://docs.lovable.dev/tips-tricks/mobile-development
 
