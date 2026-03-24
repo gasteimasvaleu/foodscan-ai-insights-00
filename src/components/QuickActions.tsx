@@ -41,7 +41,7 @@ export const QuickActions = () => {
   ];
 
   return (
-    <div className="flex flex-col" style={{ marginBottom: '-24px' }}>
+    <div className="flex flex-col" style={{ marginBottom: '-48px' }}>
       {actions.map((action, index) => {
         const isLast = index === actions.length - 1;
         return (
