@@ -80,7 +80,7 @@ export const PaymentRegistrationForm = ({ sessionId }: PaymentRegistrationFormPr
       if (!error) {
         toast({
           title: "Conta criada com sucesso!",
-          description: "Bem-vindo ao FoodScan & Diet! Você já pode começar a usar.",
+          description: "Bem-vindo ao We Diet! Você já pode começar a usar.",
         });
         navigate('/', { replace: true });
       }
