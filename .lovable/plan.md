@@ -1,17 +1,12 @@
 
 
-## Alterar cores dos cards QuickActions
+## Alterar cor do menu Tubelight e Navbar para #FA1690
 
-Trocar os gradientes Tailwind por cores sólidas alternando entre `#E24989` e `#FA1690`.
+### Alterações
 
-Ordem (último card = WhatsApp = na frente):
-1. Escanear Comida → `#FA1690`
-2. Registrar Exercício → `#E24989`
-3. Gerar Cardápio → `#FA1690`
-4. WhatsApp → `#E24989`
+**`src/components/ui/tubelight-navbar.tsx`**:
+- Trocar `bg-[#DB2174]/85` por `bg-[#FA1690]/85` na div do menu
 
-### Alteração em `src/components/QuickActions.tsx`
-
-- Substituir a propriedade `gradient` por `color` com o hex correspondente
-- No botão, trocar `className` com `bg-gradient-to-r ${action.gradient}` por `style={{ backgroundColor: action.color }}` inline
+**`src/components/Navbar.tsx`**:
+- Trocar `bg-[#DB2174]/85` por `bg-[#FA1690]/85` na tag `<nav>`
 
