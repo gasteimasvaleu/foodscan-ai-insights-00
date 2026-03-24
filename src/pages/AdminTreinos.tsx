@@ -246,7 +246,7 @@ export default function AdminTreinos() {
   if (!user) return <AuthCard mode="login" />;
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-28">
         <Navbar />
         <main className="container mx-auto px-4 py-8">
           <Card className="text-center py-12">
