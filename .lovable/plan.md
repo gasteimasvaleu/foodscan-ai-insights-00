@@ -1,14 +1,19 @@
 
 
-## Conectar último card do QuickActions à faixa branca do menu
+## Alterar cor de todos os botões para #FD46A1
 
-O último card (WhatsApp) precisa ficar parcialmente atrás da faixa branca do Tubelight, eliminando o espaço entre eles.
+A cor `#FD46A1` corresponde a HSL `337 98% 64%`. A abordagem mais eficiente é atualizar as variáveis centrais de cor primária, assim todos os botões (e elementos que usam `bg-primary`, `bg-primary-500`, etc.) mudam automaticamente.
 
-### Alteração em `src/components/QuickActions.tsx`
+### Alterações
 
-- Aumentar o `marginBottom` negativo do container de `-24px` para `-48px`, fazendo o bloco inteiro descer mais e o último card ficar parcialmente coberto pela faixa branca do menu
+**1. `src/index.css`** — Atualizar a variável CSS `--primary`
+- Linha 16: `--primary: 336 100% 40%` → `--primary: 337 98% 64%`
 
-### Alteração em `src/pages/Index.tsx`
+**2. `tailwind.config.ts`** — Atualizar as cores primary no Tailwind
+- `DEFAULT: '#CC0055'` → `DEFAULT: '#FD46A1'`
+- `500: '#CC0055'` → `500: '#FD46A1'`
+- `600: '#B3004B'` → `600: '#E53D8F'` (hover mais escuro)
+- `700: '#99003F'` → `700: '#CC357D'`
 
-- Reduzir o `pb-28` para `pb-20` na Index, já que o QuickActions agora se estende mais para baixo com o margin negativo
+Isso garante que todos os botões com `bg-primary`, `bg-primary-500`, `hover:bg-primary-600`, e o variant `default` do componente Button mudem automaticamente sem editar cada arquivo individual.
 
