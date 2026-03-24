@@ -42,7 +42,7 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary">
+    <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
       <div className="pt-32 px-4">

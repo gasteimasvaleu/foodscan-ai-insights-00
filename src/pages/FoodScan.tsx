@@ -588,7 +588,7 @@ const FoodScan = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-16">
+      <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="text-center mb-12 animate-fade-in">

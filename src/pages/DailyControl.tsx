@@ -323,7 +323,7 @@ const DailyControl = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary pt-16">
+      <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
           
           

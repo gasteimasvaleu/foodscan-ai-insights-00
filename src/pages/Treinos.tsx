@@ -145,7 +145,7 @@ const Treinos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pt-16">
+    <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
       <Navbar />
       
       <main className="px-4 py-8">
