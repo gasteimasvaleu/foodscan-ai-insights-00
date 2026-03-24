@@ -199,7 +199,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                         ? 'text-gray-700 hover:bg-gray-200' 
                         : 'text-gray-400'
                     }
-                    ${isToday && !isSelected ? 'ring-2 ring-purple-300' : ''}
+                    ${isToday && !isSelected ? 'ring-2 ring-pink-300' : ''}
                   `}
                 >
                   {day.short}
