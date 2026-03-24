@@ -1,86 +1,57 @@
 
-# Usar a mesma IA do FoodScan no WhatsApp
 
-## Problema Atual
+# Renomear App de "FoodScan & Diet" / "FoodScan AI" para "We Diet"
 
-O WhatsApp usa um fluxo inferior para análise de imagens:
-- Chama `analyze-image` (GPT-4o) com um prompt simples
-- Tenta extrair calorias/proteínas/carboidratos/gorduras via **regex** do texto livre
-- Se o formato do texto mudar, os valores caem no fallback (500 kcal, 25g prot, etc.)
+## Escopo
 
-O FoodScan usa `analyze-nutrition` com um fluxo de duas etapas:
-- **Etapa 1**: GPT-4o analisa a imagem com prompt detalhado (descrição rica)
-- **Etapa 2**: GPT-4.1 recebe a descrição e retorna **JSON estruturado** com nutrição precisa
+Trocar todas as ocorrencias visiveis do nome do app para "We Diet", mantendo rotas e nomes internos de componentes inalterados.
 
-## Solucao
+## Arquivos a alterar
 
-Alterar `whatsapp-process-image` para chamar `analyze-nutrition` (passando `base64Image`) em vez de `analyze-image`. A funcao `analyze-nutrition` ja aceita `base64Image` e faz todo o trabalho em duas etapas.
+### 1. Frontend - Textos visiveis (12 arquivos)
 
-## Mudancas Necessarias
+| Arquivo | O que muda |
+|---|---|
+| `src/components/Header.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/components/Navbar.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/components/Footer.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/components/SplashScreen.tsx` | "FoodScan AI" → "We Diet", alt da imagem |
+| `src/components/PWAInstallPrompt.tsx` | "FoodScan AI" → "We Diet" (2 ocorrencias) |
+| `src/components/FAQSection.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/components/TestimonialsSection.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/components/PaymentRegistrationForm.tsx` | "FoodScan & Diet" → "We Diet" (3 ocorrencias) |
+| `src/pages/About.tsx` | Todas as menções → "We Diet" |
+| `src/pages/Subscription.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/pages/PaymentSuccess.tsx` | "FoodScan & Diet" → "We Diet" |
+| `src/pages/FoodScan.tsx` | "FoodScan" (titulo da pagina) → manter pois é o nome da feature, nao do app. Apenas trocar "acessar o FoodScan" se referenciar o app |
+| `src/pages/ServiNUTRI.tsx` | "FoodScan & Diet" → "We Diet" |
 
-### 1. `supabase/functions/whatsapp-process-image/index.ts`
+### 2. PWA / HTML (3 arquivos)
 
-**Trocar a chamada de funcao** (1 linha):
-- De: `supabase.functions.invoke('analyze-image', { body: { base64Image } })`
-- Para: `supabase.functions.invoke('analyze-nutrition', { body: { base64Image } })`
+| Arquivo | O que muda |
+|---|---|
+| `index.html` | title, meta tags (og, twitter, apple-mobile-web-app-title, application-name, author) |
+| `public/manifest.json` | name, short_name |
+| `public/offline.html` | title |
 
-**Ajustar a validacao do retorno**:
-- De: `analysisData?.description`
-- Para: `analysisData?.foodName` (o formato de retorno do `analyze-nutrition` e diferente)
+### 3. Backend - Edge Functions (1 arquivo)
 
-**Simplificar a extracao de nutricao** — em vez de regex, usar os valores estruturados do JSON:
-```text
-calories = analysisData.nutrition.calories
-proteins = analysisData.nutrition.proteins
-carbs    = analysisData.nutrition.carbohydrates
-fats     = analysisData.nutrition.fats
-```
+| Arquivo | O que muda |
+|---|---|
+| `supabase/functions/hotmart-webhook/index.ts` | Textos de email: titulo, saudacao, rodape, remetente |
 
-**Ajustar a montagem da mensagem**:
-- Usar `analysisData.description` para o texto descritivo (ja vem do analyze-nutrition)
-- Usar `analysisData.foodName` para o nome do alimento
-- Usar `analysisData.elements` (se existir) para listar itens individuais
-- Remover toda a logica de regex de extracao de nutricao (linhas ~100-130)
+### O que NAO muda
 
-**Ajustar os dados do pending_meal**:
-- Usar `analysisData.foodName` como nome
-- Usar os valores numericos diretos do JSON
+- Rotas (`/foodscan`, `/food-scan`) - permanecem iguais
+- Nomes de componentes/arquivos (`FoodScan.tsx`, etc.)
+- Nome do feature "FoodScan" dentro da pagina de scan (é o nome da funcionalidade)
+- Assets/logos (continua usando a mesma imagem)
+- URLs do Supabase, dominio publicado
+- `send-notification/index.ts` - URLs hardcoded do dominio antigo (precisaria atualizar separadamente)
 
-### 2. Nenhuma outra funcao precisa ser alterada
+## Ordem de execução
 
-A `analyze-nutrition` ja esta pronta e funcional. Nenhuma mudanca necessaria nela.
+1. Alterar todos os arquivos frontend de uma vez (substituicao de texto)
+2. Alterar `index.html`, `manifest.json`, `offline.html`
+3. Alterar edge function `hotmart-webhook` e fazer deploy
 
-## Beneficios
-
-- Analise de imagem identica ao FoodScan (mesma qualidade)
-- Valores nutricionais em JSON estruturado (sem regex fragil)
-- Sem fallbacks incorretos (500 kcal generico)
-- Se a analise do FoodScan melhorar no futuro, o WhatsApp melhora junto
-- Usa GPT-4.1 para a analise nutricional (modelo mais recente)
-
-## Riscos
-
-- **Baixo**: a chamada `analyze-nutrition` e ligeiramente mais lenta por fazer duas chamadas de IA em vez de uma. Mas a qualidade compensa.
-- **Nenhum risco de quebra**: a funcao `analyze-nutrition` ja e usada em producao pelo FoodScan.
-
-## Detalhes Tecnicos
-
-A resposta do `analyze-nutrition` tem este formato:
-```text
-{
-  "foodName": "Nome do prato",
-  "description": "Descricao detalhada...",
-  "quantity": "Porcao tipica",
-  "elements": [...],        // opcional, se multiplos itens
-  "nutrition": {
-    "calories": 450,
-    "carbohydrates": 55,
-    "proteins": 35,
-    "fats": 8,
-    "fiber": 5,
-    "sodium": 300
-  }
-}
-```
-
-A mensagem do WhatsApp sera montada usando esses campos diretamente, eliminando toda a logica de regex.
