@@ -174,6 +174,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           >
             {isLogin ? 'Entrar' : 'Criar Conta'}
           </Button>
+          
+          {isLogin && (
+            <div className="mt-4">
+              <AppleSignInButton />
+            </div>
+          )}
         </form>
         
         <div className="mt-4 text-center">

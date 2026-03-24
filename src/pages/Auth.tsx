@@ -308,6 +308,10 @@ const Auth = () => {
                       <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? 'Entrando...' : 'Entrar'}
                       </Button>
+                      
+                      <div className="mt-4">
+                        <AppleSignInButton />
+                      </div>
                     </form>
                   </TabsContent>
                   
