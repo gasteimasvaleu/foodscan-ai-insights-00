@@ -295,7 +295,7 @@ const handler = async (req: Request): Promise<Response> => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">🎉 Bem-vindo ao FoodScan&amp;Diet!</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">🎉 Bem-vindo ao We Diet!</h1>
             </td>
           </tr>
           
