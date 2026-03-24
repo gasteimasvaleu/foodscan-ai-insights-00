@@ -50,6 +50,7 @@ export const QuickActions = () => {
             onClick={() => navigate(action.path)}
             className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]"
             style={{
+              backgroundColor: action.color,
               zIndex: index,
               marginTop: index === 0 ? 0 : '-52px',
               minHeight: isLast ? '120px' : '120px',
