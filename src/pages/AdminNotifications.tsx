@@ -310,7 +310,7 @@ const AdminNotifications = () => {
           </Card>
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };
