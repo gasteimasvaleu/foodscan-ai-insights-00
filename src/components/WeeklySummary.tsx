@@ -257,7 +257,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
 
         {/* Médias semanais */}
         {weeklyData.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6">
+          <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
               Médias da Semana ({weeklyData.length} dias registrados)
             </h4>

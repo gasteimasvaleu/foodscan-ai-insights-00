@@ -174,19 +174,19 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-purple-500/20 via-pink-500/15 to-violet-500/20 border-purple-200/50 dark:border-purple-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.3s'}}>
+      <Card className="bg-gradient-to-br from-pink-500/20 via-rose-500/15 to-primary-500/20 border-pink-200/50 dark:border-pink-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.3s'}}>
         <CardContent className="p-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
           <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
-              <p className="text-lg font-bold truncate bg-gradient-to-br from-purple-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>
-              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+              <p className="text-lg font-bold truncate bg-gradient-to-br from-primary-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>
+              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300">
                 {stats.totalExercises} exercícios
               </Badge>
             </div>
-            <div className="p-3 rounded-full bg-purple-500/20 backdrop-blur-sm group-hover:bg-purple-500/30 transition-colors">
-              <Target className="h-8 w-8 text-purple-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Target className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>

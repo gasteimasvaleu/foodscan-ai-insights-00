@@ -151,7 +151,7 @@ export function ExerciseHistory() {
           {exercises.map((exercise, index) => (
             <div 
               key={exercise.id} 
-              className="flex items-center justify-between p-4 border border-white/20 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-sm group animate-fade-in"
+              className="flex items-center justify-between p-4 border border-white/20 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-pink-50/50 dark:hover:from-blue-900/20 dark:hover:to-pink-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-sm group animate-fade-in"
               style={{animationDelay: `${index * 0.1}s`}}
             >
               <div className="flex-1">
