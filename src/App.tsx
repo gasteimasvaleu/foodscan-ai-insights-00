@@ -42,6 +42,12 @@ const navItems = [
   { name: 'ServiNUTRI', url: '/servinutri', icon: Apple }
 ];
 
+const AuthAwareNavbar = () => {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <TubelightNavbar items={navItems} />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -49,7 +55,7 @@ const App = () => (
       <Sonner />
       <PushNotificationSetup />
       <BrowserRouter>
-        <TubelightNavbar items={navItems} />
+        <AuthAwareNavbar />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/profile" element={<Profile />} />
