@@ -1,30 +1,23 @@
 
 
-## Plan: Apply glassmorphism modal style across all dialogs
+## Reverting VideoModal.tsx and AdminTreinos.tsx
 
-Apply the same styling from the "Editar Perfil" modal to every `DialogContent` and `AlertDialogContent` in the project.
+The user wants to undo the glassmorphism styling changes made to these two files. The easiest way is to use the built-in revert feature.
 
-**Reference style:** `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
+However, since the user only wants to revert **specific files** (not the entire project state), and the revert button would revert ALL changes from that message, I should advise using the revert button if they want to undo everything, or note that selective file reversion isn't available via the UI.
 
-### Files to update
+Since these files already had the glassmorphism styling applied in the previous message alongside other files, the user can revert the entire message and then re-apply changes only to the files they want to keep.
 
-**1. `src/pages/Profile.tsx` (line 603)** — Calculadora de TMB dialog
-- Add glassmorphism classes to `<DialogContent>`
+Alternatively, I can simply restore the original classes in those two files directly.
 
-**2. `src/pages/PhysicalAssessment.tsx` (line 192)** — Nova Avaliação dialog
-- Replace current classes, keep `max-w-2xl max-h-[90vh] overflow-y-auto`, add glassmorphism + rounded + border
+**Recommended approach:** Revert the styling changes in just those 2 files by restoring the original `DialogContent` and `AlertDialogContent` classes.
 
-**3. `src/pages/MyDiets.tsx` (line 195)** — Adicionar Alimento dialog
-- Add glassmorphism classes to `<DialogContent>`
+### Changes
 
-**4. `src/pages/AdminTreinos.tsx` (line 288)** — Add/Edit workout dialog
-- Replace current classes, keep `max-w-2xl max-h-[90vh] overflow-y-auto`, add glassmorphism + rounded + border
+**1. `src/components/VideoModal.tsx`** (line 56)
+- Remove glassmorphism classes, restore original: `max-w-4xl h-[80vh] flex flex-col`
 
-**5. `src/pages/AdminTreinos.tsx` (line 559)** — Delete confirmation AlertDialog
-- Add glassmorphism classes to `<AlertDialogContent>`
-
-**6. `src/components/VideoModal.tsx` (line 56)** — Video player dialog
-- Keep `max-w-4xl w-full h-[80vh] flex flex-col`, add glassmorphism + rounded + border
-
-All modals will receive: `rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl` plus `w-[calc(100%-2rem)]` for horizontal spacing on mobile.
+**2. `src/pages/AdminTreinos.tsx`**
+- Workout dialog (~line 288): restore original classes with just `max-w-2xl max-h-[90vh] overflow-y-auto`
+- Delete AlertDialog (~line 559): restore to default (no extra classes)
 
