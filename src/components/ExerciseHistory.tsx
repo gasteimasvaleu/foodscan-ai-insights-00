@@ -118,10 +118,9 @@ export function ExerciseHistory() {
 
   if (exercises.length === 0) {
     return (
-      <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
-      <CardHeader className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-pink-500/5"></div>
-        <CardTitle className="text-xl font-bold relative z-10 text-center">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold text-center">
           Histórico de Exercícios
         </CardTitle>
       </CardHeader>
