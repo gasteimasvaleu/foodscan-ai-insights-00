@@ -368,7 +368,7 @@ const MasterCheFIT = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setShowHistory(!showHistory)}
-                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-red-500/50 transition-all duration-300 hover:scale-105"
+                      className="bg-white border-white/20 hover:bg-white/90 transition-all duration-300 hover:scale-105"
                     >
                       <History className="w-4 h-4 mr-2" />
                       Histórico
