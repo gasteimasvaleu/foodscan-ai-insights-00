@@ -419,7 +419,7 @@ const MasterCheFIT = () => {
                         placeholder="Ex: frango, salmão, arroz integral, banana, aveia, brócolis..."
                         value={preferences.favoriteIngredients}
                         onChange={(e) => setPreferences(prev => ({ ...prev, favoriteIngredients: e.target.value }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
+                         className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
                         rows={3}
                       />
                     </div>
@@ -433,7 +433,7 @@ const MasterCheFIT = () => {
                         placeholder="Ex: sem glúten, vegano, baixo sódio, rico em proteína..."
                         value={preferences.specificRequirements}
                         onChange={(e) => setPreferences(prev => ({ ...prev, specificRequirements: e.target.value }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
+                        className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
                         rows={2}
                       />
                     </div>
@@ -449,7 +449,7 @@ const MasterCheFIT = () => {
                         max="4000"
                         value={preferences.maxCalories}
                         onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
+                        className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
                       />
                     </div>
                   </>
