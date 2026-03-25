@@ -588,7 +588,11 @@ const FoodScan = () => {
 
   return (
     <>
-      <VideoOverlay isVisible={isAnalyzing || isDescribing} message="Analisando seu prato..." subMessage="Nossa IA está identificando os alimentos" />
+      <VideoOverlay 
+        isVisible={isAnalyzing || isDescribing || isBarcodeAnalyzing} 
+        message={isBarcodeAnalyzing ? "Consultando base de dados..." : "Analisando seu prato..."} 
+        subMessage={isBarcodeAnalyzing ? "Buscando informações nutricionais do produto" : "Nossa IA está identificando os alimentos"} 
+      />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
@@ -603,15 +607,7 @@ const FoodScan = () => {
           </div>
           
           <div className="max-w-4xl mx-auto space-y-8">
-            {isBarcodeAnalyzing ? (
-              <div data-results-section>
-                <OpenFoodFactsLoadingState />
-              </div>
-            ) : (isAnalyzing || isDescribing) ? (
-              <div data-results-section>
-                <LoadingState />
-              </div>
-            ) : incompleteProductData ? (
+            {(isBarcodeAnalyzing || isAnalyzing || isDescribing) ? null : incompleteProductData ? (
               <div data-results-section className="space-y-6">
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
                   <div className="text-center mb-4">
