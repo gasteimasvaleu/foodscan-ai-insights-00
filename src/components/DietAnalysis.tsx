@@ -98,14 +98,9 @@ export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading,
   return (
     <>
       <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="bg-purple-100 rounded-full p-3">
-            <Brain className="w-6 h-6 text-purple-600" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-800">Análise do Dia</h3>
-            <p className="text-gray-600">Feedback sobre sua alimentação</p>
-          </div>
+        <div className="text-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800">Análise do Dia</h3>
+          <p className="text-gray-600">Feedback sobre sua alimentação</p>
         </div>
 
         <div className="bg-gray-50 rounded-2xl p-6 mb-6">
