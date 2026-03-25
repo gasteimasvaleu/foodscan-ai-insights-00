@@ -71,7 +71,7 @@ export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, onManualInput, i
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6">
+    <div className="w-full max-w-2xl mx-auto p-2">
       <input
         type="file"
         accept="image/*"
