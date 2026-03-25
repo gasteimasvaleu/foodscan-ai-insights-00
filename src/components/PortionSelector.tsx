@@ -57,10 +57,10 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
     <div className="bg-[#F9FAFB] border border-white/20 rounded-3xl p-6">
       <div className="flex items-center justify-center space-x-3 mb-4">
         <div className="text-center">
-          <h4 className="text-lg font-semibold text-amber-800">
+          <h4 className="text-lg font-semibold text-gray-800">
             Ajustar Porção
           </h4>
-          <p className="text-sm text-amber-600">
+          <p className="text-sm text-gray-600">
             Selecione o tamanho da porção que você consumiu
           </p>
         </div>
@@ -70,7 +70,7 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <Select onValueChange={handlePortionChange} value={selectedPortion}>
-              <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+              <SelectTrigger className="w-full bg-white border-gray-800 focus:border-gray-900">
                 <SelectValue placeholder="Escolha uma porção" />
               </SelectTrigger>
               <SelectContent>
@@ -83,7 +83,7 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
             </Select>
           </div>
           
-          <div className="text-amber-600 font-medium text-sm">ou</div>
+          <div className="text-gray-800 font-medium text-sm">ou</div>
           
           <div className="flex-1">
             <div className="relative">
@@ -92,10 +92,10 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
                 placeholder="Gramas"
                 value={manualGrams}
                 onChange={handleManualGramsChange}
-                className="bg-white border-amber-200 focus:border-amber-400 pr-8"
+                className="bg-white border-gray-800 focus:border-gray-900 pr-8"
                 min="1"
               />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600 text-sm">g</span>
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 text-sm">g</span>
             </div>
           </div>
         </div>
