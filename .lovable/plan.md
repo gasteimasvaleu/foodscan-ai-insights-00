@@ -2,40 +2,23 @@
 
 ## Problema
 
-No `src/index.css` (linha 158-164), existe esta regra:
-
-```css
-@media all and (display-mode: standalone) {
-  body {
-    background-color: #FD46A1;
-  }
-}
-```
-
-O Capacitor roda em modo standalone, então o body fica rosa. O fundo deveria ser o cinza claro `#F7FAFB` como no navegador.
+O `env(safe-area-inset-top)` não funciona porque o `<meta name="viewport">` no `index.html` não tem `viewport-fit=cover`. Sem isso, o iOS ignora as variáveis de safe area e retorna 0.
 
 ## Solução
 
-**Arquivo: `src/index.css`**
+### 1. Arquivo: `index.html` (linha 24)
 
-Alterar a cor do `background-color` no bloco `display-mode: standalone` de `#FD46A1` para `#F7FAFB`:
+Adicionar `viewport-fit=cover` ao meta viewport:
 
-```css
-@media all and (display-mode: standalone) {
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: #F7FAFB;
-  }
-}
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 ```
 
-Isso garante que tanto no navegador quanto no app nativo/PWA o fundo será o cinza claro correto.
+Isso ativa as variáveis `env(safe-area-inset-*)` no iOS/Capacitor. A navbar já tem `paddingTop: env(safe-area-inset-top)` e o conteúdo das páginas já usa `calc(env(safe-area-inset-top) + 4rem)`, então tudo deve funcionar automaticamente após essa única mudança.
 
-## Após a mudança
+### Após a mudança
 
-1. `git pull`
-2. `npm run build`
-3. `npx cap sync ios`
-4. Rodar no Xcode
+1. `npm run build`
+2. `npx cap sync ios`
+3. Rodar no Xcode
 
