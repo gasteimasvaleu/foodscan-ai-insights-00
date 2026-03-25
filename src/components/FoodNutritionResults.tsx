@@ -199,7 +199,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
             Proteínas
           </h4>
-          <div className="text-2xl font-bold text-blue-600">{proteins} g</div>
+          <div className="text-2xl font-bold text-[#FD46A1]">{proteins} g</div>
         </div>
         <div className="bg-gray-50 rounded-2xl p-4 text-center">
           <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
