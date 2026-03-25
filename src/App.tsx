@@ -27,6 +27,8 @@ import Profile from "./pages/Profile";
 import WorkoutPlan from "./pages/WorkoutPlan";
 import PhysicalAssessment from "./pages/PhysicalAssessment";
 import MyDiets from "./pages/MyDiets";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,8 @@ const App = () => (
           <Route path="/masterchef" element={<MasterCheFIT />} />
           <Route path="/quero-assinar" element={<Subscription />} />
           <Route path="/sobre" element={<About />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+          <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
