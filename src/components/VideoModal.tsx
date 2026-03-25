@@ -53,7 +53,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[calc(100%-2rem)] h-[80vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+      <DialogContent className="max-w-4xl w-[calc(100%-2rem)] max-h-[90vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-bold">{workout.title}</DialogTitle>
           <DialogDescription className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
 
         <div className="flex-1 overflow-y-auto flex flex-col gap-4">
           {/* Video Container */}
-          <div className="aspect-video bg-black rounded-lg overflow-hidden">
+          <div className="aspect-video flex-shrink-0 bg-black rounded-lg overflow-hidden">
             {!isValidVideoUrl ? (
               <div className="w-full h-full flex items-center justify-center text-white">
                 <div className="text-center">
