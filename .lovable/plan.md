@@ -1,20 +1,18 @@
 
 
-## Substituir Splash Screen por vídeo de 8 segundos
+## Conectar cards de ação rápida com a faixa branca do menu
 
-### O que muda
+### Problema
+No dispositivo real, o último card (WhatsApp) não alcança a faixa branca do menu inferior, criando um gap visual.
 
-Trocar toda a animação atual (logo estático + texto + dots) por um vídeo MP4 fullscreen que dura 8 segundos.
+### Alterações
 
-### Alteracao
+**1. `src/components/QuickActions.tsx`** - Aumentar altura do último card:
+- Alterar `minHeight` do último card de `120px` para `160px`
+- Aumentar `paddingBottom` do último card de `32px` para `64px`
+- Manter todos os outros cards iguais
 
-**`src/components/SplashScreen.tsx`**:
-- Remover o logo estático, texto "We Diet", texto "Dieta Inteligente" e os dots de loading
-- Substituir por um elemento `<video>` fullscreen com a URL: `https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/App_icon_morphs_202603250602.mp4`
-- Video configurado com `autoPlay`, `muted`, `playsInline`, sem controles
-- Fundo preto para evitar flash branco enquanto o vídeo carrega
-- Ajustar o timer de 4000ms para 8000ms (duração do vídeo)
-- Manter a animação de fade-out ao finalizar via Framer Motion
-- Usar `object-cover` para preencher a tela inteira no formato 9:16
-- Adicionar evento `onEnded` no vídeo como fallback para garantir que o splash encerre mesmo se o timer falhar
+**2. `src/components/ui/tubelight-navbar.tsx`** - Adicionar padding inferior ao menu:
+- Alterar `pb-[env(safe-area-inset-bottom)]` para incluir um padding base adicional, algo como `pb-[calc(8px+env(safe-area-inset-bottom))]`
+- Isso faz a faixa branca decorativa aparecer também na parte inferior do menu
 
