@@ -741,8 +741,8 @@ export default function Profile() {
         {weeklyData.length > 0 && (
           <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
             <CardHeader>
-              <CardTitle>Gráfico de Progresso</CardTitle>
-              <CardDescription>Evolução das últimas 4 semanas</CardDescription>
+              <CardTitle className="text-center text-2xl font-semibold">Gráfico de Progresso</CardTitle>
+              <CardDescription className="text-center">Evolução das últimas 4 semanas</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
