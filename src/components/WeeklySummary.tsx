@@ -153,7 +153,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
 
   if (isLoading) {
     return (
-      <Card className={`bg-white/90 backdrop-blur-sm border border-white/20 ${className}`}>
+      <Card className={`bg-[#FFD1E7] backdrop-blur-sm border border-white/20 ${className}`}>
         <CardContent className="p-6">
           <div className="animate-pulse flex space-x-4">
             <div className="rounded-full bg-gray-300 h-10 w-10"></div>
