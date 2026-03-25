@@ -223,7 +223,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
           {selectedDayData ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-[#FD46A1]">
                   {Math.round(selectedDayData.calories)}
                 </div>
                 <div className="text-sm text-gray-500">kcal</div>
