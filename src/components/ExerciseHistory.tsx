@@ -81,10 +81,10 @@ export function ExerciseHistory() {
 
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {
-      case 'Leve': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'Moderada': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'Intensa': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case 'Leve': return 'bg-pink-100 text-pink-800';
+      case 'Moderada': return 'bg-pink-100 text-pink-800';
+      case 'Intensa': return 'bg-pink-100 text-pink-800';
+      default: return 'bg-pink-100 text-pink-800';
     }
   };
 
@@ -93,7 +93,7 @@ export function ExerciseHistory() {
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-blue-500/10 text-blue-600">
+            <div className="p-2 rounded-full bg-pink-500/10 text-pink-600">
               <Clock className="h-5 w-5" />
             </div>
             Histórico de Exercícios
@@ -149,26 +149,26 @@ export function ExerciseHistory() {
           {exercises.map((exercise, index) => (
             <div 
               key={exercise.id} 
-              className="flex items-center justify-between p-4 border border-white/20 rounded-xl hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-pink-50/50 dark:hover:from-blue-900/20 dark:hover:to-pink-900/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-sm group animate-fade-in"
+              className="flex items-center justify-between p-4 border border-white/20 rounded-xl bg-[#F9FAFB] hover:bg-pink-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group animate-fade-in"
               style={{animationDelay: `${index * 0.1}s`}}
             >
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="font-semibold text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{exercise.activity_type}</h3>
+                  <h3 className="font-semibold text-lg group-hover:text-[#FA1690] transition-colors">{exercise.activity_type}</h3>
                   <Badge className={getIntensityColor(exercise.intensity)} variant="secondary">
                     {exercise.intensity}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2 group-hover:text-foreground transition-colors">
-                    <div className="p-1 rounded-full bg-blue-500/10">
-                      <Clock className="h-3 w-3" />
+                     <div className="p-1 rounded-full bg-pink-500/10">
+                       <Clock className="h-3 w-3 text-pink-500" />
                     </div>
                     <span className="font-medium">{exercise.duration_minutes} min</span>
                   </div>
                   <div className="flex items-center gap-2 group-hover:text-foreground transition-colors">
-                    <div className="p-1 rounded-full bg-orange-500/10">
-                      <Flame className="h-3 w-3" />
+                     <div className="p-1 rounded-full bg-pink-500/10">
+                       <Flame className="h-3 w-3 text-pink-500" />
                     </div>
                     <span className="font-medium">{exercise.calories_burned} cal</span>
                   </div>
