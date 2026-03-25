@@ -1,28 +1,19 @@
 
 
-## Reduzir espaçamento excessivo nas safe areas
+## Reduzir safe area superior e restaurar logo
 
 ### Problema
-Pelo screenshot, há duas áreas com espaço excessivo:
-1. **Topo (Navbar)**: A navbar tem `h-16` (64px) + safe area, ficando grande demais
-2. **Inferior (TubelightNavbar)**: Usa `pb-[calc(14px+env(safe-area-inset-bottom))]` — os 14px extras somados ao safe area inset criam uma faixa branca grande demais. A faixa decorativa branca (`-bottom-4`) também contribui.
+O `pt-[env(safe-area-inset-top)]` aplica o inset completo do iPhone (~47px no notch), que somado à altura da navbar fica excessivo. A logo foi reduzida de `h-10` para `h-8` e ficou deformada.
 
 ### Solução
 
-**1. Navbar.tsx** — Reduzir altura interna:
-- `h-16` (64px) → `h-12` (48px)
-- Logo `h-10` → `h-8`
+**1. Navbar.tsx** — Reduzir o padding da safe area pela metade e restaurar logo:
+- Trocar `pt-[env(safe-area-inset-top)]` por `pt-[calc(env(safe-area-inset-top)*0.5)]` (metade do inset)
+- Restaurar logo de `h-8` para `h-10`
 
-**2. TubelightNavbar.tsx** — Reduzir padding inferior:
-- Trocar `pb-[calc(14px+env(safe-area-inset-bottom))]` por `pb-[env(safe-area-inset-bottom)]` (remover os 14px extras)
-- Reduzir faixa decorativa branca: `-bottom-4` → `-bottom-2`
+**2. Páginas (~15 arquivos)** — Reduzir o offset correspondente:
+- Trocar `+3rem` por `+2.5rem` nas páginas padrão
+- Trocar `+4rem` por `+3.5rem` nas páginas de perfil
 
-**3. Páginas** — Ajustar padding-top para acompanhar a navbar menor:
-- Páginas com `+4rem` → `+3rem`
-- Páginas com `+5rem` → `+4rem`
-
-Arquivos afetados:
-- `src/components/Navbar.tsx`
-- `src/components/ui/tubelight-navbar.tsx`
-- ~15 páginas em `src/pages/`
+Isso reduz ~20-24px do espaço superior sem comprometer a visibilidade abaixo da status bar.
 
