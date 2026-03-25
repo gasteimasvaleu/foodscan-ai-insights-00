@@ -176,8 +176,8 @@ export function ExerciseDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
-              <p className="text-lg font-bold truncate bg-gradient-to-br from-primary-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>
-              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300">
+              <p className="text-lg font-bold text-[#FD46A1] truncate">{stats.favoriteActivity}</p>
+              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-pink-100 text-pink-800">
                 {stats.totalExercises} exercícios
               </Badge>
             </div>
