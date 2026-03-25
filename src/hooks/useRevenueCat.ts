@@ -58,7 +58,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
   const fetchPrice = async () => {
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
-      const { offerings } = await Purchases.getOfferings();
+      const offerings = await Purchases.getOfferings();
       
       const currentOffering = offerings.current;
       if (currentOffering?.monthly) {
