@@ -10,7 +10,7 @@ interface UseRevenueCatReturn {
   restorePurchases: () => Promise<boolean>;
 }
 
-const RC_API_KEY = 'test_gpQDqNpCbIkhVtyxKDelGynfEfk';
+const RC_API_KEY = 'test_TEmDfKCvkDMhVHaGfrvFibDod0E';
 
 export const useRevenueCat = (): UseRevenueCatReturn => {
   const { isNative, isIOS } = useNativePlatform();
