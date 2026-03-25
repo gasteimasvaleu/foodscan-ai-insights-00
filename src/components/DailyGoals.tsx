@@ -79,7 +79,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
   ];
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
+    <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
       <div className="flex flex-col items-center mb-6">
         <div className="text-center">
           <h3 className="text-2xl font-bold text-gray-800">Metas Diárias</h3>
