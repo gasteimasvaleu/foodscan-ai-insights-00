@@ -1,15 +1,16 @@
 
 
-## Re-apply glassmorphism styling to VideoModal.tsx and AdminTreinos.tsx
+## Fix: Video preview squeezed in VideoModal
 
-Restore the same glassmorphism modal style used across the app to the two previously reverted files.
+The issue is that the video container has `aspect-video` on the wrapper div, but the `flex-1` parent with `overflow-y-auto` is compressing it. On a 390px mobile screen with `h-[80vh]`, the header + button take space, leaving little room for the video, which gets squeezed.
 
-### Changes
+### Fix
 
-**1. `src/components/VideoModal.tsx`** (line 56)
-- Change `DialogContent` classes to: `max-w-4xl w-[calc(100%-2rem)] h-[80vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
+**`src/components/VideoModal.tsx`**:
+- Remove fixed `h-[80vh]` from DialogContent -- let it size naturally with `max-h-[90vh]`
+- Keep `overflow-y-auto` on the content area so long descriptions scroll
+- Change the video container: remove `aspect-video` from wrapper, use `w-full h-0 pb-[56.25%] relative` for a stable 16:9 ratio that won't be compressed by flex, with the iframe/video absolutely positioned inside
+- Alternatively, simpler: just add `flex-shrink-0` to the video container so flex doesn't compress it
 
-**2. `src/pages/AdminTreinos.tsx`** — Two locations:
-- Workout dialog (~line 288): Change `DialogContent` to: `w-[calc(100%-2rem)] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
-- Delete AlertDialog (~line 559): Change `AlertDialogContent` to: `w-[calc(100%-2rem)] rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
+Simplest fix: add `flex-shrink-0` to the `aspect-video` div so it maintains its 16:9 ratio and isn't squeezed by the flex container.
 
