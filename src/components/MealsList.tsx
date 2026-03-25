@@ -71,25 +71,25 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-lg font-bold text-red-600">
+                  <div className="text-lg font-bold text-[#FD46A1]">
                     {meal.calories}
                   </div>
                   <div className="text-xs text-gray-500">kcal</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-orange-600">
+                  <div className="text-lg font-bold text-[#FD46A1]">
                     {meal.carbohydrates}g
                   </div>
                   <div className="text-xs text-gray-500">Carboidratos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600">
+                  <div className="text-lg font-bold text-[#FD46A1]">
                     {meal.proteins}g
                   </div>
                   <div className="text-xs text-gray-500">Proteínas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-600">
+                  <div className="text-lg font-bold text-[#FD46A1]">
                     {meal.fats}g
                   </div>
                   <div className="text-xs text-gray-500">Gorduras</div>
