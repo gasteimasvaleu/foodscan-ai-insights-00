@@ -572,7 +572,7 @@ const MasterCheFIT = () => {
             {/* Menu Plan */}
             {menuPlan && (
               <div className="animate-fade-in">
-                <h2 className="text-center text-3xl font-bold text-white mb-8">
+                <h2 className="text-center text-3xl font-bold text-gray-800 mb-8">
                   Seu Cardápio Personalizado
                 </h2>
                 <div className="grid gap-6">
