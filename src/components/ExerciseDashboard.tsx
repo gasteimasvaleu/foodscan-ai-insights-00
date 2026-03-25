@@ -126,12 +126,12 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent">{stats.todayCalories}</p>
-                <Badge variant="secondary" className="text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">cal</Badge>
+                <p className="text-3xl font-bold text-[#FD46A1]">{stats.todayCalories}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">cal</Badge>
               </div>
             </div>
-            <div className="p-3 rounded-full bg-orange-500/20 backdrop-blur-sm group-hover:bg-orange-500/30 transition-colors">
-              <Flame className="h-8 w-8 text-orange-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Flame className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>
@@ -143,12 +143,12 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold bg-gradient-to-br from-blue-600 to-cyan-600 bg-clip-text text-transparent">{stats.weeklyCalories}</p>
-                <Badge variant="secondary" className="text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">cal</Badge>
+                <p className="text-3xl font-bold text-[#FD46A1]">{stats.weeklyCalories}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">cal</Badge>
               </div>
             </div>
-            <div className="p-3 rounded-full bg-blue-500/20 backdrop-blur-sm group-hover:bg-blue-500/30 transition-colors">
-              <Calendar className="h-8 w-8 text-blue-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Calendar className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>
@@ -160,12 +160,12 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Sequência</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">{stats.currentStreak}</p>
-                <Badge variant="secondary" className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">dias</Badge>
+                <p className="text-3xl font-bold text-[#FD46A1]">{stats.currentStreak}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">dias</Badge>
               </div>
             </div>
-            <div className="p-3 rounded-full bg-green-500/20 backdrop-blur-sm group-hover:bg-green-500/30 transition-colors">
-              <Trophy className="h-8 w-8 text-green-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Trophy className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>
@@ -176,8 +176,8 @@ export function ExerciseDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
-              <p className="text-lg font-bold truncate bg-gradient-to-br from-primary-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>
-              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300">
+              <p className="text-lg font-bold text-[#FD46A1] truncate">{stats.favoriteActivity}</p>
+              <Badge variant="secondary" className="text-xs mt-2 font-semibold bg-pink-100 text-pink-800">
                 {stats.totalExercises} exercícios
               </Badge>
             </div>
