@@ -300,7 +300,8 @@ export default function MyDiets() {
             </TabsContent>
           ))}
         </Tabs>
-      </div>
-    </div>
+          </div>
+        </div>
+      </>
   );
 }

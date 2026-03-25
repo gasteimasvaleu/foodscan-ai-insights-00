@@ -254,7 +254,8 @@ export default function WorkoutPlan() {
             </TabsContent>
           ))}
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

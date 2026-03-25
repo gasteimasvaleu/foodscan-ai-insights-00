@@ -376,7 +376,8 @@ export default function PhysicalAssessment() {
             ))
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
