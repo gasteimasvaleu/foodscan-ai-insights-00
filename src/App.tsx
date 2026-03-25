@@ -27,6 +27,8 @@ import Profile from "./pages/Profile";
 import WorkoutPlan from "./pages/WorkoutPlan";
 import PhysicalAssessment from "./pages/PhysicalAssessment";
 import MyDiets from "./pages/MyDiets";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 
 const queryClient = new QueryClient();
 
