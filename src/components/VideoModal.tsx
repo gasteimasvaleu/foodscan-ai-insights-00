@@ -76,7 +76,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
           {/* Video Container */}
           <div className="aspect-video bg-black rounded-lg overflow-hidden">
             {!isValidVideoUrl ? (
-              <div className="w-full h-full flex items-center justify-center text-white min-h-[300px]">
+              <div className="w-full h-full flex items-center justify-center text-white">
                 <div className="text-center">
                   <p className="text-lg mb-2">URL de vídeo inválida</p>
                   <p className="text-sm text-muted-foreground">Não foi possível carregar o vídeo.</p>
