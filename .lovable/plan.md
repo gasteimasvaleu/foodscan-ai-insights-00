@@ -1,12 +1,21 @@
 
 
-## Reduzir padding lateral das páginas de Política e Termos
+## Adicionar texto informativo acima do botão "Assinar via App Store"
 
-As duas páginas usam `px-4` (16px cada lado) no container externo, o que em 390px de viewport espreme os cards.
+No fluxo nativo iOS do `AuthCard.tsx`, adicionar o texto "Caso ainda não tenha assinatura, clique antes em:" logo acima do botão "Assinar via App Store".
 
-### Alterações
+### Alteração
 
-**`src/pages/PrivacyPolicy.tsx` e `src/pages/TermsOfUse.tsx`**:
-- Trocar `px-4` por `px-2` no div wrapper externo
-- Isso libera 8px a mais de cada lado para o conteúdo dos cards
+**`src/components/AuthCard.tsx`** — No bloco nativo iOS (ainda a ser implementado), incluir um `<p>` com o texto antes do botão de assinatura:
+
+```tsx
+<p className="text-sm text-gray-600 text-center">
+  Caso ainda não tenha assinatura, clique antes em:
+</p>
+<Button onClick={handlePurchase}>
+  Assinar via App Store
+</Button>
+```
+
+Isso será incluído na implementação do plano anterior (refatoração do AuthCard com fluxo nativo/web).
 
