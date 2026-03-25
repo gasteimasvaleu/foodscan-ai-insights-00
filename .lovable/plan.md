@@ -1,11 +1,10 @@
 
 
-## Alterar background da div da imagem para branco
+## Substituir texto "We Diet" por logo na Navbar
 
 ### Alteracao
 
-**`src/pages/ServiNUTRI.tsx`** (linha 513):
-- Na div que envolve a imagem, adicionar `bg-white` à classe existente
-- De: `className="flex justify-center"`
-- Para: `className="flex justify-center bg-white rounded-lg p-2"`
+**`src/components/Navbar.tsx`** (linha 40):
+- Trocar `<h1 className="text-xl font-bold text-white">We Diet</h1>` por uma tag `<img>` com a URL do logo
+- Altura de ~40px para caber na navbar de 64px, largura automática
 
