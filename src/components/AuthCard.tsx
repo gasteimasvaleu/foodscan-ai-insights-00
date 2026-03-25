@@ -196,11 +196,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           <Button type="submit" className="w-full">Entrar</Button>
         </form>
 
-        <div className="mt-4 text-center">
-          <button type="button" onClick={() => navigate('/quero-assinar')} className="text-sm text-primary underline hover:text-primary/80">
-            Quero Assinar
-          </button>
-        </div>
 
         <div className="flex justify-center gap-4 text-[11px]">
           <button type="button" onClick={() => navigate('/politica-de-privacidade')} className="text-primary underline">
