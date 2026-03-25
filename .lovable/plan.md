@@ -1,28 +1,17 @@
 
 
-## Plan: Hide Navbar and Tubelight Menu When User is Not Logged In
+## Configurar RevenueCat no App
 
-### Problem
-The Navbar (top) and TubelightNavbar (bottom menu) are always visible, including on the login form. They should only appear when the user is authenticated.
+### O que será feito
+Inserir a API key do RevenueCat no hook existente e garantir que o fluxo de assinatura in-app funcione corretamente.
 
-### Approach
+### Alteração
 
-**1. `src/App.tsx`** — Conditionally render `TubelightNavbar`
-- Import `useAuth` and wrap the component to only show when `user` exists
-- Since `useAuth` uses hooks, convert `App` from arrow const to a component that can use hooks inside `BrowserRouter`
+**Arquivo: `src/hooks/useRevenueCat.ts`**
+- Substituir a constante `RC_API_KEY = ''` por `RC_API_KEY = 'test_gpQDqNpCbIkhVtyxKDelGynfEfk'`
 
-**2. `src/components/Navbar.tsx`** — Hide when not logged in
-- The Navbar is rendered inside individual pages (Index, Auth, etc.)
-- Option A: Add `useAuth` check inside Navbar to return `null` when no user
-- Option B: Remove `<Navbar />` from pages that show to unauthenticated users
-
-Best approach: **Option A** — inside Navbar, if no `user`, return `null`. This way all pages automatically hide it for unauthenticated users.
-
-**3. `src/pages/Index.tsx`** — Adjust padding
-- When Navbar is hidden, the top padding (`pt-[calc(env(safe-area-inset-top)+2.5rem)]`) needs to be conditional or reduced since there's no navbar taking space.
-
-### Files to modify
-1. **`src/components/Navbar.tsx`** — Return `null` if `!user`
-2. **`src/App.tsx`** — Wrap TubelightNavbar in a component that checks auth, only render when user exists
-3. **`src/pages/Index.tsx`** — Adjust top padding to be conditional based on auth state
+### Observação
+- Essa é uma chave pública (client-side SDK key), segura para ficar no código
+- Quando for publicar na App Store em produção, você precisará gerar uma chave de **produção** no RevenueCat (sem o prefixo `test_`) e substituir
+- Para o fluxo funcionar, você precisa ter configurado no RevenueCat: um **Offering** com um **Package** do tipo "Monthly" vinculado ao produto do App Store Connect
 
