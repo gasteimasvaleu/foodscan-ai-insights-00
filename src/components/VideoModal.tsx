@@ -53,7 +53,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[calc(100%-2rem)] h-[80vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+      <DialogContent className="max-w-4xl w-[calc(100%-2rem)] max-h-[90vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-bold">{workout.title}</DialogTitle>
           <DialogDescription className="flex items-center gap-4 text-sm text-muted-foreground">
