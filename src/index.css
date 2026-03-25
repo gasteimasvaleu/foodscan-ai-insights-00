@@ -157,9 +157,9 @@
   /* PWA standalone mode adjustments */
   @media all and (display-mode: standalone) {
     body {
-      /* Remove default browser UI spacing when in standalone mode */
       margin: 0;
       padding: 0;
+      background-color: #FD46A1;
     }
   }
 
