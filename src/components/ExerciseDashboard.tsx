@@ -160,12 +160,12 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Sequência</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">{stats.currentStreak}</p>
-                <Badge variant="secondary" className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">dias</Badge>
+                <p className="text-3xl font-bold text-[#FD46A1]">{stats.currentStreak}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">dias</Badge>
               </div>
             </div>
-            <div className="p-3 rounded-full bg-green-500/20 backdrop-blur-sm group-hover:bg-green-500/30 transition-colors">
-              <Trophy className="h-8 w-8 text-green-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Trophy className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>
