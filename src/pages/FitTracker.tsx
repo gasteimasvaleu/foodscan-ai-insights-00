@@ -24,7 +24,7 @@ export default function FitTracker() {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-16">
+        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+4rem)]">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 bg-muted rounded"></div>
             <div className="h-96 bg-muted rounded"></div>
