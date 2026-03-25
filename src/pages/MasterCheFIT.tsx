@@ -502,7 +502,7 @@ const MasterCheFIT = () => {
                       >
                         <div className="flex flex-col gap-4">
                           <div>
-                             <h3 className="font-semibold text-lg text-white/95">
+                             <h3 className="font-semibold text-lg text-gray-800">
                                Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
                              </h3>
                             <div className="flex items-center gap-4 text-sm text-white/80">
