@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Plus, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import VideoOverlay from '@/components/VideoOverlay';
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -322,6 +323,7 @@ const DailyControl = () => {
   }
   return (
     <>
+      <VideoOverlay isVisible={isAnalyzing} message="Analisando seu dia..." subMessage="Calculando seus resultados nutricionais" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">

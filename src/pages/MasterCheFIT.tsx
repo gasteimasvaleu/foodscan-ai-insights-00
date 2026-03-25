@@ -13,6 +13,7 @@ import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2, Target, Eye } f
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import VideoOverlay from '@/components/VideoOverlay';
 
 interface UserPreferences {
   favoriteIngredients: string;
@@ -341,6 +342,7 @@ const MasterCheFIT = () => {
 
   return (
     <>
+      <VideoOverlay isVisible={isGenerating} message="Criando seu cardápio..." subMessage="Preparando receitas personalizadas para você" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">

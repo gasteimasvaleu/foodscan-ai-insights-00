@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { NutritionData, FoodElement } from '@/types/nutrition';
 import { supabase } from '@/integrations/supabase/client';
+import VideoOverlay from '@/components/VideoOverlay';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
@@ -587,6 +588,7 @@ const FoodScan = () => {
 
   return (
     <>
+      <VideoOverlay isVisible={isAnalyzing || isDescribing} message="Analisando seu prato..." subMessage="Nossa IA está identificando os alimentos" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
