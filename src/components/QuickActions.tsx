@@ -53,9 +53,9 @@ export const QuickActions = () => {
               backgroundColor: action.color,
               zIndex: index,
               marginTop: index === 0 ? 0 : '-52px',
-              minHeight: isLast ? '120px' : '120px',
+              minHeight: isLast ? '160px' : '120px',
               paddingTop: '16px',
-              paddingBottom: isLast ? '32px' : '16px',
+              paddingBottom: isLast ? '64px' : '16px',
               paddingLeft: '20px',
               paddingRight: '20px',
             }}
