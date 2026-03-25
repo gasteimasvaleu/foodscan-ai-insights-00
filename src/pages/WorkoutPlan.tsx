@@ -162,7 +162,7 @@ export default function WorkoutPlan() {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-20">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-[calc(env(safe-area-inset-top)+5rem)]">
           <div className="max-w-6xl mx-auto">Carregando...</div>
         </div>
       </>
@@ -172,7 +172,7 @@ export default function WorkoutPlan() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-20 pb-40">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-[calc(env(safe-area-inset-top)+5rem)] pb-40">
         <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex flex-col items-center gap-4">
           <div className="text-center">

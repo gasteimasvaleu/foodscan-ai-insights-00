@@ -131,7 +131,7 @@ const Treinos = () => {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-16">
+        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+4rem)]">
           <div className="max-w-md mx-auto space-y-8">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
@@ -145,7 +145,7 @@ const Treinos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
+    <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
       <Navbar />
       
       <main className="px-4 py-8">
