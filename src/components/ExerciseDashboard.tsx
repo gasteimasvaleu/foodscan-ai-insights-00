@@ -126,12 +126,12 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent">{stats.todayCalories}</p>
-                <Badge variant="secondary" className="text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">cal</Badge>
+                <p className="text-3xl font-bold text-[#FD46A1]">{stats.todayCalories}</p>
+                <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">cal</Badge>
               </div>
             </div>
-            <div className="p-3 rounded-full bg-orange-500/20 backdrop-blur-sm group-hover:bg-orange-500/30 transition-colors">
-              <Flame className="h-8 w-8 text-orange-500 group-hover:scale-110 transition-transform" />
+            <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
+              <Flame className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
             </div>
           </div>
         </CardContent>
