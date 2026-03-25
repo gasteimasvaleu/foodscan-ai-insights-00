@@ -21,7 +21,7 @@ export const SubscriptionStatus = () => {
 
   if (loading) {
     return (
-      <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mb-8">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 mb-8">
         <CardContent className="p-6 text-center">
           <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
           <p>Verificando status da assinatura...</p>
