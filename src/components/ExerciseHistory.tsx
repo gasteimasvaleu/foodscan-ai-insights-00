@@ -167,8 +167,8 @@ export function ExerciseHistory() {
                     <span className="font-medium">{exercise.duration_minutes} min</span>
                   </div>
                   <div className="flex items-center gap-2 group-hover:text-foreground transition-colors">
-                    <div className="p-1 rounded-full bg-orange-500/10">
-                      <Flame className="h-3 w-3" />
+                     <div className="p-1 rounded-full bg-pink-500/10">
+                       <Flame className="h-3 w-3 text-pink-500" />
                     </div>
                     <span className="font-medium">{exercise.calories_burned} cal</span>
                   </div>
