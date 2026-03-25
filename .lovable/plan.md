@@ -1,15 +1,15 @@
 
 
-## Padronizar cores do Histórico de Cardápios com o card Preferências Alimentares
+## Plan: Standardize "Estatísticas Gerais" inner cards styling
 
-### Alterações em `src/pages/MasterCheFIT.tsx`
+The inner stat cards (lines 503-524) use `text-3xl` for values, varied gradient backgrounds (`from-primary/10`, `from-orange-500/10`, etc.), and different icon colors. These need to match the app's established pattern.
 
-1. **Card container do histórico** (linha 489): trocar `bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10` por `bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20`
+### Changes in `src/pages/Profile.tsx` (lines 494-526)
 
-2. **Cards individuais de cada cardápio** (linha 500): trocar `bg-gradient-to-br from-primary/10 to-primary/15 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25` por `bg-[#F9FAFB]`
-
-3. **Textos dentro dos cards individuais**:
-   - Título h3 (linha 505): `text-white/95` → `text-gray-800`
-   - Texto "Total:" (linha 508): `text-white/80` → `text-gray-600`
-   - Título do CardTitle (linha 491): sem alteração necessária (já usa cor padrão)
+1. **Card wrapper**: Change from `bg-card/80` to `bg-[#FFD1E7] rounded-3xl border-white/20`
+2. **Inner stat cards**: Change gradient backgrounds to `bg-[#F9FAFB] rounded-2xl`
+3. **Value text**: Change `text-3xl font-bold text-foreground` to `text-2xl font-bold text-[#FD46A1]`
+4. **Icons**: All icons change to `text-pink-500`
+5. **Subtitle text**: Keep `text-sm text-muted-foreground` (already consistent)
+6. **CardTitle**: Remove the `User` icon, center the title text to match other card headers
 
