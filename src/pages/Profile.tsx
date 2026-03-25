@@ -422,7 +422,7 @@ export default function Profile() {
                       Editar Perfil
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="mx-4 rounded-2xl max-w-[calc(100%-2rem)]">
                     <DialogHeader>
                       <DialogTitle>Editar Perfil</DialogTitle>
                     </DialogHeader>
