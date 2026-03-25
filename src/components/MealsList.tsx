@@ -65,10 +65,9 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
                 </Badge>
               </div>
                 
-                <p className="text-sm text-gray-600">
-                  Porção: {meal.portion}
-                </p>
-              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Porção: {meal.portion}
+              </p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
