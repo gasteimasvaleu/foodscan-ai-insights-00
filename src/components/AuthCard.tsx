@@ -167,6 +167,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           </div>
         </CardContent>
       </Card>
+      </div>
     );
   }
 
