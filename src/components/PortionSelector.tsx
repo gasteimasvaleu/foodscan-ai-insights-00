@@ -70,7 +70,7 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <Select onValueChange={handlePortionChange} value={selectedPortion}>
-              <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+              <SelectTrigger className="w-full bg-white border-gray-800 focus:border-gray-900">
                 <SelectValue placeholder="Escolha uma porção" />
               </SelectTrigger>
               <SelectContent>
