@@ -1,20 +1,24 @@
 
 
-## Corrigir navbar visível nas páginas internas do Profile
+## Adicionar Navbar (barra superior) nas 3 páginas internas do Profile
 
 ### Problema
-As páginas WorkoutPlan, MyDiets e PhysicalAssessment têm backgrounds opacos (`bg-gradient-to-br`) que cobrem a faixa branca decorativa do navbar. O menu rosa aparece (z-40), mas a faixa branca fica por trás do conteúdo da página.
+As páginas WorkoutPlan, MyDiets e PhysicalAssessment não importam nem renderizam o componente `<Navbar />` (barra superior rosa com logo e "MEU PERFIL"). Todas as outras páginas do app incluem esse componente.
 
 ### Alterações
 
 **1. `src/pages/WorkoutPlan.tsx`**
-- Aumentar `pb-24` para `pb-40` no container principal para garantir espaço para a navbar + faixa branca
+- Importar `Navbar` de `@/components/Navbar`
+- Adicionar `<Navbar />` no início do JSX retornado (antes do div principal)
+- Adicionar `pt-20` ao container principal para compensar a navbar fixa
 
 **2. `src/pages/MyDiets.tsx`**
-- Aumentar `pb-24` para `pb-40` no container principal
+- Importar `Navbar` de `@/components/Navbar`
+- Adicionar `<Navbar />` no início do JSX retornado
+- Adicionar `pt-20` ao container principal
 
 **3. `src/pages/PhysicalAssessment.tsx`**
-- Aumentar `pb-28` (ou o valor atual) para `pb-40` no container principal
-
-Isso garante que o conteúdo termine antes da área da navbar, deixando a faixa branca e o menu visíveis em todas as páginas.
+- Importar `Navbar` de `@/components/Navbar`
+- Adicionar `<Navbar />` no início do JSX retornado
+- Adicionar `pt-20` ao container principal
 
