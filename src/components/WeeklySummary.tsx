@@ -235,7 +235,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                 <div className="text-sm text-gray-500">Carboidratos (g)</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-[#FD46A1]">
                   {Math.round(selectedDayData.proteins)}
                 </div>
                 <div className="text-sm text-gray-500">Proteínas (g)</div>
