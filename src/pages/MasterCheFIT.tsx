@@ -579,9 +579,9 @@ const MasterCheFIT = () => {
                   {Object.entries(menuPlan).map(([mealType, meal]: [string, Meal]) => (
                     <div key={mealType} className="relative group">
                       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-xl group-hover:blur-2xl transition-all duration-300" />
-                      <div className="relative bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:border-primary/40 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                      <div className="relative bg-[#F9FAFB] rounded-xl p-6 border border-white/20 hover:border-primary/40 transition-all duration-300 shadow-xl hover:shadow-2xl">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                             {getMealIcon(mealType)}
                             {getMealName(mealType)}
                           </h3>
@@ -591,12 +591,12 @@ const MasterCheFIT = () => {
                         </div>
                         
                         <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
-                          <h4 className="font-semibold text-white mb-2">{meal.name}</h4>
+                          <h4 className="font-semibold text-gray-800 mb-2">{meal.name}</h4>
                           <p className="text-sm text-black whitespace-pre-line">{meal.recipe}</p>
                         </div>
 
                         <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
-                          <h4 className="font-semibold text-white mb-2">Modo de Preparo</h4>
+                          <h4 className="font-semibold text-gray-800 mb-2">Modo de Preparo</h4>
                           <p className="text-sm text-black whitespace-pre-line">{meal.instructions}</p>
                         </div>
 
