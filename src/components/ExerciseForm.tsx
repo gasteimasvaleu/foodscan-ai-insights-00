@@ -185,7 +185,7 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
             </div>
           </div>
 
-          <div className="space-y-4 p-4 rounded-lg bg-accent/30 backdrop-blur-sm border border-accent/50">
+          <div className="space-y-4 p-4 rounded-lg bg-[#F9FAFB] border border-accent/50">
             <Label className="font-medium text-lg text-center block">Intensidade do Exercício</Label>
             <RadioGroup 
               value={formData.intensity} 
