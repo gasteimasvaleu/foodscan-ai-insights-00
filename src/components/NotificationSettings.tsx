@@ -192,11 +192,8 @@ export function NotificationSettings() {
       <PushNotificationSetup ref={pushNotificationRef} />
       <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {getStatusIcon()}
-            Notificações Push
-          </CardTitle>
-          <CardDescription>
+          <CardTitle className="text-center text-2xl font-semibold">Notificações Push</CardTitle>
+          <CardDescription className="text-center">
             Receba notificações sobre novidades, lembretes e atualizações importantes
           </CardDescription>
         </CardHeader>
