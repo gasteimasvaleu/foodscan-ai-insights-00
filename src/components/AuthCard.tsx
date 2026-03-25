@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
 import { AppleSignInButton } from './AppleSignInButton';
+import { Separator } from '@/components/ui/separator';
+import { toast } from '@/hooks/use-toast';
 
 interface AuthCardProps {
   mode?: 'login' | 'signup';
@@ -16,55 +19,38 @@ interface AuthCardProps {
 export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(mode === 'login');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
-  const [justLoggedIn, setJustLoggedIn] = useState(false);
+  const { isNative, isIOS } = useNativePlatform();
+  const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat();
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
 
-  // Detect when user just logged in (preserved for future features)
-  useEffect(() => {
-    if (user && justLoggedIn) {
-      setJustLoggedIn(false);
-    }
-  }, [user, justLoggedIn]);
+  const isNativeIOS = isNative && isIOS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (isLogin) {
-      const result = await signIn(formData.email, formData.password);
-      if (!result.error) {
-        setJustLoggedIn(true);
-      }
-    } else {
-      const result = await signUp(formData.email, formData.password, formData.name);
-      // If signup successful and we're on payment success page, redirect to home
-      if (!result.error && window.location.pathname === '/payment-success') {
-        navigate('/');
-      }
+    const result = await signIn(formData.email, formData.password);
+    if (!result.error) {
+      sessionStorage.setItem('skipSplash', 'true');
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+  const handlePurchase = async () => {
+    const success = await purchaseMonthly();
+    if (success) {
+      toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
+    }
   };
 
-  const handleNotificationPermissionGranted = async () => {
-    console.log('User granted notification permission, setting up push notifications...');
-    if (pushNotificationRef.current) {
-      await pushNotificationRef.current.setupPushNotifications();
+  const handleRestore = async () => {
+    const found = await restorePurchases();
+    if (found) {
+      toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+    } else {
+      toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
     }
   };
 
@@ -104,87 +90,124 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     );
   }
 
+  // ─── Native iOS Flow ───
+  if (isNativeIOS) {
+    return (
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-center text-gray-800 text-lg">
+            Mandato Intelligence Pro
+          </CardTitle>
+          <p className="text-center text-2xl font-bold text-primary">
+            {price || '...'} <span className="text-sm font-normal text-muted-foreground">/mês</span>
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Apple Sign In — disabled until purchased */}
+          <AppleSignInButton disabled={!hasPurchased} />
+
+          {/* Subscribe via App Store */}
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground text-center">
+              Caso ainda não tenha assinatura, clique antes em:
+            </p>
+            <Button
+              onClick={handlePurchase}
+              disabled={rcLoading || hasPurchased}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {rcLoading ? 'Processando...' : hasPurchased ? '✅ Assinatura ativa' : 'Assinar via App Store'}
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">ou</span>
+            <Separator className="flex-1" />
+          </div>
+
+          {/* Email/Password form */}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required placeholder="seu@email.com" />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} required placeholder="Sua senha" minLength={6} />
+            </div>
+            <Button type="submit" className="w-full">Entrar</Button>
+          </form>
+
+          {/* Restore Purchases */}
+          <button
+            type="button"
+            onClick={handleRestore}
+            disabled={rcLoading}
+            className="w-full text-sm text-primary underline hover:text-primary/80"
+          >
+            Restaurar Compras
+          </button>
+
+          {/* Legal text — Apple Guideline 3.1.2c */}
+          <p className="text-[10px] text-muted-foreground text-center leading-tight">
+            A assinatura é renovada automaticamente, a menos que seja cancelada pelo menos 24 horas antes do término do período atual. O pagamento será cobrado na sua conta do iTunes. A gestão da assinatura pode ser feita nas Definições da conta após a compra.
+          </p>
+
+          {/* Privacy & Terms links */}
+          <div className="flex justify-center gap-4 text-[11px]">
+            <button type="button" onClick={() => navigate('/politica-de-privacidade')} className="text-primary underline">
+              Política de Privacidade
+            </button>
+            <button type="button" onClick={() => navigate('/termos-de-uso')} className="text-primary underline">
+              Termos de Uso
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // ─── Web Flow ───
   return (
     <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
       <CardHeader>
-        <CardTitle className="text-center text-gray-800">
-          {isLogin ? 'Fazer Login' : 'Criar Conta'}
-        </CardTitle>
+        <CardTitle className="text-center text-gray-800">Fazer Login</CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome
-              </label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleInputChange}
-                required={!isLogin}
-                placeholder="Seu nome"
-                className="w-full"
-              />
-            </div>
-          )}
-          
+      <CardContent className="space-y-4">
+        <AppleSignInButton />
+
+        <div className="flex items-center gap-3">
+          <Separator className="flex-1" />
+          <span className="text-xs text-muted-foreground">ou</span>
+          <Separator className="flex-1" />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Login (Email)
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              placeholder="seu@email.com"
-              className="w-full"
-            />
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Login (Email)</label>
+            <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required placeholder="seu@email.com" />
           </div>
-          
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Senha
-            </label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              placeholder="Sua senha"
-              className="w-full"
-              minLength={6}
-            />
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+            <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} required placeholder="Sua senha" minLength={6} />
           </div>
-          
-          <Button
-            type="submit"
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white"
-          >
-            {isLogin ? 'Entrar' : 'Criar Conta'}
-          </Button>
-          
-          {isLogin && (
-            <div className="mt-4">
-              <AppleSignInButton />
-            </div>
-          )}
+          <Button type="submit" className="w-full">Entrar</Button>
         </form>
-        
+
         <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={() => navigate('/quero-assinar')}
-            className="text-sm text-primary-600 hover:text-primary-700 underline"
-          >
+          <button type="button" onClick={() => navigate('/quero-assinar')} className="text-sm text-primary underline hover:text-primary/80">
             Quero Assinar
+          </button>
+        </div>
+
+        <div className="flex justify-center gap-4 text-[11px]">
+          <button type="button" onClick={() => navigate('/politica-de-privacidade')} className="text-primary underline">
+            Política de Privacidade
+          </button>
+          <button type="button" onClick={() => navigate('/termos-de-uso')} className="text-primary underline">
+            Termos de Uso
           </button>
         </div>
       </CardContent>
