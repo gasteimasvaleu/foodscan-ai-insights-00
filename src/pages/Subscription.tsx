@@ -22,7 +22,7 @@ const Subscription = () => {
           </div>
 
           {/* Description Card */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mb-8 animate-scale-in">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 mb-8 animate-scale-in">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-primary-600 text-center mb-4">
                 We Diet – Nutrição Inteligente na Palma da Mão!
