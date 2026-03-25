@@ -2,36 +2,40 @@
 
 ## Problema
 
-O `capacitor.config.ts` está com `server.url` apontando para o preview do Lovable. Isso é útil apenas durante desenvolvimento (hot-reload), mas faz o app nativo carregar uma página web externa em vez de usar os arquivos locais compilados.
+No `src/index.css` (linha 158-164), existe esta regra:
+
+```css
+@media all and (display-mode: standalone) {
+  body {
+    background-color: #FD46A1;
+  }
+}
+```
+
+O Capacitor roda em modo standalone, então o body fica rosa. O fundo deveria ser o cinza claro `#F7FAFB` como no navegador.
 
 ## Solução
 
-**Arquivo: `capacitor.config.ts`**
+**Arquivo: `src/index.css`**
 
-Remover o bloco `server` inteiro. Assim o Capacitor carregará os arquivos locais da pasta `dist/` (definida em `webDir`), funcionando como app nativo offline.
+Alterar a cor do `background-color` no bloco `display-mode: standalone` de `#FD46A1` para `#F7FAFB`:
 
-```ts
-import type { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
-  appId: 'app.dietainteligente',
-  appName: 'We Diet',
-  webDir: 'dist',
-  backgroundColor: '#ff2d9e',
-  ios: {
-    backgroundColor: '#ff2d9e',
-  },
-};
-
-export default config;
+```css
+@media all and (display-mode: standalone) {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #F7FAFB;
+  }
+}
 ```
+
+Isso garante que tanto no navegador quanto no app nativo/PWA o fundo será o cinza claro correto.
 
 ## Após a mudança
 
-1. `git pull` no projeto local
-2. `npm run build` para gerar a pasta `dist/`
-3. `npx cap sync ios` para sincronizar
-4. Rodar no Xcode novamente
-
-> **Nota**: Quando quiser voltar ao modo de desenvolvimento com hot-reload, basta re-adicionar o bloco `server` temporariamente.
+1. `git pull`
+2. `npm run build`
+3. `npx cap sync ios`
+4. Rodar no Xcode
 
