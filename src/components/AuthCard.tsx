@@ -92,7 +92,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             />
           </div>
         </Card>
-        <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+        <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
           <CardContent className="p-4">
             <h3 className="font-semibold text-foreground text-sm truncate text-center">
               Boas-vindas, {userName}!
