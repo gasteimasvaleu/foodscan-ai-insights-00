@@ -1,19 +1,11 @@
 
 
-## Reduzir safe area superior e restaurar logo
+## Ajuste fino da safe area superior
 
-### Problema
-O `pt-[env(safe-area-inset-top)]` aplica o inset completo do iPhone (~47px no notch), que somado à altura da navbar fica excessivo. A logo foi reduzida de `h-10` para `h-8` e ficou deformada.
+Trocar o multiplicador de `0.5` para `0.6` no padding-top da Navbar:
 
-### Solução
+**`src/components/Navbar.tsx`**:
+- `pt-[calc(env(safe-area-inset-top)*0.5)]` → `pt-[calc(env(safe-area-inset-top)*0.6)]`
 
-**1. Navbar.tsx** — Reduzir o padding da safe area pela metade e restaurar logo:
-- Trocar `pt-[env(safe-area-inset-top)]` por `pt-[calc(env(safe-area-inset-top)*0.5)]` (metade do inset)
-- Restaurar logo de `h-8` para `h-10`
-
-**2. Páginas (~15 arquivos)** — Reduzir o offset correspondente:
-- Trocar `+3rem` por `+2.5rem` nas páginas padrão
-- Trocar `+4rem` por `+3.5rem` nas páginas de perfil
-
-Isso reduz ~20-24px do espaço superior sem comprometer a visibilidade abaixo da status bar.
+Isso adiciona ~5px a mais que a metade, sem voltar ao excesso anterior.
 
