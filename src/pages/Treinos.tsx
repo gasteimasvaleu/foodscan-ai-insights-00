@@ -161,7 +161,7 @@ const Treinos = () => {
           </div>
 
           {/* Filters Section */}
-          <Card className="mb-8 shadow-lg border-primary/10">
+          <Card className="mb-8 shadow-lg border-primary/10 bg-[#FFD3E8]">
             <CardContent className="p-6">
               <div className="flex flex-col gap-4">
                 {/* Search Input */}
