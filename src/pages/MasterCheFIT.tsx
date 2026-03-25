@@ -464,7 +464,7 @@ const MasterCheFIT = () => {
                         <p className="leading-relaxed text-gray-800">{preferences.favoriteIngredients || 'Não definido'}</p>
                       </div>
                       
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 border border-white/20 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300">
+                      <div className="p-4 rounded-xl bg-[#F9FAFB] border border-white/20">
                         <h4 className="font-semibold text-sm text-primary mb-3 flex items-center gap-2">
                           <Target className="w-4 h-4" />
                           LIMITE CALÓRICO
