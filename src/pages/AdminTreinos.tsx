@@ -556,7 +556,7 @@ export default function AdminTreinos() {
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="w-[calc(100%-2rem)] rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
                           <AlertDialogHeader>
                             <AlertDialogTitle>Excluir treino</AlertDialogTitle>
                             <AlertDialogDescription>
