@@ -32,16 +32,23 @@ export const QuickActions = () => {
       color: "#FA1690",
     },
     {
+      icon: Dumbbell,
+      title: "Treinos",
+      tags: ["Vídeos", "Exercícios"],
+      path: "/treinos",
+      color: "#E24989",
+    },
+    {
       icon: MessageCircle,
       title: "WhatsApp",
       tags: ["Automático", "Análises"],
       path: "/whatsapp-settings",
-      color: "#E24989",
+      color: "#FA1690",
     },
   ];
 
   return (
-    <div className="flex flex-col" style={{ marginBottom: '-48px' }}>
+    <div className="flex flex-col" style={{ marginBottom: '-64px' }}>
       {actions.map((action, index) => {
         const isLast = index === actions.length - 1;
         return (
