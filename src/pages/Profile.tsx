@@ -492,33 +492,32 @@ export default function Profile() {
           </Card>
 
           {/* Estatísticas Gerais */}
-        <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+        <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5 text-primary" />
+            <CardTitle className="text-center">
               Estatísticas Gerais
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
-                <Utensils className="w-8 h-8 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold text-foreground">{stats.totalMeals}</p>
+              <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
+                <Utensils className="w-8 h-8 mx-auto mb-2 text-pink-500" />
+                <p className="text-2xl font-bold text-[#FD46A1]">{stats.totalMeals}</p>
                 <p className="text-sm text-muted-foreground">Refeições</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gradient-to-br from-orange-500/10 to-orange-500/5">
-                <Flame className="w-8 h-8 mx-auto mb-2 text-orange-500" />
-                <p className="text-3xl font-bold text-foreground">{stats.totalCaloriesBurned.toLocaleString()}</p>
+              <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
+                <Flame className="w-8 h-8 mx-auto mb-2 text-pink-500" />
+                <p className="text-2xl font-bold text-[#FD46A1]">{stats.totalCaloriesBurned.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Calorias</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5">
-                <Dumbbell className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                <p className="text-3xl font-bold text-foreground">{stats.totalExercises}</p>
+              <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
+                <Dumbbell className="w-8 h-8 mx-auto mb-2 text-pink-500" />
+                <p className="text-2xl font-bold text-[#FD46A1]">{stats.totalExercises}</p>
                 <p className="text-sm text-muted-foreground">Exercícios</p>
               </div>
-              <div className="text-center p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-                <Calendar className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                <p className="text-3xl font-bold text-foreground">{stats.activeDays}</p>
+              <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
+                <Calendar className="w-8 h-8 mx-auto mb-2 text-pink-500" />
+                <p className="text-2xl font-bold text-[#FD46A1]">{stats.activeDays}</p>
                 <p className="text-sm text-muted-foreground">Dias Ativos</p>
               </div>
             </div>
