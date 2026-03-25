@@ -17,6 +17,8 @@ export const Navbar = () => {
   const menuItems = [
     { label: 'Meu Perfil', href: '/profile' },
     { label: 'Assinatura', href: '/quero-assinar' },
+    { label: 'Política de Privacidade', href: '/politica-de-privacidade' },
+    { label: 'Termos de Uso', href: '/termos-de-uso' },
     { label: 'Sobre', href: '/sobre' }
   ];
 
