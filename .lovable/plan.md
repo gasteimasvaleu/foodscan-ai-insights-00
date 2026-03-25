@@ -1,14 +1,15 @@
 
 
-## Padronizar tabs do FitTracker com o estilo do FoodScan
+## Padronizar cores do Histórico de Cardápios com o card Preferências Alimentares
 
-O TabsList do FitTracker usa estilo glass (bg-white/10, text-white, active:text-blue-600). O do FoodScan usa o estilo padrão do componente (bg-muted, sem customização extra).
+### Alterações em `src/pages/MasterCheFIT.tsx`
 
-### Alteração
+1. **Card container do histórico** (linha 489): trocar `bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10` por `bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20`
 
-**src/pages/FitTracker.tsx** (linhas 69-81):
-- **TabsList** (linha 69): trocar `bg-white/10 backdrop-blur-md border border-white/20 shadow-lg` por apenas `grid w-full grid-cols-3 mb-6` (mesmo do ImageUpload)
-- **TabsTrigger** (linhas 70, 74, 78): remover classes customizadas `data-[state=active]:bg-white/90 data-[state=active]:text-blue-600 data-[state=active]:shadow-md hover:bg-white/10 transition-all duration-300 text-white drop-shadow-lg`, manter apenas `gap-2` (mesmo do ImageUpload)
+2. **Cards individuais de cada cardápio** (linha 500): trocar `bg-gradient-to-br from-primary/10 to-primary/15 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25` por `bg-[#F9FAFB]`
 
-Resultado: as tabs ficarão com fundo cinza claro (muted) e texto escuro, idêntico ao componente do FoodScan.
+3. **Textos dentro dos cards individuais**:
+   - Título h3 (linha 505): `text-white/95` → `text-gray-800`
+   - Texto "Total:" (linha 508): `text-white/80` → `text-gray-600`
+   - Título do CardTitle (linha 491): sem alteração necessária (já usa cor padrão)
 
