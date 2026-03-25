@@ -1,24 +1,27 @@
 
 
-## Adicionar Navbar (barra superior) nas 3 páginas internas do Profile
+## Implementar VideoOverlay fullscreen com progresso
 
-### Problema
-As páginas WorkoutPlan, MyDiets e PhysicalAssessment não importam nem renderizam o componente `<Navbar />` (barra superior rosa com logo e "MEU PERFIL"). Todas as outras páginas do app incluem esse componente.
+### Vídeo
+`https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/openart-video_172ff066_1774432172784.mp4`
 
-### Alterações
+### 1. Criar `src/components/VideoOverlay.tsx`
+- Overlay `fixed inset-0 z-50` com fundo escuro semi-transparente
+- Vídeo fullscreen em loop, muted, autoplay como background
+- Texto centralizado sobre o vídeo: mensagem principal + submensagem
+- Barra de progresso animada (indeterminada, oscilando)
+- Fade in/out com framer-motion (`AnimatePresence`)
+- Props: `isVisible: boolean`, `message: string`, `subMessage?: string`
 
-**1. `src/pages/WorkoutPlan.tsx`**
-- Importar `Navbar` de `@/components/Navbar`
-- Adicionar `<Navbar />` no início do JSX retornado (antes do div principal)
-- Adicionar `pt-20` ao container principal para compensar a navbar fixa
+### 2. Integrar em `src/pages/FoodScan.tsx`
+- Importar `VideoOverlay`
+- Renderizar: `<VideoOverlay isVisible={isAnalyzing || isDescribing} message="Analisando seu prato..." subMessage="Nossa IA está identificando os alimentos" />`
 
-**2. `src/pages/MyDiets.tsx`**
-- Importar `Navbar` de `@/components/Navbar`
-- Adicionar `<Navbar />` no início do JSX retornado
-- Adicionar `pt-20` ao container principal
+### 3. Integrar em `src/pages/MasterCheFIT.tsx`
+- Importar `VideoOverlay`
+- Renderizar: `<VideoOverlay isVisible={isGenerating} message="Criando seu cardápio..." subMessage="Preparando receitas personalizadas para você" />`
 
-**3. `src/pages/PhysicalAssessment.tsx`**
-- Importar `Navbar` de `@/components/Navbar`
-- Adicionar `<Navbar />` no início do JSX retornado
-- Adicionar `pt-20` ao container principal
+### 4. Integrar em `src/pages/DailyControl.tsx`
+- Importar `VideoOverlay`
+- Renderizar: `<VideoOverlay isVisible={isAnalyzing} message="Analisando seu dia..." subMessage="Calculando seus resultados nutricionais" />`
 
