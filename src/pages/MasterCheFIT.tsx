@@ -486,7 +486,7 @@ const MasterCheFIT = () => {
 
             {/* Menu History */}
             {showHistory && savedMenuPlans.length > 0 && (
-              <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
+              <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20 transition-all duration-500 animate-fade-in">
                 <CardHeader>
                   <CardTitle className="text-2xl text-center">
                     Histórico de Cardápios
