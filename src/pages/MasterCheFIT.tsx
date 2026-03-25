@@ -596,7 +596,7 @@ const MasterCheFIT = () => {
                         </div>
 
                         <div className="bg-white/5 rounded-lg p-4 border border-white/10 mb-4">
-                          <h4 className="font-semibold text-white mb-2">Modo de Preparo</h4>
+                          <h4 className="font-semibold text-gray-800 mb-2">Modo de Preparo</h4>
                           <p className="text-sm text-black whitespace-pre-line">{meal.instructions}</p>
                         </div>
 
