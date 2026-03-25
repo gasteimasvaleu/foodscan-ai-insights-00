@@ -83,7 +83,7 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
             </Select>
           </div>
           
-          <div className="text-amber-600 font-medium text-sm">ou</div>
+          <div className="text-gray-800 font-medium text-sm">ou</div>
           
           <div className="flex-1">
             <div className="relative">
