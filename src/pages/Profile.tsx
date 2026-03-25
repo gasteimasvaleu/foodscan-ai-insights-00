@@ -729,7 +729,7 @@ export default function Profile() {
                   <span className="text-lg font-bold" style={{ color: '#FC45A0' }}>{goals.fats}g</span>
                 </div>
               </div>
-              <Button onClick={() => navigate("/daily-control")} className="w-full mt-4" variant="outline">
+              <Button onClick={() => navigate("/controle-diario")} className="w-full mt-4" variant="outline">
                 <Edit2 className="w-4 h-4 mr-2" />
                 Editar Metas
               </Button>
