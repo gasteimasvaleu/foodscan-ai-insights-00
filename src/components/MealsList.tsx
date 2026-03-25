@@ -55,20 +55,19 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
               key={meal.id || index}
               className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-200"
             >
-              <div className="mb-4">
-                <Badge variant="secondary" className="mb-2">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {formatTime(meal.meal_time)}
-                </Badge>
-                
+              <div className="flex items-center justify-between mb-2">
                 <h4 className="text-lg font-semibold text-gray-800">
                   {meal.food_name}
                 </h4>
-                
-                <p className="text-sm text-gray-600">
-                  Porção: {meal.portion}
-                </p>
+                <Badge variant="secondary">
+                  <Clock className="w-3 h-3 mr-1" />
+                  {formatTime(meal.meal_time)}
+                </Badge>
               </div>
+                
+              <p className="text-sm text-gray-600 mb-4">
+                Porção: {meal.portion}
+              </p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
