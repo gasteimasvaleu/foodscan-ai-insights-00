@@ -505,7 +505,7 @@ const MasterCheFIT = () => {
                              <h3 className="font-semibold text-lg text-gray-800">
                                Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
                              </h3>
-                            <div className="flex items-center gap-4 text-sm text-white/80">
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-primary"></div>
                                 <span>Total:</span>
