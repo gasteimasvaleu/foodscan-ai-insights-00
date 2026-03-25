@@ -491,7 +491,7 @@ const ServiNUTRI = () => {
               <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
                 <Stethoscope className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-white">ServiNUTRI</h1>
+              <h1 className="text-xl font-bold text-[#FD46A1]">ServiNUTRI</h1>
             </div>
           </div>
 

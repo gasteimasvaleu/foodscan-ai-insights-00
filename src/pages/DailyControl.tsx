@@ -334,7 +334,7 @@ const DailyControl = () => {
                 <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-xl font-bold text-white">Controle Diário</h1>
+                <h1 className="text-xl font-bold text-[#FD46A1]">Controle Diário</h1>
               </div>
             </div>
 

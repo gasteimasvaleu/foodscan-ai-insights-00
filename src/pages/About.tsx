@@ -14,7 +14,7 @@ const About = () => {
               <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
                 <Shield className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-white">Sobre</h1>
+              <h1 className="text-xl font-bold text-[#FD46A1]">Sobre</h1>
             </div>
           </div>
 
