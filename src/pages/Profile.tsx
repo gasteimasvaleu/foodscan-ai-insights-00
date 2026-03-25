@@ -718,15 +718,15 @@ export default function Profile() {
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="font-medium">Carboidratos</span>
-                  <span className="text-lg font-bold text-orange-500">{goals.carbohydrates}g</span>
+                  <span className="text-lg font-bold" style={{ color: '#FC45A0' }}>{goals.carbohydrates}g</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="font-medium">Proteínas</span>
-                  <span className="text-lg font-bold text-green-500">{goals.proteins}g</span>
+                  <span className="text-lg font-bold" style={{ color: '#FC45A0' }}>{goals.proteins}g</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="font-medium">Gorduras</span>
-                  <span className="text-lg font-bold text-blue-500">{goals.fats}g</span>
+                  <span className="text-lg font-bold" style={{ color: '#FC45A0' }}>{goals.fats}g</span>
                 </div>
               </div>
               <Button onClick={() => navigate("/daily-control")} className="w-full mt-4" variant="outline">
