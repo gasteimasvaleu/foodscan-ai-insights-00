@@ -36,7 +36,7 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <h1 className="text-xl font-bold text-white">We Diet</h1>
+              <img src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/wedietlogonavbar.png" alt="We Diet" className="h-10 w-auto" />
             </Link>
           </div>
 
