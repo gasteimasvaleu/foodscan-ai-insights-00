@@ -120,10 +120,9 @@ export function ExerciseDashboard() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/20 border-orange-200/50 dark:border-orange-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 animate-fade-in group">
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
