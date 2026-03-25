@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import { Brain, MessageCircle, Zap } from 'lucide-react';
+import React from 'react';
+import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SaveButton } from '@/components/ui/save-button';
-import { TruthMoment } from './TruthMoment';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface DietAnalysisProps {
   analysis: string;
