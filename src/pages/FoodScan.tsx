@@ -588,6 +588,7 @@ const FoodScan = () => {
 
   return (
     <>
+      <VideoOverlay isVisible={isAnalyzing || isDescribing} message="Analisando seu prato..." subMessage="Nossa IA está identificando os alimentos" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">

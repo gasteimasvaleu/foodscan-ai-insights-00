@@ -323,6 +323,7 @@ const DailyControl = () => {
   }
   return (
     <>
+      <VideoOverlay isVisible={isAnalyzing} message="Analisando seu dia..." subMessage="Calculando seus resultados nutricionais" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
         <div className="container mx-auto px-4 py-8">
