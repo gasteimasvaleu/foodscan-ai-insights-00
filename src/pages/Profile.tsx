@@ -777,10 +777,7 @@ export default function Profile() {
         {/* Configurações */}
         <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5 text-primary" />
-              Configurações
-            </CardTitle>
+            <CardTitle className="text-center text-2xl font-semibold">Configurações</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button onClick={() => navigate("/whatsapp-settings")} variant="outline" className="w-full justify-start">
