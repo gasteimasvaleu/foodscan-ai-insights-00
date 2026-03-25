@@ -60,7 +60,7 @@ export const Navbar = () => {
                 </Button>
               </div>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-l border-white/20 p-0 flex flex-col h-full">
+            <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-2 border-primary rounded-2xl p-0 flex flex-col h-[calc(100%-3rem)] my-6">
               <SheetHeader className="p-6 border-b border-white/20 flex-shrink-0">
                 <SheetTitle className="text-white text-lg font-bold">
                   Meu Perfil
