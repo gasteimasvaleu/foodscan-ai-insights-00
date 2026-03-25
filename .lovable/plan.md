@@ -1,11 +1,11 @@
 
 
-## Reduzir padding interno do card FoodScan
-
-O card do FoodScan tem padding duplo: `p-4` no wrapper externo (FoodScan.tsx linha 678) + `p-6` no div interno do ImageUpload (linha 74). Isso cria um espaçamento maior que os outros cards.
+## Alterar background da div da imagem para branco
 
 ### Alteracao
 
-**`src/components/ImageUpload.tsx`** (linha 74):
-- Trocar `p-6` por `p-2` no div wrapper principal, alinhando com o padding dos outros cards do app
+**`src/pages/ServiNUTRI.tsx`** (linha 513):
+- Na div que envolve a imagem, adicionar `bg-white` à classe existente
+- De: `className="flex justify-center"`
+- Para: `className="flex justify-center bg-white rounded-lg p-2"`
 
