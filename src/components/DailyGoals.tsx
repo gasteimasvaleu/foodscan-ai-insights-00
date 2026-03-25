@@ -49,7 +49,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.calories,
       goal: goals.calories,
       unit: 'kcal',
-      color: 'text-red-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-red-100',
     },
     {
