@@ -10,14 +10,7 @@ interface DietAnalysisProps {
   consumed?: any;
 }
 
-interface TruthMomentData {
-  score: number;
-  feedback: string;
-}
-
-export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading, goals, consumed }) => {
-  const [truthMoment, setTruthMoment] = useState<TruthMomentData | null>(null);
-  const [isTruthLoading, setIsTruthLoading] = useState(false);
+export const DietAnalysis: React.FC<DietAnalysisProps> = ({ analysis, isLoading }) => {
 
   const handleWhatsAppShare = () => {
     const message = `🍎 *Análise da Minha Dieta*\n\n${analysis}`;
