@@ -525,11 +525,8 @@ export default function Profile() {
         {calorieBalanceData.length > 0 && (
           <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-500" />
-                Balanço Calórico
-              </CardTitle>
-              <CardDescription>Últimos 7 dias - Calorias consumidas vs gastas</CardDescription>
+              <CardTitle className="text-center text-2xl font-semibold">Balanço Calórico</CardTitle>
+              <CardDescription className="text-center">Últimos 7 dias - Calorias consumidas vs gastas</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
