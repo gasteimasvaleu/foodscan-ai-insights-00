@@ -154,7 +154,7 @@ export function ExerciseHistory() {
             >
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="font-semibold text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{exercise.activity_type}</h3>
+                  <h3 className="font-semibold text-lg group-hover:text-[#FA1690] transition-colors">{exercise.activity_type}</h3>
                   <Badge className={getIntensityColor(exercise.intensity)} variant="secondary">
                     {exercise.intensity}
                   </Badge>
