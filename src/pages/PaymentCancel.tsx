@@ -24,7 +24,7 @@ const PaymentCancel = () => {
       
       <div className="pt-20 px-4">
         <div className="container mx-auto max-w-2xl">
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 animate-scale-in">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-scale-in">
             <CardHeader>
               <CardTitle className="text-center text-red-600 flex items-center justify-center gap-3">
                 <XCircle className="w-8 h-8" />

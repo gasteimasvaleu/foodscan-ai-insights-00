@@ -108,7 +108,7 @@ export function ExerciseDashboard() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="bg-[#FFD1E7] rounded-3xl animate-pulse">
             <CardContent className="p-6">
               <div className="h-16 bg-muted rounded"></div>
             </CardContent>
@@ -120,10 +120,9 @@ export function ExerciseDashboard() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gradient-to-br from-orange-500/20 via-red-500/15 to-pink-500/20 border-orange-200/50 dark:border-orange-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 animate-fade-in group">
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
@@ -138,10 +137,9 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-indigo-500/20 border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.1s'}}>
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group" style={{animationDelay: '0.1s'}}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
@@ -156,10 +154,9 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/20 border-green-200/50 dark:border-green-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.2s'}}>
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group" style={{animationDelay: '0.2s'}}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Sequência</p>
               <div className="flex items-center gap-2">
@@ -174,10 +171,9 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-pink-500/20 via-rose-500/15 to-primary-500/20 border-pink-200/50 dark:border-pink-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.3s'}}>
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group" style={{animationDelay: '0.3s'}}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
               <p className="text-lg font-bold truncate bg-gradient-to-br from-primary-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>

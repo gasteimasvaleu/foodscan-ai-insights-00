@@ -115,10 +115,9 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-[#FFD1E7] backdrop-blur-lg border-white/20 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 hover:shadow-2xl hover:shadow-gray-300/60 dark:hover:shadow-gray-800/60 transition-all duration-500 hover:scale-[1.01] animate-scale-in">
-      <CardHeader className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-pink-500/5"></div>
-        <CardTitle className="text-2xl font-bold relative z-10 text-center">
+    <Card className="w-full max-w-2xl mx-auto bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-center">
           Registrar Exercício
         </CardTitle>
       </CardHeader>

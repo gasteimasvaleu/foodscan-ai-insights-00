@@ -183,7 +183,7 @@ const PricingCard = ({ plan, allPlans }: { plan: SubscriptionPlan; allPlans: Sub
 
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur-sm shadow-xl border ${
+      className={`relative overflow-hidden rounded-3xl bg-[#FFD1E7] backdrop-blur-sm shadow-xl border ${
         plan.popular ? 'border-primary ring-2 ring-primary/20' : 'border-white/20'
       }`}
       whileHover={{ scale: 1.02, y: -5 }}

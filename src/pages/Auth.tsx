@@ -270,7 +270,7 @@ const Auth = () => {
           )}
 
           {!isHotmartFlow && !validatingToken && (
-            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
+            <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold text-primary-600">
                   Entre na sua conta

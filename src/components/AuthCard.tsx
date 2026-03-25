@@ -70,7 +70,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
 
   if (loading) {
     return (
-      <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
         <CardContent className="p-6">
           <div className="text-center">Carregando...</div>
         </CardContent>
@@ -82,7 +82,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     const userName = user.user_metadata?.name || user.email;
     return (
       <>
-        <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden">
+        <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
           <div className="aspect-video w-full">
             <img
               src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/bannerapp2.png"
@@ -92,7 +92,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             />
           </div>
         </Card>
-        <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+        <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
           <CardContent className="p-4">
             <h3 className="font-semibold text-foreground text-sm truncate text-center">
               Boas-vindas, {userName}!
@@ -105,7 +105,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   }
 
   return (
-    <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl">
+    <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
       <CardHeader>
         <CardTitle className="text-center text-gray-800">
           {isLogin ? 'Fazer Login' : 'Criar Conta'}

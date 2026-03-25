@@ -3,7 +3,7 @@ import { Scan, Database, CheckCircle } from 'lucide-react';
 
 export const OpenFoodFactsLoadingState = () => {
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/20 text-center animate-scale-in">
+    <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/20 text-center animate-scale-in">
       <div className="space-y-8">
         {/* Animated Icon */}
         <div className="relative">

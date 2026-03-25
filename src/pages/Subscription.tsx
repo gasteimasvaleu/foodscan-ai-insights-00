@@ -22,7 +22,7 @@ const Subscription = () => {
           </div>
 
           {/* Description Card */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mb-8 animate-scale-in">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 mb-8 animate-scale-in">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-primary-600 text-center mb-4">
                 We Diet – Nutrição Inteligente na Palma da Mão!
@@ -85,7 +85,7 @@ const Subscription = () => {
 
           {/* Payment Methods Info */}
           <div className="mb-8 animate-scale-in">
-            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20">
+            <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-primary-100 rounded-full p-3">
@@ -106,7 +106,7 @@ const Subscription = () => {
           <SubscriptionPlans />
 
           {/* Features List */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 mt-8 animate-scale-in">
             <CardContent className="p-8">
               <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-primary-600 to-orange-600 bg-clip-text text-transparent">
                 Incluído na Assinatura

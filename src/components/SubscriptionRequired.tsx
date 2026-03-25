@@ -21,7 +21,7 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
   if (!subscription.subscriptionStatus.subscribed) {
     return (
       <div className="min-h-screen bg-gradient-primary flex items-center justify-center px-4">
-        <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 max-w-md w-full">
+        <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 max-w-md w-full">
           <CardHeader className="text-center pb-6">
             <div className="bg-primary/10 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <Lock className="w-8 h-8 text-primary" />
