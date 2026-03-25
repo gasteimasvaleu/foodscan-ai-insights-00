@@ -95,7 +95,7 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
                 className="bg-white border-gray-800 focus:border-gray-900 pr-8"
                 min="1"
               />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600 text-sm">g</span>
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 text-sm">g</span>
             </div>
           </div>
         </div>
