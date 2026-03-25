@@ -57,7 +57,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.carbohydrates,
       goal: goals.carbohydrates,
       unit: 'g',
-      color: 'text-orange-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-orange-100',
     },
     {
