@@ -205,7 +205,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
             Gorduras
           </h4>
-          <div className="text-2xl font-bold text-yellow-600">{fats} g</div>
+          <div className="text-2xl font-bold text-[#FD46A1]">{fats} g</div>
         </div>
       </div>
 
