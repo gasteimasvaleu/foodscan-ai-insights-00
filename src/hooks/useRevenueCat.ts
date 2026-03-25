@@ -73,7 +73,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
-      const { offerings } = await Purchases.getOfferings();
+      const offerings = await Purchases.getOfferings();
       
       const monthlyPackage = offerings.current?.monthly;
       if (!monthlyPackage) {
