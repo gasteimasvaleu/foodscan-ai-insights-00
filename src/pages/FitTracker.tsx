@@ -24,7 +24,7 @@ export default function FitTracker() {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+4rem)]">
+        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+3rem)]">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 bg-muted rounded"></div>
             <div className="h-96 bg-muted rounded"></div>
@@ -38,7 +38,7 @@ export default function FitTracker() {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+4rem)]">
+        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+3rem)]">
           <div className="max-w-md mx-auto space-y-8">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
@@ -52,7 +52,7 @@ export default function FitTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
+    <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+3rem)] pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}

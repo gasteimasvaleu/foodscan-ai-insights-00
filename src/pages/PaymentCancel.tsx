@@ -22,7 +22,7 @@ const PaymentCancel = () => {
     <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
-      <div className="pt-[calc(env(safe-area-inset-top)+5rem)] px-4">
+      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] px-4">
         <div className="container mx-auto max-w-2xl">
           <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-scale-in">
             <CardHeader>

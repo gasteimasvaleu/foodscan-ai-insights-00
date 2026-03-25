@@ -6,7 +6,7 @@ const About = () => {
   return <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
       
-      <div className="pt-[calc(env(safe-area-inset-top)+5rem)] pb-12 px-4">
+      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-12 px-4">
         <div className="container mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-6 animate-fade-in">

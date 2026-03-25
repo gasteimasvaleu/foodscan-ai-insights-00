@@ -32,11 +32,11 @@ export const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FA1690]/85 backdrop-blur-md border-b border-white/20 shadow-sm pt-[env(safe-area-inset-top)]" style={{ WebkitTransform: 'translateZ(0)', willChange: 'transform' }}>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <img src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/wedietlogonavbar4.png" alt="We Diet" className="h-10 w-auto" />
+              <img src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/wedietlogonavbar4.png" alt="We Diet" className="h-8 w-auto" />
             </Link>
           </div>
 
