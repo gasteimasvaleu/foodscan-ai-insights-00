@@ -263,7 +263,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-xl font-bold text-red-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.calories}
                 </div>
                 <div className="text-sm text-gray-500">kcal/dia</div>
