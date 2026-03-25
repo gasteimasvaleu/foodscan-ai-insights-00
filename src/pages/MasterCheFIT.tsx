@@ -379,7 +379,7 @@ const MasterCheFIT = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(true)}
-                      className="bg-white/10 backdrop-blur border-white/20 hover:bg-white/20 hover:border-primary/50 transition-all duration-300 hover:scale-105"
+                      className="bg-white border-white/20 hover:bg-white/90 transition-all duration-300 hover:scale-105"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Editar
