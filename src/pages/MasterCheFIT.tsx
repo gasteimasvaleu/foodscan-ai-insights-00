@@ -486,7 +486,7 @@ const MasterCheFIT = () => {
 
             {/* Menu History */}
             {showHistory && savedMenuPlans.length > 0 && (
-              <Card className="mb-8 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-fade-in">
+              <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20 transition-all duration-500 animate-fade-in">
                 <CardHeader>
                   <CardTitle className="text-2xl text-center">
                     Histórico de Cardápios
@@ -497,15 +497,15 @@ const MasterCheFIT = () => {
                     {savedMenuPlans.map((savedMenu, index) => (
                       <div
                         key={savedMenu.id}
-                        className="p-4 border border-white/20 rounded-xl bg-gradient-to-br from-primary/10 to-primary/15 hover:bg-gradient-to-br hover:from-primary/20 hover:to-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                        className="p-4 border border-white/20 rounded-xl bg-[#F9FAFB] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
                         <div className="flex flex-col gap-4">
                           <div>
-                             <h3 className="font-semibold text-lg text-white/95">
+                             <h3 className="font-semibold text-lg text-gray-800">
                                Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
                              </h3>
-                            <div className="flex items-center gap-4 text-sm text-white/80">
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-primary"></div>
                                 <span>Total:</span>
