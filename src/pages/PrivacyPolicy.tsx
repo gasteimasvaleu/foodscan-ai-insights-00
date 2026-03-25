@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
-      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-12 px-4">
+      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-12 px-2">
         <div className="container mx-auto max-w-4xl">
           <div className="mb-6 animate-fade-in">
             <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
