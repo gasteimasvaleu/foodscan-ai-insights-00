@@ -447,46 +447,43 @@ export default function Profile() {
           </Card>
 
           {/* Ações Rápidas */}
-          <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+          <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20">
             <CardHeader>
-              <CardTitle className="text-xl font-bold">🚀 Ações Rápidas</CardTitle>
-              <CardDescription>Acesse suas ferramentas de acompanhamento</CardDescription>
+              <CardTitle className="text-center text-2xl font-semibold">Ações Rápidas</CardTitle>
+              <CardDescription className="text-center">Acesse suas ferramentas de acompanhamento</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 py-6"
+                <div
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/workout")}
                 >
-                  <Dumbbell className="h-8 w-8 text-primary" />
+                  <Dumbbell className="h-8 w-8 text-pink-500" />
                   <div className="text-center">
                     <p className="font-semibold">Ficha de Treino</p>
                     <p className="text-xs text-muted-foreground">Monte seu treino semanal</p>
                   </div>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 py-6"
+                </div>
+                <div
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/assessment")}
                 >
-                  <ClipboardList className="h-8 w-8 text-primary" />
+                  <ClipboardList className="h-8 w-8 text-pink-500" />
                   <div className="text-center">
                     <p className="font-semibold">Avaliação Física</p>
                     <p className="text-xs text-muted-foreground">Registre suas medidas</p>
                   </div>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 py-6"
+                </div>
+                <div
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/diets")}
                 >
-                  <Salad className="h-8 w-8 text-primary" />
+                  <Salad className="h-8 w-8 text-pink-500" />
                   <div className="text-center">
                     <p className="font-semibold">Minhas Dietas</p>
                     <p className="text-xs text-muted-foreground">Monte sua dieta</p>
                   </div>
-                </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
