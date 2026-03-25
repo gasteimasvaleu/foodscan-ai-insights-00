@@ -55,40 +55,38 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-[calc(100%-2rem)] h-[80vh] flex flex-col rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
         <DialogHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold pr-8">{workout.title}</DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={openInNewTab}
-              className="gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Abrir em nova aba
-            </Button>
-          </div>
+          <DialogTitle className="text-xl font-bold">{workout.title}</DialogTitle>
           <DialogDescription className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="font-medium">{workout.activity_type}</span>
             {workout.duration && <span>• {workout.duration} min</span>}
             {workout.calories && <span>• {workout.calories} kcal</span>}
           </DialogDescription>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={openInNewTab}
+            className="gap-2 w-fit mt-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Abrir em nova aba
+          </Button>
         </DialogHeader>
 
-        <div className="flex-1 flex flex-col gap-4">
+        <div className="flex-1 overflow-y-auto flex flex-col gap-4">
           {/* Video Container */}
-          <div className="flex-1 bg-black rounded-lg overflow-hidden">
+          <div className="min-h-[300px] bg-black rounded-lg overflow-hidden">
             {!isValidVideoUrl ? (
-              <div className="w-full h-full flex items-center justify-center text-white">
+              <div className="w-full h-full flex items-center justify-center text-white min-h-[300px]">
                 <div className="text-center">
                   <p className="text-lg mb-2">URL de vídeo inválida</p>
-                  <p className="text-sm text-gray-400">Não foi possível carregar o vídeo.</p>
+                  <p className="text-sm text-muted-foreground">Não foi possível carregar o vídeo.</p>
                 </div>
               </div>
             ) : isYouTube ? (
               <iframe
                 src={embedUrl}
                 title={workout.title}
-                className="w-full h-full"
+                className="w-full aspect-video"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -97,7 +95,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
               <video
                 src={workout.video_url}
                 controls
-                className="w-full h-full object-contain"
+                className="w-full object-contain"
                 preload="metadata"
               >
                 Seu navegador não suporta o elemento de vídeo.
