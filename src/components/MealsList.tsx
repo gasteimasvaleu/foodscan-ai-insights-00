@@ -83,7 +83,7 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
                   <div className="text-xs text-gray-500">Carboidratos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600">
+                  <div className="text-lg font-bold text-[#FD46A1]">
                     {meal.proteins}g
                   </div>
                   <div className="text-xs text-gray-500">Proteínas</div>
