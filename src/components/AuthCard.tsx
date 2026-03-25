@@ -173,7 +173,8 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
 
   // ─── Web Flow ───
   return (
-    <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top)-6rem)] flex items-center">
+    <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full">
       <CardHeader>
         <CardTitle className="text-center text-gray-800">Fazer Login</CardTitle>
       </CardHeader>
@@ -198,7 +199,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           <Button type="submit" className="w-full">Entrar</Button>
         </form>
 
-
         <div className="flex justify-center gap-4 text-[11px]">
           <button type="button" onClick={() => navigate('/politica-de-privacidade')} className="text-primary underline">
             Política de Privacidade
@@ -209,5 +209,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
