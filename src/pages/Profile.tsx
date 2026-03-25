@@ -707,8 +707,8 @@ export default function Profile() {
         {goals && (
           <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
             <CardHeader>
-              <CardTitle>Metas Atuais</CardTitle>
-              <CardDescription>Objetivo: {goals.diet_objective}</CardDescription>
+              <CardTitle className="text-center text-2xl font-semibold">Metas Atuais</CardTitle>
+              <CardDescription className="text-center">Objetivo: {goals.diet_objective}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
