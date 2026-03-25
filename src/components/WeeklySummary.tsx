@@ -263,25 +263,25 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-xl font-bold text-red-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.calories}
                 </div>
                 <div className="text-sm text-gray-500">kcal/dia</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-orange-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.carbohydrates}
                 </div>
                 <div className="text-sm text-gray-500">Carb. (g/dia)</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-blue-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.proteins}
                 </div>
                 <div className="text-sm text-gray-500">Prot. (g/dia)</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-yellow-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.fats}
                 </div>
                 <div className="text-sm text-gray-500">Gord. (g/dia)</div>
