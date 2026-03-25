@@ -161,8 +161,8 @@ export function ExerciseHistory() {
                 </div>
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2 group-hover:text-foreground transition-colors">
-                    <div className="p-1 rounded-full bg-blue-500/10">
-                      <Clock className="h-3 w-3" />
+                     <div className="p-1 rounded-full bg-pink-500/10">
+                       <Clock className="h-3 w-3 text-pink-500" />
                     </div>
                     <span className="font-medium">{exercise.duration_minutes} min</span>
                   </div>
