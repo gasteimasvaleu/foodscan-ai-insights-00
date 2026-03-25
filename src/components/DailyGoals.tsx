@@ -128,7 +128,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
                 {/* Barra de progresso animada */}
                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                   <motion.div
-                    className={`${item.bgColor.replace('bg-', 'bg-')} h-2 rounded-full`}
+                    className="bg-[#FD46A1] h-2 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
                     transition={{ 
