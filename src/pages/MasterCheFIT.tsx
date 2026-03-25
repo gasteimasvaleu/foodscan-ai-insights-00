@@ -520,7 +520,7 @@ const MasterCheFIT = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => loadSavedMenu(savedMenu)}
-                              className="flex-1 justify-center flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-green-500/20 hover:border-green-500/50 transition-all duration-300"
+                              className="flex-1 justify-center flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-[#FA449F]/20 hover:border-[#FA449F]/50 transition-all duration-300"
                             >
                               <Eye className="w-3 h-3" />
                               Ver
