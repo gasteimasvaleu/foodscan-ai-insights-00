@@ -600,7 +600,7 @@ export default function Profile() {
                             <Calculator className="w-3 h-3" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
                           <DialogHeader>
                             <DialogTitle>Calculadora de TMB</DialogTitle>
                           </DialogHeader>
