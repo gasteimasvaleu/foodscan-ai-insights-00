@@ -1,21 +1,20 @@
 
 
-## Adicionar card "Treinos" e subir o menu Tubelight
+## Corrigir navbar visível nas páginas internas do Profile
+
+### Problema
+As páginas WorkoutPlan, MyDiets e PhysicalAssessment têm backgrounds opacos (`bg-gradient-to-br`) que cobrem a faixa branca decorativa do navbar. O menu rosa aparece (z-40), mas a faixa branca fica por trás do conteúdo da página.
 
 ### Alterações
 
-**1. `src/components/QuickActions.tsx`**
-- Adicionar import do ícone `Dumbbell` do lucide-react
-- Inserir novo card "Treinos" entre "Gerar Cardápio" e "WhatsApp" (ou ao final), com:
-  - `icon: Dumbbell`
-  - `title: "Treinos"`
-  - `tags: ["Vídeos", "Exercícios"]`
-  - `path: "/treinos"`
-  - `color: "#FA1690"` (alternar cores)
-- Ajustar cores alternadas para manter o padrão com 5 cards
-- Aumentar `marginBottom` negativo de `-48px` para `-64px` para que o conjunto maior de cards alcance a faixa branca
+**1. `src/pages/WorkoutPlan.tsx`**
+- Aumentar `pb-24` para `pb-40` no container principal para garantir espaço para a navbar + faixa branca
 
-**2. `src/components/ui/tubelight-navbar.tsx`**
-- Alterar o padding bottom de `pb-[calc(8px+env(safe-area-inset-bottom))]` para `pb-[calc(14px+env(safe-area-inset-bottom))]`
-- Subir o menu adicionando `bottom-2` em vez de `bottom-0`
+**2. `src/pages/MyDiets.tsx`**
+- Aumentar `pb-24` para `pb-40` no container principal
+
+**3. `src/pages/PhysicalAssessment.tsx`**
+- Aumentar `pb-28` (ou o valor atual) para `pb-40` no container principal
+
+Isso garante que o conteúdo termine antes da área da navbar, deixando a faixa branca e o menu visíveis em todas as páginas.
 
