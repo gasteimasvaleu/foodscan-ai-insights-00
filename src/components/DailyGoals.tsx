@@ -49,7 +49,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.calories,
       goal: goals.calories,
       unit: 'kcal',
-      color: 'text-red-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-red-100',
     },
     {
@@ -57,7 +57,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.carbohydrates,
       goal: goals.carbohydrates,
       unit: 'g',
-      color: 'text-orange-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-orange-100',
     },
     {
@@ -65,7 +65,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.proteins,
       goal: goals.proteins,
       unit: 'g',
-      color: 'text-blue-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-blue-100',
     },
     {
@@ -73,7 +73,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
       consumed: consumed.fats,
       goal: goals.fats,
       unit: 'g',
-      color: 'text-yellow-600',
+      color: 'text-[#FD46A1]',
       bgColor: 'bg-yellow-100',
     },
   ];
