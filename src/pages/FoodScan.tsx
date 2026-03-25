@@ -721,10 +721,10 @@ const FoodScan = () => {
                         />
                         
                         {imageDescription && (
-                          <div className="flex justify-center">
+                          <div>
                             <Button
                               onClick={handleNutritionAnalysis}
-                              className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8"
+                              className="w-full bg-primary-500 hover:bg-primary-600 text-white rounded-xl"
                             >
                               Analisar Nutrição
                             </Button>
