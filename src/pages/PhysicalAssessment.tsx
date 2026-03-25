@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Trash2, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -165,15 +166,20 @@ export default function PhysicalAssessment() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pb-40">
-        <div className="max-w-4xl mx-auto">Carregando...</div>
-      </div>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-20 pb-40">
+          <div className="max-w-4xl mx-auto">Carregando...</div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pb-40">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-20 pb-40">
+        <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex flex-col items-center gap-4">
           <div className="text-center">
             <h1 className="text-3xl font-bold">Avaliação Física</h1>
@@ -369,7 +375,8 @@ export default function PhysicalAssessment() {
             ))
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
