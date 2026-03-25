@@ -160,8 +160,12 @@ export default function WorkoutPlan() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
-        <div className="max-w-6xl mx-auto">Carregando...</div>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-20">
+          <div className="max-w-6xl mx-auto">Carregando...</div>
+        </div>
+      </>
       </div>
     );
   }
