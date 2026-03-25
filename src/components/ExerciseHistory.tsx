@@ -90,10 +90,10 @@ export function ExerciseHistory() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="p-2 rounded-full bg-blue-500/10 text-blue-600">
               <Clock className="h-5 w-5" />
             </div>
             Histórico de Exercícios
