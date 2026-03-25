@@ -281,7 +281,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                 <div className="text-sm text-gray-500">Prot. (g/dia)</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-yellow-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.fats}
                 </div>
                 <div className="text-sm text-gray-500">Gord. (g/dia)</div>
