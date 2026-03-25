@@ -61,15 +61,6 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
             {workout.duration && <span>• {workout.duration} min</span>}
             {workout.calories && <span>• {workout.calories} kcal</span>}
           </DialogDescription>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={openInNewTab}
-            className="gap-2 w-fit mt-2"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Abrir em nova aba
-          </Button>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto flex flex-col gap-4">
