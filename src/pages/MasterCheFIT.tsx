@@ -344,7 +344,7 @@ const MasterCheFIT = () => {
     <>
       <VideoOverlay isVisible={isGenerating} message="Criando seu cardápio..." subMessage="Preparando receitas personalizadas para você" />
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
+      <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
             

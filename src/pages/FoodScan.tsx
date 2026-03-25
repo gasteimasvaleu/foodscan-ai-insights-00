@@ -594,7 +594,7 @@ const FoodScan = () => {
         subMessage={isBarcodeAnalyzing ? "Buscando informações nutricionais do produto" : "Nossa IA está identificando os alimentos"} 
       />
       <Navbar />
-      <div className="min-h-screen bg-gradient-primary font-inter pt-16 pb-28">
+      <div className="min-h-screen bg-gradient-primary font-inter pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="mb-6 animate-fade-in">

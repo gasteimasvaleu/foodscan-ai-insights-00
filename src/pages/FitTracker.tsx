@@ -52,7 +52,7 @@ export default function FitTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary pt-16 pb-28">
+    <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
