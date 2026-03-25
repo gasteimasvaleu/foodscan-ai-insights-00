@@ -775,7 +775,7 @@ export default function Profile() {
         <NotificationSettings />
 
         {/* Configurações */}
-        <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+        <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl mt-6">
           <CardHeader>
             <CardTitle className="text-center text-2xl font-semibold">Configurações</CardTitle>
           </CardHeader>
