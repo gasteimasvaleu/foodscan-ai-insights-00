@@ -34,7 +34,7 @@ export const TruthMoment: React.FC<TruthMomentProps> = ({ score, feedback, isLoa
 
   if (isLoading) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 mt-6">
+      <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 mt-6">
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Analisando seu desempenho... 🤔</p>
