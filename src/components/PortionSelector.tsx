@@ -57,10 +57,10 @@ export const PortionSelector: React.FC<PortionSelectorProps> = ({
     <div className="bg-[#F9FAFB] border border-white/20 rounded-3xl p-6">
       <div className="flex items-center justify-center space-x-3 mb-4">
         <div className="text-center">
-          <h4 className="text-lg font-semibold text-amber-800">
+          <h4 className="text-lg font-semibold text-gray-800">
             Ajustar Porção
           </h4>
-          <p className="text-sm text-amber-600">
+          <p className="text-sm text-gray-600">
             Selecione o tamanho da porção que você consumiu
           </p>
         </div>
