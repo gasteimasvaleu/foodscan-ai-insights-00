@@ -607,15 +607,7 @@ const FoodScan = () => {
           </div>
           
           <div className="max-w-4xl mx-auto space-y-8">
-            {isBarcodeAnalyzing ? (
-              <div data-results-section>
-                <OpenFoodFactsLoadingState />
-              </div>
-            ) : (isAnalyzing || isDescribing) ? (
-              <div data-results-section>
-                <LoadingState />
-              </div>
-            ) : incompleteProductData ? (
+            {(isBarcodeAnalyzing || isAnalyzing || isDescribing) ? null : incompleteProductData ? (
               <div data-results-section className="space-y-6">
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
                   <div className="text-center mb-4">
