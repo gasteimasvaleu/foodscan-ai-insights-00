@@ -269,7 +269,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                 <div className="text-sm text-gray-500">kcal/dia</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-orange-600">
+                <div className="text-xl font-bold text-[#FD46A1]">
                   {weeklyAverages.carbohydrates}
                 </div>
                 <div className="text-sm text-gray-500">Carb. (g/dia)</div>
