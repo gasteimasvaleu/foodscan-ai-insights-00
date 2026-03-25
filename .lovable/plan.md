@@ -1,45 +1,28 @@
 
 
-## Corrigir Safe Area da Navbar Superior
+## Reduzir espaçamento excessivo nas safe areas
 
 ### Problema
-A Navbar usa `style={{ paddingTop: 'env(safe-area-inset-top)' }}` como inline style do React. `env()` CSS **não funciona em inline styles** — o React trata como string literal. Por isso o padding é ignorado e a navbar fica atrás da status bar.
+Pelo screenshot, há duas áreas com espaço excessivo:
+1. **Topo (Navbar)**: A navbar tem `h-16` (64px) + safe area, ficando grande demais
+2. **Inferior (TubelightNavbar)**: Usa `pb-[calc(14px+env(safe-area-inset-bottom))]` — os 14px extras somados ao safe area inset criam uma faixa branca grande demais. A faixa decorativa branca (`-bottom-4`) também contribui.
 
 ### Solução
 
-**1. Navbar.tsx** — Trocar inline style por classe Tailwind + hardware acceleration:
+**1. Navbar.tsx** — Reduzir altura interna:
+- `h-16` (64px) → `h-12` (48px)
+- Logo `h-10` → `h-8`
 
-```tsx
-<nav 
-  className="fixed top-0 left-0 right-0 z-50 bg-[#FA1690]/85 backdrop-blur-md border-b border-white/20 shadow-sm pt-[env(safe-area-inset-top)]"
-  style={{ WebkitTransform: 'translateZ(0)', willChange: 'transform' }}
->
-```
+**2. TubelightNavbar.tsx** — Reduzir padding inferior:
+- Trocar `pb-[calc(14px+env(safe-area-inset-bottom))]` por `pb-[env(safe-area-inset-bottom)]` (remover os 14px extras)
+- Reduzir faixa decorativa branca: `-bottom-4` → `-bottom-2`
 
-**2. Todas as páginas com conteúdo** — Trocar `pt-16`, `pt-20` e inline `paddingTop` por `pt-[calc(env(safe-area-inset-top)+4rem)]`:
+**3. Páginas** — Ajustar padding-top para acompanhar a navbar menor:
+- Páginas com `+4rem` → `+3rem`
+- Páginas com `+5rem` → `+4rem`
 
-| Página | De | Para |
-|--------|-----|------|
-| `Index.tsx` | `style={{ paddingTop: 'calc(...)' }}` | classe `pt-[calc(env(safe-area-inset-top)+4rem)]` |
-| `FoodScan.tsx` (3x) | `pt-16` | `pt-[calc(env(safe-area-inset-top)+4rem)]` |
-| `DailyControl.tsx` (3x) | `pt-16` | `pt-[calc(env(safe-area-inset-top)+4rem)]` |
-| `MasterCheFIT.tsx` (3x) | `pt-16` | `pt-[calc(env(safe-area-inset-top)+4rem)]` |
-| `Treinos.tsx` (2x) | `pt-16` | `pt-[calc(env(safe-area-inset-top)+4rem)]` |
-| `Profile.tsx` | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `About.tsx` | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `Subscription.tsx` | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `PaymentCancel.tsx` | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `WorkoutPlan.tsx` (2x) | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `PhysicalAssessment.tsx` (2x) | `pt-20` | `pt-[calc(env(safe-area-inset-top)+5rem)]` |
-| `ServiNUTRI.tsx` | verificar | ajustar |
-| `MyDiets.tsx` | verificar | ajustar |
-| `WhatsAppSettings.tsx` | verificar | ajustar |
-| `FitTracker.tsx` | verificar | ajustar |
-
-**Nenhuma alteração no TubelightNavbar.**
-
-### Após implementar
-1. `npm run build`
-2. `npx cap sync ios`
-3. Rodar no Xcode
+Arquivos afetados:
+- `src/components/Navbar.tsx`
+- `src/components/ui/tubelight-navbar.tsx`
+- ~15 páginas em `src/pages/`
 
