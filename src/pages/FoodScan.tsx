@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { NutritionData, FoodElement } from '@/types/nutrition';
 import { supabase } from '@/integrations/supabase/client';
+import VideoOverlay from '@/components/VideoOverlay';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
