@@ -75,8 +75,8 @@ export const PhysicalEvolutionChart = () => {
   return (
     <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">📊 Evolução Física</CardTitle>
-        <CardDescription>Acompanhe sua evolução ao longo do tempo</CardDescription>
+        <CardTitle className="text-center text-2xl font-semibold">Evolução Física</CardTitle>
+        <CardDescription className="text-center">Acompanhe sua evolução ao longo do tempo</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
