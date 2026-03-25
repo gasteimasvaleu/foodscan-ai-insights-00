@@ -14,6 +14,8 @@ export const Navbar = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
 
+  if (!user) return null;
+
   const menuItems = [
     { label: 'Meu Perfil', href: '/profile' },
     { label: 'Assinatura', href: '/quero-assinar' },
