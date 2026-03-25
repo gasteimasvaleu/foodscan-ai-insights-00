@@ -151,7 +151,6 @@ export default function MyDiets() {
           <div className="max-w-6xl mx-auto">Carregando...</div>
         </div>
       </>
-      </div>
     );
   }
 

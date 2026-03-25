@@ -172,7 +172,6 @@ export default function PhysicalAssessment() {
           <div className="max-w-4xl mx-auto">Carregando...</div>
         </div>
       </>
-      </div>
     );
   }
 

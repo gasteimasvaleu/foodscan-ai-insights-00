@@ -166,7 +166,6 @@ export default function WorkoutPlan() {
           <div className="max-w-6xl mx-auto">Carregando...</div>
         </div>
       </>
-      </div>
     );
   }
 
