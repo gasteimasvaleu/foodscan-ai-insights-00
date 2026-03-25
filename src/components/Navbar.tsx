@@ -30,7 +30,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FA1690]/85 backdrop-blur-md border-b border-white/20 shadow-sm pt-[calc(env(safe-area-inset-top)*0.5)]" style={{ WebkitTransform: 'translateZ(0)', willChange: 'transform' }}>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FA1690]/85 backdrop-blur-md border-b border-white/20 shadow-sm pt-[calc(env(safe-area-inset-top)*0.6)]" style={{ WebkitTransform: 'translateZ(0)', willChange: 'transform' }}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
