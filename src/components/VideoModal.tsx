@@ -74,7 +74,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
 
         <div className="flex-1 overflow-y-auto flex flex-col gap-4">
           {/* Video Container */}
-          <div className="aspect-video bg-black rounded-lg overflow-hidden">
+          <div className="aspect-video flex-shrink-0 bg-black rounded-lg overflow-hidden">
             {!isValidVideoUrl ? (
               <div className="w-full h-full flex items-center justify-center text-white">
                 <div className="text-center">
