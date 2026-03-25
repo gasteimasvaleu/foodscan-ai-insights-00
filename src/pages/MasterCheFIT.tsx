@@ -449,7 +449,7 @@ const MasterCheFIT = () => {
                         max="4000"
                         value={preferences.maxCalories}
                         onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
+                        className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
                       />
                     </div>
                   </>
