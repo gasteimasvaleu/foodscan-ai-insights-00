@@ -13,6 +13,7 @@ import { ChefHat, Edit2, Save, X, Clock, Users, History, Trash2, Target, Eye } f
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import VideoOverlay from '@/components/VideoOverlay';
 
 interface UserPreferences {
   favoriteIngredients: string;
