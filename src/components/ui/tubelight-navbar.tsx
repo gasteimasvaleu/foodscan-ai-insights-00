@@ -59,8 +59,8 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               onClick={() => setActiveTab(item.name)}
               className={cn(
                 "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
-                "text-white/80 hover:text-white",
-                isActive && "bg-white/20 text-white",
+                "text-[#FA1690]/70 hover:text-[#FA1690]",
+                isActive && "bg-[#FA1690]/15 text-[#FA1690]",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -70,7 +70,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 w-full bg-white/10 rounded-2xl -z-10"
+                  className="absolute inset-0 w-full bg-[#FA1690]/10 rounded-2xl -z-10"
                   initial={false}
                   transition={{
                     type: "spring",
