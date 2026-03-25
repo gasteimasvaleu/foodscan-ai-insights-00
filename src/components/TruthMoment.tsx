@@ -46,7 +46,7 @@ export const TruthMoment: React.FC<TruthMomentProps> = ({ score, feedback, isLoa
   if (!feedback) return null;
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 mt-6 animate-scale-in">
+    <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 mt-6 animate-scale-in">
       <div className="text-center mb-6 animate-fade-in">
         <div className="flex justify-center mb-4 transform transition-transform duration-300 hover:scale-110">
           {getScoreIcon()}

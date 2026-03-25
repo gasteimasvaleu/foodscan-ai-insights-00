@@ -102,7 +102,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
   };
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
+    <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
       <div className="flex items-center space-x-3 mb-6">
         <div className="bg-blue-100 rounded-full p-3">
           <Utensils className="w-6 h-6 text-blue-600" />

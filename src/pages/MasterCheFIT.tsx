@@ -357,7 +357,7 @@ const MasterCheFIT = () => {
             </div>
 
             {/* Preferences Card */}
-            <Card className="mb-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-white/20 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 hover:shadow-2xl hover:shadow-gray-300/60 dark:hover:shadow-gray-800/60 transition-all duration-500 hover:scale-[1.01] animate-fade-in">
+            <Card className="mb-8 bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="text-2xl text-center w-full">
                   Preferências Alimentares

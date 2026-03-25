@@ -4,7 +4,7 @@ import { Play } from 'lucide-react';
 
 export const HowItWorksCard = () => {
   return (
-    <Card className="bg-white/90 backdrop-blur-sm border border-white/20 shadow-xl animate-fade-in">
+    <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl animate-fade-in">
       <CardContent className="p-6">
         <div className="text-center mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">

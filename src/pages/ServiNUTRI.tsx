@@ -496,7 +496,7 @@ const ServiNUTRI = () => {
           </div>
 
           {/* Card Informativo */}
-        <Card className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+        <Card className="mb-8 bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
           <CardContent className="p-3 sm:p-4 md:p-6">
             <div className="block lg:table w-full">
               <div className="block lg:table-row">

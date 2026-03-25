@@ -47,7 +47,7 @@ const PaymentSuccess = () => {
       
       <div className="pt-32 px-4">
         <div className="container mx-auto max-w-2xl">
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 text-center">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 text-center">
             <CardContent className="p-12">
               <div className="flex items-center justify-center mb-6">
                 <div className="bg-success-100 rounded-full p-4">

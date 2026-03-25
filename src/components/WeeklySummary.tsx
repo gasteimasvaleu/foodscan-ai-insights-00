@@ -168,7 +168,7 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
   }
 
   return (
-    <Card className={`bg-[#FFD1E7] backdrop-blur-sm border border-white/20 ${className}`}>
+    <Card className={`bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl ${className}`}>
       <CardHeader className="pb-4">
         <div className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-800">Resumo Semanal</CardTitle>

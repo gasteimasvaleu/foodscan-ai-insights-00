@@ -171,10 +171,9 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-pink-500/20 via-rose-500/15 to-primary-500/20 border-pink-200/50 dark:border-pink-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.3s'}}>
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group" style={{animationDelay: '0.3s'}}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Atividade Favorita</p>
               <p className="text-lg font-bold truncate bg-gradient-to-br from-primary-600 to-pink-600 bg-clip-text text-transparent">{stats.favoriteActivity}</p>

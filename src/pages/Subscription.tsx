@@ -106,7 +106,7 @@ const Subscription = () => {
           <SubscriptionPlans />
 
           {/* Features List */}
-          <Card className="bg-white/90 backdrop-blur-sm shadow-xl border border-white/20 mt-8 animate-scale-in">
+          <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 mt-8 animate-scale-in">
             <CardContent className="p-8">
               <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-primary-600 to-orange-600 bg-clip-text text-transparent">
                 Incluído na Assinatura
