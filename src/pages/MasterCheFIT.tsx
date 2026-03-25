@@ -433,7 +433,7 @@ const MasterCheFIT = () => {
                         placeholder="Ex: sem glúten, vegano, baixo sódio, rico em proteína..."
                         value={preferences.specificRequirements}
                         onChange={(e) => setPreferences(prev => ({ ...prev, specificRequirements: e.target.value }))}
-                        className="bg-white/10 backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
+                        className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300"
                         rows={2}
                       />
                     </div>
