@@ -137,10 +137,9 @@ export function ExerciseDashboard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-indigo-500/20 border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 animate-fade-in group" style={{animationDelay: '0.1s'}}>
-        <CardContent className="p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity"></div>
-          <div className="flex items-center justify-between relative z-10">
+      <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group" style={{animationDelay: '0.1s'}}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
