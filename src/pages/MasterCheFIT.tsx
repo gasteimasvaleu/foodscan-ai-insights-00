@@ -545,12 +545,12 @@ const MasterCheFIT = () => {
 
             {/* Generate Menu Button */}
             {!isEditing && (
-              <div className="text-center mb-8">
+              <div className="mb-8">
                 <Button
                   onClick={generateMenuPlan}
                   disabled={isGenerating}
                   size="lg"
-                  className="px-8 py-4 text-lg font-semibold bg-[#6C63FF] hover:bg-[#6C63FF]/80 shadow-2xl hover:shadow-[#6C63FF]/25 transition-all duration-500 hover:scale-105"
+                  className="w-full py-4 text-lg font-semibold bg-[#FD46A1] hover:bg-[#FD46A1]/80 shadow-2xl hover:shadow-[#FD46A1]/25 transition-all duration-500 hover:scale-105"
                 >
                   {isGenerating ? (
                     <>
