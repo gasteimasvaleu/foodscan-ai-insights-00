@@ -99,7 +99,7 @@ export const ImageUpload = ({ onImageSelect, onBarcodeAnalysis, onManualInput, i
         <TabsContent value="fresh" className="space-y-4">
           {!selectedImage ? (
             <Card 
-              className="border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors cursor-pointer min-h-[300px] flex items-center justify-center"
+              className="bg-[#F9FAFB] border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors cursor-pointer min-h-[300px] flex items-center justify-center"
               onClick={handleUploadClick}
             >
               <CardContent className="flex flex-col items-center justify-center text-center p-8">
