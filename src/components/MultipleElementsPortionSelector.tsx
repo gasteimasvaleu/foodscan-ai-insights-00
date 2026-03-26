@@ -65,13 +65,13 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
   };
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6">
+    <div className="bg-[#F9FAFB] border border-white/20 rounded-3xl p-6">
       <div className="flex items-center justify-center mb-6">
         <div className="text-center">
-          <h4 className="text-lg font-semibold text-amber-800">
+          <h4 className="text-lg font-semibold text-gray-800">
             Ajustar Porções por Elemento
           </h4>
-          <p className="text-sm text-amber-600">
+          <p className="text-sm text-gray-600">
             Selecione o tamanho da porção para cada elemento do prato
           </p>
         </div>
@@ -79,10 +79,10 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
       
       <div className="space-y-6">
         {elements.map((element, index) => (
-          <div key={index} className="bg-white rounded-2xl p-4 border border-amber-100">
+          <div key={index} className="bg-white rounded-2xl p-4 border border-gray-200">
             <div className="flex items-center space-x-2 mb-3">
-              <Utensils className="w-4 h-4 text-amber-600" />
-              <h5 className="font-medium text-amber-800">{element.name}</h5>
+              <Utensils className="w-4 h-4 text-gray-600" />
+              <h5 className="font-medium text-gray-800">{element.name}</h5>
             </div>
             
             <div className="flex items-center gap-3">
@@ -92,7 +92,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
                   value={elementPortions[index]?.portion && 
                     portionOptions.find(opt => opt.label === elementPortions[index].portion)?.value || ''}
                 >
-                  <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+                  <SelectTrigger className="w-full bg-white border-gray-800 focus:border-gray-900">
                     <SelectValue placeholder="Escolha uma porção" />
                   </SelectTrigger>
                   <SelectContent>
@@ -105,7 +105,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
                 </Select>
               </div>
               
-              <div className="text-amber-600 font-medium text-sm">ou</div>
+              <div className="text-gray-800 font-medium text-sm">ou</div>
               
               <div className="flex-1">
                 <div className="relative">
@@ -117,10 +117,10 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
                       ? elementPortions[index].grams.toString() 
                       : ''}
                     onChange={(e) => handleManualGramsChange(index, e)}
-                    className="bg-white border-amber-200 focus:border-amber-400 pr-8"
+                    className="bg-white border-gray-800 focus:border-gray-900 pr-8"
                     min="1"
                   />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600 text-sm">g</span>
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 text-sm">g</span>
                 </div>
               </div>
             </div>
