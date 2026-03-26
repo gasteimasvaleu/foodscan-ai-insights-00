@@ -6,7 +6,7 @@ import App from './App.tsx'
 import './index.css'
 
 if (Capacitor.isNativePlatform()) {
-  LiveUpdates.sync().then(result => {
+  LiveUpdate.sync().then(result => {
     if (result.activeApplicationPathChanged) {
       window.location.reload();
     }
