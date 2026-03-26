@@ -1,13 +1,12 @@
 
 
-## Update AppFlow Config with New App ID
+## Corrigir nome do app no modal de login
 
-The build is failing because `appflow.config.json` still references the old app ID `d8f89897` instead of the new Capacitor app ID `f4605189`.
+O título "Mandato Intelligence Pro" está hardcoded em `src/components/AuthCard.tsx` na linha 100. Basta trocar para "We Diet - Dieta Inteligente".
 
-### Change
+### Alteração
 
-**File: `appflow.config.json`**
-- Replace `"appId": "d8f89897"` with `"appId": "f4605189"`
-
-That's it — single line change. After this, the AppFlow build should pass the `get_appflow_config` step.
+**`src/components/AuthCard.tsx` (linha 100)**
+- De: `Mandato Intelligence Pro`
+- Para: `We Diet - Dieta Inteligente`
 
