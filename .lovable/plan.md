@@ -1,14 +1,10 @@
 
 
-## Mover logo para dentro dos formulários de login
+## Incrementar build para versão 6
 
-O logo está atualmente em um Card separado acima do banner (linhas 71-80), visível apenas para usuários logados. O correto é colocá-lo dentro dos formulários de login (tanto iOS nativo quanto Web).
+Alterar `CURRENT_PROJECT_VERSION` de `5` para `6` em ambas as configurações (Debug e Release) no arquivo `ios/App/App.xcodeproj/project.pbxproj`.
 
-### Mudanças em `src/components/AuthCard.tsx`
-
-**Fluxo iOS nativo (linha 108-111)**: Adicionar a imagem do logo acima do `CardTitle "We Diet - Dieta Inteligente"` dentro do `CardHeader`.
-
-**Fluxo Web (linha 193-195)**: Adicionar a imagem do logo acima do `CardTitle "Fazer Login"` dentro do `CardHeader`.
-
-O logo no estado logado (linhas 71-80) pode ser mantido ou removido conforme preferência — ele continuará aparecendo para usuários autenticados.
+**Arquivo**: `ios/App/App.xcodeproj/project.pbxproj`
+- Linha 375: `CURRENT_PROJECT_VERSION = 5;` → `CURRENT_PROJECT_VERSION = 6;`
+- Linha 400: `CURRENT_PROJECT_VERSION = 5;` → `CURRENT_PROJECT_VERSION = 6;`
 
