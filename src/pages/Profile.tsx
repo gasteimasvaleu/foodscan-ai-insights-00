@@ -71,6 +71,7 @@ export default function Profile() {
     weight: 70,
     height: 170,
   });
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (user) {
