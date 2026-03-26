@@ -117,7 +117,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
                       ? elementPortions[index].grams.toString() 
                       : ''}
                     onChange={(e) => handleManualGramsChange(index, e)}
-                    className="bg-white border-amber-200 focus:border-amber-400 pr-8"
+                    className="bg-white border-gray-800 focus:border-gray-900 pr-8"
                     min="1"
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-600 text-sm">g</span>
