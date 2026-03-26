@@ -71,7 +71,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
           <div className="aspect-video w-full">
             <img
-              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/bannerapp2.png"
+              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp"
               alt="Banner"
               className="w-full h-full object-cover"
               loading="lazy"
