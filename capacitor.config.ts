@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   backgroundColor: '#ff2d9e',
   ios: {
     backgroundColor: '#ff2d9e',
+    packageManager: 'cocoapods',
   },
 };
 
