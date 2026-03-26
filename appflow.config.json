@@ -3,7 +3,7 @@
     {
       "appId": "d8f89897",
       "iosPath": "ios/App",
-      "npmInstallCommand": "npm ci"
+      "dependencyInstallCommand": "npm ci"
     }
   ]
 }
