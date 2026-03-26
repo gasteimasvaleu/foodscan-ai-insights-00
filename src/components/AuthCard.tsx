@@ -100,7 +100,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             We Diet - Dieta Inteligente
           </CardTitle>
           <p className="text-center text-2xl font-bold text-primary">
-            {price || '...'} <span className="text-sm font-normal text-muted-foreground">/mês</span>
+            {price || 'R$ 49,90'} <span className="text-sm font-normal text-muted-foreground">/mês</span>
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
