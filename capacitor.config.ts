@@ -9,6 +9,13 @@ const config: CapacitorConfig = {
     backgroundColor: '#ff2d9e',
     packageManager: 'cocoapods',
   },
+  plugins: {
+    LiveUpdates: {
+      appId: 'd8f89897',
+      channel: 'Production',
+      autoUpdateMethod: 'background',
+    },
+  },
 };
 
 export default config;
