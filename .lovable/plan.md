@@ -1,27 +1,26 @@
 
 
-## Correção rápida: remover @capacitor/app
+## Adicionar logo acima do título no formulário iOS
 
-### O que muda
-- Remove `@capacitor/app` do `package.json`
-- Simplifica `src/main.tsx` para fazer sync apenas no startup (sem listener de resume)
-- O `autoUpdateMethod: 'background'` no `capacitor.config.ts` já cuida de sync automático em background
+### Alteração
 
-### Arquivos alterados
+**`src/components/AuthCard.tsx`** — No bloco `isNativeIOS`, adicionar a imagem do logo centralizada acima do `CardTitle`:
 
-**1. `src/main.tsx`**
-- Remover import de `@capacitor/app`
-- Remover o listener de `resume`
-- Manter apenas o sync no startup com `liveUpdateSync()`
+```tsx
+<CardHeader className="pb-2">
+  <div className="flex justify-center mb-2">
+    <img
+      src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logoapp.png"
+      alt="We Diet Logo"
+      className="h-16 w-auto"
+    />
+  </div>
+  <CardTitle className="text-center text-gray-800 text-lg">
+    We Diet - Dieta Inteligente
+  </CardTitle>
+  ...
+</CardHeader>
+```
 
-**2. `package.json`**
-- Remover `@capacitor/app` das dependencies
-
-**3. `package-lock.json`**
-- Regenerar sem `@capacitor/app` (lockfile volta a ficar em sync)
-
-### Resultado
-- Build do Appflow passa sem erro de lockfile
-- Live Updates continua funcionando (sync no startup + auto background sync)
-- A única diferença: não há re-check explícito no resume, mas o plugin já faz isso via `autoUpdateMethod: 'background'`
+Só isso — uma imagem centralizada acima do título existente.
 
