@@ -65,7 +65,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
   };
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6">
+    <div className="bg-[#F9FAFB] border border-white/20 rounded-3xl p-6">
       <div className="flex items-center justify-center mb-6">
         <div className="text-center">
           <h4 className="text-lg font-semibold text-amber-800">
