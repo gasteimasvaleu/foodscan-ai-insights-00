@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, Download, Share } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -13,6 +14,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallPrompt = () => {
+  const isNative = Capacitor.isNativePlatform();
+
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -81,6 +84,9 @@ const PWAInstallPrompt = () => {
       }
     }
   }, []);
+
+  // Don't show on native platforms
+  if (isNative) return null;
 
   // Don't show if already installed
   if (isInstalled) {
