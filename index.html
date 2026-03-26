@@ -89,25 +89,6 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- PWA Service Worker Registration (web only, disabled on native Capacitor) -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        // Check if running inside Capacitor native shell
-        var isNative = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
-        if (!isNative) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then((registration) => {
-                console.log('SW registered: ', registration);
-              })
-              .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
-              });
-          });
-        } else {
-          console.log('Native platform detected - skipping SW registration');
-        }
-      }
-    </script>
+    <!-- SW registration moved to src/main.tsx for reliable native detection -->
   </body>
 </html>

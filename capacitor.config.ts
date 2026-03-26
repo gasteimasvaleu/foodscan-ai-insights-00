@@ -14,6 +14,7 @@ const config: CapacitorConfig = {
       appId: 'f4605189',
       channel: 'Production',
       autoUpdateMethod: 'background',
+      maxVersions: 3,
     },
   },
 };
