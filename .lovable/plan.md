@@ -1,49 +1,17 @@
 
 
-## Problema: Live Updates não está funcionando
+## Corrigir sincronização do package-lock.json
 
-O plugin `@capacitor/live-updates` está configurado no `capacitor.config.ts`, mas **nenhum código no app chama o sync do Live Updates**. A configuração sozinha não basta — é necessário chamar `LiveUpdates.sync()` programaticamente para que o app verifique e aplique atualizações OTA.
+**Problema:** O `@capacitor/app@8.1.0` foi adicionado ao `package.json` mas o `package-lock.json` não foi regenerado. O Appflow roda `npm ci` que falha quando há inconsistência.
 
-Com `autoUpdateMethod: 'background'`, o plugin tenta sincronizar automaticamente, mas ainda precisa ser **inicializado** no código da aplicação.
+**Solução:** Regenerar o `package-lock.json` executando `npm install --package-lock-only` no ambiente do projeto.
 
----
+### Passo único
 
-## Plano
-
-### 1. Adicionar inicialização do Live Updates no `src/main.tsx`
-
-Importar `LiveUpdates` de `@capacitor/live-updates` e `Capacitor` de `@capacitor/core`. Ao iniciar o app, se estiver em plataforma nativa, chamar `LiveUpdates.sync()` para verificar atualizações. Também adicionar um listener de `resume` (app voltando do background) para re-sincronizar.
-
-```typescript
-import { Capacitor } from '@capacitor/core';
-import { LiveUpdates } from '@capacitor/live-updates';
-import { App as CapApp } from '@capacitor/app';
-
-if (Capacitor.isNativePlatform()) {
-  LiveUpdates.sync().then(result => {
-    if (result.activeApplicationPathChanged) {
-      window.location.reload();
-    }
-  });
-
-  CapApp.addListener('resume', async () => {
-    const result = await LiveUpdates.sync();
-    if (result.activeApplicationPathChanged) {
-      window.location.reload();
-    }
-  });
-}
+Executar o comando para regenerar o lockfile:
+```bash
+npm install --package-lock-only
 ```
 
-### 2. Instalar `@capacitor/app` (se ainda não instalado)
-
-O pacote `@capacitor/app` é necessário para escutar o evento `resume`. Verificar se já está no `package.json`; caso contrário, adicioná-lo.
-
----
-
-## Resultado esperado
-
-- Ao abrir o app nativo, ele verifica se há uma nova versão OTA disponível
-- Ao voltar do background, verifica novamente
-- Se houver atualização, recarrega o app automaticamente com a nova versão
+Isso vai adicionar `@capacitor/app@8.1.0` ao `package-lock.json` sem alterar nenhum outro arquivo.
 
