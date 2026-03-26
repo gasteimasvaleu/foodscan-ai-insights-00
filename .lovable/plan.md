@@ -1,16 +1,28 @@
 
 
-## Alterar o Build Number do Projeto iOS
+## Corrigir Build do AppFlow — Podfile não encontra node_modules
 
-O `CURRENT_PROJECT_VERSION` está definido como `1` em ambas as configurações (Debug e Release) no arquivo `project.pbxproj`.
+### Problema
+O AppFlow executa `pod install` antes de rodar `npm install`, então o `Podfile` não consegue encontrar `node_modules/@capacitor/ios/scripts/pods_helpers`.
 
-### O que será feito
+### Solução
+Adicionar `npmInstallCommand` no `appflow.config.json` para garantir que as dependências Node sejam instaladas antes do CocoaPods.
 
-Alterar o valor de `CURRENT_PROJECT_VERSION` de `1` para `2` nas duas configurações (Debug e Release) no arquivo `ios/App/App.xcodeproj/project.pbxproj` (linhas 375 e 400).
+### Alteração
 
-A `MARKETING_VERSION` (1.0) permanece a mesma -- apenas o build number muda.
+**Arquivo:** `appflow.config.json`
 
-### Depois do deploy
+```json
+{
+  "apps": [
+    {
+      "appId": "d8f89897",
+      "iosPath": "ios/App",
+      "npmInstallCommand": "npm ci"
+    }
+  ]
+}
+```
 
-Cada vez que fizer um novo build pro AppFlow/App Store, será necessário incrementar esse número (3, 4, 5...).
+Isso instrui o AppFlow a rodar `npm ci` antes de tentar resolver o Podfile, garantindo que `node_modules/@capacitor/ios` exista.
 
