@@ -1,14 +1,9 @@
 
 
-## Adicionar preço fallback de R$ 49,90
+## Incrementar build number para 3
 
-O RevenueCat não retorna offerings enquanto o app não está aprovado na App Store (ou configurado com StoreKit sandbox). O `price` fica `null` e aparece `...`.
+Alterar `CURRENT_PROJECT_VERSION` de `2` para `3` em duas linhas do arquivo `ios/App/App.xcodeproj/project.pbxproj`:
 
-### Alteração
-
-**`src/components/AuthCard.tsx` (linha 103)**
-- De: `{price || '...'}`
-- Para: `{price || 'R$ 49,90'}`
-
-Quando o app for aprovado e o RevenueCat conseguir buscar o preço real da App Store, ele será exibido automaticamente no lugar do fallback.
+- **Linha 375** (Debug): `CURRENT_PROJECT_VERSION = 2;` → `CURRENT_PROJECT_VERSION = 3;`
+- **Linha 400** (Release): `CURRENT_PROJECT_VERSION = 2;` → `CURRENT_PROJECT_VERSION = 3;`
 
