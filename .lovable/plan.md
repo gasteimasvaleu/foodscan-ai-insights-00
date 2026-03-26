@@ -1,10 +1,12 @@
 
 
-## Adicionar o ícone/logo de volta ao AuthCard
+## Incrementar Build Number para 5
 
-O OTA funcionou! 🎉 Agora vou restaurar o logo que foi removido para o teste.
+O build atual é **4** (Debug e Release). Para enviar uma nova versão ao App Store Connect, basta incrementar para **5**.
 
-**Arquivo**: `src/components/AuthCard.tsx`
-- Adicionar de volta o bloco `<div>` com a `<img>` do logo antes do Card de boas-vindas (na seção do usuário logado, antes da linha 71)
-- Usar a mesma imagem `logoapp.png` que estava lá antes
+**Arquivo**: `ios/App/App.xcodeproj/project.pbxproj`
+- Linha 375 (Debug): `CURRENT_PROJECT_VERSION = 4` → `5`
+- Linha 400 (Release): `CURRENT_PROJECT_VERSION = 4` → `5`
+
+A `MARKETING_VERSION` continua em 1.0 (a menos que você queira mudar a versão visível ao usuário).
 
