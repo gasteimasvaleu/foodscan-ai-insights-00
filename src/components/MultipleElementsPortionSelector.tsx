@@ -71,7 +71,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
           <h4 className="text-lg font-semibold text-gray-800">
             Ajustar Porções por Elemento
           </h4>
-          <p className="text-sm text-amber-600">
+          <p className="text-sm text-gray-600">
             Selecione o tamanho da porção para cada elemento do prato
           </p>
         </div>
