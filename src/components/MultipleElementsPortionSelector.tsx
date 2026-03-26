@@ -79,7 +79,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
       
       <div className="space-y-6">
         {elements.map((element, index) => (
-          <div key={index} className="bg-white rounded-2xl p-4 border border-amber-100">
+          <div key={index} className="bg-white rounded-2xl p-4 border border-gray-200">
             <div className="flex items-center space-x-2 mb-3">
               <Utensils className="w-4 h-4 text-amber-600" />
               <h5 className="font-medium text-amber-800">{element.name}</h5>
