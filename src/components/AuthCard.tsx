@@ -96,13 +96,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       <div className="min-h-[calc(100vh-env(safe-area-inset-top)-6rem)] flex items-center">
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full">
         <CardHeader className="pb-2">
-          <div className="flex justify-center mb-2">
-            <img
-              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logoapp.png"
-              alt="We Diet Logo"
-              className="h-16 w-auto"
-            />
-          </div>
           <CardTitle className="text-center text-gray-800 text-lg">
             We Diet - Dieta Inteligente
           </CardTitle>
