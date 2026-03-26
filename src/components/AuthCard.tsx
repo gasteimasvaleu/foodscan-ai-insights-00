@@ -69,6 +69,16 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     return (
       <>
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
+          <CardContent className="p-4 flex justify-center">
+            <img
+              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logoapp.png"
+              alt="We Diet Logo"
+              className="h-16 object-contain"
+              loading="lazy"
+            />
+          </CardContent>
+        </Card>
+        <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
           <div className="aspect-video w-full">
             <img
               src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp"
