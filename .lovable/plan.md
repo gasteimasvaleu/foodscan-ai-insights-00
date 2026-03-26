@@ -1,40 +1,14 @@
 
 
-## Correções para aprovação na App Store (Build 5)
+## Mover logo para dentro dos formulários de login
 
-Baseado no screenshot de referência do seu outro app (BíbliaToon), entendi o padrão: o botão Apple fica desabilitado com texto explicativo, e o botão de assinar fica embaixo. O problema não é o fluxo em si — é que o IAP não funcionou no sandbox e a Apple quer uma opção de deletar conta.
+O logo está atualmente em um Card separado acima do banner (linhas 71-80), visível apenas para usuários logados. O correto é colocá-lo dentro dos formulários de login (tanto iOS nativo quanto Web).
 
-### 1. Melhorar UX do botão Apple desabilitado (Guideline 2.1a)
+### Mudanças em `src/components/AuthCard.tsx`
 
-O botão já está desabilitado, mas falta uma mensagem clara como no seu outro app. Vou adicionar um texto abaixo do botão Apple: "Assine primeiro abaixo para habilitar o login com Apple" — igual ao screenshot de referência. Assim o revisor entende que é intencional.
+**Fluxo iOS nativo (linha 108-111)**: Adicionar a imagem do logo acima do `CardTitle "We Diet - Dieta Inteligente"` dentro do `CardHeader`.
 
-**Arquivo**: `src/components/AuthCard.tsx`
-- Adicionar texto explicativo abaixo do `<AppleSignInButton disabled={!hasPurchased} />`
+**Fluxo Web (linha 193-195)**: Adicionar a imagem do logo acima do `CardTitle "Fazer Login"` dentro do `CardHeader`.
 
-### 2. Corrigir IAP não funcionando no sandbox (Guideline 2.1b)
-
-O botão de compra provavelmente falhou silenciosamente. Vou adicionar:
-- Toast de erro visível quando a compra falha (não só console.error)
-- Toast de erro quando o RevenueCat não inicializa
-- Feedback visual se as offerings não carregaram
-
-**Arquivos**:
-- `src/hooks/useRevenueCat.ts` — adicionar toasts de erro na inicialização e na compra
-- `src/components/AuthCard.tsx` — mostrar estado de erro quando offerings não carregam
-
-### 3. Adicionar exclusão de conta (Guideline 5.1.1v)
-
-Adicionar botão "Excluir Minha Conta" na seção Configurações do Profile, com AlertDialog de confirmação. A exclusão será feita via uma nova edge function.
-
-**Arquivos**:
-- `src/pages/Profile.tsx` — adicionar botão e AlertDialog de exclusão entre "Sair da Conta" e o final do card de Configurações
-- `supabase/functions/delete-account/index.ts` — nova edge function que valida o JWT, deleta dados do usuário das tabelas relacionadas, e deleta o usuário via `supabase.auth.admin.deleteUser()`
-
-### Resumo
-
-| Problema Apple | Solução |
-|---|---|
-| Apple Sign In sem ação | Manter desabilitado + adicionar texto explicativo claro |
-| IAP sem ação | Adicionar toasts de erro + feedback visual |
-| Sem exclusão de conta | Botão no Profile + edge function |
+O logo no estado logado (linhas 71-80) pode ser mantido ou removido conforme preferência — ele continuará aparecendo para usuários autenticados.
 
