@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import servinutriHero from '@/assets/servinutri-hero.jpg';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -511,7 +512,7 @@ const ServiNUTRI = () => {
                 </div>
                 <div className="block lg:table-cell w-full lg:w-1/3 p-3 sm:p-4 md:p-6 align-top">
                   <div className="flex justify-center bg-white rounded-lg p-2">
-                    <img alt="Nutrição e alimentação saudável" className="rounded-lg shadow-md w-full max-w-xs sm:max-w-sm object-cover" src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/sign/criativos/image?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTk4Mzc3ZS0wZjU2LTQxYTItOGZhZS04OTFkM2ZlNzc5NmYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjcmlhdGl2b3MvaW1hZ2UiLCJpYXQiOjE3NTAyNjEzNTUsImV4cCI6MTc4MTc5NzM1NX0.0WeU-fnnvTafoepwV_0wWUI6_Dffe7CpYkwG2o06gYI" />
+                    <img alt="Nutrição e alimentação saudável" className="rounded-lg shadow-md w-full max-w-xs sm:max-w-sm object-cover aspect-video" src={servinutriHero} />
                   </div>
                 </div>
               </div>
