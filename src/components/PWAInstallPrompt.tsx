@@ -85,6 +85,9 @@ const PWAInstallPrompt = () => {
     }
   }, []);
 
+  // Don't show on native platforms
+  if (isNative) return null;
+
   // Don't show if already installed
   if (isInstalled) {
     return null;
