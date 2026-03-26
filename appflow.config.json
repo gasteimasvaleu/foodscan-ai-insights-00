@@ -2,7 +2,8 @@
   "apps": [
     {
       "appId": "d8f89897",
-      "iosPath": "ios/App"
+      "iosPath": "ios/App",
+      "npmInstallCommand": "npm ci"
     }
   ]
 }
