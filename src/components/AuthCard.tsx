@@ -116,6 +116,11 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         <CardContent className="space-y-4">
           {/* Apple Sign In — disabled until purchased */}
           <AppleSignInButton disabled={!hasPurchased} />
+          {!hasPurchased && (
+            <p className="text-xs text-muted-foreground text-center -mt-2">
+              Assine primeiro abaixo para habilitar o login com Apple
+            </p>
+          )}
 
           {/* Subscribe via App Store */}
           <div className="space-y-2">

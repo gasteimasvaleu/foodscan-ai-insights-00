@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNativePlatform } from './useNativePlatform';
+import { toast } from '@/hooks/use-toast';
 
 interface UseRevenueCatReturn {
   price: string | null;
   hasPurchased: boolean;
   loading: boolean;
   initialized: boolean;
+  initError: boolean;
   purchaseMonthly: () => Promise<boolean>;
   restorePurchases: () => Promise<boolean>;
 }
@@ -18,6 +20,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
   const [hasPurchased, setHasPurchased] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [initError, setInitError] = useState(false);
 
   useEffect(() => {
     if (!isNative || !isIOS) return;
@@ -31,13 +34,16 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       await Purchases.configure({ apiKey: RC_API_KEY });
       setInitialized(true);
 
-      // Check existing subscriptions
       await checkExistingSubscription();
-      
-      // Get localized price
       await fetchPrice();
     } catch (err) {
       console.error('RevenueCat init error:', err);
+      setInitError(true);
+      toast({
+        title: 'Erro ao inicializar compras',
+        description: 'Não foi possível conectar à App Store. Tente novamente mais tarde.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -63,9 +69,21 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       const currentOffering = offerings.current;
       if (currentOffering?.monthly) {
         setPrice(currentOffering.monthly.product.priceString);
+      } else {
+        console.warn('No monthly offering found');
+        toast({
+          title: 'Produto não disponível',
+          description: 'Não foi possível carregar o plano de assinatura.',
+          variant: 'destructive',
+        });
       }
     } catch (err) {
       console.error('Error fetching price:', err);
+      toast({
+        title: 'Erro ao carregar preço',
+        description: 'Não foi possível obter informações do plano.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -77,7 +95,11 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       
       const monthlyPackage = offerings.current?.monthly;
       if (!monthlyPackage) {
-        console.error('No monthly package found');
+        toast({
+          title: 'Plano não encontrado',
+          description: 'Não foi possível encontrar o plano mensal. Verifique sua conexão e tente novamente.',
+          variant: 'destructive',
+        });
         return false;
       }
 
@@ -90,6 +112,11 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
         return false;
       }
       console.error('Purchase error:', err);
+      toast({
+        title: 'Erro na compra',
+        description: `Não foi possível completar a compra. Código: ${err?.code || 'desconhecido'}`,
+        variant: 'destructive',
+      });
       return false;
     } finally {
       setLoading(false);
@@ -110,6 +137,11 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       return false;
     } catch (err) {
       console.error('Restore purchases error:', err);
+      toast({
+        title: 'Erro ao restaurar',
+        description: 'Não foi possível restaurar suas compras. Tente novamente.',
+        variant: 'destructive',
+      });
       return false;
     } finally {
       setLoading(false);
@@ -121,6 +153,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
     hasPurchased,
     loading,
     initialized,
+    initError,
     purchaseMonthly,
     restorePurchases,
   };

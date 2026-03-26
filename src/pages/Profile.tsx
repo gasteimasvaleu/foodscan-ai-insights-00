@@ -788,6 +788,55 @@ export default function Profile() {
             <Button onClick={signOut} variant="destructive" className="w-full">
               Sair da Conta
             </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Excluir Minha Conta
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir conta permanentemente?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação é irreversível. Todos os seus dados serão excluídos permanentemente, incluindo refeições, exercícios, dietas e avaliações físicas.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={deletingAccount}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setDeletingAccount(true);
+                      try {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) throw new Error('Não autenticado');
+
+                        const res = await supabase.functions.invoke('delete-account', {
+                          headers: { Authorization: `Bearer ${session.access_token}` },
+                        });
+
+                        if (res.error) throw res.error;
+
+                        await supabase.auth.signOut();
+                        toast({ title: '✅ Conta excluída com sucesso.' });
+                        navigate('/');
+                      } catch (err: any) {
+                        console.error('Delete account error:', err);
+                        toast({ title: 'Erro ao excluir conta', description: err?.message || 'Tente novamente.', variant: 'destructive' });
+                      } finally {
+                        setDeletingAccount(false);
+                      }
+                    }}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {deletingAccount ? 'Excluindo...' : 'Sim, excluir minha conta'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>
