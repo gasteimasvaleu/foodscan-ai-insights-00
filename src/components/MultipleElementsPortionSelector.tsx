@@ -92,7 +92,7 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
                   value={elementPortions[index]?.portion && 
                     portionOptions.find(opt => opt.label === elementPortions[index].portion)?.value || ''}
                 >
-                  <SelectTrigger className="w-full bg-white border-amber-200 focus:border-amber-400">
+                  <SelectTrigger className="w-full bg-white border-gray-800 focus:border-gray-900">
                     <SelectValue placeholder="Escolha uma porção" />
                   </SelectTrigger>
                   <SelectContent>
