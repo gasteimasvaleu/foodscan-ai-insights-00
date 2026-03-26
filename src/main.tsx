@@ -4,12 +4,41 @@ import { sync as liveUpdateSync } from '@capacitor/live-updates'
 import App from './App.tsx'
 import './index.css'
 
-if (Capacitor.isNativePlatform()) {
+const isNative = Capacitor.isNativePlatform();
+
+if (isNative) {
+  // ── Live Updates (OTA) ──
+  console.log('[LiveUpdates] Platform:', Capacitor.getPlatform(), '| Starting sync...');
+
   liveUpdateSync().then(result => {
+    console.log('[LiveUpdates] Sync result:', JSON.stringify(result));
     if (result.activeApplicationPathChanged) {
+      console.log('[LiveUpdates] New bundle ready – reloading WebView');
       window.location.reload();
     }
-  }).catch(err => console.warn('Live Updates sync failed:', err));
+  }).catch(err => console.warn('[LiveUpdates] Sync failed:', err));
+
+  // Re-sync when the app comes back to foreground
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      console.log('[LiveUpdates] App resumed – syncing...');
+      liveUpdateSync().then(result => {
+        console.log('[LiveUpdates] Foreground sync result:', JSON.stringify(result));
+        if (result.activeApplicationPathChanged) {
+          window.location.reload();
+        }
+      }).catch(err => console.warn('[LiveUpdates] Foreground sync failed:', err));
+    }
+  });
+} else {
+  // ── Service Worker (Web / PWA only) ──
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] Registered:', reg.scope))
+        .catch(err => console.warn('[SW] Registration failed:', err));
+    });
+  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
