@@ -14,7 +14,7 @@ if (Capacitor.isNativePlatform()) {
 
   CapApp.addListener('resume', async () => {
     try {
-      const result = await LiveUpdate.sync();
+      const result = await liveUpdateSync();
       if (result.activeApplicationPathChanged) {
         window.location.reload();
       }
