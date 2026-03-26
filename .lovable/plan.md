@@ -1,24 +1,17 @@
 
 
-## Problema
+## Plano: Ajustar cores do MultipleElementsPortionSelector
 
-O `package.json` tem **duas** dependências de plugin React:
-- `@vitejs/plugin-react@^6.0.1` (em dependencies) — requer Vite 8, incompatível
-- `@vitejs/plugin-react-swc@^4.3.0` (em devDependencies) — compatível com Vite 5
+### Alterações no arquivo `src/components/MultipleElementsPortionSelector.tsx`:
 
-O `vite.config.ts` já usa `plugin-react-swc`. Só preciso **remover** o `@vitejs/plugin-react` do `package.json`.
+1. **Background do card principal** (linha 68): `bg-amber-50` → `bg-[#F9FAFB]`, `border-amber-200` → `border-white/20`
+2. **Textos do header** (linhas 71, 74): cores amber → `text-gray-800` e `text-gray-600`
+3. **Cards internos** (linha 82): `border-amber-100` → `border-gray-200`
+4. **Ícone e nome** (linhas 84-85): `text-amber-600` / `text-amber-800` → `text-gray-600` / `text-gray-800`
+5. **SelectTrigger** (linha 95): `border-amber-200 focus:border-amber-400` → `border-gray-800 focus:border-gray-900`
+6. **Texto "ou"** (linha 108): `text-amber-600` → `text-gray-800`
+7. **Input de gramas** (linha 120): `border-amber-200 focus:border-amber-400` → `border-gray-800 focus:border-gray-900`
+8. **Span "g"** (linha 123): `text-amber-600` → `text-gray-800`
 
-## Mudança
-
-**`package.json`** — remover a linha `"@vitejs/plugin-react": "^6.0.1"` das dependencies.
-
-Depois disso, no terminal:
-
-```bash
-npm install
-npm run build
-rm -rf ios
-npx cap add ios --packagemanager cocoapods
-ls ios/App/Podfile
-```
+Isso alinha o estilo com o `PortionSelector` de elemento único que já usa `#F9FAFB` e `border-gray-800`.
 
