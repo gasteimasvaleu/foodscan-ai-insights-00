@@ -97,7 +97,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-center text-gray-800 text-lg">
-            Mandato Intelligence Pro
+            We Diet - Dieta Inteligente
           </CardTitle>
           <p className="text-center text-2xl font-bold text-primary">
             {price || '...'} <span className="text-sm font-normal text-muted-foreground">/mês</span>
