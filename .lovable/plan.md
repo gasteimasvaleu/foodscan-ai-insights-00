@@ -1,13 +1,16 @@
 
 
-## Plano: Posicionar toasts ainda mais abaixo
+## Alterar o Build Number do Projeto iOS
 
-### Alteração em `src/components/ui/toast.tsx` (linha 17)
+O `CURRENT_PROJECT_VERSION` está definido como `1` em ambas as configurações (Debug e Release) no arquivo `project.pbxproj`.
 
-Aumentar o offset de `1rem` para `3.5rem`:
+### O que será feito
 
-**De:** `top-[calc(env(safe-area-inset-top)+1rem)]`
-**Para:** `top-[calc(env(safe-area-inset-top)+3.5rem)]`
+Alterar o valor de `CURRENT_PROJECT_VERSION` de `1` para `2` nas duas configurações (Debug e Release) no arquivo `ios/App/App.xcodeproj/project.pbxproj` (linhas 375 e 400).
 
-Isso empurra os toasts ~40px mais para baixo, garantindo distância confortável da barra de status e indicadores do dispositivo.
+A `MARKETING_VERSION` (1.0) permanece a mesma -- apenas o build number muda.
+
+### Depois do deploy
+
+Cada vez que fizer um novo build pro AppFlow/App Store, será necessário incrementar esse número (3, 4, 5...).
 
