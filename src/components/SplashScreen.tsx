@@ -34,7 +34,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             playsInline
             onEnded={handleEnd}
             className="w-full h-full object-cover"
-            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/App_icon_morphs_202603250602.mp4"
+            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/splashrosa.mp4"
           />
         </motion.div>
       )}
