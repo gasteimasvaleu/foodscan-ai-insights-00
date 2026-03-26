@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "appId": "d8f89897",
+      "appId": "f4605189",
       "iosPath": "ios/App",
       "dependencyInstallCommand": "npm ci && npm run build && npx cap sync ios"
     }
