@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import servinutriHero from '@/assets/servinutri-hero.jpg';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
