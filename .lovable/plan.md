@@ -1,20 +1,13 @@
 
 
-## Plano: Posicionar toasts abaixo da status bar no app nativo
+## Plano: Posicionar toasts ainda mais abaixo
 
-### Alteração em `src/components/ui/toast.tsx`
+### Alteração em `src/components/ui/toast.tsx` (linha 17)
 
-Na linha 17, o `ToastViewport` usa `top-0`. Vamos trocar para usar `top-[calc(env(safe-area-inset-top)+1rem)]` para que os toasts apareçam abaixo da área do notch/status bar em dispositivos nativos.
+Aumentar o offset de `1rem` para `3.5rem`:
 
-**De:**
-```
-"fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
-```
+**De:** `top-[calc(env(safe-area-inset-top)+1rem)]`
+**Para:** `top-[calc(env(safe-area-inset-top)+3.5rem)]`
 
-**Para:**
-```
-"fixed top-[calc(env(safe-area-inset-top)+1rem)] z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
-```
-
-Isso garante que em dispositivos com notch ou barra de status, o toast fique posicionado abaixo dela. Na web sem safe-area, `env(safe-area-inset-top)` resolve para `0px`, então o toast ficará a `1rem` do topo — comportamento normal.
+Isso empurra os toasts ~40px mais para baixo, garantindo distância confortável da barra de status e indicadores do dispositivo.
 
