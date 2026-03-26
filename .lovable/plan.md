@@ -1,36 +1,15 @@
 
-Objetivo: corrigir o fluxo de OTA no iOS agora que já ficou confirmado que o pod `CapacitorLiveUpdates` está instalado. A causa mais provável deixou de ser “plugin ausente” e passou a ser conflito/cache entre o Live Updates e o Service Worker web.
 
-O que encontrei:
-- O plugin nativo está configurado no `capacitor.config.ts` com `appId: f4605189`, canal `Production` e `autoUpdateMethod: 'background'`.
-- O app chama `liveUpdateSync()` em `src/main.tsx`.
-- Existe registro manual de Service Worker em `index.html`.
-- O `public/sw.js` usa cache-first para navegação, scripts, estilos e imagens, o que pode servir assets antigos.
-- O check atual em `index.html` depende de `window.Capacitor` existir cedo demais; no iOS isso pode falhar no momento do parse e registrar o SW mesmo dentro do app nativo.
+## Remover logo do AuthCard para testar OTA
 
-Plano de implementação:
-1. Remover o registro inline do Service Worker de `index.html`.
-   - Motivo: hoje ele pode registrar indevidamente no app nativo.
-2. Centralizar o controle de atualização em `src/main.tsx`.
-   - Registrar SW apenas no web, usando import/runtime check confiável.
-   - Manter `liveUpdateSync()` apenas no nativo.
-3. Fortalecer a lógica de Live Updates no nativo.
-   - Executar `sync()` com logs mais claros de sucesso/erro.
-   - Recarregar a WebView quando `activeApplicationPathChanged` for `true`.
-   - Opcionalmente sincronizar também quando o app voltar ao foreground, para reduzir casos em que o update foi baixado mas não aplicado no momento esperado.
-4. Alinhar a config com o app que funciona.
-   - Adicionar `maxVersions: 3` no bloco `LiveUpdates` para paridade e previsibilidade de cache.
-5. Deixar o fluxo mais fácil de diagnosticar.
-   - Adicionar logs temporários no startup do nativo para mostrar plataforma, resultado do `sync()` e se houve troca de bundle.
+Remover o bloco da imagem do logo (linhas 99-105) do `src/components/AuthCard.tsx`. Assim, após publicar um novo Web Build no Appflow, o app no celular deve mostrar a tela de login **sem** o logo — confirmando que o OTA está funcionando.
 
-Validação prevista:
-- Gerar novo binário iOS após essas mudanças.
-- Instalar no iPhone.
-- Publicar um Web Build novo no canal `Production`.
-- Abrir o app uma vez para baixar, fechar completamente, abrir de novo para aplicar.
-- Confirmar que a alteração visual (logo no login) aparece.
+**Arquivo**: `src/components/AuthCard.tsx`
+- Remover o `<div>` com a `<img>` do logo (linhas 99-105)
 
-Detalhes técnicos:
-- Arquivos a ajustar: `index.html`, `src/main.tsx`, `capacitor.config.ts`.
-- Hipótese principal: o OTA está chegando, mas um Service Worker registrado indevidamente no shell nativo está servindo a versão web antiga do cache.
-- Verificação extra fora do repo: após `npx cap sync ios`, confirmar localmente que `ios/App/App/capacitor.config.json` foi gerado com a seção `LiveUpdates`; esse arquivo é ignorado pelo git, então a presença dele precisa ser garantida no ambiente de build local/Appflow.
+Após implementar, você deve:
+1. Fazer commit/push
+2. Publicar novo Web Build no canal Production no Appflow
+3. Abrir o app no celular, fechar completamente, reabrir
+4. Verificar se o logo sumiu da tela de login
+
