@@ -4,7 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { SubscriptionStatus } from '@/components/SubscriptionStatus';
-import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, CreditCard, Clock, Dumbbell, Play, Heart, TrendingUp, Calendar, BarChart3, Zap } from 'lucide-react';
+import { Sparkles, Camera, Brain, MessageCircle, Target, CheckCircle, ChefHat, Users, Clock, Dumbbell, Play, Heart, TrendingUp, Calendar, BarChart3, Zap } from 'lucide-react';
 const Subscription = () => {
   return <div className="min-h-screen bg-gradient-primary pb-28">
       <Navbar />
