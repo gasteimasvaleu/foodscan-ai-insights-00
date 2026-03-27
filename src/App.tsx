@@ -81,7 +81,9 @@ const App = () => (
           <Route path="/nutri-coach" element={<NutriCoach />} />
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
+          <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
           
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
