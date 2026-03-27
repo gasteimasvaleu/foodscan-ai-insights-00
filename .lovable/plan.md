@@ -1,14 +1,20 @@
 
 
-## Incrementar build number para App Store
+## Re-deploy da edge function analyze-nutrition
 
-O build atual está em **7** (Debug e Release). Vou incrementar para **8**.
+### Situação
+O código do prompt já está correto (valores por 100g), mas a edge function pode não ter sido re-deployada após as últimas alterações.
 
 ### Correção
-**Arquivo:** `ios/App/App.xcodeproj/project.pbxproj`
+**`supabase/functions/analyze-nutrition/index.ts`** — adicionar um comentário de versão no topo do arquivo para forçar o re-deploy automático:
 
-- Linha 375 (Debug): `CURRENT_PROJECT_VERSION = 7` → `CURRENT_PROJECT_VERSION = 8`
-- Linha 400 (Release): `CURRENT_PROJECT_VERSION = 7` → `CURRENT_PROJECT_VERSION = 8`
+```typescript
+// v2.1 - 2026-03-27 - Valores por 100g para múltiplos elementos
+```
 
-Duas linhas, mesma mudança. A `MARKETING_VERSION` continua em 1.0.
+Isso garante que o Lovable detecte a mudança no arquivo e faça o deploy da edge function com o prompt atualizado.
+
+### Resultado
+- Edge function será re-deployada com o prompt que usa 100g por elemento
+- Sem mudança funcional no código — apenas trigger de deploy
 
