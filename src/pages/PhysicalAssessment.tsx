@@ -325,8 +325,8 @@ export default function PhysicalAssessment() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>
-                        📅 {format(new Date(assessment.assessment_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                     <CardTitle className="text-base">
+                        {format(new Date(assessment.assessment_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                       </CardTitle>
                       <CardDescription>
                         Peso: {assessment.weight}kg | Gordura: {assessment.body_fat_percentage}% |
