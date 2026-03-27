@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lock, Crown, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 interface SubscriptionRequiredProps {
   children: React.ReactNode;
@@ -11,6 +13,9 @@ interface SubscriptionRequiredProps {
 
 export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ children }) => {
   const { user, subscription } = useAuth();
+  const { isIOS, isNative } = useNativePlatform();
+  const isNativeIOS = isNative && isIOS;
+  const { purchaseMonthly, loading: rcLoading, price } = useRevenueCat(user);
 
   // If not logged in, redirect to auth page
   if (!user) {
@@ -57,11 +62,21 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
 
             <div className="space-y-3">
               <Button 
-                onClick={() => window.location.href = '/quero-assinar'}
+                onClick={() => {
+                  if (isNativeIOS) {
+                    purchaseMonthly();
+                  } else {
+                    window.location.href = '/quero-assinar';
+                  }
+                }}
                 className="w-full"
                 size="lg"
+                disabled={rcLoading}
               >
-                Assinar Agora
+                {isNativeIOS 
+                  ? (rcLoading ? 'Processando...' : `Assinar${price ? ` por ${price}/mês` : ''}`)
+                  : 'Assinar Agora'
+                }
               </Button>
               
               <Button 

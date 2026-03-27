@@ -4,7 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Plus } from "lucide-react";
@@ -51,6 +52,12 @@ const AuthAwareNavbar = () => {
   return <TubelightNavbar items={navItems} />;
 };
 
+const WebOnlyRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isIOS, isNative } = useNativePlatform();
+  if (isNative && isIOS) return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -70,7 +77,7 @@ const App = () => (
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
-          <Route path="/quero-assinar" element={<Subscription />} />
+          <Route path="/quero-assinar" element={<WebOnlyRoute><Subscription /></WebOnlyRoute>} />
           <Route path="/sobre" element={<About />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
@@ -82,8 +89,8 @@ const App = () => (
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancel" element={<PaymentCancel />} />
+          <Route path="/payment-success" element={<WebOnlyRoute><PaymentSuccess /></WebOnlyRoute>} />
+          <Route path="/payment-cancel" element={<WebOnlyRoute><PaymentCancel /></WebOnlyRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

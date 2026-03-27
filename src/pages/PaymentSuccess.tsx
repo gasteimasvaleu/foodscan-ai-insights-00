@@ -73,11 +73,11 @@ const PaymentSuccess = () => {
                 </Button>
                 
                 <Button 
-                  onClick={() => navigate('/quero-assinar')}
+                  onClick={() => navigate('/')}
                   variant="outline"
                   className="w-full"
                 >
-                  Ver Status da Assinatura
+                  Voltar ao Início
                 </Button>
               </div>
             </CardContent>
