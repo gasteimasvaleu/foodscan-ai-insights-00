@@ -1,48 +1,20 @@
 
 
-## Reformular pagina /auth para cadastro VIP via token
+## Diagnostico: Pagina Auth mostrando LoadingState (cerebro de IA)
 
-### Alteracoes em `src/pages/Auth.tsx`
+### Analise
 
-1. **Remover tabs e aba de login** - Pagina exclusivamente de cadastro
-2. **Detectar `?token=` na URL** via `useSearchParams`
-3. **Mensagem VIP** quando token presente: icone Crown, titulo "Voce recebeu um Acesso VIP!", subtitulo sobre acesso exclusivo ao We Diet
-4. **Formulario de cadastro** (Nome, Email, Senha) - sem login, sem Apple Sign In
-5. **Apos cadastro com sucesso**:
-   - Toast "Cadastro realizado com sucesso!"
-   - NAO redirecionar
-   - Substituir formulario por tela de sucesso com instrucoes para baixar o app e botao App Store (link placeholder por enquanto)
-6. **Remover** imports nao usados (Tabs, signIn, AppleSignInButton)
+Verifiquei o codigo atual de `src/pages/Auth.tsx` e ele esta correto — nao importa nem usa o componente `LoadingState` (cerebro de IA). O card VIP com formulario de cadastro esta implementado corretamente.
 
-### Fluxo visual
+### Causa provavel
 
-```text
-ANTES DO CADASTRO:
-┌──────────────────────────────┐
-│     👑 Acesso VIP!           │
-│  Voce foi selecionado(a)     │
-│  para acesso exclusivo       │
-│                              │
-│  [Nome]                      │
-│  [Email]                     │
-│  [Senha]                     │
-│  [Cadastrar]                 │
-└──────────────────────────────┘
+A pagina que voce acessou provavelmente foi a URL publica (`app.dietainteligente.app/auth?token=...`) que ainda esta com a versao antiga do codigo (antes das alteracoes). O preview do Lovable deve estar mostrando a versao correta.
 
-APOS CADASTRO:
-┌──────────────────────────────┐
-│  ✅ Cadastro realizado!      │
-│                              │
-│  Agora baixe o app para      │
-│  comecar sua jornada:        │
-│                              │
-│  [ Baixar na App Store ]     │
-└──────────────────────────────┘
-```
+### Proximos passos
 
-### Detalhes tecnicos
-- `useSearchParams` para detectar token
-- Estado `registered` (boolean) alterna entre formulario e tela de sucesso
-- Botao App Store so aparece apos cadastro, com `window.open(appStoreUrl, '_blank')` - URL placeholder
-- Remover `useEffect` que redireciona usuario logado
+1. **Verificar no preview do Lovable**: Acesse `https://id-preview--7af51b51-f57a-4397-be1b-b371107e8a01.lovable.app/auth?token=teste` para confirmar que o card VIP aparece corretamente
+2. **Publicar o projeto**: Se o preview estiver correto, basta publicar o projeto para que as alteracoes reflitam na URL publica
+3. **Se o problema persistir no preview**: Pode ser um cache do navegador — tente abrir em aba anonima
+
+Nenhuma alteracao de codigo e necessaria — o `Auth.tsx` ja esta implementado conforme o plano aprovado.
 
