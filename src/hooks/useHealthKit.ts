@@ -59,13 +59,20 @@ export const useHealthKit = () => {
   }, []);
 
   const checkAvailability = useCallback(async (): Promise<boolean> => {
+    console.log('[HealthKit] checkAvailability called, isSupported:', isSupported);
     if (!isSupported) return false;
     try {
       const Health = await getHealthPlugin();
-      if (!Health) return false;
-      const { available } = await withTimeout(Health.isAvailable(), 10000);
-      return available;
-    } catch {
+      if (!Health) {
+        console.warn('[HealthKit] checkAvailability: plugin is null');
+        return false;
+      }
+      console.log('[HealthKit] Calling Health.isAvailable()...');
+      const result = await withTimeout(Health.isAvailable(), 10000);
+      console.log('[HealthKit] isAvailable result:', JSON.stringify(result));
+      return result.available;
+    } catch (error) {
+      console.error('[HealthKit] checkAvailability error:', error);
       return false;
     }
   }, [isSupported, getHealthPlugin]);
