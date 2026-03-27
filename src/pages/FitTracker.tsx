@@ -18,6 +18,7 @@ const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 
 export default function FitTracker() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [promptDismissed, setPromptDismissed] = useState(
     () => localStorage.getItem(HEALTHKIT_DISMISSED_KEY) === 'true'
