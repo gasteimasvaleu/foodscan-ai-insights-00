@@ -157,6 +157,20 @@ export default function ChartsProgress() {
           balanceMap.get(dateKey)!.burned += Number(exercise.calories_burned);
         }
       });
+      // Add HealthKit calories if connected
+      if (hkConnected) {
+        try {
+          const hkData = await getHKWeeklyData();
+          hkData.forEach((d) => {
+            if (balanceMap.has(d.date)) {
+              balanceMap.get(d.date)!.burned += d.calories;
+            }
+          });
+        } catch (e) {
+          console.warn('Could not load HK data for chart:', e);
+        }
+      }
+
       balanceMap.forEach((data) => { data.burned += basalMetabolicRate; });
       const chartData: CalorieBalanceData[] = Array.from(balanceMap.entries())
         .sort(([a], [b]) => a.localeCompare(b))
