@@ -127,9 +127,9 @@ export const useHealthKit = () => {
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
       return true;
-    } catch (error) {
-      const errMsg = error instanceof Error ? error.message : String(error);
-      console.error('[HealthKit] requestPermissions error:', error);
+    } catch (error: any) {
+      const errMsg = error instanceof Error ? error.message : JSON.stringify(error, Object.getOwnPropertyNames(error ?? {}));
+      console.error('[HealthKit] requestPermissions error:', errMsg);
       setDebugStatus(`ERROR: ${errMsg}`);
       return false;
     } finally {

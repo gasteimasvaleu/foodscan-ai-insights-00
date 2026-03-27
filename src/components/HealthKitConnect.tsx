@@ -40,8 +40,8 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
           variant: 'destructive',
         });
       }
-    } catch (err) {
-      console.error('[HealthKitConnect] onConnect error:', err);
+    } catch (err: any) {
+      console.error('[HealthKitConnect] onConnect error:', JSON.stringify(err, Object.getOwnPropertyNames(err ?? {})));
       toast({
         title: 'Erro ao conectar',
         description: err instanceof Error ? err.message : 'Tente novamente mais tarde.',
