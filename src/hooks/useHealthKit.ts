@@ -11,6 +11,20 @@ const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
     ),
   ]);
 
+export interface WeeklyDataPoint {
+  date: string;
+  steps: number;
+  calories: number;
+}
+
+export interface RecentWorkout {
+  sourceName: string;
+  value: number;
+  startDate: string;
+  endDate: string;
+  unit: string;
+}
+
 export const useHealthKit = () => {
   const { isIOS, isNative } = useNativePlatform();
   const [isConnected, setIsConnected] = useState(false);
@@ -18,6 +32,8 @@ export const useHealthKit = () => {
   const [dailySteps, setDailySteps] = useState<number>(0);
   const [dailyCalories, setDailyCalories] = useState<number>(0);
   const [weight, setWeight] = useState<number | null>(null);
+  const [weeklyData, setWeeklyData] = useState<WeeklyDataPoint[]>([]);
+  const [recentWorkouts, setRecentWorkouts] = useState<RecentWorkout[]>([]);
 
   const isSupported = isIOS && isNative;
 
@@ -88,6 +104,8 @@ export const useHealthKit = () => {
     setDailySteps(0);
     setDailyCalories(0);
     setWeight(null);
+    setWeeklyData([]);
+    setRecentWorkouts([]);
   }, []);
 
   const getDailySteps = useCallback(async (): Promise<number> => {
@@ -194,15 +212,114 @@ export const useHealthKit = () => {
     }
   }, [isConnected, isSupported, getHealthPlugin]);
 
+  const getWeeklyData = useCallback(async (): Promise<WeeklyDataPoint[]> => {
+    if (!isConnected || !isSupported) return [];
+    try {
+      const Health = await getHealthPlugin();
+      if (!Health) return [];
+
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      const [stepsResult, caloriesResult] = await Promise.all([
+        withTimeout(Health.queryAggregated({
+          dataType: 'steps',
+          startDate: sevenDaysAgo.toISOString(),
+          endDate: now.toISOString(),
+          bucket: 'day',
+          aggregation: 'sum',
+        }), 10000),
+        withTimeout(Health.queryAggregated({
+          dataType: 'calories',
+          startDate: sevenDaysAgo.toISOString(),
+          endDate: now.toISOString(),
+          bucket: 'day',
+          aggregation: 'sum',
+        }), 10000),
+      ]);
+
+      const stepsMap = new Map<string, number>();
+      const caloriesMap = new Map<string, number>();
+
+      stepsResult?.samples?.forEach((s: any) => {
+        const dateKey = new Date(s.startDate).toISOString().split('T')[0];
+        stepsMap.set(dateKey, Math.round(s.value ?? 0));
+      });
+
+      caloriesResult?.samples?.forEach((s: any) => {
+        const dateKey = new Date(s.startDate).toISOString().split('T')[0];
+        caloriesMap.set(dateKey, Math.round(s.value ?? 0));
+      });
+
+      const data: WeeklyDataPoint[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(now.getDate() - i);
+        const dateKey = date.toISOString().split('T')[0];
+        data.push({
+          date: dateKey,
+          steps: stepsMap.get(dateKey) ?? 0,
+          calories: caloriesMap.get(dateKey) ?? 0,
+        });
+      }
+
+      setWeeklyData(data);
+      return data;
+    } catch (error) {
+      console.error('Error reading weekly data:', error);
+      return [];
+    }
+  }, [isConnected, isSupported, getHealthPlugin]);
+
+  const getRecentWorkouts = useCallback(async (): Promise<RecentWorkout[]> => {
+    if (!isConnected || !isSupported) return [];
+    try {
+      const Health = await getHealthPlugin();
+      if (!Health) return [];
+
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const result = await withTimeout(Health.readSamples({
+        dataType: 'workout',
+        startDate: sevenDaysAgo.toISOString(),
+        endDate: now.toISOString(),
+        limit: 20,
+        ascending: false,
+      }), 10000);
+
+      const workouts: RecentWorkout[] = (result?.samples ?? []).map((s: any) => ({
+        sourceName: s.sourceName ?? 'Apple Health',
+        value: s.value ?? 0,
+        startDate: s.startDate ?? '',
+        endDate: s.endDate ?? '',
+        unit: s.unit ?? 'min',
+      }));
+
+      setRecentWorkouts(workouts);
+      return workouts;
+    } catch (error) {
+      console.error('Error reading workouts:', error);
+      return [];
+    }
+  }, [isConnected, isSupported, getHealthPlugin]);
+
   const refreshData = useCallback(async () => {
     if (!isConnected || !isSupported) return;
     setIsLoading(true);
     try {
-      await Promise.all([getDailySteps(), getDailyActiveCalories(), getWeight()]);
+      await Promise.all([
+        getDailySteps(),
+        getDailyActiveCalories(),
+        getWeight(),
+        getWeeklyData(),
+        getRecentWorkouts(),
+      ]);
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected, isSupported, getDailySteps, getDailyActiveCalories, getWeight]);
+  }, [isConnected, isSupported, getDailySteps, getDailyActiveCalories, getWeight, getWeeklyData, getRecentWorkouts]);
 
   return {
     isSupported,
@@ -211,11 +328,15 @@ export const useHealthKit = () => {
     dailySteps,
     dailyCalories,
     weight,
+    weeklyData,
+    recentWorkouts,
     requestPermissions,
     disconnect,
     getDailySteps,
     getDailyActiveCalories,
     getWeight,
+    getWeeklyData,
+    getRecentWorkouts,
     saveMealCalories,
     refreshData,
   };
