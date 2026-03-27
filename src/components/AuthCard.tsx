@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
+
 import { AppleSignInButton } from './AppleSignInButton';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
