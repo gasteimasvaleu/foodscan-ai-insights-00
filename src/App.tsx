@@ -65,6 +65,7 @@ const App = () => (
           <Route path="/profile/workout" element={<WorkoutPlan />} />
           <Route path="/profile/assessment" element={<PhysicalAssessment />} />
           <Route path="/profile/diets" element={<MyDiets />} />
+          <Route path="/profile/graficos" element={<ChartsProgress />} />
           <Route path="/foodscan" element={<FoodScan />} />
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
