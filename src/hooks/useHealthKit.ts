@@ -99,7 +99,7 @@ export const useHealthKit = () => {
             read: ['steps', 'calories', 'weight'],
             write: ['calories'],
           }),
-          20000,
+          60000,
           'requestAuthorization'
         );
         console.log('[HealthKit] <<< requestAuthorization result:', JSON.stringify(authResult));

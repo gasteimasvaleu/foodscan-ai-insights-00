@@ -75,8 +75,6 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
     }
   };
 
-  const displayStatus = debugStatus && debugStatus !== 'idle' ? debugStatus : localStatus;
-
   return (
     <div className="mb-6 animate-fade-in">
       <div className="relative bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 backdrop-blur-xl border border-primary/20 rounded-2xl p-6 shadow-lg">
@@ -113,12 +111,6 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
           </div>
         </div>
 
-        {/* Debug status visible on screen */}
-        {displayStatus && (
-          <div className="mb-3 p-2 bg-muted/50 rounded-lg">
-            <p className="text-xs font-mono text-muted-foreground">{displayStatus}</p>
-          </div>
-        )}
 
         <div className="flex gap-3">
           <Button
