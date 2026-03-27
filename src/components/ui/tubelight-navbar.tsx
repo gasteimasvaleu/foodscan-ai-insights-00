@@ -101,7 +101,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           className,
         )}
       >
-        <div className="absolute -inset-x-6 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
+        <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
         <div className="flex items-center gap-2 sm:gap-3 bg-[#FA1690]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-none">
           {items.map((item) => {
             const Icon = item.icon
