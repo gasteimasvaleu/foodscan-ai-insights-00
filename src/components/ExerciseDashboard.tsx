@@ -14,7 +14,11 @@ interface ExerciseStats {
   currentStreak: number;
 }
 
-export function ExerciseDashboard() {
+interface ExerciseDashboardProps {
+  healthKitCalories?: number;
+}
+
+export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardProps) {
   const { user } = useAuth();
   const [stats, setStats] = useState<ExerciseStats>({
     todayCalories: 0,
