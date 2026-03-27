@@ -1,50 +1,24 @@
 
 
-## Substituir ServiNUTRI por botão "+" com Bottom Sheet no Tubelight Menu
+## Mostrar refeições do dia selecionado no Resumo Semanal
 
-### O que muda
-
-O item "ServiNUTRI" (ícone Apple) no menu inferior será substituído por um botão "+" (Plus) que abre um bottom sheet com links para páginas extras, começando pelo ServiNUTRI.
+Ao selecionar um dia da semana no Resumo Semanal, exibir a lista de refeições consumidas naquele dia logo abaixo do card de totais nutricionais.
 
 ### Mudanças
 
-**1. `src/App.tsx`**
-- Remover `ServiNUTRI` do array `navItems`
-- Remover import do ícone `Apple`
-- Adicionar import de `Plus` do lucide-react
-- Adicionar o item "Mais" com ícone `Plus` e url especial (ex: `#more`)
+**`src/components/WeeklySummary.tsx`**:
 
-**2. `src/components/ui/tubelight-navbar.tsx`**
-- Adicionar estado `moreSheetOpen` para controlar o bottom sheet
-- Detectar clique no item "Mais" (url `#more`) — em vez de navegar, abrir o sheet
-- Renderizar um `<Sheet>` com `<SheetContent side="bottom">` estilizado com as cores do app:
-  - `rounded-t-2xl max-h-[85vh] overflow-y-auto`
-  - Fundo com glassmorphism (`bg-white/95 backdrop-blur-xl`)
-  - Handle visual no topo (barrinha cinza)
-- Dentro do sheet, listar os itens extras como cards clicáveis:
-  - **ServiNUTRI** (ícone Apple/Stethoscope, cor primária)
-  - Espaço para futuras páginas
-- Cada card navega para a rota correspondente e fecha o sheet
-- Estilo dos cards: fundo rosa claro, ícone em círculo com cor primária, texto em negrito
-
-### Visual do Bottom Sheet
-
-```text
-┌─────────────────────────────┐
-│          ── (handle) ──     │
-│                             │
-│  ┌─────────────────────┐    │
-│  │ 🩺  ServiNUTRI      │→   │
-│  │     Rede de nutri.. │    │
-│  └─────────────────────┘    │
-│                             │
-│  (futuras páginas aqui)     │
-│                             │
-└─────────────────────────────┘
-```
+1. Adicionar estado `dayMeals` para armazenar as refeições do dia selecionado
+2. Criar função `loadDayMeals(dayIndex)` que busca `meal_records` do Supabase filtrando por `user_id` e data correspondente ao dia da semana
+3. Chamar `loadDayMeals` sempre que `selectedDay` mudar (via `useEffect`)
+4. Renderizar lista de refeições abaixo do card de totais do dia selecionado:
+   - Cada refeição mostra: nome do alimento, horário, porção e macros (calorias, carbs, proteínas, gorduras)
+   - Estilo consistente com o app: cards em `bg-gray-50 rounded-2xl`, valores em `text-[#FD46A1]`
+   - Se não houver refeições, mostrar mensagem "Nenhuma refeição registrada"
+   - Ícone de relógio + horário como badge (similar ao `MealsList`)
 
 ### Detalhes técnicos
-- Imports necessários: `Sheet, SheetContent` de `@/components/ui/sheet`, `useNavigate` de react-router-dom, `Plus` e `Stethoscope` de lucide-react
-- O item "Mais" não terá o efeito "lamp" ativo (não é uma rota real)
-- O sheet segue o padrão de cores do app: bordas `border-[#FA1690]/20`, ícones em `#FD46A1`
+- Query: `supabase.from('meal_records').select('*').eq('user_id', user.id).gte('meal_time', startOfDay).lt('meal_time', endOfDay).order('meal_time')`
+- Reutilizar o tipo `MealRecord` já existente importando de `DailyControl` ou definindo localmente
+- A lista aparece apenas quando `selectedDayData` existe (dia tem dados)
 
