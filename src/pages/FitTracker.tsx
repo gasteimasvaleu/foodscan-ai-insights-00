@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, BarChart3 } from "lucide-react";
+import { Activity, BarChart3, Heart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
@@ -12,6 +12,7 @@ import { HealthKitDashboard } from "@/components/HealthKitDashboard";
 import { useHealthKit } from "@/hooks/useHealthKit";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
+import { useNavigate } from "react-router-dom";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 
