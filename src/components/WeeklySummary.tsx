@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+
+interface DayMeal {
+  id: string;
+  food_name: string;
+  meal_time: string;
+  portion: string;
+  calories: number;
+  carbohydrates: number;
+  proteins: number;
+  fats: number;
+}
 
 export interface WeeklySummaryData {
   id?: string;
