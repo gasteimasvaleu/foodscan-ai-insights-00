@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Navbar } from "@/components/Navbar";
-import AuthCard from "@/components/AuthCard";
+import { AuthCard } from "@/components/AuthCard";
 import { UtensilsCrossed } from "lucide-react";
 
 const Receitas = () => {
