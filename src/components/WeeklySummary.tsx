@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -111,6 +111,23 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleDeleteMeal = async (mealId: string) => {
+    if (!confirm('Tem certeza que deseja excluir esta refeição?')) return;
+    try {
+      const { error } = await supabase
+        .from('meal_records')
+        .delete()
+        .eq('id', mealId);
+      if (error) throw error;
+      toast({ title: 'Refeição excluída com sucesso' });
+      loadDayMeals(selectedDay);
+      loadWeeklyData();
+    } catch (error) {
+      console.error('Erro ao excluir refeição:', error);
+      toast({ title: 'Erro ao excluir refeição', variant: 'destructive' });
+    }
   };
 
   const loadWeeklyData = async () => {
@@ -327,10 +344,20 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                     <h5 className="text-sm font-semibold text-gray-800 truncate flex-1">
                       {meal.food_name}
                     </h5>
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {formatMealTime(meal.meal_time)}
-                    </Badge>
+                    <div className="flex items-center gap-1 ml-2">
+                      <Badge variant="secondary" className="text-xs">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatMealTime(meal.meal_time)}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteMeal(meal.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
                   <p className="text-xs text-gray-500 mb-2">Porção: {meal.portion}</p>
                   <div className="grid grid-cols-4 gap-2">
