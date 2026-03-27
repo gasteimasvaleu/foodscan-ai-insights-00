@@ -1,9 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNativePlatform } from './useNativePlatform';
-import { Capacitor } from '@capacitor/core';
 
 const HEALTHKIT_CONNECTED_KEY = 'healthkit_connected';
-const BUILD_ID = 'HK-BUILD-2026-03-27-A';
+const BUILD_ID = 'HK-BUILD-2026-03-27-B';
 
 export interface WeeklyDataPoint {
   date: string;
@@ -17,6 +16,15 @@ export interface RecentWorkout {
   startDate: string;
   endDate: string;
   unit: string;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout: ${label} não respondeu em ${ms / 1000}s`)), ms)
+    ),
+  ]);
 }
 
 export const useHealthKit = () => {
@@ -33,7 +41,6 @@ export const useHealthKit = () => {
 
   const isSupported = isIOS && isNative;
 
-  // Log build ID once to confirm bundle is fresh
   console.log(`[HealthKit] ${BUILD_ID} | isIOS:${isIOS} isNative:${isNative} isSupported:${isSupported}`);
 
   useEffect(() => {
@@ -46,104 +53,79 @@ export const useHealthKit = () => {
   const getHealthPlugin = useCallback(async () => {
     if (pluginRef.current) return pluginRef.current;
     try {
-      // 1. Check if the native side registered the plugin
-      const pluginName = 'CapgoCapacitorHealth';
-      const isRegistered = Capacitor.isPluginAvailable(pluginName);
-      console.log(`[HealthKit] Capacitor.isPluginAvailable('${pluginName}'):`, isRegistered);
-
-      // 2. List ALL registered plugins for debugging
-      try {
-        const allPlugins = Object.keys((Capacitor as any).Plugins || {});
-        console.log('[HealthKit] All registered Capacitor.Plugins:', JSON.stringify(allPlugins));
-      } catch (e) {
-        console.log('[HealthKit] Could not list Capacitor.Plugins:', String(e));
-      }
-
-      // 3. Also try the alternative name
-      const altRegistered = Capacitor.isPluginAvailable('Health');
-      console.log(`[HealthKit] Capacitor.isPluginAvailable('Health'):`, altRegistered);
-
-      // 4. Import the JS wrapper
       console.log('[HealthKit] Importing @capgo/capacitor-health...');
       const module = await import('@capgo/capacitor-health');
-      console.log('[HealthKit] Import OK, keys:', Object.keys(module));
       const { Health } = module;
-
-      // 5. Log what methods are available on the proxy
-      console.log('[HealthKit] Health typeof:', typeof Health);
-      console.log('[HealthKit] Health.isAvailable typeof:', typeof Health?.isAvailable);
-      console.log('[HealthKit] Health.requestAuthorization typeof:', typeof Health?.requestAuthorization);
-
+      console.log('[HealthKit] Import OK. Health typeof:', typeof Health);
+      console.log('[HealthKit] Methods: isAvailable=', typeof Health?.isAvailable, 'requestAuthorization=', typeof Health?.requestAuthorization);
       pluginRef.current = Health;
       return Health;
     } catch (error) {
-      console.error('[HealthKit] getHealthPlugin FAILED:', String(error));
+      console.error('[HealthKit] Import FAILED:', String(error));
       return null;
     }
   }, []);
 
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     console.log('[HealthKit] === requestPermissions START ===');
-    setDebugStatus('starting...');
+    setDebugStatus('importando plugin...');
     if (!isSupported) {
-      const msg = `Not supported (isIOS=${isIOS}, isNative=${isNative})`;
+      const msg = `Não suportado (isIOS=${isIOS}, isNative=${isNative})`;
       console.warn('[HealthKit]', msg);
       setDebugStatus(msg);
       return false;
     }
     setIsLoading(true);
     try {
-      // Step 1: Get plugin
-      setDebugStatus('getting plugin...');
       const Health = await getHealthPlugin();
       if (!Health) {
-        setDebugStatus('ERROR: plugin is null');
+        setDebugStatus('ERRO: plugin não carregou');
         return false;
       }
 
-      // Step 2: isAvailable (NO timeout – let it run or fail naturally)
-      setDebugStatus('calling isAvailable...');
-      console.log('[HealthKit] >>> calling Health.isAvailable() NOW');
+      // isAvailable — 8s timeout
+      setDebugStatus('verificando disponibilidade...');
+      console.log('[HealthKit] >>> Health.isAvailable()');
       try {
-        const availResult = await Health.isAvailable();
-        console.log('[HealthKit] <<< isAvailable returned:', JSON.stringify(availResult));
+        const availResult = await withTimeout(Health.isAvailable(), 8000, 'isAvailable');
+        console.log('[HealthKit] <<< isAvailable:', JSON.stringify(availResult));
         if (!availResult?.available) {
-          setDebugStatus('HealthKit not available on device');
+          setDebugStatus('HealthKit não disponível neste dispositivo');
           return false;
         }
-      } catch (availErr: any) {
-        console.error('[HealthKit] isAvailable ERROR message:', availErr?.message);
-        console.error('[HealthKit] isAvailable ERROR string:', String(availErr));
-        setDebugStatus(`isAvailable error: ${availErr?.message || String(availErr)}`);
+      } catch (err: any) {
+        console.error('[HealthKit] isAvailable error:', err?.message || String(err));
+        setDebugStatus(`Erro disponibilidade: ${err?.message || String(err)}`);
         return false;
       }
 
-      // Step 3: requestAuthorization (NO timeout – let iOS show the dialog)
-      setDebugStatus('requesting authorization...');
-      console.log('[HealthKit] >>> calling Health.requestAuthorization() NOW');
+      // requestAuthorization — 15s timeout (iOS dialog can take time)
+      setDebugStatus('solicitando permissão...');
+      console.log('[HealthKit] >>> Health.requestAuthorization()');
       try {
-        const authResult = await Health.requestAuthorization({
-          read: ['steps', 'calories', 'weight'],
-          write: ['calories'],
-        });
-        console.log('[HealthKit] <<< requestAuthorization returned:', JSON.stringify(authResult));
-      } catch (authErr: any) {
-        console.error('[HealthKit] requestAuthorization ERROR message:', authErr?.message);
-        console.error('[HealthKit] requestAuthorization ERROR string:', String(authErr));
-        setDebugStatus(`auth error: ${authErr?.message || String(authErr)}`);
+        const authResult = await withTimeout(
+          Health.requestAuthorization({
+            read: ['steps', 'calories', 'weight'],
+            write: ['calories'],
+          }),
+          15000,
+          'requestAuthorization'
+        );
+        console.log('[HealthKit] <<< requestAuthorization:', JSON.stringify(authResult));
+      } catch (err: any) {
+        console.error('[HealthKit] requestAuthorization error:', err?.message || String(err));
+        setDebugStatus(`Erro permissão: ${err?.message || String(err)}`);
         return false;
       }
 
-      // Success
-      setDebugStatus('Connected!');
+      setDebugStatus('Conectado!');
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
       console.log('[HealthKit] === requestPermissions SUCCESS ===');
       return true;
     } catch (error: any) {
-      console.error('[HealthKit] requestPermissions UNEXPECTED error message:', error?.message);
-      console.error('[HealthKit] requestPermissions UNEXPECTED error string:', String(error));
-      setDebugStatus(`ERROR: ${error?.message || String(error)}`);
+      console.error('[HealthKit] Unexpected error:', error?.message || String(error));
+      setDebugStatus(`ERRO: ${error?.message || String(error)}`);
       return false;
     } finally {
       setIsLoading(false);
@@ -178,7 +160,7 @@ export const useHealthKit = () => {
       setDailySteps(Math.round(steps));
       return steps;
     } catch (error) {
-      console.error('Error reading steps:', error);
+      console.error('[HealthKit] Error reading steps:', error);
       return 0;
     }
   }, [isConnected, isSupported, getHealthPlugin]);
@@ -201,7 +183,7 @@ export const useHealthKit = () => {
       setDailyCalories(cals);
       return cals;
     } catch (error) {
-      console.error('Error reading calories:', error);
+      console.error('[HealthKit] Error reading calories:', error);
       return 0;
     }
   }, [isConnected, isSupported, getHealthPlugin]);
@@ -228,7 +210,7 @@ export const useHealthKit = () => {
       }
       return null;
     } catch (error) {
-      console.error('Error reading weight:', error);
+      console.error('[HealthKit] Error reading weight:', error);
       return null;
     }
   }, [isConnected, isSupported, getHealthPlugin]);
@@ -248,7 +230,7 @@ export const useHealthKit = () => {
       });
       return true;
     } catch (error) {
-      console.error('Error saving meal to HealthKit:', error);
+      console.error('[HealthKit] Error saving meal:', error);
       return false;
     }
   }, [isConnected, isSupported, getHealthPlugin]);
@@ -301,7 +283,7 @@ export const useHealthKit = () => {
       setWeeklyData(data);
       return data;
     } catch (error) {
-      console.error('Error reading weekly data:', error);
+      console.error('[HealthKit] Error reading weekly data:', error);
       return [];
     }
   }, [isConnected, isSupported, getHealthPlugin]);
@@ -330,7 +312,7 @@ export const useHealthKit = () => {
       setRecentWorkouts(workouts);
       return workouts;
     } catch (error) {
-      console.error('Error reading workouts:', error);
+      console.error('[HealthKit] Error reading workouts:', error);
       return [];
     }
   }, [isConnected, isSupported, getHealthPlugin]);
