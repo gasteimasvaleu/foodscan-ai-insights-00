@@ -10,6 +10,8 @@ interface HealthKitConnectProps {
   debugStatus?: string;
 }
 
+const WATCHDOG_MS = 25000; // 25s safety net
+
 export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
   onConnect,
   onDismiss,
@@ -17,21 +19,42 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
   debugStatus,
 }) => {
   const [connecting, setConnecting] = useState(false);
+  const [localStatus, setLocalStatus] = useState<string | null>(null);
 
   const handleConnect = async () => {
     console.log('[HealthKitConnect] Button tapped – starting connection flow');
     setConnecting(true);
+    setLocalStatus('iniciando...');
+
     try {
-      // No timeout here – let the hook handle its own flow
-      // iOS authorization dialog can take a long time if user reads it
-      const success = await onConnect();
-      console.log('[HealthKitConnect] onConnect resolved, success:', success);
-      if (success) {
+      // Watchdog: if onConnect never resolves, force-fail after WATCHDOG_MS
+      const result = await Promise.race([
+        onConnect(),
+        new Promise<'timeout'>((resolve) =>
+          setTimeout(() => resolve('timeout'), WATCHDOG_MS)
+        ),
+      ]);
+
+      if (result === 'timeout') {
+        console.error('[HealthKitConnect] Watchdog timeout after', WATCHDOG_MS / 1000, 's');
+        setLocalStatus('Timeout – o plugin nativo não respondeu');
+        toast({
+          title: 'Timeout na conexão',
+          description: `O Apple Health não respondeu em ${WATCHDOG_MS / 1000}s. Tente novamente ou reinicie o app.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      console.log('[HealthKitConnect] onConnect resolved, success:', result);
+      if (result) {
+        setLocalStatus(null);
         toast({
           title: '✅ Apple Health conectado!',
           description: 'Seus dados de saúde serão sincronizados automaticamente.',
         });
       } else {
+        setLocalStatus('falha na conexão');
         toast({
           title: 'Não foi possível conectar',
           description: 'Verifique se o Apple Health está habilitado nas configurações do seu iPhone.',
@@ -39,13 +62,9 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
         });
       }
     } catch (err: any) {
-      // Detailed error logging – avoid the {} problem
-      console.error('[HealthKitConnect] onConnect error message:', err?.message);
-      console.error('[HealthKitConnect] onConnect error string:', String(err));
-      console.error('[HealthKitConnect] onConnect error type:', typeof err, err?.constructor?.name);
-      if (err?.stack) console.error('[HealthKitConnect] stack:', err.stack);
-
+      console.error('[HealthKitConnect] onConnect error:', err?.message || String(err));
       const errorMsg = err?.message || String(err) || 'Erro desconhecido';
+      setLocalStatus(`erro: ${errorMsg}`);
       toast({
         title: 'Erro ao conectar',
         description: errorMsg,
@@ -55,6 +74,8 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
       setConnecting(false);
     }
   };
+
+  const displayStatus = debugStatus && debugStatus !== 'idle' ? debugStatus : localStatus;
 
   return (
     <div className="mb-6 animate-fade-in">
@@ -93,9 +114,9 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
         </div>
 
         {/* Debug status visible on screen */}
-        {debugStatus && debugStatus !== 'idle' && (
+        {displayStatus && (
           <div className="mb-3 p-2 bg-muted/50 rounded-lg">
-            <p className="text-xs font-mono text-muted-foreground">{debugStatus}</p>
+            <p className="text-xs font-mono text-muted-foreground">{displayStatus}</p>
           </div>
         )}
 

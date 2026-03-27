@@ -44,6 +44,7 @@ export default function AppleHealth() {
     isSupported,
     isConnected,
     isLoading,
+    debugStatus,
     dailySteps,
     dailyCalories,
     weight,
@@ -136,6 +137,7 @@ export default function AppleHealth() {
             onConnect={requestPermissions}
             onDismiss={() => navigate('/fit-tracker')}
             isLoading={isLoading}
+            debugStatus={debugStatus}
           />
         )}
 
