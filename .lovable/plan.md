@@ -1,40 +1,56 @@
 
 
-## Dashboard Admin com Assinaturas Promocionais
+## Adicionar envio de convite via WhatsApp (Z-API)
 
-### Estrutura
+### Contexto
+O projeto atualmente usa Twilio para WhatsApp. Vamos criar uma nova edge function dedicada para enviar convites via Z-API, separada da `whatsapp-send` (Twilio).
 
-#### 1. Criar pagina `src/pages/AdminDashboard.tsx`
-Dashboard central admin com cards de navegacao para as sub-paginas:
-- **Treinos** (`/admin/treinos`) - gerenciamento de conteudo de treinos
-- **Assinaturas Promocionais** (`/admin/assinaturas-promocionais`) - envio de tokens via email
+### Alteracoes
 
-Inclui verificacao de role admin (reutilizando `has_role` RPC). Layout com header "Painel Administrativo", grid de cards clicaveis com icones (Dumbbell, Gift/Tag).
+#### 1. Criar edge function `supabase/functions/send-whatsapp-invite/index.ts`
+- Recebe: `phone`, `name`, `plan_type`, `token`
+- Valida admin (JWT)
+- Monta mensagem formatada com o link `https://app.dietainteligente.app/auth?token={token}`
+- Envia via Z-API usando `POST https://api.z-api.io/instances/{INSTANCE_ID}/token/{TOKEN}/send-text`
+- Secrets necessarios: `ZAPI_INSTANCE_ID`, `ZAPI_TOKEN`, `ZAPI_SECURITY_TOKEN`
 
-#### 2. Criar pagina `src/pages/AdminSubscriptions.tsx`
-Formulario para enviar tokens promocionais chamando a edge function `send-registration-token`:
-- Campos: Nome, Email, Tipo de plano (Mensal/Anual)
-- Botao "Enviar Convite"
-- Chama `supabase.functions.invoke('send-registration-token', { body: { email, name, plan_type } })`
-- Lista de tokens ja enviados (query na tabela `registration_tokens`) com status (usado/pendente/expirado)
-- Verificacao de admin role
+#### 2. Atualizar `src/pages/AdminSubscriptions.tsx`
+- Adicionar campo opcional "WhatsApp" (numero de telefone)
+- Adicionar toggle/checkbox "Enviar tambem por WhatsApp"
+- Ao enviar: primeiro cria o token via `send-registration-token`, depois se WhatsApp marcado, chama `send-whatsapp-invite` passando o token retornado
+- Adicionar icone MessageCircle do lucide
 
-#### 3. Atualizar `src/App.tsx`
-- Adicionar imports das novas paginas
-- Adicionar rotas:
-  - `/admin` -> `AdminDashboard`
-  - `/admin/assinaturas-promocionais` -> `AdminSubscriptions`
-  - Manter `/admin/treinos` -> `AdminTreinos`
+#### 3. Secrets
+Precisarei que voce informe:
+- **Instance ID** da Z-API
+- **Token** da Z-API  
+- **Security Token** (Client Token) da Z-API
 
-#### 4. Sem alteracoes no banco
-A edge function `send-registration-token` ja existe e funciona. A tabela `registration_tokens` ja tem as colunas necessarias. Apenas precisamos de uma policy SELECT para admins verem todos os tokens (hoje so permite ver tokens validos nao usados).
+Esses serao adicionados como secrets no Supabase antes de implementar.
 
-#### 5. Migration: adicionar policy para admins lerem todos os tokens
-```sql
-CREATE POLICY "Admins can view all registration tokens"
-ON public.registration_tokens
-FOR SELECT
-TO authenticated
-USING (public.has_role(auth.uid(), 'admin'));
+### Mensagem WhatsApp (template)
 ```
+🎉 Olá {name}!
+
+Seu acesso ao *We Diet* foi liberado! 🎊
+
+📋 *Plano:* {plan_name}
+⏰ *Duração:* {months} {mês/meses}
+
+Para começar, clique no link abaixo e finalize seu cadastro:
+👉 {registration_url}
+
+⚠️ Este link é válido por 7 dias e pode ser usado apenas uma vez.
+
+💪 We Diet - Sua jornada fitness começa aqui!
+```
+
+### Sem alteracoes no banco
+A edge function `send-registration-token` ja retorna o token criado. Usaremos esse token para montar o link e enviar via Z-API.
+
+### Detalhes tecnicos
+- A Z-API espera o numero no formato `55DDD9XXXXXXXX` (sem +, sem espacos)
+- Endpoint: `POST https://api.z-api.io/instances/{instanceId}/token/{token}/send-text`
+- Headers: `Client-Token: {security_token}`, `Content-Type: application/json`
+- Body: `{ "phone": "55...", "message": "..." }`
 
