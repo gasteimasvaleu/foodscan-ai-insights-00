@@ -1,16 +1,12 @@
 
 
-## Padronizar modal de receitas e melhorar loading
+## Estilizar botão de fechar do Dialog
 
-### Mudancas em `src/components/RecipeDetails.tsx`
+### Mudança em `src/components/ui/dialog.tsx` (linha ~46)
 
-**1. Estilizar DialogContent no padrao do app**
-- Adicionar classes: `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
-- Manter `max-h-[85vh] overflow-y-auto p-0`
+Adicionar fundo rosa primário, ícone branco e cantos arredondados ao `DialogPrimitive.Close`, seguindo o padrão descrito na memória de estilo:
 
-**2. Substituir loading de Skeletons por spinner centralizado**
-- Remover os Skeletons atuais
-- Mostrar um spinner animado (`animate-spin rounded-full border-b-2 border-primary`) centralizado
-- Texto abaixo: "Traduzindo receita..." com animacao de pulso (`animate-pulse`)
-- Centralizado vertical e horizontalmente dentro do modal com altura minima
+- Adicionar classes: `bg-primary text-white rounded-lg p-1 hover:bg-primary/90`
+- Remover `opacity-70` e `hover:opacity-100` (não necessários com fundo sólido)
+- Manter o ícone X branco com tamanho `h-4 w-4`
 
