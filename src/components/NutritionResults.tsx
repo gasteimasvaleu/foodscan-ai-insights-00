@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Check, Download, Save, Utensils } from 'lucide-react';
+import { Save, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PortionSelector } from './PortionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useHealthKit } from '@/hooks/useHealthKit';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
-// Interface local para dados nutricionais
 interface NutritionData {
   nome_alimento: string;
   descricao: string;
@@ -29,6 +29,7 @@ interface NutritionResultsProps {
 export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionData, onSave, onClose }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isConnected: hkConnected, saveMealCalories } = useHealthKit();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
   const [isSaving, setIsSaving] = useState(false);
@@ -83,9 +84,18 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
         description: "Refeição salva com sucesso!",
       });
 
-      onSave?.();
+      // Sync with Apple Health if connected
+      if (hkConnected) {
+        const saved = await saveMealCalories(calories);
+        if (saved) {
+          toast({
+            title: "🍎 Apple Health",
+            description: "Calorias sincronizadas com Apple Health",
+          });
+        }
+      }
 
-      // Redirecionar para a página de Controle Diário
+      onSave?.();
       navigate('/controle-diario');
 
     } catch (error) {

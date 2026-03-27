@@ -10,6 +10,7 @@
         "@capacitor/core": "^8.2.0",
         "@capacitor/ios": "^8.2.0",
         "@capacitor/live-updates": "^0.5.0",
+        "@capgo/capacitor-health": "^8.4.1",
         "@hookform/resolvers": "^3.9.0",
         "@radix-ui/react-accordion": "^1.2.0",
         "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -109,6 +110,8 @@
     "@capacitor/ios": ["@capacitor/ios@8.2.0", "", { "peerDependencies": { "@capacitor/core": "^8.2.0" } }, "sha512-X2/VtM4qP/R1SM0VQ5W/VotEc6PS/KTooD33EijsfAHWBdee+xmBapW8SeNLnu16wJ+tsfWlvtipaJEyfKbRKQ=="],
 
     "@capacitor/live-updates": ["@capacitor/live-updates@0.5.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/live-updates/-/live-updates-0.5.0.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-qJBD+gVg4JwfRryM/i366Uzw9DRYqCAmFl5+k9ph9kDbvikvT69UiITcdJw840C3Q3RA2z+rLC7LZOZ5L56cuQ=="],
+
+    "@capgo/capacitor-health": ["@capgo/capacitor-health@8.4.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capgo/capacitor-health/-/capacitor-health-8.4.2.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-Z04zPNBGvRe/v++/SfFVxFBkrueMDPAsgwf3WdQlVzP/y/82PSjWC7v8l0yCyzS6f+vt85P21xIfrcEo+nfKYg=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.0", "", { "os": "aix", "cpu": "ppc64" }, "sha512-O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ=="],
 
