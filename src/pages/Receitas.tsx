@@ -139,7 +139,7 @@ const Receitas = () => {
                 </button>
               )}
             </div>
-            <Button onClick={() => searchRecipes(true)} disabled={loading} size="default">
+            <Button onClick={() => searchRecipes(true)} disabled={loading || !query.trim()} size="default">
               Buscar
             </Button>
           </div>
