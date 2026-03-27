@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { supabase } from '@/integrations/supabase/client';
 
 import { AppleSignInButton } from './AppleSignInButton';
 import { Separator } from '@/components/ui/separator';
@@ -22,9 +23,31 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { isNative, isIOS } = useNativePlatform();
   const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  
+  const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const isNativeIOS = isNative && isIOS;
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      const { data } = await supabase
+        .from('homepage_banners')
+        .select('id, image_url')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      if (data && data.length > 0) setBanners(data);
+    };
+    fetchBanners();
+  }, []);
+
+  // Autoplay 10s
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBanner(prev => (prev + 1) % banners.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,18 +87,43 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     );
   }
 
+  const fallbackBannerUrl = "https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp";
+
   if (user) {
     const userName = user.user_metadata?.name || user.email;
+    const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
+
     return (
       <>
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
-          <div className="aspect-video w-full">
-            <img
-              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp"
-              alt="Banner"
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+          <div className="aspect-video w-full relative">
+            {bannerImages.map((banner, index) => (
+              <img
+                key={banner.id}
+                src={banner.image_url}
+                alt={`Banner ${index + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                  index === currentBanner ? 'opacity-100' : 'opacity-0'
+                }`}
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            ))}
+            {/* Dots */}
+            {bannerImages.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {bannerImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentBanner(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentBanner
+                        ? 'bg-white w-4'
+                        : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </Card>
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Tag, ArrowLeft, Shield } from 'lucide-react';
+import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
@@ -54,6 +54,12 @@ const AdminDashboard = () => {
   }
 
   const adminPages = [
+    {
+      title: 'Banners',
+      description: 'Gerenciar banners da página principal',
+      icon: ImageIcon,
+      path: '/admin/banners',
+    },
     {
       title: 'Treinos',
       description: 'Gerenciar conteúdo de treinos e vídeos',

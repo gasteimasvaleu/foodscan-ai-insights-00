@@ -19,6 +19,7 @@ import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminSubscriptions from "./pages/AdminSubscriptions";
+import AdminBanners from "./pages/AdminBanners";
 
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import Auth from "./pages/Auth";
@@ -82,6 +83,7 @@ const App = () => (
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/banners" element={<AdminBanners />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
           
