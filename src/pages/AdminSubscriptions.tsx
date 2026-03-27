@@ -83,9 +83,30 @@ const AdminSubscriptions = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      toast({ title: '✅ Convite enviado!', description: `Email enviado para ${email}` });
+      // Send WhatsApp if checked
+      if (sendWhatsApp && phone.trim()) {
+        try {
+          const { error: whatsAppError } = await supabase.functions.invoke('send-whatsapp-invite', {
+            body: {
+              phone: phone.trim(),
+              name: name.trim(),
+              plan_type: planType,
+              registration_token: data.token,
+            },
+          });
+          if (whatsAppError) throw whatsAppError;
+          toast({ title: '✅ Convite enviado!', description: `Email e WhatsApp enviados com sucesso` });
+        } catch (whatsErr: any) {
+          toast({ title: '⚠️ Email enviado, WhatsApp falhou', description: whatsErr.message, variant: 'destructive' });
+        }
+      } else {
+        toast({ title: '✅ Convite enviado!', description: `Email enviado para ${email}` });
+      }
+
       setName('');
       setEmail('');
+      setPhone('');
+      setSendWhatsApp(false);
       fetchTokens();
     } catch (err: any) {
       toast({ title: 'Erro ao enviar', description: err.message, variant: 'destructive' });
