@@ -57,7 +57,7 @@ export const useHealthKit = () => {
 
       await Health.requestAuthorization({
         read: ['steps', 'calories', 'weight'],
-        write: ['nutrition'],
+        write: ['calories'],
       });
 
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
@@ -92,10 +92,12 @@ export const useHealthKit = () => {
         dataType: 'steps',
         startDate: startOfDay.toISOString(),
         endDate: now.toISOString(),
+        bucket: 'day',
+        aggregation: 'sum',
       });
 
-      const steps = result?.value ?? 0;
-      setDailySteps(steps);
+      const steps = result?.samples?.[0]?.value ?? 0;
+      setDailySteps(Math.round(steps));
       return steps;
     } catch (error) {
       console.error('Error reading steps:', error);
@@ -116,9 +118,11 @@ export const useHealthKit = () => {
         dataType: 'calories',
         startDate: startOfDay.toISOString(),
         endDate: now.toISOString(),
+        bucket: 'day',
+        aggregation: 'sum',
       });
 
-      const cals = Math.round(result?.value ?? 0);
+      const cals = Math.round(result?.samples?.[0]?.value ?? 0);
       setDailyCalories(cals);
       return cals;
     } catch (error) {
@@ -136,11 +140,12 @@ export const useHealthKit = () => {
       const now = new Date();
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-      const result = await Health.query({
+      const result = await Health.readSamples({
         dataType: 'weight',
         startDate: thirtyDaysAgo.toISOString(),
         endDate: now.toISOString(),
         limit: 1,
+        ascending: false,
       });
 
       const samples = result?.samples ?? [];
@@ -163,9 +168,10 @@ export const useHealthKit = () => {
       if (!Health) return false;
 
       const now = new Date().toISOString();
-      await Health.store({
-        dataType: 'nutrition',
+      await Health.saveSample({
+        dataType: 'calories',
         value: calories,
+        unit: 'kilocalorie',
         startDate: now,
         endDate: now,
       });
