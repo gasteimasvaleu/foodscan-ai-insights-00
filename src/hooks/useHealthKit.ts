@@ -72,11 +72,12 @@ export const useHealthKit = () => {
         return false;
       }
       console.log('[HealthKit] Calling Health.isAvailable()...');
+      console.log('[HealthKit] Health methods:', typeof Health.isAvailable, typeof Health.requestAuthorization);
       const result = await withTimeout(Health.isAvailable(), 10000);
       console.log('[HealthKit] isAvailable result:', JSON.stringify(result));
       return result.available;
-    } catch (error) {
-      console.error('[HealthKit] checkAvailability error:', error);
+    } catch (error: any) {
+      console.error('[HealthKit] checkAvailability error:', JSON.stringify(error, Object.getOwnPropertyNames(error ?? {})));
       return false;
     }
   }, [isSupported, getHealthPlugin]);
