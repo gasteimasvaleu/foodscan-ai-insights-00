@@ -3,6 +3,14 @@ import { useNativePlatform } from './useNativePlatform';
 
 const HEALTHKIT_CONNECTED_KEY = 'healthkit_connected';
 
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('HealthKit timeout')), ms)
+    ),
+  ]);
+
 export const useHealthKit = () => {
   const { isIOS, isNative } = useNativePlatform();
   const [isConnected, setIsConnected] = useState(false);
@@ -35,7 +43,7 @@ export const useHealthKit = () => {
     try {
       const Health = await getHealthPlugin();
       if (!Health) return false;
-      const { available } = await Health.isAvailable();
+      const { available } = await withTimeout(Health.isAvailable(), 10000);
       return available;
     } catch {
       return false;
@@ -55,10 +63,13 @@ export const useHealthKit = () => {
         return false;
       }
 
-      await Health.requestAuthorization({
-        read: ['steps', 'calories', 'weight'],
-        write: ['calories'],
-      });
+      await withTimeout(
+        Health.requestAuthorization({
+          read: ['steps', 'calories', 'weight'],
+          write: ['calories'],
+        }),
+        15000
+      );
 
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
