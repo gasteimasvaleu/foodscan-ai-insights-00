@@ -18,6 +18,12 @@ interface NavBarProps {
 
 const moreSheetItems = [
   {
+    name: "Receitas",
+    description: "Suas receitas favoritas",
+    url: "/receitas",
+    icon: UtensilsCrossed,
+  },
+  {
     name: "ServiNUTRI",
     description: "Rede de nutricionistas",
     url: "/servinutri",
