@@ -35,6 +35,7 @@ import Receitas from "./pages/Receitas";
 import Comunidade from "./pages/Comunidade";
 import ChartsProgress from "./pages/ChartsProgress";
 import NutriCoach from "./pages/NutriCoach";
+import AppleHealth from "./pages/AppleHealth";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
