@@ -111,12 +111,6 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
           </div>
         </div>
 
-        {/* Debug status visible on screen */}
-        {displayStatus && (
-          <div className="mb-3 p-2 bg-muted/50 rounded-lg">
-            <p className="text-xs font-mono text-muted-foreground">{displayStatus}</p>
-          </div>
-        )}
 
         <div className="flex gap-3">
           <Button
