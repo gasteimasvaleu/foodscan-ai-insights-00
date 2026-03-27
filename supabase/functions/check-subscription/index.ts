@@ -63,14 +63,29 @@ serve(async (req) => {
 
     // 🛡️ PROTEÇÃO DEFINITIVA: Se é gerenciado pelo Hotmart, NUNCA sobrescrever
     if (existingSubscription?.is_hotmart_managed) {
-      logStep("🛡️ HOTMART MANAGED SUBSCRIPTION - Skipping Stripe check completely", {
+      const subEnd = existingSubscription.subscription_end 
+        ? new Date(existingSubscription.subscription_end) 
+        : null;
+      const isActive = subEnd ? subEnd > new Date() : false;
+
+      logStep("🛡️ HOTMART MANAGED SUBSCRIPTION", {
         tier: existingSubscription.subscription_tier,
         end: existingSubscription.subscription_end,
-        subscribed: existingSubscription.subscribed
+        subscribed: existingSubscription.subscribed,
+        isActive
       });
+
+      // Se expirou, atualizar no banco
+      if (!isActive && existingSubscription.subscribed) {
+        logStep("⏰ Hotmart subscription expired, marking as inactive");
+        await supabaseClient.from("subscribers").update({
+          subscribed: false,
+          updated_at: new Date().toISOString(),
+        }).eq("user_id", user.id);
+      }
       
       return new Response(JSON.stringify({
-        subscribed: existingSubscription.subscribed,
+        subscribed: isActive,
         subscription_tier: existingSubscription.subscription_tier,
         subscription_end: existingSubscription.subscription_end,
         payment_provider: 'hotmart'
