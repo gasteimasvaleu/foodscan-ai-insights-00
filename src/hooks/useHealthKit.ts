@@ -78,18 +78,29 @@ export const useHealthKit = () => {
   }, [isSupported, getHealthPlugin]);
 
   const requestPermissions = useCallback(async (): Promise<boolean> => {
-    if (!isSupported) return false;
+    console.log('[HealthKit] requestPermissions called, isSupported:', isSupported);
+    if (!isSupported) {
+      console.warn('[HealthKit] Not supported, aborting. isIOS:', isIOS, 'isNative:', isNative);
+      return false;
+    }
     setIsLoading(true);
     try {
+      console.log('[HealthKit] Getting health plugin...');
       const Health = await getHealthPlugin();
-      if (!Health) return false;
-
-      const available = await checkAvailability();
-      if (!available) {
-        console.warn('HealthKit not available on this device');
+      if (!Health) {
+        console.error('[HealthKit] Plugin is null after import');
         return false;
       }
 
+      console.log('[HealthKit] Checking availability...');
+      const available = await checkAvailability();
+      console.log('[HealthKit] Available:', available);
+      if (!available) {
+        console.warn('[HealthKit] HealthKit not available on this device');
+        return false;
+      }
+
+      console.log('[HealthKit] Calling requestAuthorization...');
       await withTimeout(
         Health.requestAuthorization({
           read: ['steps', 'calories', 'weight'],
@@ -97,17 +108,18 @@ export const useHealthKit = () => {
         }),
         15000
       );
+      console.log('[HealthKit] requestAuthorization succeeded!');
 
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
       return true;
     } catch (error) {
-      console.error('Error requesting HealthKit permissions:', error);
+      console.error('[HealthKit] requestPermissions error:', error);
       return false;
     } finally {
       setIsLoading(false);
     }
-  }, [isSupported, getHealthPlugin, checkAvailability]);
+  }, [isSupported, isIOS, isNative, getHealthPlugin, checkAvailability]);
 
   const disconnect = useCallback(() => {
     localStorage.removeItem(HEALTHKIT_CONNECTED_KEY);
