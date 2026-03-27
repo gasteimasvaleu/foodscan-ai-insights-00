@@ -60,6 +60,21 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
     }
   };
 
+  const [deleting, setDeleting] = useState(false);
+  const isOwner = post.user_id === userId;
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error } = await supabase.from("community_posts").delete().eq("id", post.id);
+    setDeleting(false);
+    if (error) {
+      toast({ title: "Erro ao deletar post", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Post deletado com sucesso" });
+      onPostDeleted?.();
+    }
+  };
+
   const authorName = post.profiles?.name || "Usuário";
   const avatarUrl = post.profiles?.avatar_url;
 
