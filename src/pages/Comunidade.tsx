@@ -106,7 +106,8 @@ export default function Comunidade() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
