@@ -6,6 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/Navbar';
 import ReactMarkdown from 'react-markdown';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+type UserContext = {
+  name?: string;
+  calories?: number;
+  proteins?: number;
+  carbohydrates?: number;
+  fats?: number;
+  diet_objective?: string;
+};
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
