@@ -14,6 +14,7 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
   onConnect,
   onDismiss,
   isLoading,
+  debugStatus,
 }) => {
   const [connecting, setConnecting] = useState(false);
 
