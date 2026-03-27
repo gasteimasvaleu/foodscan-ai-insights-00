@@ -52,6 +52,12 @@ const AuthAwareNavbar = () => {
   return <TubelightNavbar items={navItems} />;
 };
 
+const WebOnlyRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isIOS, isNative } = useNativePlatform();
+  if (isNative && isIOS) return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
