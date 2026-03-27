@@ -187,6 +187,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <PortionSelector
             currentPortion={currentPortion}
             onPortionChange={handlePortionChange}
+            initialGrams={initialGrams}
           />
         )}
       </div>
