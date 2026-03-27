@@ -12,6 +12,7 @@ import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2 }
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { RemindersCard } from "@/components/RemindersCard";
 
 
 interface ProfileData {
