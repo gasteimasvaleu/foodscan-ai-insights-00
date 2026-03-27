@@ -47,6 +47,12 @@ const moreSheetItems = [
     url: "/servinutri",
     icon: Apple,
   },
+  {
+    name: "Apple Health",
+    description: "Dados detalhados de saúde e atividade",
+    url: "/apple-health",
+    icon: Heart,
+  },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
