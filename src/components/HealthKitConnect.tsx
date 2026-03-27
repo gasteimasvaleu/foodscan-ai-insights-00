@@ -7,6 +7,7 @@ interface HealthKitConnectProps {
   onConnect: () => Promise<boolean>;
   onDismiss: () => void;
   isLoading: boolean;
+  debugStatus?: string;
 }
 
 export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
