@@ -61,6 +61,38 @@ serve(async (req) => {
       is_hotmart_managed: existingSubscription?.is_hotmart_managed
     });
 
+    // 🍎 PROTEÇÃO APPLE: Se payment_provider é 'apple', validar subscription_end
+    if (existingSubscription?.payment_provider === 'apple') {
+      const subEnd = existingSubscription.subscription_end 
+        ? new Date(existingSubscription.subscription_end) : null;
+      const isActive = subEnd ? subEnd > new Date() : false;
+
+      logStep("🍎 APPLE SUBSCRIPTION", {
+        tier: existingSubscription.subscription_tier,
+        end: existingSubscription.subscription_end,
+        subscribed: existingSubscription.subscribed,
+        isActive
+      });
+
+      if (!isActive && existingSubscription.subscribed) {
+        logStep("⏰ Apple subscription expired, marking as inactive");
+        await supabaseClient.from("subscribers").update({
+          subscribed: false,
+          updated_at: new Date().toISOString(),
+        }).eq("user_id", user.id);
+      }
+
+      return new Response(JSON.stringify({
+        subscribed: isActive,
+        subscription_tier: existingSubscription.subscription_tier,
+        subscription_end: existingSubscription.subscription_end,
+        payment_provider: 'apple'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     // 🛡️ PROTEÇÃO DEFINITIVA: Se é gerenciado pelo Hotmart, NUNCA sobrescrever
     if (existingSubscription?.is_hotmart_managed) {
       const subEnd = existingSubscription.subscription_end 

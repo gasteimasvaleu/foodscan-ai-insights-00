@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNativePlatform } from './useNativePlatform';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 interface UseRevenueCatReturn {
   price: string | null;
@@ -14,7 +16,7 @@ interface UseRevenueCatReturn {
 
 const RC_API_KEY = 'appl_XcPKgINorAUFAGLjSAjImHHPiJD';
 
-export const useRevenueCat = (): UseRevenueCatReturn => {
+export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const { isNative, isIOS } = useNativePlatform();
   const [price, setPrice] = useState<string | null>(null);
   const [hasPurchased, setHasPurchased] = useState(false);
@@ -26,6 +28,33 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
     if (!isNative || !isIOS) return;
     initRevenueCat();
   }, [isNative, isIOS]);
+
+  const syncToSupabase = async (customerInfo: any) => {
+    if (!user?.id || !user?.email) return;
+    
+    try {
+      const entitlements = customerInfo.entitlements?.active;
+      if (!entitlements || Object.keys(entitlements).length === 0) return;
+
+      const firstKey = Object.keys(entitlements)[0];
+      const firstEntitlement = entitlements[firstKey];
+      const expirationDate = firstEntitlement.expirationDate || null;
+
+      await supabase.from('subscribers').upsert({
+        user_id: user.id,
+        email: user.email,
+        subscribed: true,
+        subscription_tier: 'Premium',
+        subscription_end: expirationDate,
+        payment_provider: 'apple',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'email' });
+
+      console.log('[RevenueCat] Synced subscription to Supabase', { expirationDate });
+    } catch (err) {
+      console.error('[RevenueCat] Error syncing to Supabase:', err);
+    }
+  };
 
   const initRevenueCat = async () => {
     try {
@@ -55,6 +84,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       const activeEntitlements = customerInfo.entitlements.active;
       if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
         setHasPurchased(true);
+        await syncToSupabase(customerInfo);
       }
     } catch (err) {
       console.error('Error checking subscription:', err);
@@ -103,8 +133,9 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
         return false;
       }
 
-      await Purchases.purchasePackage({ aPackage: monthlyPackage });
+      const { customerInfo } = await Purchases.purchasePackage({ aPackage: monthlyPackage });
       setHasPurchased(true);
+      await syncToSupabase(customerInfo);
       return true;
     } catch (err: any) {
       if (err?.code === 1) {
@@ -132,6 +163,7 @@ export const useRevenueCat = (): UseRevenueCatReturn => {
       const activeEntitlements = customerInfo.entitlements.active;
       if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
         setHasPurchased(true);
+        await syncToSupabase(customerInfo);
         return true;
       }
       return false;
