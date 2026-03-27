@@ -6,6 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/Navbar';
 import ReactMarkdown from 'react-markdown';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+type UserContext = {
+  name?: string;
+  calories?: number;
+  proteins?: number;
+  carbohydrates?: number;
+  fats?: number;
+  diet_objective?: string;
+};
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -18,11 +28,13 @@ const WELCOME_MESSAGE: Message = {
 
 async function streamChat({
   messages,
+  userContext,
   onDelta,
   onDone,
   onError,
 }: {
   messages: Message[];
+  userContext?: UserContext;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (msg: string) => void;
@@ -33,7 +45,7 @@ async function streamChat({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, userContext }),
   });
 
   if (!resp.ok) {
@@ -107,12 +119,36 @@ const NutriCoach = () => {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userContext, setUserContext] = useState<UserContext | undefined>();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchContext = async () => {
+      const [goalsRes, profileRes] = await Promise.all([
+        supabase.from('daily_goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('profiles').select('name').eq('id', user.id).single(),
+      ]);
+      const goals = goalsRes.data?.[0];
+      const profile = profileRes.data;
+      if (goals || profile) {
+        setUserContext({
+          name: profile?.name,
+          calories: goals?.calories,
+          proteins: goals?.proteins,
+          carbohydrates: goals?.carbohydrates,
+          fats: goals?.fats,
+          diet_objective: goals?.diet_objective,
+        });
+      }
+    };
+    fetchContext();
+  }, [user]);
 
   if (loading) return null;
   if (!user) return <Navigate to="/auth" replace />;
@@ -145,6 +181,7 @@ const NutriCoach = () => {
     try {
       await streamChat({
         messages: historyToSend,
+        userContext,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (msg) => {
