@@ -1,10 +1,22 @@
 import { useState } from "react";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PostCardProps {
   post: {
@@ -21,9 +33,10 @@ interface PostCardProps {
   userId: string;
   userLiked: boolean;
   onLikeToggle: () => void;
+  onPostDeleted?: () => void;
 }
 
-export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProps) {
+export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [liked, setLiked] = useState(userLiked);
@@ -47,6 +60,21 @@ export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProp
     }
   };
 
+  const [deleting, setDeleting] = useState(false);
+  const isOwner = post.user_id === userId;
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error } = await supabase.from("community_posts").delete().eq("id", post.id);
+    setDeleting(false);
+    if (error) {
+      toast({ title: "Erro ao deletar post", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Post deletado com sucesso" });
+      onPostDeleted?.();
+    }
+  };
+
   const authorName = post.profiles?.name || "Usuário";
   const avatarUrl = post.profiles?.avatar_url;
 
@@ -61,12 +89,35 @@ export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProp
             authorName.charAt(0).toUpperCase()
           )}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="font-semibold text-foreground text-sm truncate">{authorName}</p>
           <p className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
           </p>
         </div>
+        {isOwner && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" disabled={deleting}>
+                <Trash2 size={16} />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Deletar publicação?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. O post e todos os comentários e curtidas serão removidos.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Deletar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
 
       {/* Description */}

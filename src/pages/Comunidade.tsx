@@ -107,6 +107,7 @@ export default function Comunidade() {
                 userId={user.id}
                 userLiked={userLikes.has(post.id)}
                 onLikeToggle={fetchUserLikes}
+                onPostDeleted={fetchPosts}
               />
             ))}
           </div>
