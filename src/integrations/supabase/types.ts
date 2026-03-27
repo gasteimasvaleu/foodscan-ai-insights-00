@@ -492,8 +492,6 @@ export type Database = {
           created_user_id: string | null
           email: string
           expires_at: string
-          hotmart_product_id: string
-          hotmart_transaction_id: string
           id: string
           is_used: boolean
           name: string
@@ -508,8 +506,6 @@ export type Database = {
           created_user_id?: string | null
           email: string
           expires_at: string
-          hotmart_product_id: string
-          hotmart_transaction_id: string
           id?: string
           is_used?: boolean
           name: string
@@ -524,8 +520,6 @@ export type Database = {
           created_user_id?: string | null
           email?: string
           expires_at?: string
-          hotmart_product_id?: string
-          hotmart_transaction_id?: string
           id?: string
           is_used?: boolean
           name?: string
@@ -541,11 +535,8 @@ export type Database = {
         Row: {
           created_at: string
           email: string
-          hotmart_transaction_id: string | null
           id: string
-          is_hotmart_managed: boolean | null
           payment_provider: string | null
-          stripe_customer_id: string | null
           subscribed: boolean
           subscription_end: string | null
           subscription_tier: string | null
@@ -555,11 +546,8 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
-          hotmart_transaction_id?: string | null
           id?: string
-          is_hotmart_managed?: boolean | null
           payment_provider?: string | null
-          stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_tier?: string | null
@@ -569,11 +557,8 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
-          hotmart_transaction_id?: string | null
           id?: string
-          is_hotmart_managed?: boolean | null
           payment_provider?: string | null
-          stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_tier?: string | null
