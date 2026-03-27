@@ -31,11 +31,14 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
   onPortionsChange
 }) => {
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>(
-    elements.map(element => ({
-      elementName: element.name,
-      portion: '',
-      grams: 100
-    }))
+    elements.map(element => {
+      const estimatedGrams = element.estimated_grams || 100;
+      return {
+        elementName: element.name,
+        portion: `${estimatedGrams}g`,
+        grams: estimatedGrams
+      };
+    })
   );
 
   const updateElementPortion = (elementIndex: number, portion: string, grams: number) => {

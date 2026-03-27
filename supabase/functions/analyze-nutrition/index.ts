@@ -87,10 +87,11 @@ Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada)
 {
   "foodName": "Nome do prato completo",
   "description": "Descrição do prato",
-  "quantity": "Porção típica do prato completo",
+  "quantity": "Porção típica do prato completo (ex: 1 prato médio ~450g)",
   "elements": [
     {
       "name": "Nome do elemento 1",
+      "estimated_grams": estimativa_visual_em_gramas,
       "nutrition": {
         "calories": valor_por_100g,
         "carbohydrates": valor_por_100g,
@@ -102,7 +103,7 @@ Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada)
     }
   ],
   "nutrition": {
-    "calories": soma_total,
+    "calories": soma_total_considerando_estimated_grams,
     "carbohydrates": soma_total,
     "proteins": soma_total,
     "fats": soma_total,
@@ -115,18 +116,21 @@ Se for UM elemento único, use o formato:
 {
   "foodName": "Nome específico do alimento",
   "description": "Descrição nutricional",
-  "quantity": "Porção típica",
+  "quantity": "Porção típica com estimativa de gramas (ex: 1 fatia ~80g, 1 prato médio ~250g)",
   "nutrition": {
-    "calories": número_por_porção,
-    "carbohydrates": gramas_por_porção,
-    "proteins": gramas_por_porção,
-    "fats": gramas_por_porção,
-    "fiber": gramas_por_porção,
-    "sodium": miligramas_por_porção
+    "calories": número_por_100g,
+    "carbohydrates": gramas_por_100g,
+    "proteins": gramas_por_100g,
+    "fats": gramas_por_100g,
+    "fiber": gramas_por_100g,
+    "sodium": miligramas_por_100g
   }
 }
 
-IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`;
+IMPORTANTE: 
+- Para múltiplos elementos, estime visualmente os gramas de cada elemento no prato (ex: arroz ~150g, feijão ~100g, carne ~120g) e preencha o campo "estimated_grams".
+- Os valores nutricionais de cada elemento devem ser por 100g para permitir ajuste manual.
+- O campo "quantity" deve SEMPRE conter uma estimativa de gramas baseada na análise visual (ex: "1 prato médio ~350g").`;
 
     const nutritionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

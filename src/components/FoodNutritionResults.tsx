@@ -15,28 +15,37 @@ interface FoodNutritionResultsProps {
   onReset: () => void;
 }
 
+// Extrair gramas de uma string como "1 prato médio ~350g" ou "350g"
+const extractGramsFromQuantity = (quantity: string): number | null => {
+  const match = quantity.match(/~?\s*(\d+)\s*g/i);
+  return match ? parseInt(match[1]) : null;
+};
+
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [currentPortion, setCurrentPortion] = useState<string>('');
-  const [portionGrams, setPortionGrams] = useState<number>(100);
+  
+  // Extrair gramas iniciais da estimativa da IA
+  const initialGrams = data.quantity ? extractGramsFromQuantity(data.quantity) || 100 : 100;
+  
+  const [currentPortion, setCurrentPortion] = useState<string>(data.quantity || '');
+  const [portionGrams, setPortionGrams] = useState<number>(initialGrams);
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const hasMultipleElements = data.elements && data.elements.length > 1;
-  
-  console.log("=== FOODNUTRITIONRESULTS DEBUG ===");
-  console.log("data.elements:", data.elements);  
-  console.log("hasMultipleElements:", hasMultipleElements);
 
-  // Inicializar porções padrão para elementos múltiplos (100g cada)
+  // Inicializar porções para elementos múltiplos usando estimated_grams da IA
   useEffect(() => {
     if (hasMultipleElements && data.elements && elementPortions.length === 0) {
-      const defaultPortions: ElementPortion[] = data.elements.map(element => ({
-        elementName: element.name,
-        portion: '100g',
-        grams: 100
-      }));
+      const defaultPortions: ElementPortion[] = data.elements.map(element => {
+        const estimatedGrams = element.estimated_grams || 100;
+        return {
+          elementName: element.name,
+          portion: `${estimatedGrams}g`,
+          grams: estimatedGrams
+        };
+      });
       setElementPortions(defaultPortions);
     }
   }, [hasMultipleElements, data.elements, elementPortions.length]);
@@ -162,7 +171,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
             <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-800">
               <p className="font-medium mb-1">Múltiplos elementos identificados</p>
-              <p>Os valores nutricionais são calculados com base em 100g de cada elemento. Você pode ajustar as porções individuais no card abaixo para obter valores mais precisos.</p>
+              <p>As porções foram estimadas visualmente pela IA. Você pode ajustar as porções individuais abaixo para obter valores mais precisos.</p>
             </div>
           </div>
         </div>
@@ -178,6 +187,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           <PortionSelector
             currentPortion={currentPortion}
             onPortionChange={handlePortionChange}
+            initialGrams={initialGrams}
           />
         )}
       </div>
