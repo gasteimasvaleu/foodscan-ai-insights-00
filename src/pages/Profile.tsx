@@ -195,7 +195,7 @@ export default function Profile() {
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <CardTitle className="text-3xl mb-2">{profile?.name}</CardTitle>
+                <CardTitle className="text-xl mb-2 truncate">{profile?.name}</CardTitle>
                 <CardDescription className="text-base">{user?.email}</CardDescription>
                 <p className="text-sm text-muted-foreground mt-1">Membro desde {memberSince}</p>
                 <Dialog>
