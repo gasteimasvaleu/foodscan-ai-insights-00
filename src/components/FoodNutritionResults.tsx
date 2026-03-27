@@ -15,28 +15,37 @@ interface FoodNutritionResultsProps {
   onReset: () => void;
 }
 
+// Extrair gramas de uma string como "1 prato médio ~350g" ou "350g"
+const extractGramsFromQuantity = (quantity: string): number | null => {
+  const match = quantity.match(/~?\s*(\d+)\s*g/i);
+  return match ? parseInt(match[1]) : null;
+};
+
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [currentPortion, setCurrentPortion] = useState<string>('');
-  const [portionGrams, setPortionGrams] = useState<number>(100);
+  
+  // Extrair gramas iniciais da estimativa da IA
+  const initialGrams = data.quantity ? extractGramsFromQuantity(data.quantity) || 100 : 100;
+  
+  const [currentPortion, setCurrentPortion] = useState<string>(data.quantity || '');
+  const [portionGrams, setPortionGrams] = useState<number>(initialGrams);
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const hasMultipleElements = data.elements && data.elements.length > 1;
-  
-  console.log("=== FOODNUTRITIONRESULTS DEBUG ===");
-  console.log("data.elements:", data.elements);  
-  console.log("hasMultipleElements:", hasMultipleElements);
 
-  // Inicializar porções padrão para elementos múltiplos (100g cada)
+  // Inicializar porções para elementos múltiplos usando estimated_grams da IA
   useEffect(() => {
     if (hasMultipleElements && data.elements && elementPortions.length === 0) {
-      const defaultPortions: ElementPortion[] = data.elements.map(element => ({
-        elementName: element.name,
-        portion: '100g',
-        grams: 100
-      }));
+      const defaultPortions: ElementPortion[] = data.elements.map(element => {
+        const estimatedGrams = (element as any).estimated_grams || 100;
+        return {
+          elementName: element.name,
+          portion: `${estimatedGrams}g`,
+          grams: estimatedGrams
+        };
+      });
       setElementPortions(defaultPortions);
     }
   }, [hasMultipleElements, data.elements, elementPortions.length]);
