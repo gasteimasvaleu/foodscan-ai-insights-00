@@ -29,6 +29,7 @@ export const useHealthKit = () => {
   const { isIOS, isNative } = useNativePlatform();
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [debugStatus, setDebugStatus] = useState<string>('idle');
   const [dailySteps, setDailySteps] = useState<number>(0);
   const [dailyCalories, setDailyCalories] = useState<number>(0);
   const [weight, setWeight] = useState<number | null>(null);
