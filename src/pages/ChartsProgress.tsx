@@ -37,6 +37,7 @@ interface CalorieBalanceData {
 export default function ChartsProgress() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isConnected: hkConnected, getWeeklyData: getHKWeeklyData } = useHealthKit();
   const [stats, setStats] = useState<Stats>({ totalMeals: 0, totalCaloriesBurned: 0, totalExercises: 0, activeDays: 0 });
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
   const [calorieBalanceData, setCalorieBalanceData] = useState<CalorieBalanceData[]>([]);
