@@ -207,7 +207,7 @@ const NutriCoach = () => {
       <Navbar />
       <div className="flex-1 flex flex-col pt-16 max-w-3xl mx-auto w-full">
         {/* Messages area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-4">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-56 space-y-4">
           {messages.map((msg, i) => (
             <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
