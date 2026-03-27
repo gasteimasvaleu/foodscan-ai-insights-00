@@ -31,9 +31,8 @@ import MyDiets from "./pages/MyDiets";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import Receitas from "./pages/Receitas";
-
+// QueryClient instance
 const queryClient = new QueryClient();
-
 const navItems = [
   { name: 'Home', url: '/', icon: Home },
   { name: 'FoodScan', url: '/foodscan', icon: Scan },
