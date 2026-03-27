@@ -102,7 +102,7 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
                 <Trash2 size={16} />
               </button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
               <AlertDialogHeader>
                 <AlertDialogTitle>Deletar publicação?</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -110,8 +110,8 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-primary hover:bg-primary/90 text-white rounded-xl">
                   Deletar
                 </AlertDialogAction>
               </AlertDialogFooter>
