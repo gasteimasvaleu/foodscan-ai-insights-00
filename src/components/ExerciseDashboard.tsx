@@ -14,7 +14,11 @@ interface ExerciseStats {
   currentStreak: number;
 }
 
-export function ExerciseDashboard() {
+interface ExerciseDashboardProps {
+  healthKitCalories?: number;
+}
+
+export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardProps) {
   const { user } = useAuth();
   const [stats, setStats] = useState<ExerciseStats>({
     todayCalories: 0,
@@ -118,6 +122,8 @@ export function ExerciseDashboard() {
     );
   }
 
+  const totalTodayCalories = stats.todayCalories + healthKitCalories;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 animate-fade-in group">
@@ -126,9 +132,14 @@ export function ExerciseDashboard() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Hoje</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold text-[#FD46A1]">{stats.todayCalories}</p>
+                <p className="text-3xl font-bold text-[#FD46A1]">{totalTodayCalories}</p>
                 <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">cal</Badge>
               </div>
+              {healthKitCalories > 0 && (
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {stats.todayCalories} app + {healthKitCalories} Apple Health
+                </p>
+              )}
             </div>
             <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
               <Flame className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />

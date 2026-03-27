@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, BarChart3 } from "lucide-react";
+import { Activity, BarChart3, Heart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
@@ -12,11 +12,13 @@ import { HealthKitDashboard } from "@/components/HealthKitDashboard";
 import { useHealthKit } from "@/hooks/useHealthKit";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
+import { useNavigate } from "react-router-dom";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 
 export default function FitTracker() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [promptDismissed, setPromptDismissed] = useState(
     () => localStorage.getItem(HEALTHKIT_DISMISSED_KEY) === 'true'
@@ -127,16 +129,26 @@ export default function FitTracker() {
 
             <TabsContent value="dashboard" className="space-y-6">
               {isConnected && (
-                <HealthKitDashboard
-                  dailySteps={dailySteps}
-                  dailyCalories={dailyCalories}
-                  weight={weight}
-                  isLoading={hkLoading}
-                  onRefresh={refreshData}
-                  onDisconnect={handleDisconnect}
-                />
+                <>
+                  <HealthKitDashboard
+                    dailySteps={dailySteps}
+                    dailyCalories={dailyCalories}
+                    weight={weight}
+                    isLoading={hkLoading}
+                    onRefresh={refreshData}
+                    onDisconnect={handleDisconnect}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/apple-health')}
+                    className="w-full rounded-xl border-primary/30 text-[#FD46A1] hover:bg-primary/5"
+                  >
+                    <Heart className="w-4 h-4 mr-2" fill="currentColor" />
+                    Ver detalhes Apple Health
+                  </Button>
+                </>
               )}
-              <ExerciseDashboard key={refreshTrigger} />
+              <ExerciseDashboard key={refreshTrigger} healthKitCalories={isConnected ? dailyCalories : 0} />
             </TabsContent>
 
             <TabsContent value="history" className="space-y-6">
