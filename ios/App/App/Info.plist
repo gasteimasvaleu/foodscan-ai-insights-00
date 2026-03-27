@@ -57,5 +57,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>O We Diet precisa acessar seus dados de saúde para sincronizar passos, calorias queimadas e peso do Apple Health com seu perfil nutricional</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>O We Diet precisa gravar dados no Apple Health para registrar suas calorias consumidas e manter seu histórico de saúde atualizado</string>
 </dict>
 </plist>
