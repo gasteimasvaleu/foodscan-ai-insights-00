@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
-import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Plus } from "lucide-react";
+import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, MessageCircle, Plus } from "lucide-react";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
@@ -34,6 +34,7 @@ import TermsOfUse from "./pages/TermsOfUse";
 import Receitas from "./pages/Receitas";
 import Comunidade from "./pages/Comunidade";
 import ChartsProgress from "./pages/ChartsProgress";
+import NutriCoach from "./pages/NutriCoach";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
@@ -43,6 +44,7 @@ const navItems = [
   { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
   { name: 'Treinos', url: '/treinos', icon: Dumbbell },
   { name: 'MasterChef', url: '/masterchef', icon: ChefHat },
+  { name: 'NutriCoach', url: '/nutri-coach', icon: MessageCircle },
   { name: 'Mais', url: '#more', icon: Plus }
 ];
 
@@ -84,6 +86,7 @@ const App = () => (
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/receitas" element={<Receitas />} />
           <Route path="/comunidade" element={<Comunidade />} />
+          <Route path="/nutri-coach" element={<NutriCoach />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
