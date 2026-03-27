@@ -46,10 +46,14 @@ export const useHealthKit = () => {
 
   const getHealthPlugin = useCallback(async () => {
     try {
-      const { Health } = await import('@capgo/capacitor-health');
+      console.log('[HealthKit] Attempting dynamic import of @capgo/capacitor-health...');
+      const module = await import('@capgo/capacitor-health');
+      console.log('[HealthKit] Import successful, module keys:', Object.keys(module));
+      const { Health } = module;
+      console.log('[HealthKit] Health plugin object:', Health);
       return Health;
-    } catch {
-      console.warn('HealthKit plugin not available');
+    } catch (error) {
+      console.error('[HealthKit] Failed to import plugin:', error);
       return null;
     }
   }, []);
