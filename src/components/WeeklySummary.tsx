@@ -314,7 +314,56 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
           )}
         </div>
 
-        {/* Médias semanais */}
+        {/* Refeições do dia selecionado */}
+        {dayMeals.length > 0 && (
+          <div className="bg-gray-50 rounded-2xl p-4">
+            <h4 className="text-base font-semibold text-gray-800 mb-3 text-center">
+              Refeições de {selectedDayName.full}
+            </h4>
+            <div className="space-y-3">
+              {dayMeals.map((meal) => (
+                <div key={meal.id} className="bg-white rounded-xl p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h5 className="text-sm font-semibold text-gray-800 truncate flex-1">
+                      {meal.food_name}
+                    </h5>
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {formatMealTime(meal.meal_time)}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-2">Porção: {meal.portion}</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.calories}</div>
+                      <div className="text-[10px] text-gray-500">kcal</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.carbohydrates}g</div>
+                      <div className="text-[10px] text-gray-500">Carb</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.proteins}g</div>
+                      <div className="text-[10px] text-gray-500">Prot</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.fats}g</div>
+                      <div className="text-[10px] text-gray-500">Gord</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isLoadingMeals && (
+          <div className="text-center py-4">
+            <div className="animate-pulse text-sm text-gray-500">Carregando refeições...</div>
+          </div>
+        )}
+
+
         {weeklyData.length > 0 && (
           <div className="bg-[#F9FAFB] rounded-2xl p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
