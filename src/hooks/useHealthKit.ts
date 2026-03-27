@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNativePlatform } from './useNativePlatform';
+import { Health } from '@capgo/capacitor-health';
 
 const HEALTHKIT_CONNECTED_KEY = 'healthkit_connected';
-const BUILD_ID = 'HK-BUILD-2026-03-27-B';
+const BUILD_ID = 'HK-BUILD-2026-03-27-C';
 
 export interface WeeklyDataPoint {
   date: string;
@@ -37,11 +38,13 @@ export const useHealthKit = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [weeklyData, setWeeklyData] = useState<WeeklyDataPoint[]>([]);
   const [recentWorkouts, setRecentWorkouts] = useState<RecentWorkout[]>([]);
-  const pluginRef = useRef<any>(null);
 
   const isSupported = isIOS && isNative;
 
-  console.log(`[HealthKit] ${BUILD_ID} | isIOS:${isIOS} isNative:${isNative} isSupported:${isSupported}`);
+  // Log only once per mount cycle, not every render
+  useEffect(() => {
+    console.log(`[HealthKit] ${BUILD_ID} | isIOS:${isIOS} isNative:${isNative} isSupported:${isSupported}`);
+  }, [isIOS, isNative, isSupported]);
 
   useEffect(() => {
     const stored = localStorage.getItem(HEALTHKIT_CONNECTED_KEY);
@@ -50,56 +53,44 @@ export const useHealthKit = () => {
     }
   }, [isSupported]);
 
-  const getHealthPlugin = useCallback(async () => {
-    if (pluginRef.current) return pluginRef.current;
-    try {
-      console.log('[HealthKit] Importing @capgo/capacitor-health...');
-      const module = await import('@capgo/capacitor-health');
-      const { Health } = module;
-      console.log('[HealthKit] Import OK. Health typeof:', typeof Health);
-      console.log('[HealthKit] Methods: isAvailable=', typeof Health?.isAvailable, 'requestAuthorization=', typeof Health?.requestAuthorization);
-      pluginRef.current = Health;
-      return Health;
-    } catch (error) {
-      console.error('[HealthKit] Import FAILED:', String(error));
-      return null;
-    }
-  }, []);
-
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     console.log('[HealthKit] === requestPermissions START ===');
-    setDebugStatus('importando plugin...');
+
     if (!isSupported) {
       const msg = `Não suportado (isIOS=${isIOS}, isNative=${isNative})`;
       console.warn('[HealthKit]', msg);
       setDebugStatus(msg);
       return false;
     }
-    setIsLoading(true);
-    try {
-      const Health = await getHealthPlugin();
-      if (!Health) {
-        setDebugStatus('ERRO: plugin não carregou');
-        return false;
-      }
 
-      // isAvailable — 8s timeout
+    setIsLoading(true);
+    setDebugStatus('carregando bridge...');
+
+    try {
+      // Step 1: Ping the native bridge to confirm it's alive
+      console.log('[HealthKit] >>> Health object type:', typeof Health);
+      console.log('[HealthKit] >>> Health keys:', Object.keys(Health || {}));
+
+      // Step 2: isAvailable — 10s timeout
       setDebugStatus('verificando disponibilidade...');
       console.log('[HealthKit] >>> Health.isAvailable()');
       try {
-        const availResult: any = await withTimeout(Health.isAvailable(), 8000, 'isAvailable');
-        console.log('[HealthKit] <<< isAvailable:', JSON.stringify(availResult));
+        const availResult: any = await withTimeout(Health.isAvailable(), 10000, 'isAvailable');
+        console.log('[HealthKit] <<< isAvailable result:', JSON.stringify(availResult));
         if (!availResult?.available) {
-          setDebugStatus('HealthKit não disponível neste dispositivo');
+          setDebugStatus('HealthKit indisponível neste dispositivo');
           return false;
         }
       } catch (err: any) {
-        console.error('[HealthKit] isAvailable error:', err?.message || String(err));
-        setDebugStatus(`Erro disponibilidade: ${err?.message || String(err)}`);
+        const errMsg = err?.message || String(err);
+        console.error('[HealthKit] isAvailable error:', errMsg);
+        setDebugStatus(`timeout/erro disponibilidade: ${errMsg}`);
         return false;
       }
 
-      // requestAuthorization — 15s timeout (iOS dialog can take time)
+      setDebugStatus('plugin nativo respondeu ✓');
+
+      // Step 3: requestAuthorization — 20s timeout (iOS dialog can take time)
       setDebugStatus('solicitando permissão...');
       console.log('[HealthKit] >>> Health.requestAuthorization()');
       try {
@@ -108,13 +99,14 @@ export const useHealthKit = () => {
             read: ['steps', 'calories', 'weight'],
             write: ['calories'],
           }),
-          15000,
+          20000,
           'requestAuthorization'
         );
-        console.log('[HealthKit] <<< requestAuthorization:', JSON.stringify(authResult));
+        console.log('[HealthKit] <<< requestAuthorization result:', JSON.stringify(authResult));
       } catch (err: any) {
-        console.error('[HealthKit] requestAuthorization error:', err?.message || String(err));
-        setDebugStatus(`Erro permissão: ${err?.message || String(err)}`);
+        const errMsg = err?.message || String(err);
+        console.error('[HealthKit] requestAuthorization error:', errMsg);
+        setDebugStatus(`timeout/erro autorização: ${errMsg}`);
         return false;
       }
 
@@ -124,13 +116,14 @@ export const useHealthKit = () => {
       console.log('[HealthKit] === requestPermissions SUCCESS ===');
       return true;
     } catch (error: any) {
-      console.error('[HealthKit] Unexpected error:', error?.message || String(error));
-      setDebugStatus(`ERRO: ${error?.message || String(error)}`);
+      const errMsg = error?.message || String(error);
+      console.error('[HealthKit] Unexpected error:', errMsg);
+      setDebugStatus(`ERRO: ${errMsg}`);
       return false;
     } finally {
       setIsLoading(false);
     }
-  }, [isSupported, isIOS, isNative, getHealthPlugin]);
+  }, [isSupported, isIOS, isNative]);
 
   const disconnect = useCallback(() => {
     localStorage.removeItem(HEALTHKIT_CONNECTED_KEY);
@@ -145,8 +138,6 @@ export const useHealthKit = () => {
   const getDailySteps = useCallback(async (): Promise<number> => {
     if (!isConnected || !isSupported) return 0;
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return 0;
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const result = await Health.queryAggregated({
@@ -163,13 +154,11 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error reading steps:', error);
       return 0;
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const getDailyActiveCalories = useCallback(async (): Promise<number> => {
     if (!isConnected || !isSupported) return 0;
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return 0;
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const result = await Health.queryAggregated({
@@ -186,13 +175,11 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error reading calories:', error);
       return 0;
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const getWeight = useCallback(async (): Promise<number | null> => {
     if (!isConnected || !isSupported) return null;
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return null;
       const now = new Date();
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       const result = await Health.readSamples({
@@ -213,13 +200,11 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error reading weight:', error);
       return null;
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const saveMealCalories = useCallback(async (calories: number): Promise<boolean> => {
     if (!isConnected || !isSupported || calories <= 0) return false;
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return false;
       const now = new Date().toISOString();
       await Health.saveSample({
         dataType: 'calories',
@@ -233,13 +218,11 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error saving meal:', error);
       return false;
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const getWeeklyData = useCallback(async (): Promise<WeeklyDataPoint[]> => {
     if (!isConnected || !isSupported) return [];
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return [];
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000);
       sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -286,13 +269,11 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error reading weekly data:', error);
       return [];
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const getRecentWorkouts = useCallback(async (): Promise<RecentWorkout[]> => {
     if (!isConnected || !isSupported) return [];
     try {
-      const Health = await getHealthPlugin();
-      if (!Health) return [];
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const result = await Health.readSamples({
@@ -315,7 +296,7 @@ export const useHealthKit = () => {
       console.error('[HealthKit] Error reading workouts:', error);
       return [];
     }
-  }, [isConnected, isSupported, getHealthPlugin]);
+  }, [isConnected, isSupported]);
 
   const refreshData = useCallback(async () => {
     if (!isConnected || !isSupported) return;

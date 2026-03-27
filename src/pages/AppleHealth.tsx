@@ -44,6 +44,7 @@ export default function AppleHealth() {
     isSupported,
     isConnected,
     isLoading,
+    debugStatus,
     dailySteps,
     dailyCalories,
     weight,
