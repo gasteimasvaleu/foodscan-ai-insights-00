@@ -73,7 +73,5 @@ export const useSubscription = (user: any) => {
     subscriptionStatus,
     loading,
     checkSubscription,
-    createCheckout,
-    openCustomerPortal,
   };
 };

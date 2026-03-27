@@ -45,8 +45,8 @@ const Index = () => {
         </div>
       </div>
       
-      <PWAInstallPrompt />
-      <PWAOfflineIndicator />
+
+
     </>;
 };
 export default Index;

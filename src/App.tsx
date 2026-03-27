@@ -83,8 +83,8 @@ const App = () => (
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/payment-success" element={<WebOnlyRoute><PaymentSuccess /></WebOnlyRoute>} />
-          <Route path="/payment-cancel" element={<WebOnlyRoute><PaymentCancel /></WebOnlyRoute>} />
+
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
