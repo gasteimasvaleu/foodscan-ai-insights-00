@@ -80,7 +80,7 @@ const App = () => (
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
-          <Route path="/admin/notificacoes" element={<AdminNotifications />} />
+          
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
 

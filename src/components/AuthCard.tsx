@@ -85,7 +85,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </h3>
           </CardContent>
         </Card>
-        <PushNotificationSetup ref={pushNotificationRef} />
+        
       </>
     );
   }

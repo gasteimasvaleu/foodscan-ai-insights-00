@@ -305,8 +305,6 @@ export default function Profile() {
             </Card>
           )}
 
-          {/* Notificações Push */}
-          <NotificationSettings />
 
           {/* Configurações */}
           <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl mt-6">
