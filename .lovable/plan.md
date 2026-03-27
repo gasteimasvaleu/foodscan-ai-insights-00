@@ -1,20 +1,17 @@
 
 
-## Criar página Receitas e adicionar ao menu "+"
+## Adicionar botão de deletar refeição no Resumo Semanal
 
-### Mudanças
+### Mudança
 
-**1. `src/pages/Receitas.tsx`** — Nova página
-- Estrutura padrão: `Navbar`, `AuthCard`, proteção por auth
-- Página inicial com título "Receitas", busca de receitas salvas do Supabase (tabela `saved_recipes` se existir, ou começar com estado vazio/placeholder)
-- Cards de receitas com nome, tempo de preparo, calorias
-- Estilo consistente com o app (rounded-2xl, cores rosa)
-- Placeholder/empty state com ícone `UtensilsCrossed` e mensagem "Nenhuma receita salva ainda"
+**`src/components/WeeklySummary.tsx`**:
 
-**2. `src/App.tsx`** — Adicionar rota
-- Import da página `Receitas`
-- Rota: `<Route path="/receitas" element={<Receitas />} />`
-
-**3. `src/components/ui/tubelight-navbar.tsx`** — Adicionar ao bottom sheet
-- Adicionar item "Receitas" ao array `moreSheetItems` com ícone `UtensilsCrossed`, descrição "Suas receitas favoritas", url `/receitas`
+1. Importar `Trash2` do lucide-react
+2. Criar função `handleDeleteMeal(mealId)` que:
+   - Deleta o registro da tabela `meal_records` no Supabase
+   - Recarrega as refeições do dia (`loadDayMeals`) e os dados semanais (`loadWeeklyData`)
+   - Exibe toast de sucesso/erro
+3. Adicionar botão com ícone `Trash2` no canto superior direito de cada card de refeição (ao lado do badge de horário)
+   - Estilo: botão ghost pequeno, cor vermelha no hover
+   - Confirmação implícita pelo clique (ou um confirm() simples para evitar exclusões acidentais)
 
