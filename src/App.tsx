@@ -30,6 +30,7 @@ import PhysicalAssessment from "./pages/PhysicalAssessment";
 import MyDiets from "./pages/MyDiets";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
+import Receitas from "./pages/Receitas";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="/servinutri" element={<ServiNUTRI />} />
+          <Route path="/receitas" element={<Receitas />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
