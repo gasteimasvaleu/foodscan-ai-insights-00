@@ -52,18 +52,14 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-0" aria-describedby={undefined}>
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-y-auto p-0" aria-describedby={undefined}>
         {loading ? (
-          <div className="p-6 space-y-4">
+          <div className="flex flex-col items-center justify-center p-12 min-h-[300px] space-y-4">
             <DialogHeader>
               <DialogTitle className="sr-only">Carregando receita</DialogTitle>
             </DialogHeader>
-            <Skeleton className="w-full h-48 rounded-lg" />
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <div className="grid grid-cols-4 gap-2">
-              {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-16" />)}
-            </div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+            <p className="text-primary font-medium animate-pulse">Traduzindo receita...</p>
           </div>
         ) : recipe ? (
           <>
