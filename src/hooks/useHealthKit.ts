@@ -3,6 +3,14 @@ import { useNativePlatform } from './useNativePlatform';
 
 const HEALTHKIT_CONNECTED_KEY = 'healthkit_connected';
 
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('HealthKit timeout')), ms)
+    ),
+  ]);
+
 export const useHealthKit = () => {
   const { isIOS, isNative } = useNativePlatform();
   const [isConnected, setIsConnected] = useState(false);
