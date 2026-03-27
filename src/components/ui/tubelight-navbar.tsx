@@ -18,6 +18,12 @@ interface NavBarProps {
 
 const moreSheetItems = [
   {
+    name: "Comunidade",
+    description: "Compartilhe sua jornada fitness",
+    url: "/comunidade",
+    icon: Users,
+  },
+  {
     name: "Receitas",
     description: "Suas receitas favoritas",
     url: "/receitas",
