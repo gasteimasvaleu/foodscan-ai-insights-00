@@ -236,33 +236,33 @@ export default function Profile() {
               <CardDescription className="text-center">Acesse suas ferramentas de acompanhamento</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div
-                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-row items-center gap-4 py-4 px-5 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/workout")}
                 >
-                  <Dumbbell className="h-8 w-8 text-pink-500" />
-                  <div className="text-center">
+                  <Dumbbell className="h-8 w-8 text-pink-500 shrink-0" />
+                  <div>
                     <p className="font-semibold">Ficha de Treino</p>
                     <p className="text-xs text-muted-foreground">Monte seu treino semanal</p>
                   </div>
                 </div>
                 <div
-                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-row items-center gap-4 py-4 px-5 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/assessment")}
                 >
-                  <ClipboardList className="h-8 w-8 text-pink-500" />
-                  <div className="text-center">
+                  <ClipboardList className="h-8 w-8 text-pink-500 shrink-0" />
+                  <div>
                     <p className="font-semibold">Avaliação Física</p>
                     <p className="text-xs text-muted-foreground">Registre suas medidas</p>
                   </div>
                 </div>
                 <div
-                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
+                  className="bg-[#F9FAFB] rounded-2xl flex flex-row items-center gap-4 py-4 px-5 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/diets")}
                 >
-                  <Salad className="h-8 w-8 text-pink-500" />
-                  <div className="text-center">
+                  <Salad className="h-8 w-8 text-pink-500 shrink-0" />
+                  <div>
                     <p className="font-semibold">Minhas Dietas</p>
                     <p className="text-xs text-muted-foreground">Monte sua dieta</p>
                   </div>
