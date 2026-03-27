@@ -113,6 +113,23 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
     });
   };
 
+  const handleDeleteMeal = async (mealId: string) => {
+    if (!confirm('Tem certeza que deseja excluir esta refeição?')) return;
+    try {
+      const { error } = await supabase
+        .from('meal_records')
+        .delete()
+        .eq('id', mealId);
+      if (error) throw error;
+      toast({ title: 'Refeição excluída com sucesso' });
+      loadDayMeals(selectedDay);
+      loadWeeklyData();
+    } catch (error) {
+      console.error('Erro ao excluir refeição:', error);
+      toast({ title: 'Erro ao excluir refeição', variant: 'destructive' });
+    }
+  };
+
   const loadWeeklyData = async () => {
     if (!user) return;
 
