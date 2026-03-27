@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Link, useLocation } from "react-router-dom"
-import { LucideIcon } from "lucide-react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { LucideIcon, Apple, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 
 interface NavItem {
   name: string
@@ -15,10 +16,21 @@ interface NavBarProps {
   className?: string
 }
 
+const moreSheetItems = [
+  {
+    name: "ServiNUTRI",
+    description: "Rede de nutricionistas",
+    url: "/servinutri",
+    icon: Apple,
+  },
+]
+
 export function TubelightNavbar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name)
   const [isMobile, setIsMobile] = useState(false)
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,64 +43,127 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   }, [])
 
   useEffect(() => {
-    // Update active tab based on current route
     const currentItem = items.find(item => item.url === location.pathname)
     if (currentItem) {
       setActiveTab(currentItem.name)
     }
   }, [location.pathname, items])
 
-  return (
-    <div
-      className={cn(
-        "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
-        className,
-      )}
-    >
-      {/* Faixa decorativa atrás do menu */}
-      <div className="absolute -inset-x-6 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
-      <div className="flex items-center gap-2 sm:gap-3 bg-[#FA1690]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-none">
-        {items.map((item) => {
-          const Icon = item.icon
-          const isActive = location.pathname === item.url
+  const handleItemClick = (item: NavItem, e: React.MouseEvent) => {
+    if (item.url === "#more") {
+      e.preventDefault()
+      setMoreSheetOpen(true)
+    } else {
+      setActiveTab(item.name)
+    }
+  }
 
-          return (
-            <Link
-              key={item.name}
-              to={item.url}
-              onClick={() => setActiveTab(item.name)}
-              className={cn(
-                "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
-                "text-white/80 hover:text-white",
-                isActive && "bg-white/20 text-white",
-              )}
-            >
-              <span className="hidden md:inline">{item.name}</span>
-              <span className="md:hidden">
-                <Icon size={26} strokeWidth={2.5} />
-              </span>
-              {isActive && (
-                <motion.div
-                  layoutId="lamp"
-                  className="absolute inset-0 w-full bg-white/10 rounded-2xl -z-10"
-                  initial={false}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                >
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-full">
-                    <div className="absolute w-12 h-6 bg-white/30 rounded-full blur-md -top-2 -left-2" />
-                    <div className="absolute w-8 h-6 bg-white/30 rounded-full blur-md -top-1" />
-                    <div className="absolute w-4 h-4 bg-white/20 rounded-full blur-sm top-0 left-2" />
-                  </div>
-                </motion.div>
-              )}
-            </Link>
-          )
-        })}
+  const handleSheetNavigate = (url: string) => {
+    setMoreSheetOpen(false)
+    navigate(url)
+  }
+
+  return (
+    <>
+      <div
+        className={cn(
+          "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
+          className,
+        )}
+      >
+        <div className="absolute -inset-x-6 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
+        <div className="flex items-center gap-2 sm:gap-3 bg-[#FA1690]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-none">
+          {items.map((item) => {
+            const Icon = item.icon
+            const isMore = item.url === "#more"
+            const isActive = !isMore && location.pathname === item.url
+
+            return isMore ? (
+              <button
+                key={item.name}
+                onClick={(e) => handleItemClick(item, e)}
+                className={cn(
+                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "text-white/80 hover:text-white",
+                  moreSheetOpen && "bg-white/20 text-white",
+                )}
+              >
+                <span className="hidden md:inline">{item.name}</span>
+                <span className="md:hidden">
+                  <Icon size={26} strokeWidth={2.5} />
+                </span>
+              </button>
+            ) : (
+              <Link
+                key={item.name}
+                to={item.url}
+                onClick={(e) => handleItemClick(item, e)}
+                className={cn(
+                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "text-white/80 hover:text-white",
+                  isActive && "bg-white/20 text-white",
+                )}
+              >
+                <span className="hidden md:inline">{item.name}</span>
+                <span className="md:hidden">
+                  <Icon size={26} strokeWidth={2.5} />
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="lamp"
+                    className="absolute inset-0 w-full bg-white/10 rounded-2xl -z-10"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  >
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-full">
+                      <div className="absolute w-12 h-6 bg-white/30 rounded-full blur-md -top-2 -left-2" />
+                      <div className="absolute w-8 h-6 bg-white/30 rounded-full blur-md -top-1" />
+                      <div className="absolute w-4 h-4 bg-white/20 rounded-full blur-sm top-0 left-2" />
+                    </div>
+                  </motion.div>
+                )}
+              </Link>
+            )
+          })}
+        </div>
       </div>
-    </div>
+
+      <Sheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl border-t border-[#FA1690]/20 p-0">
+          {/* Handle */}
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-10 h-1 rounded-full bg-gray-300" />
+          </div>
+
+          <div className="px-4 pb-6 pt-2 space-y-3">
+            <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
+
+            {moreSheetItems.map((sheetItem) => {
+              const SheetIcon = sheetItem.icon
+              return (
+                <button
+                  key={sheetItem.url}
+                  onClick={() => handleSheetNavigate(sheetItem.url)}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FFD1E7]/40 border border-[#FA1690]/10 hover:bg-[#FFD1E7]/60 transition-colors text-left"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center flex-shrink-0">
+                    <SheetIcon size={24} className="text-[#FD46A1]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-foreground">{sheetItem.name}</p>
+                    <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                  </div>
+                  <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
+                </button>
+              )
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }

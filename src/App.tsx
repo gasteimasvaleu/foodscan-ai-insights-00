@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
-import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Apple } from "lucide-react";
+import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Plus } from "lucide-react";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
@@ -40,7 +40,7 @@ const navItems = [
   { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
   { name: 'Treinos', url: '/treinos', icon: Dumbbell },
   { name: 'MasterChef', url: '/masterchef', icon: ChefHat },
-  { name: 'ServiNUTRI', url: '/servinutri', icon: Apple }
+  { name: 'Mais', url: '#more', icon: Plus }
 ];
 
 const AuthAwareNavbar = () => {
