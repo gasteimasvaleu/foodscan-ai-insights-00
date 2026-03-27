@@ -22,11 +22,9 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
     console.log('[HealthKitConnect] Button tapped – starting connection flow');
     setConnecting(true);
     try {
-      // Wrap onConnect with a 20s timeout so the button never gets stuck
-      const timeoutPromise = new Promise<boolean>((_, reject) =>
-        setTimeout(() => reject(new Error('Connection timeout (20s)')), 20000)
-      );
-      const success = await Promise.race([onConnect(), timeoutPromise]);
+      // No timeout here – let the hook handle its own flow
+      // iOS authorization dialog can take a long time if user reads it
+      const success = await onConnect();
       console.log('[HealthKitConnect] onConnect resolved, success:', success);
       if (success) {
         toast({
@@ -41,10 +39,16 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
         });
       }
     } catch (err: any) {
-      console.error('[HealthKitConnect] onConnect error:', JSON.stringify(err, Object.getOwnPropertyNames(err ?? {})));
+      // Detailed error logging – avoid the {} problem
+      console.error('[HealthKitConnect] onConnect error message:', err?.message);
+      console.error('[HealthKitConnect] onConnect error string:', String(err));
+      console.error('[HealthKitConnect] onConnect error type:', typeof err, err?.constructor?.name);
+      if (err?.stack) console.error('[HealthKitConnect] stack:', err.stack);
+
+      const errorMsg = err?.message || String(err) || 'Erro desconhecido';
       toast({
         title: 'Erro ao conectar',
-        description: err instanceof Error ? err.message : 'Tente novamente mais tarde.',
+        description: errorMsg,
         variant: 'destructive',
       });
     } finally {
@@ -88,6 +92,13 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
           </div>
         </div>
 
+        {/* Debug status visible on screen */}
+        {debugStatus && debugStatus !== 'idle' && (
+          <div className="mb-3 p-2 bg-muted/50 rounded-lg">
+            <p className="text-xs font-mono text-muted-foreground">{debugStatus}</p>
+          </div>
+        )}
+
         <div className="flex gap-3">
           <Button
             onClick={handleConnect}
@@ -99,8 +110,6 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                 Conectando...
               </div>
-            ) : debugStatus && debugStatus !== 'idle' ? (
-              <span className="text-xs">{debugStatus}</span>
             ) : (
               <>
                 <Heart className="w-4 h-4 mr-2" fill="white" />
