@@ -30,6 +30,7 @@ import PhysicalAssessment from "./pages/PhysicalAssessment";
 import MyDiets from "./pages/MyDiets";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
+import Receitas from "./pages/Receitas";
 
 const queryClient = new QueryClient();
 
