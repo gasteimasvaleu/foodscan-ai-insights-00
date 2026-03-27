@@ -69,7 +69,7 @@ const App = () => (
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
-          <Route path="/quero-assinar" element={<WebOnlyRoute><Subscription /></WebOnlyRoute>} />
+          
           <Route path="/sobre" element={<About />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
