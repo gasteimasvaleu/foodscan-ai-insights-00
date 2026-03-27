@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/Navbar';
 import ReactMarkdown from 'react-markdown';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 type UserContext = {
   name?: string;
@@ -116,6 +117,7 @@ async function streamChat({
 
 const NutriCoach = () => {
   const { user, loading } = useAuth();
+  const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -163,8 +165,6 @@ const NutriCoach = () => {
     setIsLoading(true);
 
     let assistantSoFar = '';
-    const allMessages = [...messages.filter(m => m !== WELCOME_MESSAGE || messages.indexOf(m) > 0), userMsg];
-    // Send only user/assistant messages, skip welcome
     const historyToSend = messages.slice(1).concat(userMsg);
 
     const upsertAssistant = (chunk: string) => {
@@ -205,74 +205,117 @@ const NutriCoach = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="flex-1 flex flex-col pt-16 max-w-3xl mx-auto w-full">
-        {/* Messages area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-56 space-y-4">
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {msg.role === 'assistant' && (
+      <div className="flex-1 px-4 pt-20 pb-24 max-w-3xl mx-auto w-full space-y-4">
+        {/* Card título */}
+        <div className="bg-gradient-to-r from-red-500/20 via-pink-500/20 to-primary/20 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl p-4 flex items-center gap-3">
+          <Bot className="w-6 h-6 text-[#FD46A1]" />
+          <h1 className="text-lg font-bold text-[#FD46A1]">NutriCoach</h1>
+        </div>
+
+        {/* Card descrição */}
+        <div className="bg-[#FFD1E7] rounded-3xl shadow-xl p-6 space-y-4">
+          <div className="flex items-center gap-3 mb-2">
+            <MessageCircle className="w-8 h-8 text-[#FD46A1]" />
+            <h2 className="text-lg font-bold text-gray-800">Seu Assistente de Nutrição</h2>
+          </div>
+          <p className="text-sm text-gray-700 leading-relaxed">
+            Converse com o NutriCoach para receber orientações personalizadas sobre alimentação, dietas, treinos, contagem de macros e suplementação. Seu assistente de IA que conhece seus objetivos e metas!
+          </p>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li>🍽️ Dicas de alimentação e dietas</li>
+            <li>🏋️‍♂️ Planejamento de treinos</li>
+            <li>📊 Contagem de macros e calorias</li>
+            <li>💊 Orientações sobre suplementação</li>
+          </ul>
+          <Button
+            onClick={() => setChatOpen(true)}
+            className="w-full rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold py-3"
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Abrir Chat
+          </Button>
+        </div>
+      </div>
+
+      {/* Chat Modal */}
+      <Dialog open={chatOpen} onOpenChange={setChatOpen}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg h-[85vh] rounded-2xl bg-white border-2 border-primary shadow-xl p-0 flex flex-col gap-0 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center gap-3 px-4 py-3 border-b bg-white rounded-t-2xl">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-primary" />
+            </div>
+            <h2 className="font-bold text-foreground">NutriCoach</h2>
+          </div>
+
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.role === 'assistant' && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-primary" />
+                  </div>
+                )}
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground rounded-br-md'
+                      : 'bg-muted text-foreground rounded-bl-md'
+                  }`}
+                >
+                  {msg.role === 'assistant' ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  )}
+                </div>
+                {msg.role === 'user' && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+            ))}
+            {isLoading && messages[messages.length - 1]?.role === 'user' && (
+              <div className="flex gap-3 justify-start">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
-              )}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-md'
-                    : 'bg-muted text-foreground rounded-bl-md'
-                }`}
-              >
-                {msg.role === 'assistant' ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                )}
-              </div>
-              {msg.role === 'user' && (
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary-foreground" />
+                <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
+                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                 </div>
-              )}
-            </div>
-          ))}
-          {isLoading && messages[messages.length - 1]?.role === 'user' && (
-            <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-primary" />
               </div>
-              <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
-                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input area */}
-        <div className="fixed bottom-20 left-0 right-0 z-30 border-t bg-background p-4 pb-4">
-          <div className="flex gap-2 items-end max-w-3xl mx-auto">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Pergunte sobre nutrição ou treinos..."
-              rows={1}
-              className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-h-32 overflow-y-auto"
-              style={{ minHeight: '44px' }}
-            />
-            <Button
-              onClick={send}
-              disabled={!input.trim() || isLoading}
-              size="icon"
-              className="rounded-xl h-11 w-11 flex-shrink-0"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            )}
           </div>
-        </div>
-      </div>
+
+          {/* Input */}
+          <div className="border-t bg-white p-3 rounded-b-2xl">
+            <div className="flex gap-2 items-end">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Pergunte sobre nutrição ou treinos..."
+                rows={1}
+                className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-h-32 overflow-y-auto"
+                style={{ minHeight: '44px' }}
+              />
+              <Button
+                onClick={send}
+                disabled={!input.trim() || isLoading}
+                size="icon"
+                className="rounded-xl h-11 w-11 flex-shrink-0"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
