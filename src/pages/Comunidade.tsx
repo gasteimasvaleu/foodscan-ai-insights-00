@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { PostForm } from "@/components/community/PostForm";
 import { PostCard } from "@/components/community/PostCard";
 import { Loader2, Users } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface Post {
   id: string;
