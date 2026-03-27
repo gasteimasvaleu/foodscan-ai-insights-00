@@ -344,10 +344,20 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
                     <h5 className="text-sm font-semibold text-gray-800 truncate flex-1">
                       {meal.food_name}
                     </h5>
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {formatMealTime(meal.meal_time)}
-                    </Badge>
+                    <div className="flex items-center gap-1 ml-2">
+                      <Badge variant="secondary" className="text-xs">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatMealTime(meal.meal_time)}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteMeal(meal.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
                   <p className="text-xs text-gray-500 mb-2">Porção: {meal.portion}</p>
                   <div className="grid grid-cols-4 gap-2">
