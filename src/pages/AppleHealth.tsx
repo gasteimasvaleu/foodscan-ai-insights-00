@@ -103,19 +103,8 @@ export default function AppleHealth() {
     <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-lg">
-        {/* Back button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/fit-tracker')}
-          className="mb-4 -ml-2 text-muted-foreground"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" />
-          FitTracker
-        </Button>
-
         {/* Header */}
-        <div className="mb-6 animate-fade-in">
+        <div className="mb-4 animate-fade-in">
           <div className="bg-gradient-to-r from-red-500/20 via-pink-500/20 to-primary/20 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-br from-red-500 to-pink-500 p-2.5 rounded-xl shadow-lg">
@@ -131,6 +120,15 @@ export default function AppleHealth() {
             </Badge>
           </div>
         </div>
+
+        {/* FitTracker button */}
+        <Button
+          onClick={() => navigate('/fit-tracker')}
+          className="w-full mb-6 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Acessar FitTracker
+        </Button>
 
         {/* Not connected */}
         {!isConnected && (
