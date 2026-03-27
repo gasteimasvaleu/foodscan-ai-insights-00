@@ -1,63 +1,52 @@
 
 
-## Limpeza web-only: manter auth e tokens, remover PWA e Stripe
+## Remover fluxo Hotmart, manter edge de envio de token via Resend
 
-### O que será removido
+### Resumo
 
-1. **Componentes PWA**: `PWAInstallPrompt`, `PWAOfflineIndicator`, `usePWA` hook
-2. **Rotas Stripe/web-only**: `/quero-assinar`, `/payment-success`, `/payment-cancel` e o wrapper `WebOnlyRoute`
-3. **Páginas Stripe**: `PaymentSuccess.tsx`, `PaymentCancel.tsx`, `Subscription.tsx`
-4. **Componentes Stripe**: `SubscriptionPlans.tsx`, `SubscriptionStatus.tsx`, `PaymentRegistrationForm.tsx`
-5. **Referências na Navbar**: remover item "Assinatura" do menu
-6. **Arquivos PWA públicos**: `public/sw.js`, `public/manifest.json`, `public/offline.html`, `public/aimtell-worker.js`
-7. **Edge functions Stripe**: `create-checkout`, `customer-portal` (se existirem como arquivos)
-8. **Funções Stripe no useSubscription**: remover `createCheckout` e `openCustomerPortal`
+Remover toda a integração com Hotmart (webhook, referências no check-subscription, fluxo na Auth page), mas extrair a lógica de criação de token + envio de email via Resend para uma edge function independente (`send-registration-token`), que podera ser usada manualmente depois.
 
-### O que será MANTIDO
+### Alteracoes
 
-- **Auth page** (`src/pages/Auth.tsx`): login/senha + tabs Entrar/Cadastrar intactas
-- **AuthCard** (`src/components/AuthCard.tsx`): inputs de email/senha em ambos os fluxos (iOS e web)
-- **Token flow**: toda a lógica de `validate-token`, `activate-subscription`, fluxo Hotmart com token na URL
-- **Edge functions de token**: `validate-token/index.ts`, `activate-subscription/index.ts`
-- **AppleSignInButton**: mantida
-- **SubscriptionRequired**: mantida mas ajustada (remover redirect para `/quero-assinar`, manter apenas fluxo RevenueCat)
+#### 1. Criar nova edge function `send-registration-token`
+**`supabase/functions/send-registration-token/index.ts`**
 
-### Alterações por arquivo
+Extrair do `hotmart-webhook` apenas a logica de:
+- Receber `email`, `name`, `plan_type` (monthly/annual) via body JSON
+- Criar registro em `registration_tokens` (sem `hotmart_transaction_id`)
+- Enviar email via Resend com o template HTML existente
+- Retornar o token criado
 
-**`src/App.tsx`**
-- Remover imports: `Subscription`, `PaymentSuccess`, `PaymentCancel`
-- Remover componente `WebOnlyRoute`
-- Remover rotas: `/quero-assinar`, `/payment-success`, `/payment-cancel`
+Requer autenticacao admin (verificar role ou service_role key).
 
-**`src/pages/Index.tsx`**
-- Remover imports e uso de `PWAInstallPrompt` e `PWAOfflineIndicator`
+#### 2. Deletar edge function Hotmart
+**Deletar**: `supabase/functions/hotmart-webhook/index.ts`
 
-**`src/components/Navbar.tsx`**
-- Remover item de menu "Assinatura" (`/quero-assinar`)
+#### 3. Deletar edge function activate-subscription
+**Deletar**: `supabase/functions/activate-subscription/index.ts`
 
-**`src/components/SubscriptionRequired.tsx`**
-- Remover fallback `window.location.href = '/quero-assinar'`; manter apenas `purchaseMonthly()` do RevenueCat
+Nao sera mais necessaria sem o fluxo Hotmart de signup com token.
 
-**`src/hooks/useSubscription.ts`**
-- Remover funções `createCheckout` e `openCustomerPortal` que chamam edge functions Stripe
-- Manter `checkSubscription` e estado de subscription
+#### 4. Simplificar `check-subscription`
+**`supabase/functions/check-subscription/index.ts`**
 
-**Deletar arquivos**:
-- `src/components/PWAInstallPrompt.tsx`
-- `src/components/PWAOfflineIndicator.tsx`
-- `src/hooks/usePWA.ts`
-- `src/pages/PaymentSuccess.tsx`
-- `src/pages/PaymentCancel.tsx`
-- `src/pages/Subscription.tsx`
-- `src/components/SubscriptionPlans.tsx`
-- `src/components/SubscriptionStatus.tsx`
-- `src/components/PaymentRegistrationForm.tsx`
-- `public/sw.js`, `public/manifest.json`, `public/offline.html`, `public/aimtell-worker.js`
+- Remover toda a logica de `is_hotmart_managed` (linhas 96-128)
+- Remover checks de `payment_provider === 'hotmart'` (linhas 136-158, 192-209, 258-283, 286-320)
+- Remover referencia a `hotmart_transaction_id` nos upserts
+- Manter: protecao Apple, Stripe check, race condition protection
 
-**Manter intactos**:
-- `src/pages/Auth.tsx` (login + cadastro + token Hotmart)
-- `src/components/AuthCard.tsx` (login nativo + web)
-- `supabase/functions/validate-token/index.ts`
-- `supabase/functions/activate-subscription/index.ts`
-- `supabase/functions/hotmart-webhook/index.ts`
+#### 5. Simplificar `Auth.tsx`
+**`src/pages/Auth.tsx`**
+
+- Remover estados: `isHotmartFlow`, `hotmartToken`, `tokenData`, `tokenError`, `validatingToken`
+- Remover `validateHotmartToken` function
+- Remover bloco condicional de ativacao Hotmart no `handleSignUp`
+- Remover card condicional Hotmart no JSX (linhas 231-269)
+- Remover condicional `!isHotmartFlow && !validatingToken` — mostrar o card de login sempre
+- Manter: login/senha, cadastro manual, `AppleSignInButton`, login automatico apos signup manual
+
+#### 6. Manter intactos
+- `supabase/functions/validate-token/index.ts` — sera usado pela nova edge function
+- `supabase/functions/revenuecat-webhook/index.ts`
+- Tabela `registration_tokens` no banco
 
