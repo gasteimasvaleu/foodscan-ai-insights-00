@@ -256,16 +256,7 @@ const PricingCard = ({ plan, allPlans }: { plan: SubscriptionPlan; allPlans: Sub
 export const SubscriptionPlans = () => {
   return (
     <div className="space-y-12 mb-8">
-      {/* Seção Hotmart - PIX ou Cartão */}
       <div>
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-white mb-2">
-            💳 Pagamento com PIX ou Cartão
-          </h2>
-          <p className="text-white/90">
-            Acesso liberado em até 1 hora após confirmação do pagamento
-          </p>
-        </div>
         <div className="grid md:grid-cols-2 gap-8">
           {hotmartPlans.map((plan) => (
             <PricingCard key={plan.name} plan={plan} allPlans={hotmartPlans} />
