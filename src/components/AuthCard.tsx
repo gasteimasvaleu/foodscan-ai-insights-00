@@ -87,31 +87,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     );
   }
 
-  // Banner carousel state
-  const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
-  const [currentBanner, setCurrentBanner] = useState(0);
-
-  useEffect(() => {
-    const fetchBanners = async () => {
-      const { data } = await supabase
-        .from('homepage_banners')
-        .select('id, image_url')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-      if (data && data.length > 0) setBanners(data);
-    };
-    fetchBanners();
-  }, []);
-
-  // Autoplay 10s
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentBanner(prev => (prev + 1) % banners.length);
-    }, 10000);
-    return () => clearInterval(timer);
-  }, [banners.length]);
-
   const fallbackBannerUrl = "https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp";
 
   if (user) {
