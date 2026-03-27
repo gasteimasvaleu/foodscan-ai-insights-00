@@ -34,6 +34,7 @@ import TermsOfUse from "./pages/TermsOfUse";
 import Receitas from "./pages/Receitas";
 import Comunidade from "./pages/Comunidade";
 import ChartsProgress from "./pages/ChartsProgress";
+import NutriCoach from "./pages/NutriCoach";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
