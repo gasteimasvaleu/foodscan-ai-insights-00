@@ -31,11 +31,15 @@ export default function Comunidade() {
   }, [user, authLoading, navigate]);
 
   const fetchPosts = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("community_posts")
       .select("*, profiles:user_id(name, avatar_url)")
       .order("created_at", { ascending: false })
       .limit(50);
+    if (error) {
+      console.error("fetchPosts error:", error);
+      toast({ title: "Erro ao carregar posts", description: error.message, variant: "destructive" });
+    }
     setPosts((data as unknown as Post[]) || []);
     setLoading(false);
   };
