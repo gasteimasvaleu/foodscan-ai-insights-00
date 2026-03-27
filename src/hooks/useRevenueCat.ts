@@ -25,7 +25,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [initError, setInitError] = useState(false);
 
   useEffect(() => {
-    if (!isNative || !isIOS) return;
+    if (!isNative || !isIOS || !user?.id) return;
     initRevenueCat();
   }, [isNative, isIOS]);
 
