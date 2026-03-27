@@ -23,9 +23,31 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { isNative, isIOS } = useNativePlatform();
   const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  
+  const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const isNativeIOS = isNative && isIOS;
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      const { data } = await supabase
+        .from('homepage_banners')
+        .select('id, image_url')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      if (data && data.length > 0) setBanners(data);
+    };
+    fetchBanners();
+  }, []);
+
+  // Autoplay 10s
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBanner(prev => (prev + 1) % banners.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
