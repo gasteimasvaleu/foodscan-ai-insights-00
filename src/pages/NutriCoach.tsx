@@ -207,9 +207,8 @@ const NutriCoach = () => {
       <Navbar />
       <div className="flex-1 px-4 pt-20 pb-24 max-w-3xl mx-auto w-full space-y-4">
         {/* Card título */}
-        <div className="bg-gradient-to-r from-red-500/20 via-pink-500/20 to-primary/20 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl p-4 flex items-center gap-3">
-          <Bot className="w-6 h-6 text-[#FD46A1]" />
-          <h1 className="text-lg font-bold text-[#FD46A1]">NutriCoach</h1>
+        <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3">
+          <h1 className="text-xl font-bold text-primary">NutriCoach</h1>
         </div>
 
         {/* Card descrição */}
