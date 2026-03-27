@@ -49,22 +49,31 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
   const [isLoading, setIsLoading] = useState(true);
 
+  const [dayMeals, setDayMeals] = useState<DayMeal[]>([]);
+  const [isLoadingMeals, setIsLoadingMeals] = useState(false);
+
   useEffect(() => {
     if (user) {
       loadWeeklyData();
     }
   }, [user]);
 
-  // Recarregar dados a cada 30 segundos para pegar mudanças nas refeições
+  // Recarregar dados a cada 30 segundos
   useEffect(() => {
     if (!user) return;
-    
     const interval = setInterval(() => {
       loadWeeklyData();
-    }, 30000); // 30 segundos - otimizado
-
+      loadDayMeals(selectedDay);
+    }, 30000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, selectedDay]);
+
+  // Carregar refeições quando o dia selecionado mudar
+  useEffect(() => {
+    if (user) {
+      loadDayMeals(selectedDay);
+    }
+  }, [user, selectedDay]);
 
   const loadWeeklyData = async () => {
     if (!user) return;
