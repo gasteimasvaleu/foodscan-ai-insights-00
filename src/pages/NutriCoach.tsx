@@ -28,6 +28,7 @@ const WELCOME_MESSAGE: Message = {
 
 async function streamChat({
   messages,
+  userContext,
   onDelta,
   onDone,
   onError,
