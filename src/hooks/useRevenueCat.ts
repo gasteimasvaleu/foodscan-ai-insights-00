@@ -60,7 +60,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
       
-      await Purchases.configure({ apiKey: RC_API_KEY });
+      await Purchases.configure({ apiKey: RC_API_KEY, appUserID: user?.id });
       setInitialized(true);
 
       await checkExistingSubscription();
