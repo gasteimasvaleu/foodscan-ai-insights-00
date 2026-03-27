@@ -118,12 +118,36 @@ const NutriCoach = () => {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userContext, setUserContext] = useState<UserContext | undefined>();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchContext = async () => {
+      const [goalsRes, profileRes] = await Promise.all([
+        supabase.from('daily_goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+        supabase.from('profiles').select('name').eq('id', user.id).single(),
+      ]);
+      const goals = goalsRes.data?.[0];
+      const profile = profileRes.data;
+      if (goals || profile) {
+        setUserContext({
+          name: profile?.name,
+          calories: goals?.calories,
+          proteins: goals?.proteins,
+          carbohydrates: goals?.carbohydrates,
+          fats: goals?.fats,
+          diet_objective: goals?.diet_objective,
+        });
+      }
+    };
+    fetchContext();
+  }, [user]);
 
   if (loading) return null;
   if (!user) return <Navigate to="/auth" replace />;
