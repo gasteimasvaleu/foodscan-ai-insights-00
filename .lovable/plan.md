@@ -1,35 +1,47 @@
 
 
-## Fix: Install Missing Native HealthKit Pod
+## Diagnóstico: o plugin nativo está registrado no bridge?
 
-### Root Cause
-The `@capgo/capacitor-health` npm package is installed (v8.4.1 in `package.json`), but the **native iOS pod was never added**. The `Podfile.lock` only lists Capacitor core and RevenueCat — no health plugin. This is why `Health` imports as `{}`: the JavaScript wrapper loads, but there's no native bridge behind it.
+### Análise do problema real
 
-### Plan
+Os logs param em `Health plugin object: {}` e pulam direto para o erro. O log `[HealthKit] Checking availability...` **nunca aparece**. Isso significa uma de duas coisas:
+1. A chamada `Health.isAvailable()` trava silenciosamente e o timeout de 20s do HealthKitConnect dispara primeiro (mas nesse caso veríamos "Checking availability..." no log)
+2. Algo está interceptando o fluxo antes disso
 
-**No code changes needed in Lovable.** This is a local native setup issue.
+O problema central é que o **plugin JS é um Proxy** (por isso aparece como `{}`), mas precisamos confirmar se o **lado nativo do plugin está registrado no bridge do Capacitor**. Se não estiver, qualquer chamada ao Proxy vai travar indefinidamente esperando uma resposta nativa que nunca vem.
 
-The user needs to run these commands in their local project:
+### Plano de implementação
 
-```bash
-npm run build
-npx cap sync ios
-cd ios/App && pod install
+**1. Adicionar diagnóstico de registro nativo em `useHealthKit.ts`**
+Antes de qualquer chamada ao plugin, logar:
+- `Capacitor.isPluginAvailable('CapgoCapacitorHealth')` — verifica se o native side registrou o plugin
+- `Object.keys(Capacitor.Plugins)` — lista todos os plugins nativos registrados
+- Tentar chamar `Health.isAvailable()` com um try/catch **sem** timeout primeiro, logando o resultado ou erro real
+
+**2. Corrigir o logging de erros em `HealthKitConnect.tsx`**
+O `JSON.stringify(err, Object.getOwnPropertyNames(err))` pode produzir `{}` se o erro não for um Error padrão. Substituir por:
+```
+console.error('error message:', err?.message);
+console.error('error string:', String(err));
+console.error('error type:', typeof err, err?.constructor?.name);
 ```
 
-Then open Xcode and rebuild. After this:
-- `Podfile.lock` should show `CapgoCapacitorHealth` 
-- `Health` will no longer be `{}`
-- The HealthKit permission prompt should appear
+**3. Simplificar o fluxo de `requestPermissions`**
+- Remover a camada dupla de timeouts (10s no hook + 20s no componente)
+- Usar um único timeout de 15s no hook
+- Logar **cada passo** com `console.log` imediatamente antes e depois da chamada nativa
+- Separar claramente: "plugin registrado?", "isAvailable?", "requestAuthorization?"
 
-If `npx cap sync` doesn't auto-add the pod, manually add this line to `ios/App/Podfile` inside `capacitor_pods`:
-```ruby
-pod 'CapgoCapacitorHealth', :path => '../../node_modules/@capgo/capacitor-health'
-```
+**4. Adicionar log no startup para verificar o bundle**
+No início do componente FitTracker, logar um ID de build único para confirmar que o código mais recente está rodando no device.
 
-### After Running
-1. Verify `Podfile.lock` now includes `CapgoCapacitorHealth`
-2. Build and run on physical iPhone via Xcode
-3. Tap "Conectar Apple Health" — the native permission dialog should appear
-4. Share Xcode logs if it still fails
+### Arquivos alterados
+- `src/hooks/useHealthKit.ts` — diagnóstico de registro nativo + simplificação do fluxo
+- `src/components/HealthKitConnect.tsx` — fix do logging de erros
+
+### Após implementar
+1. `npm run build && npx cap sync ios`
+2. Build via Xcode no device
+3. Tocar em "Conectar Apple Health"
+4. Compartilhar os logs do Xcode — agora saberemos se o plugin nativo está ou não registrado
 
