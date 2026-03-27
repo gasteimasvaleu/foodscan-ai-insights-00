@@ -1,20 +1,48 @@
 
 
-## Diagnostico: Pagina Auth mostrando LoadingState (cerebro de IA)
+## Gerenciamento de Banners da Pagina Principal
 
-### Analise
+### O que sera feito
 
-Verifiquei o codigo atual de `src/pages/Auth.tsx` e ele esta correto — nao importa nem usa o componente `LoadingState` (cerebro de IA). O card VIP com formulario de cadastro esta implementado corretamente.
+1. **Tabela `homepage_banners`** no Supabase para armazenar as imagens do banner
+2. **Pagina admin `/admin/banners`** para upload/exclusao de imagens
+3. **Atualizar `AuthCard.tsx`** para buscar banners do banco e exibir em carrossel com dots e autoplay de 10s
+4. **Adicionar rota e link no painel admin**
 
-### Causa provavel
+### Detalhes tecnicos
 
-A pagina que voce acessou provavelmente foi a URL publica (`app.dietainteligente.app/auth?token=...`) que ainda esta com a versao antiga do codigo (antes das alteracoes). O preview do Lovable deve estar mostrando a versao correta.
+**Nova tabela `homepage_banners`:**
+- `id` uuid PK
+- `image_url` text (URL publica do storage)
+- `storage_path` text (caminho no bucket para delete)
+- `display_order` integer (ordem no carrossel)
+- `is_active` boolean default true
+- `created_at` timestamp
 
-### Proximos passos
+RLS: SELECT publico (todos veem), INSERT/UPDATE/DELETE apenas admins via `has_role`.
 
-1. **Verificar no preview do Lovable**: Acesse `https://id-preview--7af51b51-f57a-4397-be1b-b371107e8a01.lovable.app/auth?token=teste` para confirmar que o card VIP aparece corretamente
-2. **Publicar o projeto**: Se o preview estiver correto, basta publicar o projeto para que as alteracoes reflitam na URL publica
-3. **Se o problema persistir no preview**: Pode ser um cache do navegador — tente abrir em aba anonima
+**Pagina `src/pages/AdminBanners.tsx`:**
+- Verificacao de admin (mesmo padrao das outras paginas admin)
+- Lista de banners atuais com preview e botao de excluir
+- Upload de nova imagem para bucket `criativos` 
+- Drag ou campo de ordem para reordenar
 
-Nenhuma alteracao de codigo e necessaria — o `Auth.tsx` ja esta implementado conforme o plano aprovado.
+**Alteracoes em `src/components/AuthCard.tsx` (linhas 71-80):**
+- Buscar banners da tabela `homepage_banners` ordenados por `display_order`
+- Se 1 banner: imagem estatica (comportamento atual)
+- Se 2+: carrossel com autoplay 10s e dots indicadores
+- Fallback para imagem hardcoded atual se nenhum banner cadastrado
+
+**Alteracoes em `src/pages/AdminDashboard.tsx`:**
+- Adicionar card "Banners" com icone `ImageIcon` apontando para `/admin/banners`
+
+**Alteracoes em `src/App.tsx`:**
+- Adicionar rota `/admin/banners` → `AdminBanners`
+
+### Arquivos alterados/criados
+- `supabase/migrations/` — nova tabela + RLS
+- `src/pages/AdminBanners.tsx` — nova pagina
+- `src/pages/AdminDashboard.tsx` — novo card
+- `src/App.tsx` — nova rota
+- `src/components/AuthCard.tsx` — carrossel dinamico
 
