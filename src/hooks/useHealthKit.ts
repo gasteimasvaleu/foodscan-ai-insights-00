@@ -87,7 +87,7 @@ export const useHealthKit = () => {
       setDebugStatus('verificando disponibilidade...');
       console.log('[HealthKit] >>> Health.isAvailable()');
       try {
-        const availResult = await withTimeout(Health.isAvailable(), 8000, 'isAvailable');
+        const availResult: any = await withTimeout(Health.isAvailable(), 8000, 'isAvailable');
         console.log('[HealthKit] <<< isAvailable:', JSON.stringify(availResult));
         if (!availResult?.available) {
           setDebugStatus('HealthKit não disponível neste dispositivo');
