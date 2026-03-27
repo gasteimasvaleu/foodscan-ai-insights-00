@@ -1,56 +1,48 @@
 
 
-## Adicionar envio de convite via WhatsApp (Z-API)
+## Reformular pagina /auth para cadastro VIP via token
 
-### Contexto
-O projeto atualmente usa Twilio para WhatsApp. Vamos criar uma nova edge function dedicada para enviar convites via Z-API, separada da `whatsapp-send` (Twilio).
+### Alteracoes em `src/pages/Auth.tsx`
 
-### Alteracoes
+1. **Remover tabs e aba de login** - Pagina exclusivamente de cadastro
+2. **Detectar `?token=` na URL** via `useSearchParams`
+3. **Mensagem VIP** quando token presente: icone Crown, titulo "Voce recebeu um Acesso VIP!", subtitulo sobre acesso exclusivo ao We Diet
+4. **Formulario de cadastro** (Nome, Email, Senha) - sem login, sem Apple Sign In
+5. **Apos cadastro com sucesso**:
+   - Toast "Cadastro realizado com sucesso!"
+   - NAO redirecionar
+   - Substituir formulario por tela de sucesso com instrucoes para baixar o app e botao App Store (link placeholder por enquanto)
+6. **Remover** imports nao usados (Tabs, signIn, AppleSignInButton)
 
-#### 1. Criar edge function `supabase/functions/send-whatsapp-invite/index.ts`
-- Recebe: `phone`, `name`, `plan_type`, `token`
-- Valida admin (JWT)
-- Monta mensagem formatada com o link `https://app.dietainteligente.app/auth?token={token}`
-- Envia via Z-API usando `POST https://api.z-api.io/instances/{INSTANCE_ID}/token/{TOKEN}/send-text`
-- Secrets necessarios: `ZAPI_INSTANCE_ID`, `ZAPI_TOKEN`, `ZAPI_SECURITY_TOKEN`
+### Fluxo visual
 
-#### 2. Atualizar `src/pages/AdminSubscriptions.tsx`
-- Adicionar campo opcional "WhatsApp" (numero de telefone)
-- Adicionar toggle/checkbox "Enviar tambem por WhatsApp"
-- Ao enviar: primeiro cria o token via `send-registration-token`, depois se WhatsApp marcado, chama `send-whatsapp-invite` passando o token retornado
-- Adicionar icone MessageCircle do lucide
+```text
+ANTES DO CADASTRO:
+┌──────────────────────────────┐
+│     👑 Acesso VIP!           │
+│  Voce foi selecionado(a)     │
+│  para acesso exclusivo       │
+│                              │
+│  [Nome]                      │
+│  [Email]                     │
+│  [Senha]                     │
+│  [Cadastrar]                 │
+└──────────────────────────────┘
 
-#### 3. Secrets
-Precisarei que voce informe:
-- **Instance ID** da Z-API
-- **Token** da Z-API  
-- **Security Token** (Client Token) da Z-API
-
-Esses serao adicionados como secrets no Supabase antes de implementar.
-
-### Mensagem WhatsApp (template)
+APOS CADASTRO:
+┌──────────────────────────────┐
+│  ✅ Cadastro realizado!      │
+│                              │
+│  Agora baixe o app para      │
+│  comecar sua jornada:        │
+│                              │
+│  [ Baixar na App Store ]     │
+└──────────────────────────────┘
 ```
-🎉 Olá {name}!
-
-Seu acesso ao *We Diet* foi liberado! 🎊
-
-📋 *Plano:* {plan_name}
-⏰ *Duração:* {months} {mês/meses}
-
-Para começar, clique no link abaixo e finalize seu cadastro:
-👉 {registration_url}
-
-⚠️ Este link é válido por 7 dias e pode ser usado apenas uma vez.
-
-💪 We Diet - Sua jornada fitness começa aqui!
-```
-
-### Sem alteracoes no banco
-A edge function `send-registration-token` ja retorna o token criado. Usaremos esse token para montar o link e enviar via Z-API.
 
 ### Detalhes tecnicos
-- A Z-API espera o numero no formato `55DDD9XXXXXXXX` (sem +, sem espacos)
-- Endpoint: `POST https://api.z-api.io/instances/{instanceId}/token/{token}/send-text`
-- Headers: `Client-Token: {security_token}`, `Content-Type: application/json`
-- Body: `{ "phone": "55...", "message": "..." }`
+- `useSearchParams` para detectar token
+- Estado `registered` (boolean) alterna entre formulario e tela de sucesso
+- Botao App Store so aparece apos cadastro, com `window.open(appStoreUrl, '_blank')` - URL placeholder
+- Remover `useEffect` que redireciona usuario logado
 
