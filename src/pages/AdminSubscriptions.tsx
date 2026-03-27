@@ -35,6 +35,8 @@ const AdminSubscriptions = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [planType, setPlanType] = useState('monthly');
+  const [phone, setPhone] = useState('');
+  const [sendWhatsApp, setSendWhatsApp] = useState(false);
   const [sending, setSending] = useState(false);
 
   const [tokens, setTokens] = useState<RegistrationToken[]>([]);
