@@ -1,10 +1,22 @@
 import { useState } from "react";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PostCardProps {
   post: {
@@ -21,6 +33,7 @@ interface PostCardProps {
   userId: string;
   userLiked: boolean;
   onLikeToggle: () => void;
+  onPostDeleted?: () => void;
 }
 
 export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProps) {
