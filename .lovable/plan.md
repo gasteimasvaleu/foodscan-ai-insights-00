@@ -1,12 +1,25 @@
 
 
-## Estilizar botão de fechar do Dialog
+## Criar Página "Gráficos e Progresso"
 
-### Mudança em `src/components/ui/dialog.tsx` (linha ~46)
+Transferir os cards de Estatísticas Gerais, Balanço Calórico, Evolução Física e Gráfico de Progresso do `/profile` para uma nova página `/profile/graficos`.
 
-Adicionar fundo rosa primário, ícone branco e cantos arredondados ao `DialogPrimitive.Close`, seguindo o padrão descrito na memória de estilo:
+### Mudanças
 
-- Adicionar classes: `bg-primary text-white rounded-lg p-1 hover:bg-primary/90`
-- Remover `opacity-70` e `hover:opacity-100` (não necessários com fundo sólido)
-- Manter o ícone X branco com tamanho `h-4 w-4`
+**1. Criar `src/pages/ChartsProgress.tsx`**
+- Nova página com Navbar, mesmo layout/background do Profile
+- Mover toda a lógica de dados: `loadStats`, `loadCalorieBalance`, `loadWeeklyData`, estados relacionados (`stats`, `calorieBalanceData`, `weeklyData`), TMB (`editBMR`, `bmrForm`, `showBMRCalculator`, `handleUpdateBMR`, `calculateBMR`, `handleUseBMR`)
+- Incluir o componente `<PhysicalEvolutionChart />`
+- Renderizar os 4 cards na ordem: Estatísticas Gerais → Balanço Calórico → Evolução Física → Gráfico de Progresso
+
+**2. Atualizar `src/pages/Profile.tsx`**
+- Remover os cards transferidos (linhas 493-773) e o `<PhysicalEvolutionChart />`
+- Remover imports e estados não mais utilizados (`AreaChart`, `BarChart`, `stats`, `weeklyData`, `calorieBalanceData`, `editBMR`, `bmrForm`, etc.)
+- Remover as funções `loadStats`, `loadWeeklyData`, `loadCalorieBalance`, `calculateBMR`, `handleUpdateBMR`, `handleUseBMR`
+
+**3. Adicionar atalho em Ações Rápidas (`Profile.tsx`)**
+- Adicionar um novo card no grid de Ações Rápidas com ícone `BarChart3` apontando para `/profile/graficos` com texto "Gráficos e Progresso"
+
+**4. Registrar rota em `src/App.tsx`**
+- Importar `ChartsProgress` e adicionar `<Route path="/profile/graficos" element={<ChartsProgress />} />`
 
