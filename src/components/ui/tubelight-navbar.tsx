@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -17,6 +17,12 @@ interface NavBarProps {
 }
 
 const moreSheetItems = [
+  {
+    name: "Gráficos e Progresso",
+    description: "Acompanhe sua evolução",
+    url: "/graficos-progresso",
+    icon: BarChart3,
+  },
   {
     name: "Comunidade",
     description: "Compartilhe sua jornada fitness",
