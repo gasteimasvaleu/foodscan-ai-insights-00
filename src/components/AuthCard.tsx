@@ -93,7 +93,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   // ─── Native iOS Flow ───
   if (isNativeIOS) {
     return (
-      <div className="min-h-[calc(100vh-env(safe-area-inset-top)-6rem)] flex items-center">
+      <div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center">
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full">
         <CardHeader className="pb-2">
           <div className="flex justify-center mb-2">
