@@ -1,18 +1,14 @@
 
 
-## Corrigir zoom automático do iOS em campos de texto
+## Incrementar build number para App Store
 
-### Problema
-O iOS Safari faz zoom automático em qualquer `<textarea>` ou `<input>` com fonte menor que 16px, deslocando o viewport e quebrando layouts fixos (modais, chat do NutriCoach).
+O build atual está em **7** (Debug e Release). Vou incrementar para **8**.
 
 ### Correção
+**Arquivo:** `ios/App/App.xcodeproj/project.pbxproj`
 
-**1. `src/components/ui/textarea.tsx`**
-- Trocar `text-sm` por `text-base md:text-sm` na classe base
+- Linha 375 (Debug): `CURRENT_PROJECT_VERSION = 7` → `CURRENT_PROJECT_VERSION = 8`
+- Linha 400 (Release): `CURRENT_PROJECT_VERSION = 7` → `CURRENT_PROJECT_VERSION = 8`
 
-**2. `src/components/ui/input.tsx`**
-- Trocar `text-base ... md:text-sm` — já usa `text-base` e `md:text-sm`, então verificar se está correto (pode já estar ok)
-
-**3. `src/pages/NutriCoach.tsx`**
-- O `<textarea>` inline do chat usa `text-sm` direto — trocar por `text-base md:text-sm`
+Duas linhas, mesma mudança. A `MARKETING_VERSION` continua em 1.0.
 
