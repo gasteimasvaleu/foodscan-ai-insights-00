@@ -17,9 +17,15 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
   const [connecting, setConnecting] = useState(false);
 
   const handleConnect = async () => {
+    console.log('[HealthKitConnect] Button tapped – starting connection flow');
     setConnecting(true);
     try {
-      const success = await onConnect();
+      // Wrap onConnect with a 20s timeout so the button never gets stuck
+      const timeoutPromise = new Promise<boolean>((_, reject) =>
+        setTimeout(() => reject(new Error('Connection timeout (20s)')), 20000)
+      );
+      const success = await Promise.race([onConnect(), timeoutPromise]);
+      console.log('[HealthKitConnect] onConnect resolved, success:', success);
       if (success) {
         toast({
           title: '✅ Apple Health conectado!',
@@ -32,10 +38,11 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
           variant: 'destructive',
         });
       }
-    } catch {
+    } catch (err) {
+      console.error('[HealthKitConnect] onConnect error:', err);
       toast({
         title: 'Erro ao conectar',
-        description: 'Tente novamente mais tarde.',
+        description: err instanceof Error ? err.message : 'Tente novamente mais tarde.',
         variant: 'destructive',
       });
     } finally {
