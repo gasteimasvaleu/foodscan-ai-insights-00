@@ -1,48 +1,36 @@
 
 
-## Gerenciamento de Banners da Pagina Principal
+## Fix: RLS error ao fazer upload de banner
 
-### O que sera feito
+### Causa
 
-1. **Tabela `homepage_banners`** no Supabase para armazenar as imagens do banner
-2. **Pagina admin `/admin/banners`** para upload/exclusao de imagens
-3. **Atualizar `AuthCard.tsx`** para buscar banners do banco e exibir em carrossel com dots e autoplay de 10s
-4. **Adicionar rota e link no painel admin**
+O erro "new row violates row-level security policy" vem do **bucket de storage `criativos`**. O bucket é público para leitura, mas não tem política de upload configurada. Quando o admin tenta fazer upload de uma imagem, o Supabase bloqueia a inserção no `storage.objects`.
 
-### Detalhes tecnicos
+### Solução
 
-**Nova tabela `homepage_banners`:**
-- `id` uuid PK
-- `image_url` text (URL publica do storage)
-- `storage_path` text (caminho no bucket para delete)
-- `display_order` integer (ordem no carrossel)
-- `is_active` boolean default true
-- `created_at` timestamp
+Criar uma **migration** adicionando políticas de storage no bucket `criativos` para permitir que usuários autenticados com role admin possam fazer upload e deletar arquivos:
 
-RLS: SELECT publico (todos veem), INSERT/UPDATE/DELETE apenas admins via `has_role`.
+```sql
+-- Permitir admins fazerem upload no bucket criativos
+CREATE POLICY "Admins can upload to criativos"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (
+  bucket_id = 'criativos' 
+  AND public.has_role(auth.uid(), 'admin'::app_role)
+);
 
-**Pagina `src/pages/AdminBanners.tsx`:**
-- Verificacao de admin (mesmo padrao das outras paginas admin)
-- Lista de banners atuais com preview e botao de excluir
-- Upload de nova imagem para bucket `criativos` 
-- Drag ou campo de ordem para reordenar
+-- Permitir admins deletarem do bucket criativos  
+CREATE POLICY "Admins can delete from criativos"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (
+  bucket_id = 'criativos'
+  AND public.has_role(auth.uid(), 'admin'::app_role)
+);
+```
 
-**Alteracoes em `src/components/AuthCard.tsx` (linhas 71-80):**
-- Buscar banners da tabela `homepage_banners` ordenados por `display_order`
-- Se 1 banner: imagem estatica (comportamento atual)
-- Se 2+: carrossel com autoplay 10s e dots indicadores
-- Fallback para imagem hardcoded atual se nenhum banner cadastrado
-
-**Alteracoes em `src/pages/AdminDashboard.tsx`:**
-- Adicionar card "Banners" com icone `ImageIcon` apontando para `/admin/banners`
-
-**Alteracoes em `src/App.tsx`:**
-- Adicionar rota `/admin/banners` → `AdminBanners`
-
-### Arquivos alterados/criados
-- `supabase/migrations/` — nova tabela + RLS
-- `src/pages/AdminBanners.tsx` — nova pagina
-- `src/pages/AdminDashboard.tsx` — novo card
-- `src/App.tsx` — nova rota
-- `src/components/AuthCard.tsx` — carrossel dinamico
+### Arquivos alterados
+- Nova migration SQL (apenas políticas de storage)
+- Nenhuma alteração de código necessária
 
