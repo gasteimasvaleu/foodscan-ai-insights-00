@@ -13,6 +13,7 @@ interface PortionOption {
 interface PortionSelectorProps {
   currentPortion: string;
   onPortionChange: (portion: string, grams: number) => void;
+  initialGrams?: number;
 }
 
 const portionOptions: PortionOption[] = [
