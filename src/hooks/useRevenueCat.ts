@@ -25,9 +25,9 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [initError, setInitError] = useState(false);
 
   useEffect(() => {
-    if (!isNative || !isIOS) return;
+    if (!isNative || !isIOS || !user?.id) return;
     initRevenueCat();
-  }, [isNative, isIOS]);
+  }, [isNative, isIOS, user?.id]);
 
   const syncToSupabase = async (customerInfo: any) => {
     if (!user?.id || !user?.email) return;
@@ -60,7 +60,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
       
-      await Purchases.configure({ apiKey: RC_API_KEY });
+      await Purchases.configure({ apiKey: RC_API_KEY, appUserID: user?.id });
       setInitialized(true);
 
       await checkExistingSubscription();

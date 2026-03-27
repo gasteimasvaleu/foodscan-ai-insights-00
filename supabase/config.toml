@@ -29,3 +29,6 @@ verify_jwt = true
 
 [functions.whatsapp-scheduled-reminders]
 verify_jwt = true
+
+[functions.revenuecat-webhook]
+verify_jwt = false
