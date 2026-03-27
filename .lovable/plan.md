@@ -1,17 +1,11 @@
 
 
-## Adicionar botão de deletar refeição no Resumo Semanal
+## Corrigir 404 na página Receitas
 
-### Mudança
+O código está correto: o arquivo `src/pages/Receitas.tsx` existe, o import no `App.tsx` (linha 33) e a rota `/receitas` (linha 76) estão registrados corretamente.
 
-**`src/components/WeeklySummary.tsx`**:
+O erro 404 provavelmente ocorre porque o preview ainda não refletiu as últimas alterações. A solução é simplesmente **forçar um rebuild** fazendo uma alteração mínima no `App.tsx` (ex: adicionar um comentário) para que o Vite recompile e a rota passe a funcionar.
 
-1. Importar `Trash2` do lucide-react
-2. Criar função `handleDeleteMeal(mealId)` que:
-   - Deleta o registro da tabela `meal_records` no Supabase
-   - Recarrega as refeições do dia (`loadDayMeals`) e os dados semanais (`loadWeeklyData`)
-   - Exibe toast de sucesso/erro
-3. Adicionar botão com ícone `Trash2` no canto superior direito de cada card de refeição (ao lado do badge de horário)
-   - Estilo: botão ghost pequeno, cor vermelha no hover
-   - Confirmação implícita pelo clique (ou um confirm() simples para evitar exclusões acidentais)
+### Ação
+- Fazer uma edição trivial no `App.tsx` (adicionar/remover espaço ou comentário) para disparar o hot reload e resolver o 404.
 
