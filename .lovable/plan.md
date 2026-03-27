@@ -1,34 +1,32 @@
 
 
-## Resolver busca de receitas em português
+## Traduzir modo de preparo das receitas
 
 ### Problema
-A API do Spoonacular é em inglês — buscar "frango" não retorna resultados, mas "chicken" sim.
+O componente `RecipeDetails` exibe os passos do modo de preparo a partir de `recipe.analyzedInstructions[0].steps[].step`, mas a edge function só traduz `data.instructions` (texto HTML). Os steps estruturados nunca são traduzidos.
 
 ### Solução
-Usar a OpenAI (já configurada no projeto) para traduzir o termo de busca do português para inglês antes de enviar ao Spoonacular. Também traduzir os títulos dos resultados de volta para português.
+Na edge function `spoonacular-recipes/index.ts`, adicionar tradução dos steps dentro de `analyzedInstructions` usando `translateBatch`.
 
-### Mudanças
+### Mudança
 
-**1. Edge Function `spoonacular-recipes/index.ts`**
-- Antes de chamar o Spoonacular, usar a OpenAI para traduzir o `query` de PT-BR → EN
-- Após receber os resultados, traduzir os títulos das receitas de EN → PT-BR em batch (uma chamada só)
-- Usar o secret `OPENAI_API_KEY` já existente
+**`supabase/functions/spoonacular-recipes/index.ts`** (action `details`, após traduzir ingredients):
+- Extrair todos os `step.step` de `data.analyzedInstructions[0].steps`
+- Traduzir em batch com `translateBatch`
+- Substituir cada step pelo texto traduzido
 
-**2. Detalhes da tradução na action `details`**
-- Traduzir título, ingredientes e instruções da receita para PT-BR ao buscar detalhes
-
-### Fluxo
-```text
-Usuário digita "frango grelhado"
-  → Edge Function traduz para "grilled chicken"
-    → Spoonacular retorna resultados em inglês
-      → Edge Function traduz títulos para PT-BR
-        → Frontend exibe em português
+```typescript
+// After translating ingredients, add:
+if (data.analyzedInstructions?.[0]?.steps?.length) {
+  const steps = data.analyzedInstructions[0].steps;
+  const stepTexts = steps.map((s: any) => s.step);
+  const translatedSteps = await translateBatch(stepTexts, 'English', 'Portuguese', openaiKey);
+  steps.forEach((s: any, i: number) => {
+    s.originalStep = s.step;
+    s.step = translatedSteps[i];
+  });
+}
 ```
 
-### Notas técnicas
-- A tradução adiciona ~1-2s ao tempo de resposta, mas melhora muito a UX
-- Cache não implementado inicialmente (pode ser adicionado depois)
-- Usa modelo `gpt-4o-mini` para custo mínimo
+Depois, redeploy da edge function.
 
