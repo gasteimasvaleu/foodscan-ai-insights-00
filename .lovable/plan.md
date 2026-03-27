@@ -1,92 +1,65 @@
 
 
-## Sincronizar assinaturas Apple/RevenueCat com a tabela `subscribers`
+## RevenueCat Webhook Edge Function
 
-### Problema atual
-O `useRevenueCat` gerencia o estado da assinatura Apple apenas localmente (em memoria). Apos uma compra bem-sucedida, `hasPurchased` fica `true` no dispositivo, mas a tabela `subscribers` no Supabase nao e atualizada. Isso significa que:
-- No acesso web, o usuario aparece como "nao assinante"
-- A edge function `check-subscription` nao reconhece assinaturas Apple
+### Overview
+Create a dedicated edge function `revenuecat-webhook` that receives server notifications from RevenueCat, updating the `subscribers` table automatically for renewals, cancellations, expirations, and refunds -- without depending on the user opening the app.
 
-### Solucao
+### How it works
 
-**1. Atualizar `useRevenueCat.ts` para sincronizar com Supabase**
+RevenueCat sends POST requests with event data whenever a subscription status changes. The edge function validates the request, identifies the user, and updates the database accordingly.
 
-Apos `purchaseMonthly()` ou `restorePurchases()` com sucesso, e tambem na `checkExistingSubscription()` durante init, chamar uma funcao que faz upsert na tabela `subscribers` com:
-- `payment_provider: 'apple'`
-- `subscribed: true`
-- `subscription_tier: 'Premium'` (ou derivado do entitlement)
-- `subscription_end`: extraido de `customerInfo.entitlements.active[entitlementId].expirationDate`
+### Edge Function: `supabase/functions/revenuecat-webhook/index.ts`
 
-O hook precisa receber o `user` autenticado para poder identificar o `user_id` e `email`. Sera necessario alterar a assinatura do hook para receber o usuario.
+Handles these RevenueCat event types:
+- **INITIAL_PURCHASE** -- mark as subscribed (backup if client-side sync missed)
+- **RENEWAL** -- extend `subscription_end`
+- **CANCELLATION** -- keep active until `subscription_end`, mark intent
+- **EXPIRATION** -- set `subscribed: false`
+- **BILLING_ISSUE** -- log warning, optionally flag
+- **PRODUCT_CHANGE** -- update tier
+- **REFUND** -- set `subscribed: false` immediately
 
-**2. Atualizar `check-subscription/index.ts`**
+Logic flow:
+1. Parse the RevenueCat webhook payload
+2. Validate with an authorization header (shared secret)
+3. Extract `app_user_id` (which should be the Supabase `user_id`) and event type
+4. Look up subscriber by `user_id` or `email`
+5. Update `subscribers` table based on event type
+6. Return 200 to acknowledge
 
-Adicionar tratamento para `payment_provider === 'apple'`, similar ao Hotmart:
-- Se `payment_provider` e `'apple'`, verificar `subscription_end` contra a data atual
-- Nao sobrescrever com dados Stripe vazios
-- Marcar como inativo se expirado
+### Config: `supabase/config.toml`
 
-**3. Atualizar `AuthCard.tsx`**
+Add entry with `verify_jwt = false` (webhooks come from RevenueCat servers, not authenticated users).
 
-Passar o `user` para o hook `useRevenueCat` para que ele possa sincronizar.
+### Secret needed
 
-### Arquivos a modificar
+- **REVENUECAT_WEBHOOK_SECRET** -- an authorization bearer token set in RevenueCat's webhook config, used to validate incoming requests
 
-| Arquivo | Mudanca |
+### Client-side change: `src/hooks/useRevenueCat.ts`
+
+Set the RevenueCat `appUserID` during `configure` so that webhook events contain the Supabase `user_id`:
+
+```typescript
+await Purchases.configure({ apiKey: RC_API_KEY, appUserID: user.id });
+```
+
+This requires moving `initRevenueCat` to run after `user` is available (already partially done since the hook receives `user`).
+
+### Files to create/modify
+
+| File | Change |
 |---|---|
-| `src/hooks/useRevenueCat.ts` | Receber `user`, adicionar `syncToSupabase()` que faz upsert na tabela `subscribers` apos compra/restore/init com entitlements ativos |
-| `supabase/functions/check-subscription/index.ts` | Adicionar bloco de protecao para `payment_provider === 'apple'`, validando `subscription_end` (mesmo padrao do Hotmart) |
-| `src/components/AuthCard.tsx` | Passar `user` ao chamar `useRevenueCat(user)` |
+| `supabase/functions/revenuecat-webhook/index.ts` | New edge function handling all RevenueCat event types |
+| `supabase/config.toml` | Add `[functions.revenuecat-webhook]` with `verify_jwt = false` |
+| `src/hooks/useRevenueCat.ts` | Pass `user.id` as `appUserID` in `Purchases.configure()` |
 
-### Detalhes tecnicos
+### After deployment
 
-**Sync no useRevenueCat (client-side):**
-```typescript
-const syncToSupabase = async (customerInfo: CustomerInfo) => {
-  if (!user) return;
-  const entitlements = customerInfo.entitlements.active;
-  const entitlementKeys = Object.keys(entitlements);
-  if (entitlementKeys.length === 0) return;
-  
-  const firstEntitlement = entitlements[entitlementKeys[0]];
-  const expirationDate = firstEntitlement.expirationDate; // ISO string or null
-  
-  await supabase.from('subscribers').upsert({
-    user_id: user.id,
-    email: user.email,
-    subscribed: true,
-    subscription_tier: 'Premium',
-    subscription_end: expirationDate,
-    payment_provider: 'apple',
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'email' });
-};
+You will need to configure RevenueCat to send webhooks to:
+```
+https://zyhmwcsfifdepqnnrguo.supabase.co/functions/v1/revenuecat-webhook
 ```
 
-**Protecao no check-subscription:**
-```typescript
-// Apos o bloco is_hotmart_managed, adicionar:
-if (existingSubscription?.payment_provider === 'apple') {
-  const subEnd = existingSubscription.subscription_end 
-    ? new Date(existingSubscription.subscription_end) : null;
-  const isActive = subEnd ? subEnd > new Date() : false;
-  
-  if (!isActive && existingSubscription.subscribed) {
-    await supabaseClient.from("subscribers").update({
-      subscribed: false,
-      updated_at: new Date().toISOString(),
-    }).eq("user_id", user.id);
-  }
-  
-  return new Response(JSON.stringify({
-    subscribed: isActive,
-    subscription_tier: existingSubscription.subscription_tier,
-    subscription_end: existingSubscription.subscription_end,
-    payment_provider: 'apple'
-  }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 });
-}
-```
-
-### Observacao
-Futuramente, configurar webhooks do RevenueCat apontando para uma edge function dedicada seria a forma mais robusta de manter o status atualizado (renovacoes, cancelamentos, reembolsos). Mas a sincronizacao client-side resolve o cenario imediato.
+With the authorization header matching the `REVENUECAT_WEBHOOK_SECRET` secret.
 
