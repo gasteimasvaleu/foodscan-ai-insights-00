@@ -269,7 +269,7 @@ export default function Profile() {
                 </div>
                 <div
                   className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
-                  onClick={() => navigate("/profile/graficos")}
+                  onClick={() => navigate("/graficos-progresso")}
                 >
                   <BarChart3 className="h-8 w-8 text-pink-500" />
                   <div className="text-center">
