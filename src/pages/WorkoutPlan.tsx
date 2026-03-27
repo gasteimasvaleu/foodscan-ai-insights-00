@@ -3,20 +3,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, Dumbbell } from "lucide-react";
+import { Plus, Trash2, Dumbbell, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { AddExerciseModal } from "@/components/AddExerciseModal";
 
 interface Exercise {
   name: string;
+  muscleGroup?: string;
   sets: number;
   reps: string;
   notes?: string;
+  executionTip?: string;
 }
 
-interface WorkoutPlan {
+interface WorkoutPlanData {
   id: string;
   day_of_week: string;
   name: string;
@@ -35,9 +39,10 @@ const DAYS = [
 
 export default function WorkoutPlan() {
   const navigate = useNavigate();
-  const [workouts, setWorkouts] = useState<WorkoutPlan[]>([]);
+  const [workouts, setWorkouts] = useState<WorkoutPlanData[]>([]);
   const [selectedDay, setSelectedDay] = useState("segunda");
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     loadWorkouts();
@@ -69,20 +74,13 @@ export default function WorkoutPlan() {
 
   const currentWorkout = workouts.find((w) => w.day_of_week === selectedDay);
 
-  const addExercise = async () => {
+  const addExercise = async (exercise: Exercise) => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
 
-      const newExercise: Exercise = {
-        name: "Novo Exercício",
-        sets: 3,
-        reps: "10-12",
-        notes: "",
-      };
-
       if (currentWorkout) {
-        const updatedExercises = [...currentWorkout.exercises, newExercise];
+        const updatedExercises = [...currentWorkout.exercises, exercise];
         const { error } = await supabase
           .from("workout_plans")
           .update({ exercises: updatedExercises as any })
@@ -94,14 +92,14 @@ export default function WorkoutPlan() {
           user_id: user.user.id,
           day_of_week: selectedDay,
           name: `Treino ${DAYS.find((d) => d.value === selectedDay)?.label}`,
-          exercises: [newExercise] as any,
+          exercises: [exercise] as any,
         });
 
         if (error) throw error;
       }
 
       await loadWorkouts();
-      toast.success("Exercício adicionado");
+      toast.success("Exercício adicionado!");
     } catch (error) {
       console.error("Error adding exercise:", error);
       toast.error("Erro ao adicionar exercício");
@@ -174,89 +172,102 @@ export default function WorkoutPlan() {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-40">
         <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex flex-col gap-4">
-          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
-            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
-              <Dumbbell className="w-6 h-6 text-white" />
+          <div className="flex flex-col gap-4">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Dumbbell className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-[#FD46A1]">Ficha de Treino</h1>
             </div>
-            <h1 className="text-xl font-bold text-[#FD46A1]">Ficha de Treino</h1>
+            <Button className="w-full" onClick={() => navigate("/profile")}>
+              Voltar
+            </Button>
           </div>
-          <Button className="w-full" onClick={() => navigate("/profile")}>
-            Voltar
-          </Button>
-        </div>
 
-        <Tabs value={selectedDay} onValueChange={setSelectedDay}>
-          <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full h-auto gap-1">
+          <Tabs value={selectedDay} onValueChange={setSelectedDay}>
+            <TabsList className="grid grid-cols-4 md:grid-cols-7 w-full h-auto gap-1">
+              {DAYS.map((day) => (
+                <TabsTrigger key={day.value} value={day.value}>
+                  {day.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
             {DAYS.map((day) => (
-              <TabsTrigger key={day.value} value={day.value}>
-                {day.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {DAYS.map((day) => (
-            <TabsContent key={day.value} value={day.value}>
-              <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-                <CardHeader>
-                  <CardTitle>{day.label.toUpperCase()}</CardTitle>
-                  <CardDescription>
-                    {currentWorkout ? currentWorkout.name : "Nenhum treino configurado"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {currentWorkout?.exercises.map((exercise, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-lg bg-muted/50"
-                    >
-                      <Input
-                        placeholder="Nome do exercício"
-                        value={exercise.name}
-                        onChange={(e) => updateExercise(index, "name", e.target.value)}
-                        className="md:col-span-5"
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Séries"
-                        value={exercise.sets}
-                        onChange={(e) => updateExercise(index, "sets", parseInt(e.target.value))}
-                        className="md:col-span-2"
-                      />
-                      <Input
-                        placeholder="Reps"
-                        value={exercise.reps}
-                        onChange={(e) => updateExercise(index, "reps", e.target.value)}
-                        className="md:col-span-2"
-                      />
-                      <Input
-                        placeholder="Observações"
-                        value={exercise.notes || ""}
-                        onChange={(e) => updateExercise(index, "notes", e.target.value)}
-                        className="md:col-span-2"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteExercise(index)}
-                        className="md:col-span-1"
+              <TabsContent key={day.value} value={day.value}>
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+                  <CardHeader>
+                    <CardTitle>{day.label.toUpperCase()}</CardTitle>
+                    <CardDescription>
+                      {currentWorkout ? currentWorkout.name : "Nenhum treino configurado"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {currentWorkout?.exercises.map((exercise, index) => (
+                      <div
+                        key={index}
+                        className="rounded-xl bg-muted/50 border border-border/30 p-4 space-y-3"
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-sm">{exercise.name}</span>
+                              {exercise.muscleGroup && (
+                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                                  {exercise.muscleGroup}
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                              <span>{exercise.sets} séries</span>
+                              <span>×</span>
+                              <span>{exercise.reps} reps</span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteExercise(index)}
+                            className="shrink-0 h-8 w-8 text-destructive/70 hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
 
-                  <Button onClick={addExercise} className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar Exercício
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+                        {exercise.executionTip && (
+                          <div className="flex gap-2 rounded-lg bg-primary/5 border border-primary/10 p-2">
+                            <Info className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                              {exercise.executionTip}
+                            </p>
+                          </div>
+                        )}
+
+                        {exercise.notes && (
+                          <p className="text-xs text-muted-foreground italic">
+                            📝 {exercise.notes}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+
+                    <Button onClick={() => setModalOpen(true)} className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Adicionar Exercício
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </div>
+
+      <AddExerciseModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onAdd={addExercise}
+      />
     </>
   );
 }
