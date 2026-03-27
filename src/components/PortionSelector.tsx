@@ -13,7 +13,6 @@ interface PortionOption {
 interface PortionSelectorProps {
   currentPortion: string;
   onPortionChange: (portion: string, grams: number) => void;
-  initialGrams?: number;
 }
 
 const portionOptions: PortionOption[] = [
@@ -29,10 +28,9 @@ const portionOptions: PortionOption[] = [
 
 export const PortionSelector: React.FC<PortionSelectorProps> = ({ 
   currentPortion, 
-  onPortionChange,
-  initialGrams
+  onPortionChange 
 }) => {
-  const [manualGrams, setManualGrams] = useState<string>(initialGrams && initialGrams !== 100 ? initialGrams.toString() : '');
+  const [manualGrams, setManualGrams] = useState<string>('');
   const [selectedPortion, setSelectedPortion] = useState<string>('');
 
   const handlePortionChange = (value: string) => {
