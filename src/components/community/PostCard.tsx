@@ -36,7 +36,7 @@ interface PostCardProps {
   onPostDeleted?: () => void;
 }
 
-export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProps) {
+export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [liked, setLiked] = useState(userLiked);
