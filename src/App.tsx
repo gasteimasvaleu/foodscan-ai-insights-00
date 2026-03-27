@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
-import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, Plus } from "lucide-react";
+import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, MessageCircle, Plus } from "lucide-react";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
