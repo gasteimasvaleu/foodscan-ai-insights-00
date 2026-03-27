@@ -7,18 +7,49 @@ import { ExerciseForm } from "@/components/ExerciseForm";
 import { ExerciseDashboard } from "@/components/ExerciseDashboard";
 import { ExerciseHistory } from "@/components/ExerciseHistory";
 import { Navbar } from "@/components/Navbar";
-
-
+import { HealthKitConnect } from "@/components/HealthKitConnect";
+import { HealthKitDashboard } from "@/components/HealthKitDashboard";
+import { useHealthKit } from "@/hooks/useHealthKit";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthCard } from "@/components/AuthCard";
+
+const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 
 export default function FitTracker() {
   const { user, loading } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [promptDismissed, setPromptDismissed] = useState(
+    () => localStorage.getItem(HEALTHKIT_DISMISSED_KEY) === 'true'
+  );
+
+  const {
+    isSupported,
+    isConnected,
+    isLoading: hkLoading,
+    dailySteps,
+    dailyCalories,
+    weight,
+    requestPermissions,
+    disconnect,
+    refreshData,
+  } = useHealthKit();
 
   const handleExerciseAdded = () => {
     setRefreshTrigger(prev => prev + 1);
   };
+
+  const handleDismissPrompt = () => {
+    localStorage.setItem(HEALTHKIT_DISMISSED_KEY, 'true');
+    setPromptDismissed(true);
+  };
+
+  const handleDisconnect = () => {
+    disconnect();
+    localStorage.removeItem(HEALTHKIT_DISMISSED_KEY);
+    setPromptDismissed(false);
+  };
+
+  const showHealthKitPrompt = isSupported && !isConnected && !promptDismissed;
 
   if (loading) {
     return (
@@ -65,6 +96,15 @@ export default function FitTracker() {
             </div>
           </div>
 
+          {/* HealthKit Connect Prompt */}
+          {showHealthKitPrompt && (
+            <HealthKitConnect
+              onConnect={requestPermissions}
+              onDismiss={handleDismissPrompt}
+              isLoading={hkLoading}
+            />
+          )}
+
           <Tabs defaultValue="register" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="register" className="gap-2">
@@ -86,6 +126,16 @@ export default function FitTracker() {
             </TabsContent>
 
             <TabsContent value="dashboard" className="space-y-6">
+              {isConnected && (
+                <HealthKitDashboard
+                  dailySteps={dailySteps}
+                  dailyCalories={dailyCalories}
+                  weight={weight}
+                  isLoading={hkLoading}
+                  onRefresh={refreshData}
+                  onDisconnect={handleDisconnect}
+                />
+              )}
               <ExerciseDashboard key={refreshTrigger} />
             </TabsContent>
 
