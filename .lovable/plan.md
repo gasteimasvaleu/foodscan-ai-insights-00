@@ -1,8 +1,20 @@
 
 
-## Alterar grid dos cards de Ações Rápidas para 1 por linha
+## Ajustar título da data nas avaliações físicas
 
 ### Mudança
 
-**`src/pages/Profile.tsx` (linha 239)** — Alterar a classe do grid de `grid-cols-2 md:grid-cols-3` para `grid-cols-1`, e mudar o layout de cada card de vertical (`flex-col items-center`) para horizontal (`flex-row items-center`) para melhor aproveitamento do espaço em uma coluna.
+**`src/pages/PhysicalAssessment.tsx` (linha ~228)** — Remover o emoji 📅 do `CardTitle` e reduzir o tamanho da fonte para caber em uma linha:
+
+```tsx
+// De:
+<CardTitle>
+  📅 {format(new Date(assessment.assessment_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+</CardTitle>
+
+// Para:
+<CardTitle className="text-base">
+  {format(new Date(assessment.assessment_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+</CardTitle>
+```
 
