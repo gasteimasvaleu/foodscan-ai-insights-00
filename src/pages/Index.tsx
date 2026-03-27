@@ -4,8 +4,6 @@ import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
 import { useAuth } from '@/hooks/useAuth';
 
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
-import PWAOfflineIndicator from '@/components/PWAOfflineIndicator';
 import SplashScreen from '@/components/SplashScreen';
 
 const Index = () => {
