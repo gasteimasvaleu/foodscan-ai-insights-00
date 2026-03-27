@@ -1,75 +1,20 @@
 
-## Diagnóstico
 
-O erro do screenshot confirma que o problema não é moderação/admin approval.
+## Add delete own posts in community
 
-A causa real é esta:
-- hoje já existe uma constraint chamada `community_posts_user_id_fkey`
-- mas ela aponta para `auth.users(id)`, não para `public.profiles(id)`
-- a tela usa o join relacional `profiles:user_id(name, avatar_url)`
-- o PostgREST só consegue resolver esse join quando a relação aponta para `profiles`
+### Changes
 
-Também encontrei o mesmo padrão incorreto em comentários e likes:
-- `post_comments.user_id -> auth.users(id)`
-- `post_likes.user_id -> auth.users(id)`
+**1. `src/components/community/PostCard.tsx`**
+- Add `onPostDeleted` callback prop
+- Show a `Trash2` icon button in the header only when `post.user_id === userId`
+- Add confirmation dialog (AlertDialog) before deleting
+- On confirm: call `supabase.from("community_posts").delete().eq("id", post.id)`, then invoke `onPostDeleted`
+- Show toast on success/error
 
-## Por que a migration anterior não resolveu
+**2. `src/pages/Comunidade.tsx`**
+- Pass `onPostDeleted={fetchPosts}` to each `PostCard`
 
-A migration foi escrita com `IF NOT EXISTS` usando o nome:
-- `community_posts_user_id_fkey`
-- `post_comments_user_id_fkey`
+### Notes
+- RLS policy "Users can delete their own posts" already exists on `community_posts`, so no database changes needed
+- Related likes/comments should cascade-delete via existing FK constraints (`post_comments.post_id` and `post_likes.post_id` reference `community_posts.id` with `ON DELETE CASCADE`)
 
-Como essas constraints já existiam com esse mesmo nome, o SQL não recriou nada. Ou seja: o nome existia, mas o destino da FK continuou errado.
-
-## Plano de correção
-
-### 1. Corrigir as foreign keys existentes no banco
-Em vez de “adicionar se não existir”, a correção precisa:
-- remover as FKs atuais que apontam para `auth.users`
-- recriar apontando para `public.profiles(id)`
-
-Estrutura da correção:
-```sql
-ALTER TABLE public.community_posts
-  DROP CONSTRAINT IF EXISTS community_posts_user_id_fkey;
-
-ALTER TABLE public.community_posts
-  ADD CONSTRAINT community_posts_user_id_fkey
-  FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-
-ALTER TABLE public.post_comments
-  DROP CONSTRAINT IF EXISTS post_comments_user_id_fkey;
-
-ALTER TABLE public.post_comments
-  ADD CONSTRAINT post_comments_user_id_fkey
-  FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-
-ALTER TABLE public.post_likes
-  DROP CONSTRAINT IF EXISTS post_likes_user_id_fkey;
-
-ALTER TABLE public.post_likes
-  ADD CONSTRAINT post_likes_user_id_fkey
-  FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-```
-
-### 2. Manter o frontend com tratamento de erro
-O tratamento de erro já adicionado em:
-- `src/pages/Comunidade.tsx`
-- `src/components/community/CommentSection.tsx`
-
-deve continuar, porque agora ele mostra exatamente esse tipo de falha em vez de esconder o problema.
-
-### 3. Validar o fluxo completo
-Depois da migration correta:
-- abrir `/comunidade`
-- publicar um novo post
-- confirmar que o post aparece sem recarregar
-- recarregar a página e confirmar persistência
-- abrir comentários para validar nome/avatar
-- testar like para garantir que nada quebrou nas relações auxiliares
-
-## Detalhe técnico importante
-
-Usar `auth.users` como referência nesses fluxos do frontend não é o ideal aqui, porque o app consulta `profiles` no schema público. Como já existe `handle_new_user()` criando `profiles`, o relacionamento certo para a comunidade é com `public.profiles(id)`.
-
-Se eu for implementar, a próxima ação correta é ajustar a migration para substituir as FKs erradas, não apenas tentar criar novas com o mesmo nome.
