@@ -282,7 +282,7 @@ export const useHealthKit = () => {
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
       const result = await withTimeout(Health.readSamples({
-        dataType: 'workout',
+        dataType: 'workout' as any,
         startDate: sevenDaysAgo.toISOString(),
         endDate: now.toISOString(),
         limit: 20,
