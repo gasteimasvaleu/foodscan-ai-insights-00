@@ -1,41 +1,50 @@
 
 
-## Cron diário para expirar assinaturas
+## Simplificar cron para função SQL direta
 
 ### Problema
-A expiração só é processada quando o usuário abre o app. Assinaturas expiradas ficam com `subscribed = true` no banco até o próximo acesso.
+A implementação atual usa `pg_net` para chamar uma Edge Function via HTTP, o que é mais complexo e frágil. Uma função SQL direta executada pelo `pg_cron` é mais simples e eficiente.
 
-### Solução
-Criar uma Edge Function `expire-subscriptions` executada diariamente via `pg_cron` que marca como `subscribed = false` todas as assinaturas onde `subscription_end < now()` e `subscribed = true`.
+### Mudanças
 
-### Changes
+1. **Remover `supabase/functions/expire-subscriptions/index.ts`** — não será mais necessária
 
-1. **Nova Edge Function `supabase/functions/expire-subscriptions/index.ts`**
-   - Usa `SUPABASE_SERVICE_ROLE_KEY` para bypass de RLS
-   - Query: `UPDATE subscribers SET subscribed = false, updated_at = now() WHERE subscribed = true AND subscription_end < now()`
-   - Retorna contagem de registros atualizados
-   - Protegida por verificação de Authorization header (Bearer anon key ou service role)
+2. **Remover entrada `[functions.expire-subscriptions]` do `supabase/config.toml`**
 
-2. **`supabase/config.toml`** — Adicionar config para a nova function com `verify_jwt = false` (será chamada pelo cron)
+3. **SQL no Supabase SQL Editor** — criar a função e agendar o cron:
 
-3. **SQL via Supabase SQL Editor** — Habilitar `pg_cron` + `pg_net` e criar o job:
-   ```sql
-   -- Executar diariamente às 03:00 UTC
-   SELECT cron.schedule(
-     'expire-subscriptions-daily',
-     '0 3 * * *',
-     $$
-     SELECT net.http_post(
-       url := 'https://zyhmwcsfifdepqnnrguo.supabase.co/functions/v1/expire-subscriptions',
-       headers := '{"Content-Type": "application/json", "Authorization": "Bearer <anon_key>"}'::jsonb,
-       body := '{}'::jsonb
-     ) AS request_id;
-     $$
-   );
-   ```
+```sql
+CREATE OR REPLACE FUNCTION public.expire_overdue_subscriptions()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  expired_count integer;
+BEGIN
+  UPDATE subscribers
+  SET subscribed = false, updated_at = now()
+  WHERE subscribed = true
+    AND subscription_end < now();
 
-### Technical detail
-- A function faz um único UPDATE em batch, sem loops
-- Logs detalhados com contagem de assinaturas expiradas
-- Roda às 03:00 UTC (meia-noite horário de Brasília) para mínimo impacto
+  GET DIAGNOSTICS expired_count = ROW_COUNT;
+  RAISE LOG 'Expired % subscriptions at %', expired_count, now();
+END;
+$$;
+
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+SELECT cron.schedule(
+  'expire-overdue-subscriptions',
+  '0 3 * * *',
+  'SELECT public.expire_overdue_subscriptions()'
+);
+```
+
+### Vantagens
+- Sem dependência do `pg_net`
+- Execução direta no banco, sem overhead HTTP
+- Mais confiável (sem risco de timeout de rede)
+- Padrão igual ao seu outro app
 
