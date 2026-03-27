@@ -43,7 +43,7 @@ export const useHealthKit = () => {
     try {
       const Health = await getHealthPlugin();
       if (!Health) return false;
-      const { available } = await Health.isAvailable();
+      const { available } = await withTimeout(Health.isAvailable(), 10000);
       return available;
     } catch {
       return false;
