@@ -63,10 +63,13 @@ export const useHealthKit = () => {
         return false;
       }
 
-      await Health.requestAuthorization({
-        read: ['steps', 'calories', 'weight'],
-        write: ['calories'],
-      });
+      await withTimeout(
+        Health.requestAuthorization({
+          read: ['steps', 'calories', 'weight'],
+          write: ['calories'],
+        }),
+        15000
+      );
 
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
