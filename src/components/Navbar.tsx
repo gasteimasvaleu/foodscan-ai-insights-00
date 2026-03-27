@@ -7,7 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
-import { useNativePlatform } from '@/hooks/useNativePlatform';
+
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
