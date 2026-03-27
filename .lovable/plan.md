@@ -1,20 +1,17 @@
 
 
-## Add delete own posts in community
+## Padronizar modal de deletar post
 
-### Changes
+O modal atual em `PostCard.tsx` usa `<AlertDialogContent>` sem classes customizadas. Os outros modais do app seguem este padrao:
 
-**1. `src/components/community/PostCard.tsx`**
-- Add `onPostDeleted` callback prop
-- Show a `Trash2` icon button in the header only when `post.user_id === userId`
-- Add confirmation dialog (AlertDialog) before deleting
-- On confirm: call `supabase.from("community_posts").delete().eq("id", post.id)`, then invoke `onPostDeleted`
-- Show toast on success/error
+```
+className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl"
+```
 
-**2. `src/pages/Comunidade.tsx`**
-- Pass `onPostDeleted={fetchPosts}` to each `PostCard`
+### Mudanca
 
-### Notes
-- RLS policy "Users can delete their own posts" already exists on `community_posts`, so no database changes needed
-- Related likes/comments should cascade-delete via existing FK constraints (`post_comments.post_id` and `post_likes.post_id` reference `community_posts.id` with `ON DELETE CASCADE`)
+**`src/components/community/PostCard.tsx`** (linha 105):
+- Adicionar as classes do padrao visual ao `AlertDialogContent`
+- Estilizar o botao "Deletar" com fundo rosa primario (`bg-primary hover:bg-primary/90 text-white`) em vez de destructive, seguindo o padrao de botoes do app
+- Estilizar o botao "Cancelar" com borda e cantos arredondados
 
