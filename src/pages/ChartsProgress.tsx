@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Utensils, Flame, Dumbbell, Calendar, Calculator } from "lucide-react";
+import { Utensils, Flame, Dumbbell, Calendar, Calculator, BarChart3 } from "lucide-react";
 import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
@@ -238,8 +238,13 @@ export default function ChartsProgress() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-28 pt-[calc(env(safe-area-inset-top)+3.5rem)]">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <h1 className="text-2xl font-bold">Gráficos e Progresso</h1>
+          <div className="mb-6 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-[#FD46A1]">Gráficos e Progresso</h1>
+            </div>
           </div>
 
           {/* Estatísticas Gerais */}

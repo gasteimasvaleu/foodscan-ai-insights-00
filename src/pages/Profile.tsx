@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
-import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2, BarChart3 } from "lucide-react";
+import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -236,7 +236,7 @@ export default function Profile() {
               <CardDescription className="text-center">Acesse suas ferramentas de acompanhamento</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div
                   className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
                   onClick={() => navigate("/profile/workout")}
@@ -265,16 +265,6 @@ export default function Profile() {
                   <div className="text-center">
                     <p className="font-semibold">Minhas Dietas</p>
                     <p className="text-xs text-muted-foreground">Monte sua dieta</p>
-                  </div>
-                </div>
-                <div
-                  className="bg-[#F9FAFB] rounded-2xl flex flex-col items-center gap-2 py-6 px-4 cursor-pointer hover:shadow-md transition-all"
-                  onClick={() => navigate("/graficos-progresso")}
-                >
-                  <BarChart3 className="h-8 w-8 text-pink-500" />
-                  <div className="text-center">
-                    <p className="font-semibold">Gráficos e Progresso</p>
-                    <p className="text-xs text-muted-foreground">Acompanhe sua evolução</p>
                   </div>
                 </div>
               </div>
