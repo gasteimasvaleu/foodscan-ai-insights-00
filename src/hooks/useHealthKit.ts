@@ -363,6 +363,7 @@ export const useHealthKit = () => {
     isSupported,
     isConnected,
     isLoading,
+    debugStatus,
     dailySteps,
     dailyCalories,
     weight,
