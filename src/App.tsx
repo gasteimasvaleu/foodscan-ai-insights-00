@@ -17,6 +17,8 @@ import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminSubscriptions from "./pages/AdminSubscriptions";
 
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import Auth from "./pages/Auth";
@@ -79,7 +81,9 @@ const App = () => (
           <Route path="/nutri-coach" element={<NutriCoach />} />
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
+          <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
           
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
