@@ -207,7 +207,7 @@ const NutriCoach = () => {
       <Navbar />
       <div className="flex-1 flex flex-col pt-16 max-w-3xl mx-auto w-full">
         {/* Messages area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-40 space-y-4">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-56 space-y-4">
           {messages.map((msg, i) => (
             <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
@@ -250,7 +250,7 @@ const NutriCoach = () => {
         </div>
 
         {/* Input area */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 pb-[calc(5rem+env(safe-area-inset-bottom))]">
+        <div className="fixed bottom-20 left-0 right-0 z-30 border-t bg-background p-4 pb-4">
           <div className="flex gap-2 items-end max-w-3xl mx-auto">
             <textarea
               ref={inputRef}
