@@ -32,6 +32,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import Receitas from "./pages/Receitas";
 import Comunidade from "./pages/Comunidade";
+import ChartsProgress from "./pages/ChartsProgress";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
