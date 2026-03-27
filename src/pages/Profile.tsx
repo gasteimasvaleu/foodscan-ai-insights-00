@@ -272,7 +272,10 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Metas Atuais */}
+          {/* Lembretes */}
+          <RemindersCard userId={user.id} />
+
+           {/* Metas Atuais */}
           {goals && (
             <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
               <CardHeader>
