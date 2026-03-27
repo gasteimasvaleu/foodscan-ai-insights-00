@@ -19,6 +19,7 @@ import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminSubscriptions from "./pages/AdminSubscriptions";
+import AdminBanners from "./pages/AdminBanners";
 
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import Auth from "./pages/Auth";
