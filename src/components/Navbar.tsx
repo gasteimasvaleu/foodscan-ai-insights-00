@@ -7,18 +7,21 @@ import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isIOS, isNative } = useNativePlatform();
+  const isNativeIOS = isNative && isIOS;
 
   if (!user) return null;
 
   const menuItems = [
     { label: 'Meu Perfil', href: '/profile' },
-    { label: 'Assinatura', href: '/quero-assinar' },
+    ...(!isNativeIOS ? [{ label: 'Assinatura', href: '/quero-assinar' }] : []),
     { label: 'Política de Privacidade', href: '/politica-de-privacidade' },
     { label: 'Termos de Uso', href: '/termos-de-uso' },
     { label: 'Sobre', href: '/sobre' }
