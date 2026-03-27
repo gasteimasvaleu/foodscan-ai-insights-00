@@ -52,8 +52,12 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-0" aria-describedby={undefined}>
         {loading ? (
+          <div className="p-6 space-y-4">
+            <DialogHeader>
+              <DialogTitle className="sr-only">Carregando receita</DialogTitle>
+            </DialogHeader>
           <div className="p-6 space-y-4">
             <Skeleton className="w-full h-48 rounded-lg" />
             <Skeleton className="h-6 w-3/4" />
