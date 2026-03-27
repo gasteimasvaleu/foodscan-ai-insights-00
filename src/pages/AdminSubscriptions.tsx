@@ -186,6 +186,30 @@ const AdminSubscriptions = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sendWhatsApp"
+                  checked={sendWhatsApp}
+                  onCheckedChange={(checked) => setSendWhatsApp(checked === true)}
+                />
+                <Label htmlFor="sendWhatsApp" className="flex items-center gap-1.5 cursor-pointer">
+                  <MessageCircle className="h-4 w-4 text-green-500" />
+                  Enviar também por WhatsApp
+                </Label>
+              </div>
+              {sendWhatsApp && (
+                <div className="space-y-2">
+                  <Label htmlFor="phone">WhatsApp (com DDD)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="5511999999999"
+                  />
+                  <p className="text-xs text-muted-foreground">Formato: 55 + DDD + número (ex: 5511999999999)</p>
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={sending}>
                 {sending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 Enviar Convite
