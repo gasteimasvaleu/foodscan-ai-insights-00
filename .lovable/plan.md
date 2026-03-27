@@ -1,21 +1,21 @@
 
 
-## Remover badges/indicadores de debug do FitTracker
+## Corrigir overflow do chat NutriCoach quando teclado abre
 
-### Mudanças
+### Problema
+Modal usa `h-[85vh]` + posicionamento centrado fixo. No iOS, quando o teclado abre, o `vh` não muda, causando overflow horizontal e "estouro".
 
-**1. `src/pages/FitTracker.tsx`** (linhas 102-105):
-- Remover o bloco "Debug build marker" que mostra `Build: 2026-03-27T-DEBUG-V1 | HK: {debugStatus}`
+### Solução
 
-**2. `src/components/HealthKitConnect.tsx`** (linhas 116-121):
-- Remover o bloco "Debug status visible on screen" que mostra o `displayStatus` em mono
-- Remover a variável `displayStatus` (linha ~82) e a prop `debugStatus` do uso interno (manter a prop na interface para não quebrar quem passa, mas não exibir nada)
+**`src/pages/NutriCoach.tsx`** — apenas classes CSS do `DialogContent` (linha ~244):
 
-**3. `src/hooks/useHealthKit.ts`** (linha 6):
-- Aumentar timeout do `requestAuthorization` de 20s para 60s (pendente do plano anterior aprovado)
+1. `h-[85vh]` → `h-[85dvh]` — viewport dinâmico que encolhe/cresce com o teclado
+2. Ancorar modal no bottom em vez de center: `!top-auto !bottom-0 !translate-y-0 !left-0 !translate-x-0`
+3. Adicionar `overflow-hidden` e `box-border` para prevenir qualquer overflow residual
+4. Manter `w-[calc(100%-2rem)] max-w-lg mx-auto` para centralização horizontal
 
-### O que NÃO será alterado
-- Nenhuma lógica de conexão, permissão ou dados
-- Nenhum arquivo de configuração (Podfile, entitlements, etc.)
-- Os `console.log` internos permanecem (úteis para Xcode, invisíveis ao usuário)
+### Comportamento
+- Teclado abre → modal encolhe automaticamente
+- Teclado fecha → modal volta a 85% da tela
+- Sem scroll horizontal em nenhum momento
 
