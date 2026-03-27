@@ -1,43 +1,35 @@
 
 
-## Fix: OTA Cache Overriding Local Bundle + Visual Debug
+## Fix: Install Missing Native HealthKit Pod
 
 ### Root Cause
-
-The `autoUpdateMethod: 'background'` in `capacitor.config.ts` causes the Live Updates plugin to apply the cached OTA snapshot **at the native layer**, before any JavaScript runs. So the `isLocalDev` check in `main.tsx` never executes because the old cached bundle (without that check) loads first. This is a chicken-and-egg problem.
-
-The Xcode log confirms it: `[LiveUpdates] Platform: ios | Starting sync...` appears, meaning the old bundle ran (without the `isLocalDev` guard).
+The `@capgo/capacitor-health` npm package is installed (v8.4.1 in `package.json`), but the **native iOS pod was never added**. The `Podfile.lock` only lists Capacitor core and RevenueCat — no health plugin. This is why `Health` imports as `{}`: the JavaScript wrapper loads, but there's no native bridge behind it.
 
 ### Plan
 
-**Step 1: Disable Live Updates in capacitor.config.ts**
-- Comment out or remove the `LiveUpdates` plugin config entirely during development
-- This prevents the native layer from applying any cached OTA bundle
-- The user must then: delete the app from the iPhone, run `npx cap sync ios`, and reinstall via Xcode
+**No code changes needed in Lovable.** This is a local native setup issue.
 
-**Step 2: Add visual build marker to FitTracker page**
-- Show a small debug badge with a unique timestamp/ID on the FitTracker page
-- This instantly confirms whether the new local bundle is active, without relying on console logs
+The user needs to run these commands in their local project:
 
-**Step 3: Add on-screen debug status to HealthKitConnect**
-- Instead of just "Conectando...", show the current step on screen: "Importing plugin...", "Checking availability...", "Requesting authorization..."
-- The `useHealthKit` hook will expose a `debugStatus` string state
-- This makes diagnosis possible even if Xcode console doesn't show JS logs
+```bash
+npm run build
+npx cap sync ios
+cd ios/App && pod install
+```
 
-**Step 4: Expose debugStatus from useHealthKit**
-- Add a `debugStatus` state variable updated at each step of `requestPermissions`
-- Return it from the hook so `HealthKitConnect` can display it
+Then open Xcode and rebuild. After this:
+- `Podfile.lock` should show `CapgoCapacitorHealth` 
+- `Health` will no longer be `{}`
+- The HealthKit permission prompt should appear
 
-### Files Changed
-- `capacitor.config.ts` — remove LiveUpdates plugin config
-- `src/pages/FitTracker.tsx` — add visible build marker
-- `src/hooks/useHealthKit.ts` — add `debugStatus` state
-- `src/components/HealthKitConnect.tsx` — display debug status on screen
+If `npx cap sync` doesn't auto-add the pod, manually add this line to `ios/App/Podfile` inside `capacitor_pods`:
+```ruby
+pod 'CapgoCapacitorHealth', :path => '../../node_modules/@capgo/capacitor-health'
+```
 
-### After Implementation
-1. Delete the app from the iPhone
-2. Run `npm run build && npx cap sync ios`
-3. Open Xcode, build and run on device
-4. Check the build marker appears on FitTracker
-5. Tap "Conectar Apple Health" and read the on-screen status
+### After Running
+1. Verify `Podfile.lock` now includes `CapgoCapacitorHealth`
+2. Build and run on physical iPhone via Xcode
+3. Tap "Conectar Apple Health" — the native permission dialog should appear
+4. Share Xcode logs if it still fails
 
