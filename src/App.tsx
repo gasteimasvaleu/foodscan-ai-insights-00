@@ -55,7 +55,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PushNotificationSetup />
+      
       <BrowserRouter>
         <AuthAwareNavbar />
         <Routes>
