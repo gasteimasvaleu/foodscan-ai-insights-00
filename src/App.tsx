@@ -77,7 +77,7 @@ const App = () => (
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
-          <Route path="/quero-assinar" element={<Subscription />} />
+          <Route path="/quero-assinar" element={<WebOnlyRoute><Subscription /></WebOnlyRoute>} />
           <Route path="/sobre" element={<About />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
@@ -89,8 +89,8 @@ const App = () => (
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancel" element={<PaymentCancel />} />
+          <Route path="/payment-success" element={<WebOnlyRoute><PaymentSuccess /></WebOnlyRoute>} />
+          <Route path="/payment-cancel" element={<WebOnlyRoute><PaymentCancel /></WebOnlyRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
