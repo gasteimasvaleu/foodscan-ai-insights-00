@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Navbar } from "@/components/Navbar";
 import { PostForm } from "@/components/community/PostForm";
 import { PostCard } from "@/components/community/PostCard";
 import { Loader2, Users } from "lucide-react";
@@ -64,18 +65,19 @@ export default function Comunidade() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-28">
-      <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Users size={20} className="text-primary" />
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
+        <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
+          {/* Header */}
+          <div className="mb-6 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-lg font-bold text-[#FD46A1]">Comunidade</h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Comunidade</h1>
-            <p className="text-sm text-muted-foreground">Compartilhe sua jornada</p>
-          </div>
-        </div>
 
         {/* Post Form */}
         <PostForm userId={user.id} onPostCreated={() => { fetchPosts(); }} />
@@ -104,7 +106,8 @@ export default function Comunidade() {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
