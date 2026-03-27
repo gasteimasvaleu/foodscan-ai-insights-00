@@ -1,11 +1,23 @@
 
 
-## Corrigir 404 na página Receitas
+## Padronizar header da página Receitas
 
-O código está correto: o arquivo `src/pages/Receitas.tsx` existe, o import no `App.tsx` (linha 33) e a rota `/receitas` (linha 76) estão registrados corretamente.
+O título atual usa um `<h1>` simples com emoji. O padrão das outras páginas usa um card com gradiente, ícone em círculo e título rosa.
 
-O erro 404 provavelmente ocorre porque o preview ainda não refletiu as últimas alterações. A solução é simplesmente **forçar um rebuild** fazendo uma alteração mínima no `App.tsx` (ex: adicionar um comentário) para que o Vite recompile e a rota passe a funcionar.
+### Mudança
 
-### Ação
-- Fazer uma edição trivial no `App.tsx` (adicionar/remover espaço ou comentário) para disparar o hot reload e resolver o 404.
+**`src/pages/Receitas.tsx`** — Substituir o `<h1>` na linha 25 pelo header padrão:
+
+```tsx
+<div className="mb-6 animate-fade-in">
+  <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+      <UtensilsCrossed className="w-6 h-6 text-white" />
+    </div>
+    <h1 className="text-lg font-bold text-[#FD46A1]">Receitas</h1>
+  </div>
+</div>
+```
+
+Nenhuma outra mudança necessária — o ícone `UtensilsCrossed` já está importado.
 
