@@ -1,37 +1,34 @@
 
 
-## Corrigir erro na página Receitas
+## Resolver busca de receitas em português
 
-### Diagnóstico
+### Problema
+A API do Spoonacular é em inglês — buscar "frango" não retorna resultados, mas "chicken" sim.
 
-1. **Erro de validação (esperado)**: O replay mostra que o usuário clicou "Buscar" sem digitar nada no campo de busca, resultando no toast "Digite algo para buscar". Isso é o comportamento correto de validação.
-
-2. **Erro de acessibilidade no DialogContent**: O console mostra que `RecipeDetails` não renderiza um `DialogTitle` durante o estado de loading, causando o erro do Radix UI.
-
-3. **Edge function pode não estar deployada**: Não há logs da função `spoonacular-recipes`, o que pode indicar que ela ainda não foi deployada.
+### Solução
+Usar a OpenAI (já configurada no projeto) para traduzir o termo de busca do português para inglês antes de enviar ao Spoonacular. Também traduzir os títulos dos resultados de volta para português.
 
 ### Mudanças
 
-**1. Deploy da edge function `spoonacular-recipes`**
-- Garantir que a função está deployada no Supabase.
+**1. Edge Function `spoonacular-recipes/index.ts`**
+- Antes de chamar o Spoonacular, usar a OpenAI para traduzir o `query` de PT-BR → EN
+- Após receber os resultados, traduzir os títulos das receitas de EN → PT-BR em batch (uma chamada só)
+- Usar o secret `OPENAI_API_KEY` já existente
 
-**2. Corrigir acessibilidade em `src/components/RecipeDetails.tsx`**
-- Adicionar `DialogTitle` com `VisuallyHidden` no estado de loading para evitar o erro de acessibilidade.
-- Importar `DialogDescription` ou adicionar `aria-describedby={undefined}` no `DialogContent`.
+**2. Detalhes da tradução na action `details`**
+- Traduzir título, ingredientes e instruções da receita para PT-BR ao buscar detalhes
 
-**3. Melhorar UX de validação em `src/pages/Receitas.tsx`** (opcional)
-- Ao invés de permitir clicar "Buscar" com campo vazio, desabilitar o botão quando `query` está vazio.
-
-### Detalhes técnicos
-
-No `RecipeDetails.tsx`, envolver o conteúdo de loading com um `DialogHeader` contendo um `DialogTitle` oculto:
-
-```tsx
-<DialogContent className="..." aria-describedby={undefined}>
-  <DialogHeader>
-    <DialogTitle className="sr-only">Detalhes da Receita</DialogTitle>
-  </DialogHeader>
-  {loading ? (...) : recipe ? (...) : null}
-</DialogContent>
+### Fluxo
+```text
+Usuário digita "frango grelhado"
+  → Edge Function traduz para "grilled chicken"
+    → Spoonacular retorna resultados em inglês
+      → Edge Function traduz títulos para PT-BR
+        → Frontend exibe em português
 ```
+
+### Notas técnicas
+- A tradução adiciona ~1-2s ao tempo de resposta, mas melhora muito a UX
+- Cache não implementado inicialmente (pode ser adicionado depois)
+- Usa modelo `gpt-4o-mini` para custo mínimo
 
