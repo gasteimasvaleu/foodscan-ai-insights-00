@@ -31,9 +31,21 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, userContext } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    let finalSystemPrompt = systemPrompt;
+    if (userContext && (userContext.name || userContext.calories)) {
+      finalSystemPrompt += `\n\nContexto do usuário:`;
+      if (userContext.name) finalSystemPrompt += `\n- Nome: ${userContext.name}`;
+      if (userContext.diet_objective) finalSystemPrompt += `\n- Objetivo: ${userContext.diet_objective}`;
+      if (userContext.calories) finalSystemPrompt += `\n- Meta calórica: ${userContext.calories} kcal`;
+      if (userContext.proteins || userContext.carbohydrates || userContext.fats) {
+        finalSystemPrompt += `\n- Proteínas: ${userContext.proteins || 0}g | Carboidratos: ${userContext.carbohydrates || 0}g | Gorduras: ${userContext.fats || 0}g`;
+      }
+      finalSystemPrompt += `\n\nUse essas informações para personalizar suas respostas.`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -180,6 +180,7 @@ const NutriCoach = () => {
     try {
       await streamChat({
         messages: historyToSend,
+        userContext,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (msg) => {
