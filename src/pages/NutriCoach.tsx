@@ -333,7 +333,7 @@ const NutriCoach = () => {
                   onKeyDown={handleKeyDown}
                   placeholder="Pergunte sobre nutrição ou treinos..."
                   rows={1}
-                  className="flex-1 min-w-0 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-h-24 overflow-y-auto"
+                  className="flex-1 min-w-0 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-base md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-h-24 overflow-y-auto"
                   style={{ minHeight: '40px' }}
                 />
                 <Button
