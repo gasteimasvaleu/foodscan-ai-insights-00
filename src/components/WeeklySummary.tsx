@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+
+interface DayMeal {
+  id: string;
+  food_name: string;
+  meal_time: string;
+  portion: string;
+  calories: number;
+  carbohydrates: number;
+  proteins: number;
+  fats: number;
+}
 
 export interface WeeklySummaryData {
   id?: string;
@@ -37,22 +49,69 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
   const [isLoading, setIsLoading] = useState(true);
 
+  const [dayMeals, setDayMeals] = useState<DayMeal[]>([]);
+  const [isLoadingMeals, setIsLoadingMeals] = useState(false);
+
   useEffect(() => {
     if (user) {
       loadWeeklyData();
     }
   }, [user]);
 
-  // Recarregar dados a cada 30 segundos para pegar mudanças nas refeições
+  // Recarregar dados a cada 30 segundos
   useEffect(() => {
     if (!user) return;
-    
     const interval = setInterval(() => {
       loadWeeklyData();
-    }, 30000); // 30 segundos - otimizado
-
+      loadDayMeals(selectedDay);
+    }, 30000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, selectedDay]);
+
+  // Carregar refeições quando o dia selecionado mudar
+  useEffect(() => {
+    if (user) {
+      loadDayMeals(selectedDay);
+    }
+  }, [user, selectedDay]);
+
+  const loadDayMeals = async (dayIndex: number) => {
+    if (!user) return;
+    setIsLoadingMeals(true);
+    try {
+      const today = new Date();
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() - today.getDay() + dayIndex);
+      const dateString = targetDate.toISOString().split('T')[0];
+
+      const { data, error } = await supabase
+        .from('meal_records')
+        .select('id, food_name, meal_time, portion, calories, carbohydrates, proteins, fats')
+        .eq('user_id', user.id)
+        .gte('meal_time', `${dateString}T00:00:00.000Z`)
+        .lt('meal_time', `${dateString}T23:59:59.999Z`)
+        .order('meal_time');
+
+      if (error) {
+        console.error('Erro ao buscar refeições do dia:', error);
+        setDayMeals([]);
+        return;
+      }
+      setDayMeals(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar refeições:', error);
+      setDayMeals([]);
+    } finally {
+      setIsLoadingMeals(false);
+    }
+  };
+
+  const formatMealTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const loadWeeklyData = async () => {
     if (!user) return;
@@ -255,7 +314,56 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
           )}
         </div>
 
-        {/* Médias semanais */}
+        {/* Refeições do dia selecionado */}
+        {dayMeals.length > 0 && (
+          <div className="bg-gray-50 rounded-2xl p-4">
+            <h4 className="text-base font-semibold text-gray-800 mb-3 text-center">
+              Refeições de {selectedDayName.full}
+            </h4>
+            <div className="space-y-3">
+              {dayMeals.map((meal) => (
+                <div key={meal.id} className="bg-white rounded-xl p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h5 className="text-sm font-semibold text-gray-800 truncate flex-1">
+                      {meal.food_name}
+                    </h5>
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {formatMealTime(meal.meal_time)}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-2">Porção: {meal.portion}</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.calories}</div>
+                      <div className="text-[10px] text-gray-500">kcal</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.carbohydrates}g</div>
+                      <div className="text-[10px] text-gray-500">Carb</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.proteins}g</div>
+                      <div className="text-[10px] text-gray-500">Prot</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-bold text-[#FD46A1]">{meal.fats}g</div>
+                      <div className="text-[10px] text-gray-500">Gord</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isLoadingMeals && (
+          <div className="text-center py-4">
+            <div className="animate-pulse text-sm text-gray-500">Carregando refeições...</div>
+          </div>
+        )}
+
+
         {weeklyData.length > 0 && (
           <div className="bg-[#F9FAFB] rounded-2xl p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
