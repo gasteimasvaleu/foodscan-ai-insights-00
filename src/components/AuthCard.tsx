@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
-import { PushNotificationSetup, PushNotificationSetupRef } from './PushNotificationSetup';
+
 import { AppleSignInButton } from './AppleSignInButton';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
@@ -22,7 +22,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { isNative, isIOS } = useNativePlatform();
   const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
+  
 
   const isNativeIOS = isNative && isIOS;
 
@@ -85,7 +85,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </h3>
           </CardContent>
         </Card>
-        <PushNotificationSetup ref={pushNotificationRef} />
+        
       </>
     );
   }

@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { PushNotificationSetup } from "@/components/PushNotificationSetup";
+
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, MessageCircle, Plus } from "lucide-react";
 import Index from "./pages/Index";
@@ -17,7 +17,7 @@ import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
-import AdminNotifications from "./pages/AdminNotifications";
+
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -55,7 +55,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PushNotificationSetup />
+      
       <BrowserRouter>
         <AuthAwareNavbar />
         <Routes>
@@ -80,7 +80,7 @@ const App = () => (
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
-          <Route path="/admin/notificacoes" element={<AdminNotifications />} />
+          
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
 
