@@ -1,33 +1,21 @@
 
 
-## Adicionar contexto automático de metas diárias no NutriCoach
+## Corrigir navegação e input do NutriCoach
 
-### O que muda
-O chat do NutriCoach passará a buscar as metas diárias do usuário (calorias, proteínas, carboidratos, gorduras, objetivo) do Supabase e enviá-las junto com as mensagens para a Edge Function, que as incluirá no system prompt.
+### Problemas
+1. O NutriCoach foi adicionado diretamente no Tubelight Navbar, removendo o botão "+" (Mais). Deveria estar dentro do sheet do "+"
+2. O textarea de input está escondido atrás da faixa branca e do Tubelight menu
 
 ### Mudanças
 
-1. **`src/pages/NutriCoach.tsx`**
-   - Importar `supabase` client
-   - Adicionar `useEffect` para buscar `daily_goals` do usuário ao montar o componente
-   - Passar o objeto `userContext` (metas + nome do perfil) no body do fetch para a Edge Function
-   - Também buscar `profiles` para pegar o nome do usuário
+1. **`src/App.tsx`** — Remover o item `NutriCoach` do array `navItems`, mantendo apenas os 7 itens originais + "Mais"
 
-2. **`supabase/functions/nutri-coach-chat/index.ts`**
-   - Receber campo opcional `userContext` do body (`{ calories, proteins, carbohydrates, fats, diet_objective, name }`)
-   - Quando presente, anexar ao system prompt um bloco com as informações do usuário:
-     ```
-     Contexto do usuário:
-     - Nome: {name}
-     - Objetivo: {diet_objective}
-     - Meta calórica: {calories} kcal
-     - Proteínas: {proteins}g | Carboidratos: {carbohydrates}g | Gorduras: {fats}g
-     
-     Use essas informações para personalizar suas respostas.
-     ```
+2. **`src/components/ui/tubelight-navbar.tsx`** — Adicionar o NutriCoach ao array `moreSheetItems`:
+   ```ts
+   { name: "NutriCoach", description: "Chat com IA de nutrição e treinos", url: "/nutri-coach", icon: MessageCircle }
+   ```
 
-### Detalhes técnicos
-- A query ao `daily_goals` usa `order('created_at', { ascending: false }).limit(1)` para pegar a meta mais recente
-- O contexto é enviado uma vez no body e concatenado ao system prompt server-side — não ocupa tokens de histórico
-- Se o usuário não tiver metas cadastradas, o chat funciona normalmente sem contexto extra
+3. **`src/pages/NutriCoach.tsx`** — Ajustar o padding inferior da área de mensagens e do input para não ficar atrás do menu:
+   - Área de mensagens: adicionar `pb-32` para compensar o input + tubelight
+   - Input area: mudar para `fixed bottom-0 left-0 right-0` com `pb-[calc(5rem+env(safe-area-inset-bottom))]` para ficar acima do Tubelight menu e da faixa branca
 
