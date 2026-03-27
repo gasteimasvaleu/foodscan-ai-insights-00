@@ -1,23 +1,50 @@
 
 
-## Padronizar header da página Receitas
+## Integrar Spoonacular na página Receitas
 
-O título atual usa um `<h1>` simples com emoji. O padrão das outras páginas usa um card com gradiente, ícone em círculo e título rosa.
+### Contexto
+A página Receitas está vazia. Vamos integrá-la com a API do Spoonacular para buscar receitas com dados nutricionais. A API key do Spoonacular ainda não existe nos secrets — precisamos adicioná-la.
 
-### Mudança
+### Arquitetura
 
-**`src/pages/Receitas.tsx`** — Substituir o `<h1>` na linha 25 pelo header padrão:
-
-```tsx
-<div className="mb-6 animate-fade-in">
-  <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
-    <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
-      <UtensilsCrossed className="w-6 h-6 text-white" />
-    </div>
-    <h1 className="text-lg font-bold text-[#FD46A1]">Receitas</h1>
-  </div>
-</div>
+```text
+Frontend (Receitas.tsx)
+  → supabase.functions.invoke("spoonacular-recipes")
+    → Edge Function proxy → api.spoonacular.com
 ```
 
-Nenhuma outra mudança necessária — o ícone `UtensilsCrossed` já está importado.
+### Etapas
+
+**1. Adicionar secret `SPOONACULAR_API_KEY`**
+- Solicitar ao usuário a chave da API (obtida em spoonacular.com/food-api/console)
+
+**2. Criar Edge Function `supabase/functions/spoonacular-recipes/index.ts`**
+- Endpoints: busca por texto (`/recipes/complexSearch`), receita por ID (`/recipes/{id}/information`)
+- Inclui dados nutricionais (`addNutritionInformation=true`)
+- CORS headers, validação de input com Zod
+- Parâmetros: `query` (busca), `id` (detalhes), `cuisine` (filtro), `diet` (filtro), `number` (quantidade)
+
+**3. Criar componente `src/components/RecipeCard.tsx`**
+- Card com imagem, título, tempo de preparo, porções
+- Macros resumidos (calorias, proteínas, carboidratos, gorduras)
+- Botão para ver detalhes
+
+**4. Criar componente `src/components/RecipeDetails.tsx`**
+- Modal/dialog com receita completa: ingredientes, instruções passo-a-passo
+- Tabela nutricional detalhada
+- Imagem grande
+
+**5. Atualizar `src/pages/Receitas.tsx`**
+- Campo de busca com ícone Search
+- Filtros: tipo de dieta (vegetariana, low-carb, etc.), tipo de culinária
+- Grid de RecipeCards com resultados
+- Loading skeleton durante busca
+- Estado vazio quando sem resultados
+- Paginação simples (carregar mais)
+- Ao clicar num card, abre RecipeDetails
+
+### Detalhes técnicos
+- A API gratuita do Spoonacular permite 150 requests/dia
+- Tradução dos nomes dos nutrientes para PT-BR no frontend
+- Não é necessário criar tabela no banco (receitas vêm direto da API, sem persistência por enquanto)
 
