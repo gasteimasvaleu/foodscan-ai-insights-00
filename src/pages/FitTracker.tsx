@@ -129,16 +129,26 @@ export default function FitTracker() {
 
             <TabsContent value="dashboard" className="space-y-6">
               {isConnected && (
-                <HealthKitDashboard
-                  dailySteps={dailySteps}
-                  dailyCalories={dailyCalories}
-                  weight={weight}
-                  isLoading={hkLoading}
-                  onRefresh={refreshData}
-                  onDisconnect={handleDisconnect}
-                />
+                <>
+                  <HealthKitDashboard
+                    dailySteps={dailySteps}
+                    dailyCalories={dailyCalories}
+                    weight={weight}
+                    isLoading={hkLoading}
+                    onRefresh={refreshData}
+                    onDisconnect={handleDisconnect}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/apple-health')}
+                    className="w-full rounded-xl border-primary/30 text-[#FD46A1] hover:bg-primary/5"
+                  >
+                    <Heart className="w-4 h-4 mr-2" fill="currentColor" />
+                    Ver detalhes Apple Health
+                  </Button>
+                </>
               )}
-              <ExerciseDashboard key={refreshTrigger} />
+              <ExerciseDashboard key={refreshTrigger} healthKitCalories={isConnected ? dailyCalories : 0} />
             </TabsContent>
 
             <TabsContent value="history" className="space-y-6">
