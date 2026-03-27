@@ -137,6 +137,7 @@ export default function AppleHealth() {
             onConnect={requestPermissions}
             onDismiss={() => navigate('/fit-tracker')}
             isLoading={isLoading}
+            debugStatus={debugStatus}
           />
         )}
 
