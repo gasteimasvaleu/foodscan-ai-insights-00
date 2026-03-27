@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
+  
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { isIOS, isNative } = useNativePlatform();
