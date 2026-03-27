@@ -7,7 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Helper logging function for enhanced debugging
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
@@ -18,7 +17,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Use the service role key to perform writes (upsert) in Supabase
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -30,22 +28,18 @@ serve(async (req) => {
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-    logStep("Stripe key verified");
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
-    logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
-    logStep("Authenticating user with token");
-    
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Check for existing subscription first
+    // Check for existing subscription
     const { data: existingSubscription } = await supabaseClient
       .from("subscribers")
       .select("*")
@@ -57,8 +51,7 @@ serve(async (req) => {
       provider: existingSubscription?.payment_provider,
       subscribed: existingSubscription?.subscribed,
       tier: existingSubscription?.subscription_tier,
-      end: existingSubscription?.subscription_end,
-      is_hotmart_managed: existingSubscription?.is_hotmart_managed
+      end: existingSubscription?.subscription_end
     });
 
     // 🍎 PROTEÇÃO APPLE: Se payment_provider é 'apple', validar subscription_end
@@ -93,88 +86,26 @@ serve(async (req) => {
       });
     }
 
-    // 🛡️ PROTEÇÃO DEFINITIVA: Se é gerenciado pelo Hotmart, NUNCA sobrescrever
-    if (existingSubscription?.is_hotmart_managed) {
-      const subEnd = existingSubscription.subscription_end 
-        ? new Date(existingSubscription.subscription_end) 
-        : null;
-      const isActive = subEnd ? subEnd > new Date() : false;
-
-      logStep("🛡️ HOTMART MANAGED SUBSCRIPTION", {
-        tier: existingSubscription.subscription_tier,
-        end: existingSubscription.subscription_end,
-        subscribed: existingSubscription.subscribed,
-        isActive
-      });
-
-      // Se expirou, atualizar no banco
-      if (!isActive && existingSubscription.subscribed) {
-        logStep("⏰ Hotmart subscription expired, marking as inactive");
-        await supabaseClient.from("subscribers").update({
-          subscribed: false,
-          updated_at: new Date().toISOString(),
-        }).eq("user_id", user.id);
-      }
-      
-      return new Response(JSON.stringify({
-        subscribed: isActive,
-        subscription_tier: existingSubscription.subscription_tier,
-        subscription_end: existingSubscription.subscription_end,
-        payment_provider: 'hotmart'
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
-    }
-
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No Stripe customer found, checking for other providers");
+      logStep("No Stripe customer found");
       
-      // Check if there's an active Hotmart subscription
-      if (existingSubscription?.payment_provider === 'hotmart') {
-        const subEnd = existingSubscription.subscription_end ? new Date(existingSubscription.subscription_end) : null;
-        const isActive = subEnd && subEnd > new Date();
-        
-        if (isActive) {
-          logStep("Active Hotmart subscription found, preserving it", {
-            tier: existingSubscription.subscription_tier,
-            end: existingSubscription.subscription_end
-          });
-          return new Response(JSON.stringify({
-            subscribed: true,
-            subscription_tier: existingSubscription.subscription_tier,
-            subscription_end: existingSubscription.subscription_end,
-            payment_provider: 'hotmart'
-          }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 200,
-          });
-        } else {
-          logStep("Hotmart subscription expired, marking as inactive");
-        }
-      }
-      
-      // PROTEÇÃO CONTRA RACE CONDITION - DUPLA VERIFICAÇÃO
-      // Verificar se o registro foi criado OU atualizado recentemente (< 30s)
+      // PROTEÇÃO CONTRA RACE CONDITION
       if (existingSubscription) {
         const now = Date.now();
         const createdTime = new Date(existingSubscription.created_at).getTime();
         const updatedTime = new Date(existingSubscription.updated_at).getTime();
-        
         const secondsSinceCreation = (now - createdTime) / 1000;
         const secondsSinceUpdate = (now - updatedTime) / 1000;
         
-        // NOVA LÓGICA: Proteger se foi criado OU atualizado nos últimos 30 segundos
         if (secondsSinceCreation < 30 || secondsSinceUpdate < 30) {
           logStep("⚠️ RACE CONDITION PROTECTION: Record too recent", {
             secondsSinceCreation: Math.floor(secondsSinceCreation),
             secondsSinceUpdate: Math.floor(secondsSinceUpdate),
             provider: existingSubscription.payment_provider,
-            subscribed: existingSubscription.subscribed,
-            tier: existingSubscription.subscription_tier
+            subscribed: existingSubscription.subscribed
           });
           
           return new Response(JSON.stringify({
@@ -189,26 +120,6 @@ serve(async (req) => {
         }
       }
       
-      // PROTEÇÃO ADICIONAL: Verificar se já existe uma assinatura Hotmart válida
-      // Nunca sobrescrever dados Hotmart válidos com dados vazios
-      if (existingSubscription?.payment_provider === 'hotmart' && 
-          existingSubscription?.subscribed === true &&
-          existingSubscription?.subscription_end) {
-        
-        logStep("🛡️ PRESERVING VALID HOTMART SUBSCRIPTION - Não sobrescrever com dados vazios");
-        
-        return new Response(JSON.stringify({
-          subscribed: existingSubscription.subscribed,
-          subscription_tier: existingSubscription.subscription_tier,
-          subscription_end: existingSubscription.subscription_end,
-          payment_provider: 'hotmart'
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        });
-      }
-      
-      // No active subscription from any provider
       logStep("No active subscription found, updating to unsubscribed state");
       await supabaseClient.from("subscribers").upsert({
         email: user.email,
@@ -218,9 +129,9 @@ serve(async (req) => {
         subscription_tier: existingSubscription?.subscription_tier || null,
         subscription_end: existingSubscription?.subscription_end || null,
         payment_provider: existingSubscription?.payment_provider || null,
-        hotmart_transaction_id: existingSubscription?.hotmart_transaction_id || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'email' });
+
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -243,7 +154,6 @@ serve(async (req) => {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
-      // Determine subscription tier from price
       const priceId = subscription.items.data[0].price.id;
       const price = await stripe.prices.retrieve(priceId);
       const amount = price.unit_amount || 0;
@@ -255,68 +165,6 @@ serve(async (req) => {
         subscriptionTier = "Enterprise";
       }
       logStep("Determined subscription tier", { priceId, amount, subscriptionTier });
-    } else {
-      logStep("No active Stripe subscription found, checking for Hotmart");
-      
-      // Check if there's an active Hotmart subscription
-      if (existingSubscription?.payment_provider === 'hotmart') {
-        const subEnd = existingSubscription.subscription_end ? new Date(existingSubscription.subscription_end) : null;
-        const isActive = subEnd && subEnd > new Date();
-        
-        if (isActive) {
-          logStep("Active Hotmart subscription found, preserving it despite Stripe customer", {
-            tier: existingSubscription.subscription_tier,
-            end: existingSubscription.subscription_end
-          });
-          return new Response(JSON.stringify({
-            subscribed: true,
-            subscription_tier: existingSubscription.subscription_tier,
-            subscription_end: existingSubscription.subscription_end,
-            payment_provider: 'hotmart'
-          }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 200,
-          });
-        } else {
-          logStep("Hotmart subscription expired");
-        }
-      }
-    }
-
-    // Verificação final: não sobrescrever assinatura Hotmart ativa
-    if (!hasActiveSub && existingSubscription?.payment_provider === 'hotmart') {
-      const subEnd = existingSubscription.subscription_end ? new Date(existingSubscription.subscription_end) : null;
-      const isActive = subEnd && subEnd > new Date();
-      
-      if (isActive) {
-        logStep("Preserving active Hotmart subscription in final check", {
-          tier: existingSubscription.subscription_tier,
-          end: existingSubscription.subscription_end
-        });
-        
-        // Atualizar apenas stripe_customer_id, mantendo dados Hotmart
-        await supabaseClient.from("subscribers").upsert({
-          email: user.email,
-          user_id: user.id,
-          stripe_customer_id: customerId,
-          subscribed: true,
-          subscription_tier: existingSubscription.subscription_tier,
-          subscription_end: existingSubscription.subscription_end,
-          payment_provider: 'hotmart',
-          hotmart_transaction_id: existingSubscription.hotmart_transaction_id,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'email' });
-        
-        return new Response(JSON.stringify({
-          subscribed: true,
-          subscription_tier: existingSubscription.subscription_tier,
-          subscription_end: existingSubscription.subscription_end,
-          payment_provider: 'hotmart'
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        });
-      }
     }
 
     await supabaseClient.from("subscribers").upsert({
@@ -327,11 +175,10 @@ serve(async (req) => {
       subscription_tier: hasActiveSub ? subscriptionTier : (existingSubscription?.subscription_tier || null),
       subscription_end: hasActiveSub ? subscriptionEnd : (existingSubscription?.subscription_end || null),
       payment_provider: hasActiveSub ? 'stripe' : (existingSubscription?.payment_provider || null),
-      hotmart_transaction_id: existingSubscription?.hotmart_transaction_id || null,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'email' });
 
-    logStep("Updated database with subscription info", { subscribed: hasActiveSub, subscriptionTier });
+    logStep("Updated database", { subscribed: hasActiveSub, subscriptionTier });
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
       subscription_tier: subscriptionTier,
@@ -342,7 +189,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR in check-subscription", { message: errorMessage });
+    logStep("ERROR", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
