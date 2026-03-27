@@ -75,6 +75,44 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
     }
   }, [user, selectedDay]);
 
+  const loadDayMeals = async (dayIndex: number) => {
+    if (!user) return;
+    setIsLoadingMeals(true);
+    try {
+      const today = new Date();
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() - today.getDay() + dayIndex);
+      const dateString = targetDate.toISOString().split('T')[0];
+
+      const { data, error } = await supabase
+        .from('meal_records')
+        .select('id, food_name, meal_time, portion, calories, carbohydrates, proteins, fats')
+        .eq('user_id', user.id)
+        .gte('meal_time', `${dateString}T00:00:00.000Z`)
+        .lt('meal_time', `${dateString}T23:59:59.999Z`)
+        .order('meal_time');
+
+      if (error) {
+        console.error('Erro ao buscar refeições do dia:', error);
+        setDayMeals([]);
+        return;
+      }
+      setDayMeals(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar refeições:', error);
+      setDayMeals([]);
+    } finally {
+      setIsLoadingMeals(false);
+    }
+  };
+
+  const formatMealTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   const loadWeeklyData = async () => {
     if (!user) return;
 
