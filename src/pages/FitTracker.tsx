@@ -31,6 +31,7 @@ export default function FitTracker() {
     dailySteps,
     dailyCalories,
     weight,
+    debugStatus,
     requestPermissions,
     disconnect,
     refreshData,
@@ -98,12 +99,18 @@ export default function FitTracker() {
             </div>
           </div>
 
+          {/* Debug build marker */}
+          <div className="mb-2 px-3 py-1 bg-muted/50 rounded text-[10px] text-muted-foreground font-mono">
+            Build: 2026-03-27T-DEBUG-V1 | HK: {debugStatus}
+          </div>
+
           {/* HealthKit Connect Prompt */}
           {showHealthKitPrompt && (
             <HealthKitConnect
               onConnect={requestPermissions}
               onDismiss={handleDismissPrompt}
               isLoading={hkLoading}
+              debugStatus={debugStatus}
             />
           )}
 

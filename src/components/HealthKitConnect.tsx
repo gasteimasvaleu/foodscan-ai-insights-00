@@ -7,12 +7,14 @@ interface HealthKitConnectProps {
   onConnect: () => Promise<boolean>;
   onDismiss: () => void;
   isLoading: boolean;
+  debugStatus?: string;
 }
 
 export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
   onConnect,
   onDismiss,
   isLoading,
+  debugStatus,
 }) => {
   const [connecting, setConnecting] = useState(false);
 
@@ -97,6 +99,8 @@ export const HealthKitConnect: React.FC<HealthKitConnectProps> = ({
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                 Conectando...
               </div>
+            ) : debugStatus && debugStatus !== 'idle' ? (
+              <span className="text-xs">{debugStatus}</span>
             ) : (
               <>
                 <Heart className="w-4 h-4 mr-2" fill="white" />

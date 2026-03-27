@@ -29,6 +29,7 @@ export const useHealthKit = () => {
   const { isIOS, isNative } = useNativePlatform();
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [debugStatus, setDebugStatus] = useState<string>('idle');
   const [dailySteps, setDailySteps] = useState<number>(0);
   const [dailyCalories, setDailyCalories] = useState<number>(0);
   const [weight, setWeight] = useState<number | null>(null);
@@ -82,27 +83,35 @@ export const useHealthKit = () => {
 
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     console.log('[HealthKit] requestPermissions called, isSupported:', isSupported);
+    setDebugStatus('requestPermissions called');
     if (!isSupported) {
-      console.warn('[HealthKit] Not supported, aborting. isIOS:', isIOS, 'isNative:', isNative);
+      const msg = `Not supported (isIOS=${isIOS}, isNative=${isNative})`;
+      console.warn('[HealthKit]', msg);
+      setDebugStatus(msg);
       return false;
     }
     setIsLoading(true);
     try {
+      setDebugStatus('Importing plugin...');
       console.log('[HealthKit] Getting health plugin...');
       const Health = await getHealthPlugin();
       if (!Health) {
+        setDebugStatus('ERROR: plugin is null');
         console.error('[HealthKit] Plugin is null after import');
         return false;
       }
 
+      setDebugStatus('Checking availability...');
       console.log('[HealthKit] Checking availability...');
       const available = await checkAvailability();
       console.log('[HealthKit] Available:', available);
       if (!available) {
+        setDebugStatus('ERROR: HealthKit not available');
         console.warn('[HealthKit] HealthKit not available on this device');
         return false;
       }
 
+      setDebugStatus('Requesting authorization...');
       console.log('[HealthKit] Calling requestAuthorization...');
       await withTimeout(
         Health.requestAuthorization({
@@ -112,12 +121,15 @@ export const useHealthKit = () => {
         15000
       );
       console.log('[HealthKit] requestAuthorization succeeded!');
+      setDebugStatus('Connected!');
 
       localStorage.setItem(HEALTHKIT_CONNECTED_KEY, 'true');
       setIsConnected(true);
       return true;
     } catch (error) {
+      const errMsg = error instanceof Error ? error.message : String(error);
       console.error('[HealthKit] requestPermissions error:', error);
+      setDebugStatus(`ERROR: ${errMsg}`);
       return false;
     } finally {
       setIsLoading(false);
@@ -351,6 +363,7 @@ export const useHealthKit = () => {
     isSupported,
     isConnected,
     isLoading,
+    debugStatus,
     dailySteps,
     dailyCalories,
     weight,
