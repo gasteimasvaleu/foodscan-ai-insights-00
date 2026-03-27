@@ -17,6 +17,8 @@ import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminSubscriptions from "./pages/AdminSubscriptions";
 
 import WhatsAppSettings from "./pages/WhatsAppSettings";
 import Auth from "./pages/Auth";
