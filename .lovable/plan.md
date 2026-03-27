@@ -1,18 +1,33 @@
 
 
-## Centralizar formulário de login verticalmente
+## Adicionar contexto automático de metas diárias no NutriCoach
 
-### Problema
-No app nativo iOS, o card de login está posicionado muito acima na tela.
+### O que muda
+O chat do NutriCoach passará a buscar as metas diárias do usuário (calorias, proteínas, carboidratos, gorduras, objetivo) do Supabase e enviá-las junto com as mensagens para a Edge Function, que as incluirá no system prompt.
 
-### Mudança
+### Mudanças
 
-**`src/components/AuthCard.tsx`** — Nos dois blocos de retorno (Native iOS e Web), o wrapper já usa `min-h-[calc(100vh-env(safe-area-inset-top)-6rem)] flex items-center`. Trocar para `min-h-[calc(100vh-env(safe-area-inset-top)-2rem)]` e adicionar `justify-center` para melhor centralização vertical, empurrando o card mais para o centro da tela.
+1. **`src/pages/NutriCoach.tsx`**
+   - Importar `supabase` client
+   - Adicionar `useEffect` para buscar `daily_goals` do usuário ao montar o componente
+   - Passar o objeto `userContext` (metas + nome do perfil) no body do fetch para a Edge Function
+   - Também buscar `profiles` para pegar o nome do usuário
 
-Linhas ~95-96 (Native iOS) e ~180-181 (Web):
-```
-<div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center">
-```
+2. **`supabase/functions/nutri-coach-chat/index.ts`**
+   - Receber campo opcional `userContext` do body (`{ calories, proteins, carbohydrates, fats, diet_objective, name }`)
+   - Quando presente, anexar ao system prompt um bloco com as informações do usuário:
+     ```
+     Contexto do usuário:
+     - Nome: {name}
+     - Objetivo: {diet_objective}
+     - Meta calórica: {calories} kcal
+     - Proteínas: {proteins}g | Carboidratos: {carbohydrates}g | Gorduras: {fats}g
+     
+     Use essas informações para personalizar suas respostas.
+     ```
 
-Isso reduz a subtração de altura (de 6rem para 2rem), dando mais espaço e centralizando melhor o formulário.
+### Detalhes técnicos
+- A query ao `daily_goals` usa `order('created_at', { ascending: false }).limit(1)` para pegar a meta mais recente
+- O contexto é enviado uma vez no body e concatenado ao system prompt server-side — não ocupa tokens de histórico
+- Se o usuário não tiver metas cadastradas, o chat funciona normalmente sem contexto extra
 
