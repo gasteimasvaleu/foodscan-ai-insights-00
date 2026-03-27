@@ -21,6 +21,7 @@ export interface NutritionalPreview {
 
 export interface FoodElement {
   name: string;
+  estimated_grams?: number;
   description?: string;
   detailed_description?: string;
   category?: string;
