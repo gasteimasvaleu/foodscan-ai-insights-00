@@ -83,25 +83,6 @@ const Subscription = () => {
           {/* Subscription Status */}
           <SubscriptionStatus />
 
-          {/* Payment Methods Info */}
-          <div className="mb-8 animate-scale-in">
-            <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
-              <CardContent className="p-6 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-primary-100 rounded-full p-3">
-                    <CreditCard className="w-6 h-6 text-primary-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-primary-600 mb-2">
-                  💳 Pagamento com PIX ou Cartão
-                </h3>
-                <p className="text-gray-700">
-                  Acesso liberado em <strong>até 1 hora</strong> após confirmação do pagamento
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
           {/* Subscription Plans */}
           <SubscriptionPlans />
 
