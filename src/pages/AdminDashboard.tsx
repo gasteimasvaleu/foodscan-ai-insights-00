@@ -55,6 +55,12 @@ const AdminDashboard = () => {
 
   const adminPages = [
     {
+      title: 'Banners',
+      description: 'Gerenciar banners da página principal',
+      icon: ImageIcon,
+      path: '/admin/banners',
+    },
+    {
       title: 'Treinos',
       description: 'Gerenciar conteúdo de treinos e vídeos',
       icon: Dumbbell,

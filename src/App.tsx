@@ -83,6 +83,7 @@ const App = () => (
           <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/banners" element={<AdminBanners />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
           
