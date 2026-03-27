@@ -18,6 +18,12 @@ interface NavBarProps {
 
 const moreSheetItems = [
   {
+    name: "Gráficos e Progresso",
+    description: "Acompanhe sua evolução",
+    url: "/graficos-progresso",
+    icon: BarChart3,
+  },
+  {
     name: "Comunidade",
     description: "Compartilhe sua jornada fitness",
     url: "/comunidade",
