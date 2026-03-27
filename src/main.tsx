@@ -6,7 +6,12 @@ import './index.css'
 
 const isNative = Capacitor.isNativePlatform();
 
-if (isNative) {
+// Skip OTA Live Updates when running locally via Xcode (capacitor://localhost)
+// so the app always uses the bundle built by `npm run build && npx cap sync`.
+// In production (published OTA), the URL will NOT contain "localhost".
+const isLocalDev = isNative && window.location.hostname === 'localhost';
+
+if (isNative && !isLocalDev) {
   // ── Live Updates (OTA) ──
   console.log('[LiveUpdates] Platform:', Capacitor.getPlatform(), '| Starting sync...');
 
@@ -30,6 +35,8 @@ if (isNative) {
       }).catch(err => console.warn('[LiveUpdates] Foreground sync failed:', err));
     }
   });
+} else if (isLocalDev) {
+  console.log('[LiveUpdates] Skipped – running local Xcode build (localhost)');
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

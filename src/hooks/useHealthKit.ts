@@ -37,6 +37,9 @@ export const useHealthKit = () => {
 
   const isSupported = isIOS && isNative;
 
+  // Log environment on every render (will appear in Xcode console)
+  console.log('[HealthKit] Hook loaded | isIOS:', isIOS, '| isNative:', isNative, '| isSupported:', isSupported);
+
   useEffect(() => {
     const stored = localStorage.getItem(HEALTHKIT_CONNECTED_KEY);
     if (stored === 'true' && isSupported) {
