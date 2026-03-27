@@ -1,17 +1,16 @@
 
 
-## Padronizar modal de deletar post
+## Padronizar modal de receitas e melhorar loading
 
-O modal atual em `PostCard.tsx` usa `<AlertDialogContent>` sem classes customizadas. Os outros modais do app seguem este padrao:
+### Mudancas em `src/components/RecipeDetails.tsx`
 
-```
-className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl"
-```
+**1. Estilizar DialogContent no padrao do app**
+- Adicionar classes: `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
+- Manter `max-h-[85vh] overflow-y-auto p-0`
 
-### Mudanca
-
-**`src/components/community/PostCard.tsx`** (linha 105):
-- Adicionar as classes do padrao visual ao `AlertDialogContent`
-- Estilizar o botao "Deletar" com fundo rosa primario (`bg-primary hover:bg-primary/90 text-white`) em vez de destructive, seguindo o padrao de botoes do app
-- Estilizar o botao "Cancelar" com borda e cantos arredondados
+**2. Substituir loading de Skeletons por spinner centralizado**
+- Remover os Skeletons atuais
+- Mostrar um spinner animado (`animate-spin rounded-full border-b-2 border-primary`) centralizado
+- Texto abaixo: "Traduzindo receita..." com animacao de pulso (`animate-pulse`)
+- Centralizado vertical e horizontalmente dentro do modal com altura minima
 
