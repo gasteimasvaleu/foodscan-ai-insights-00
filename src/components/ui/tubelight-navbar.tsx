@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3 } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -17,6 +17,12 @@ interface NavBarProps {
 }
 
 const moreSheetItems = [
+  {
+    name: "NutriCoach",
+    description: "Chat com IA de nutrição e treinos",
+    url: "/nutri-coach",
+    icon: MessageCircle,
+  },
   {
     name: "Gráficos e Progresso",
     description: "Acompanhe sua evolução",
