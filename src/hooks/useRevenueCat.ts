@@ -27,7 +27,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   useEffect(() => {
     if (!isNative || !isIOS || !user?.id) return;
     initRevenueCat();
-  }, [isNative, isIOS]);
+  }, [isNative, isIOS, user?.id]);
 
   const syncToSupabase = async (customerInfo: any) => {
     if (!user?.id || !user?.email) return;
