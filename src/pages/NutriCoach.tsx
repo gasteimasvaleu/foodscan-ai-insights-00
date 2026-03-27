@@ -214,7 +214,7 @@ const NutriCoach = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
       <Navbar />
-      <div className="flex-1 px-4 pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28 max-w-3xl mx-auto w-full space-y-4">
+      <div className="flex-1 px-4 <div className="flex-1 px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 max-w-3xl mx-auto w-full space-y-4"> pb-28 max-w-3xl mx-auto w-full space-y-4">
         {/* Card título */}
         <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
           <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
