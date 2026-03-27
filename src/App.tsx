@@ -86,6 +86,7 @@ const App = () => (
           <Route path="/servinutri" element={<ServiNUTRI />} />
           <Route path="/receitas" element={<Receitas />} />
           <Route path="/comunidade" element={<Comunidade />} />
+          <Route path="/nutri-coach" element={<NutriCoach />} />
           <Route path="/treinos" element={<Treinos />} />
           <Route path="/admin/treinos" element={<AdminTreinos />} />
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
