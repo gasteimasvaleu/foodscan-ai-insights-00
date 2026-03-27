@@ -241,7 +241,7 @@ const NutriCoach = () => {
 
       {/* Chat Modal */}
       <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-lg h-[85dvh] rounded-2xl bg-white border-2 border-primary shadow-xl p-0 flex flex-col gap-0 overflow-hidden box-border !top-auto !bottom-0 !translate-y-0 !left-0 !translate-x-0 mx-auto">
+        <DialogContent className="!fixed !inset-x-4 !top-auto !bottom-24 !left-4 !right-4 !w-auto !max-w-lg !mx-auto !translate-x-0 !translate-y-0 h-[65dvh] max-h-[65dvh] rounded-2xl bg-white border-2 border-primary shadow-xl p-0 flex flex-col gap-0 overflow-hidden box-border">
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b bg-white rounded-t-2xl">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
