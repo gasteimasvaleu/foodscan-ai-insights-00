@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
 import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, MessageCircle, Plus } from "lucide-react";
@@ -14,15 +13,12 @@ import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
 import FitTracker from "./pages/FitTracker";
 import MasterCheFIT from "./pages/MasterCheFIT";
-import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import ServiNUTRI from "./pages/ServiNUTRI";
 import Treinos from "./pages/Treinos";
 import AdminTreinos from "./pages/AdminTreinos";
 import AdminNotifications from "./pages/AdminNotifications";
 import WhatsAppSettings from "./pages/WhatsAppSettings";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCancel from "./pages/PaymentCancel";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
@@ -54,12 +50,6 @@ const AuthAwareNavbar = () => {
   return <TubelightNavbar items={navItems} />;
 };
 
-const WebOnlyRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isIOS, isNative } = useNativePlatform();
-  if (isNative && isIOS) return <Navigate to="/" replace />;
-  return <>{children}</>;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -79,7 +69,7 @@ const App = () => (
           <Route path="/controle-diario" element={<DailyControl />} />
           <Route path="/fit-tracker" element={<FitTracker />} />
           <Route path="/masterchef" element={<MasterCheFIT />} />
-          <Route path="/quero-assinar" element={<WebOnlyRoute><Subscription /></WebOnlyRoute>} />
+          
           <Route path="/sobre" element={<About />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
@@ -93,8 +83,8 @@ const App = () => (
           <Route path="/admin/notificacoes" element={<AdminNotifications />} />
           <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/payment-success" element={<WebOnlyRoute><PaymentSuccess /></WebOnlyRoute>} />
-          <Route path="/payment-cancel" element={<WebOnlyRoute><PaymentCancel /></WebOnlyRoute>} />
+
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

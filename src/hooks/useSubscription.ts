@@ -40,68 +40,6 @@ export const useSubscription = (user: any) => {
     }
   };
 
-  const createCheckout = async (priceId: string, tier: string = 'Premium') => {
-    try {
-      // For guest checkout, we don't require authentication
-      const body: any = { priceId, tier };
-      
-      // If user is logged in, we can pass their email for existing customer lookup
-      if (user?.email) {
-        body.customerEmail = user.email;
-      }
-
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body
-      });
-
-      if (error) {
-        toast({
-          title: "Erro no checkout",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar sessão de checkout",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const openCustomerPortal = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
-
-      if (error) {
-        toast({
-          title: "Erro",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao abrir portal do cliente",
-        variant: "destructive",
-      });
-    }
-  };
-
   // Auto-check subscription when user changes
   useEffect(() => {
     if (user) {
@@ -135,7 +73,5 @@ export const useSubscription = (user: any) => {
     subscriptionStatus,
     loading,
     checkSubscription,
-    createCheckout,
-    openCustomerPortal,
   };
 };

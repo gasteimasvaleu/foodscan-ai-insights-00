@@ -30,15 +30,6 @@ if (isNative) {
       }).catch(err => console.warn('[LiveUpdates] Foreground sync failed:', err));
     }
   });
-} else {
-  // ── Service Worker (Web / PWA only) ──
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('[SW] Registered:', reg.scope))
-        .catch(err => console.warn('[SW] Registration failed:', err));
-    });
-  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

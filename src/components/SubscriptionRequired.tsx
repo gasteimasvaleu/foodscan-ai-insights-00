@@ -62,21 +62,12 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
 
             <div className="space-y-3">
               <Button 
-                onClick={() => {
-                  if (isNativeIOS) {
-                    purchaseMonthly();
-                  } else {
-                    window.location.href = '/quero-assinar';
-                  }
-                }}
+                onClick={() => purchaseMonthly()}
                 className="w-full"
                 size="lg"
                 disabled={rcLoading}
               >
-                {isNativeIOS 
-                  ? (rcLoading ? 'Processando...' : `Assinar${price ? ` por ${price}/mês` : ''}`)
-                  : 'Assinar Agora'
-                }
+                {rcLoading ? 'Processando...' : `Assinar${price ? ` por ${price}/mês` : ''}`}
               </Button>
               
               <Button 
