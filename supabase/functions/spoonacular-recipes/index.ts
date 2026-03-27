@@ -138,6 +138,17 @@ serve(async (req) => {
             });
           }
 
+          // Translate analyzedInstructions steps
+          if (data.analyzedInstructions?.[0]?.steps?.length) {
+            const steps = data.analyzedInstructions[0].steps;
+            const stepTexts = steps.map((s: any) => s.step);
+            const translatedSteps = await translateBatch(stepTexts, 'English', 'Portuguese', openaiKey);
+            steps.forEach((s: any, i: number) => {
+              s.originalStep = s.step;
+              s.step = translatedSteps[i];
+            });
+          }
+
           // Translate instructions
           if (data.instructions) {
             data.originalInstructions = data.instructions;
