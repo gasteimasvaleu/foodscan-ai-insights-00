@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Utensils, Flame, Dumbbell, Calendar, Calculator } from "lucide-react";
+import { Utensils, Flame, Dumbbell, Calendar, Calculator, BarChart3 } from "lucide-react";
 import { PhysicalEvolutionChart } from "@/components/PhysicalEvolutionChart";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useNavigate } from "react-router-dom";
