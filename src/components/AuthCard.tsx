@@ -22,7 +22,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { isNative, isIOS } = useNativePlatform();
   const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const pushNotificationRef = useRef<PushNotificationSetupRef>(null);
+  
 
   const isNativeIOS = isNative && isIOS;
 
