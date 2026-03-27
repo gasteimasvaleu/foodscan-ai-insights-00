@@ -14,8 +14,7 @@ export const Navbar = () => {
   
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { isIOS, isNative } = useNativePlatform();
-  const isNativeIOS = isNative && isIOS;
+
 
   if (!user) return null;
 
