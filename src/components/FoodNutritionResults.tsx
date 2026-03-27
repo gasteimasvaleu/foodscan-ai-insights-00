@@ -171,7 +171,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
             <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-800">
               <p className="font-medium mb-1">Múltiplos elementos identificados</p>
-              <p>Os valores nutricionais são calculados com base em 100g de cada elemento. Você pode ajustar as porções individuais no card abaixo para obter valores mais precisos.</p>
+              <p>As porções foram estimadas visualmente pela IA. Você pode ajustar as porções individuais abaixo para obter valores mais precisos.</p>
             </div>
           </div>
         </div>
