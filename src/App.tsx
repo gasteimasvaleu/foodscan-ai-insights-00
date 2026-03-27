@@ -44,7 +44,6 @@ const navItems = [
   { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
   { name: 'Treinos', url: '/treinos', icon: Dumbbell },
   { name: 'MasterChef', url: '/masterchef', icon: ChefHat },
-  { name: 'NutriCoach', url: '/nutri-coach', icon: MessageCircle },
   { name: 'Mais', url: '#more', icon: Plus }
 ];
 

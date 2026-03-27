@@ -18,6 +18,12 @@ interface NavBarProps {
 
 const moreSheetItems = [
   {
+    name: "NutriCoach",
+    description: "Chat com IA de nutrição e treinos",
+    url: "/nutri-coach",
+    icon: MessageCircle,
+  },
+  {
     name: "Gráficos e Progresso",
     description: "Acompanhe sua evolução",
     url: "/graficos-progresso",

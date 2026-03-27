@@ -250,7 +250,7 @@ const NutriCoach = () => {
         </div>
 
         {/* Input area */}
-        <div className="border-t bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 pb-[calc(5rem+env(safe-area-inset-bottom))]">
           <div className="flex gap-2 items-end max-w-3xl mx-auto">
             <textarea
               ref={inputRef}
