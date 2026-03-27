@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, Shield, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Shield, Loader2, MessageCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 
 interface RegistrationToken {
@@ -34,6 +35,8 @@ const AdminSubscriptions = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [planType, setPlanType] = useState('monthly');
+  const [phone, setPhone] = useState('');
+  const [sendWhatsApp, setSendWhatsApp] = useState(false);
   const [sending, setSending] = useState(false);
 
   const [tokens, setTokens] = useState<RegistrationToken[]>([]);
@@ -80,9 +83,30 @@ const AdminSubscriptions = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      toast({ title: '✅ Convite enviado!', description: `Email enviado para ${email}` });
+      // Send WhatsApp if checked
+      if (sendWhatsApp && phone.trim()) {
+        try {
+          const { error: whatsAppError } = await supabase.functions.invoke('send-whatsapp-invite', {
+            body: {
+              phone: phone.trim(),
+              name: name.trim(),
+              plan_type: planType,
+              registration_token: data.token,
+            },
+          });
+          if (whatsAppError) throw whatsAppError;
+          toast({ title: '✅ Convite enviado!', description: `Email e WhatsApp enviados com sucesso` });
+        } catch (whatsErr: any) {
+          toast({ title: '⚠️ Email enviado, WhatsApp falhou', description: whatsErr.message, variant: 'destructive' });
+        }
+      } else {
+        toast({ title: '✅ Convite enviado!', description: `Email enviado para ${email}` });
+      }
+
       setName('');
       setEmail('');
+      setPhone('');
+      setSendWhatsApp(false);
       fetchTokens();
     } catch (err: any) {
       toast({ title: 'Erro ao enviar', description: err.message, variant: 'destructive' });
@@ -162,6 +186,30 @@ const AdminSubscriptions = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sendWhatsApp"
+                  checked={sendWhatsApp}
+                  onCheckedChange={(checked) => setSendWhatsApp(checked === true)}
+                />
+                <Label htmlFor="sendWhatsApp" className="flex items-center gap-1.5 cursor-pointer">
+                  <MessageCircle className="h-4 w-4 text-green-500" />
+                  Enviar também por WhatsApp
+                </Label>
+              </div>
+              {sendWhatsApp && (
+                <div className="space-y-2">
+                  <Label htmlFor="phone">WhatsApp (com DDD)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="5511999999999"
+                  />
+                  <p className="text-xs text-muted-foreground">Formato: 55 + DDD + número (ex: 5511999999999)</p>
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={sending}>
                 {sending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 Enviar Convite
