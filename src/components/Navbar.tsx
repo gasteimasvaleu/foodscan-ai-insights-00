@@ -2,20 +2,19 @@
 import { useState } from 'react';
 import { User, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
+
 import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
-import { useNativePlatform } from '@/hooks/useNativePlatform';
+
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
+  
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { isIOS, isNative } = useNativePlatform();
-  const isNativeIOS = isNative && isIOS;
+
 
   if (!user) return null;
 
