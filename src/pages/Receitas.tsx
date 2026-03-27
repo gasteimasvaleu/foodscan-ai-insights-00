@@ -22,7 +22,14 @@ const Receitas = () => {
     <div className="min-h-screen bg-background pb-32">
       <Navbar />
       <div className="container max-w-lg mx-auto px-4 pt-20">
-        <h1 className="text-2xl font-bold text-foreground mb-6">🍽️ Receitas</h1>
+        <div className="mb-6 animate-fade-in">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <UtensilsCrossed className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-[#FD46A1]">Receitas</h1>
+          </div>
+        </div>
 
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="w-20 h-20 rounded-full bg-[#FFD1E7]/40 flex items-center justify-center mb-4">
