@@ -1,24 +1,41 @@
 
 
-## Hide Stripe/Hotmart payment pages on native iOS
+## Cron diário para expirar assinaturas
 
-**Context**: No iOS nativo, as assinaturas são gerenciadas via RevenueCat/In-App Purchase. As páginas `/quero-assinar`, `/payment-success` e `/payment-cancel` pertencem ao fluxo web (Hotmart) e não devem ser exibidas no iOS nativo.
+### Problema
+A expiração só é processada quando o usuário abre o app. Assinaturas expiradas ficam com `subscribed = true` no banco até o próximo acesso.
+
+### Solução
+Criar uma Edge Function `expire-subscriptions` executada diariamente via `pg_cron` que marca como `subscribed = false` todas as assinaturas onde `subscription_end < now()` e `subscribed = true`.
 
 ### Changes
 
-1. **`src/App.tsx`** — Wrap the three routes (`/quero-assinar`, `/payment-success`, `/payment-cancel`) in a conditional that checks `Capacitor.getPlatform() !== 'ios'` (or uses `useNativePlatform`). On native iOS, redirect these routes to `/` (home).
+1. **Nova Edge Function `supabase/functions/expire-subscriptions/index.ts`**
+   - Usa `SUPABASE_SERVICE_ROLE_KEY` para bypass de RLS
+   - Query: `UPDATE subscribers SET subscribed = false, updated_at = now() WHERE subscribed = true AND subscription_end < now()`
+   - Retorna contagem de registros atualizados
+   - Protegida por verificação de Authorization header (Bearer anon key ou service role)
 
-2. **`src/components/Navbar.tsx`** — Hide the "Assinatura" menu item (`/quero-assinar`) when on native iOS.
+2. **`supabase/config.toml`** — Adicionar config para a nova function com `verify_jwt = false` (será chamada pelo cron)
 
-3. **`src/components/SubscriptionRequired.tsx`** — On native iOS, change the button to trigger the RevenueCat paywall instead of navigating to `/quero-assinar`.
-
-4. **`src/pages/PaymentSuccess.tsx`** — Remove the link to `/quero-assinar` or make it platform-aware.
-
-5. **`src/pages/PaymentCancel.tsx`** — Same: hide or redirect on native iOS.
+3. **SQL via Supabase SQL Editor** — Habilitar `pg_cron` + `pg_net` e criar o job:
+   ```sql
+   -- Executar diariamente às 03:00 UTC
+   SELECT cron.schedule(
+     'expire-subscriptions-daily',
+     '0 3 * * *',
+     $$
+     SELECT net.http_post(
+       url := 'https://zyhmwcsfifdepqnnrguo.supabase.co/functions/v1/expire-subscriptions',
+       headers := '{"Content-Type": "application/json", "Authorization": "Bearer <anon_key>"}'::jsonb,
+       body := '{}'::jsonb
+     ) AS request_id;
+     $$
+   );
+   ```
 
 ### Technical detail
-
-- Use `useNativePlatform()` hook (already exists) to detect iOS native
-- For routes in `App.tsx`, create a wrapper component that redirects to `/` on native iOS using `<Navigate to="/" />`
-- The RevenueCat hook (`useRevenueCat.ts`) already exists for native purchase flow
+- A function faz um único UPDATE em batch, sem loops
+- Logs detalhados com contagem de assinaturas expiradas
+- Roda às 03:00 UTC (meia-noite horário de Brasília) para mínimo impacto
 
