@@ -89,8 +89,6 @@ const handler = async (req: Request): Promise<Response> => {
       .insert({
         email,
         name,
-        hotmart_transaction_id: `manual_${Date.now()}`,
-        hotmart_product_id: `manual_${plan_type}`,
         plan_type: planConfig.tier === 'Premium Mensal' ? 'monthly' : 'annual',
         plan_months: planConfig.months,
         subscription_end: subscriptionEnd.toISOString(),
