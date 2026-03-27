@@ -33,6 +33,7 @@ async function streamChat({
   onError,
 }: {
   messages: Message[];
+  userContext?: UserContext;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (msg: string) => void;
@@ -43,7 +44,7 @@ async function streamChat({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, userContext }),
   });
 
   if (!resp.ok) {
