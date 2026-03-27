@@ -84,10 +84,10 @@ export function PostCard({ post, userId, userLiked, onLikeToggle }: PostCardProp
             size={20}
             className={cn(
               "transition-colors",
-              liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              liked ? "fill-destructive text-destructive" : "text-muted-foreground"
             )}
           />
-          <span className={cn("font-medium", liked ? "text-red-500" : "text-muted-foreground")}>
+          <span className={cn("font-medium", liked ? "text-destructive" : "text-muted-foreground")}>
             {likesCount}
           </span>
         </button>
