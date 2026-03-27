@@ -13,8 +13,6 @@ interface SubscriptionRequiredProps {
 
 export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ children }) => {
   const { user, subscription } = useAuth();
-  const { isIOS, isNative } = useNativePlatform();
-  const isNativeIOS = isNative && isIOS;
   const { purchaseMonthly, loading: rcLoading, price } = useRevenueCat(user);
 
   // If not logged in, redirect to auth page
