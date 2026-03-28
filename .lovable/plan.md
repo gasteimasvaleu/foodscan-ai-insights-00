@@ -1,20 +1,22 @@
 
 
-## Re-deploy da edge function analyze-nutrition
+## Corrigir faixa branca do Tubelight Navbar
 
-### Situação
-O código do prompt já está correto (valores por 100g), mas a edge function pode não ter sido re-deployada após as últimas alterações.
+A faixa branca (linha 104) tem `rounded-t-3xl` que não deveria estar lá — originalmente era sem border-radius e ocupava toda a largura.
 
-### Correção
-**`supabase/functions/analyze-nutrition/index.ts`** — adicionar um comentário de versão no topo do arquivo para forçar o re-deploy automático:
+### Alteração
 
-```typescript
-// v2.1 - 2026-03-27 - Valores por 100g para múltiplos elementos
+**`src/components/ui/tubelight-navbar.tsx`** (linha 104):
+
+De:
+```
+<div className="absolute inset-x-0 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
 ```
 
-Isso garante que o Lovable detecte a mudança no arquivo e faça o deploy da edge function com o prompt atualizado.
+Para:
+```
+<div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
+```
 
-### Resultado
-- Edge function será re-deployada com o prompt que usa 100g por elemento
-- Sem mudança funcional no código — apenas trigger de deploy
+Remove o `rounded-t-3xl` para que a faixa branca fique reta no topo e ocupe toda a linha horizontal. O menu rosa não será alterado.
 
