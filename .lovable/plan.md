@@ -1,46 +1,70 @@
 
-Problema identificado: o erro continua porque o hook está assumindo que o SDK foi configurado com base em estado local do React (`initialized` / `initializedRef`), mas o próprio plugin nativo do RevenueCat continua dizendo que não foi configurado. Ou seja: o “fonte da verdade” do app e o “fonte da verdade” do SDK ficaram desencontrados.
 
-O que corrigir:
+## Diagnóstico
 
-1. Tornar a inicialização do RevenueCat idempotente e baseada no SDK real
-- Em `src/hooks/useRevenueCat.ts`, parar de confiar só em `initializedRef`.
-- Antes de qualquer `getOfferings`, `restorePurchases`, `getCustomerInfo` ou `logIn`, consultar `Purchases.isConfigured()`.
-- Se não estiver configurado, chamar `Purchases.configure(...)` e só então seguir.
-- Evitar chamadas concorrentes criando uma promise/ref de inicialização única, para dois componentes não tentarem configurar ao mesmo tempo.
+A arquitetura do seu outro projeto que funciona usa **funções standalone** em `src/lib/revenuecat.ts` — sem React hooks, sem state, sem closures. Este projeto usa um `useRevenueCat` hook com `useState`, que causa problemas de stale closures e race conditions quando múltiplos componentes o consomem.
 
-2. Remover a cadeia que hoje chama métodos dependentes logo após um “configure” otimista
-- Hoje `initRevenueCat()` já faz `checkExistingSubscription()` e `fetchPrice()` em sequência.
-- Vou reorganizar isso para:
-  - garantir configuração real primeiro;
-  - só depois buscar assinatura/preço;
-  - não marcar `initialized=true` até confirmar via `isConfigured()`.
+O problema fundamental: `Purchases.isConfigured()` pode não estar disponível ou funcionar diferente na v12.3.0 do `@revenuecat/purchases-capacitor`. Se `isConfigured()` retorna `false` mesmo após `configure()`, o SDK nunca é considerado pronto.
 
-3. Blindar os fluxos de compra/restauração/login
-- `purchaseMonthly()` e `restorePurchases()` devem sempre passar por `ensureRevenueCatReady()`.
-- O efeito que faz `loginToRevenueCat(user.id)` também deve usar esse mesmo guard.
-- Assim nenhum caminho consegue chamar o SDK “cru” antes da configuração nativa estar pronta.
+Além disso, o `configurePromise` é resetado para `null` no `finally`, então chamadas subsequentes tentam configurar novamente, potencialmente causando conflitos.
 
-4. Endurecer o controller nativo
-- Em `ios/App/App/MyViewController.swift`, ajustar o override para chamar `super.capacitorDidLoad()` antes/depois do registro manual do plugin customizado.
-- Isso reduz o risco de interferir no bootstrap padrão dos plugins do Capacitor, incluindo o plugin `Purchases`.
+## Plano: Reestruturar para a arquitetura que funciona
 
-5. Melhorar diagnóstico sem mascarar falhas
-- Adicionar logs claros no hook:
-  - plataforma detectada,
-  - resultado de `isConfigured()`,
-  - momento exato do `configure`,
-  - primeira chamada que falhou.
-- Manter toasts para o usuário, mas com causa mais útil quando o SDK ainda não estiver pronto.
+### 1. Criar `src/lib/revenuecat.ts` (novo arquivo)
+Módulo standalone com funções puras (sem React):
 
-Arquivos envolvidos:
-- `src/hooks/useRevenueCat.ts`
-- `ios/App/App/MyViewController.swift`
+- `initRevenueCat()` — configura o SDK uma única vez, com flag booleana simples (`let isConfiguredFlag = false`)
+- `purchaseMonthly()` — busca offerings e compra
+- `restorePurchases()` — restaura compras
+- `getSubscriptionPrice()` — retorna preço
+- `checkSubscriptionStatus()` — verifica entitlements
+- `syncSubscriptionAfterLogin(userId, email)` — upsert no Supabase
+- `logInRevenueCat(userId)` / `logOutRevenueCat()` — associa/desassocia user
 
-Resultado esperado:
-- `Purchases.getOfferings()` só roda depois de o plugin confirmar configuração real.
-- O botão “Assinar via App Store” deixa de cair no erro “Purchases must be configured before calling this function”.
-- O fluxo fica estável mesmo com múltiplos componentes usando `useRevenueCat()` ao mesmo tempo.
+Diferença-chave: em vez de confiar em `Purchases.isConfigured()`, usar uma flag local no módulo (`let configured = false`) que é setada após `Purchases.configure()` completar com sucesso. E usar um mutex (promise singleton) para evitar chamadas concorrentes.
 
-Detalhe técnico importante:
-Hoje o projeto tem pelo menos dois pontos consumindo `useRevenueCat()` (`AuthCard` e `SubscriptionRequired`). Isso aumenta a chance de corrida de inicialização. A correção principal é centralizar a inicialização numa rotina única e verificar `Purchases.isConfigured()` em vez de depender de estado local do hook.
+### 2. Criar `src/lib/nativeAppleSignIn.ts` (novo arquivo)
+Mover a lógica de Apple Sign In para um módulo utilitário standalone (já existe em `src/plugins/NativeAppleSignIn.ts` mas como tipo; aqui seria uma função `nativeAppleSignIn()` que chama o plugin e retorna o resultado).
+
+### 3. Simplificar `src/hooks/useRevenueCat.ts`
+O hook passa a ser um **wrapper fino** que:
+- Chama as funções de `src/lib/revenuecat.ts`
+- Gerencia apenas o estado React para a UI (price, hasPurchased, loading)
+- Não faz configure/isConfigured diretamente
+
+### 4. Atualizar Podfile com hardening de code signing
+Adicionar remoção de `CODE_SIGNING_ALLOWED`, `CODE_SIGNING_REQUIRED`, `CODE_SIGN_IDENTITY` no `post_install` (conforme memória do projeto).
+
+### Arquivos
+
+| Arquivo | Ação |
+|---|---|
+| `src/lib/revenuecat.ts` | Criar — funções standalone |
+| `src/lib/nativeAppleSignIn.ts` | Criar — wrapper do plugin |
+| `src/hooks/useRevenueCat.ts` | Reescrever — wrapper fino sobre lib |
+| `ios/App/Podfile` | Atualizar — hardening post_install |
+
+### Detalhes técnicos da `src/lib/revenuecat.ts`
+
+```text
+Module-level state (no React):
+  let configured = false
+  let configuringPromise: Promise<void> | null = null
+
+initRevenueCat():
+  if (configured) return
+  if (configuringPromise) await configuringPromise; return
+  configuringPromise = Purchases.configure({ apiKey })
+  configured = true
+
+purchaseMonthly():
+  await initRevenueCat()  // ensures configured
+  offerings = await Purchases.getOfferings()
+  result = await Purchases.purchasePackage(...)
+  return customerInfo
+
+// Same pattern for restorePurchases, getPrice, etc.
+```
+
+Isso elimina 100% dos problemas de stale closure e race condition porque o estado de configuração vive no módulo, não no React.
+
