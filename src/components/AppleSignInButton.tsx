@@ -65,11 +65,13 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
       }
     } catch (err: any) {
       if (err?.code === '1001') {
-        return; // User cancelled
+        console.log('[AppleSignIn] User cancelled');
+        return;
       }
+      console.error('[AppleSignIn] Unexpected error:', err);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível fazer login com Apple.',
+        title: 'Erro no login com Apple',
+        description: err?.message || 'Não foi possível fazer login com Apple.',
         variant: 'destructive',
       });
     } finally {
