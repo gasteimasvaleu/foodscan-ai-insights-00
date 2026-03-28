@@ -1,42 +1,46 @@
 
+Problema identificado: o erro continua porque o hook está assumindo que o SDK foi configurado com base em estado local do React (`initialized` / `initializedRef`), mas o próprio plugin nativo do RevenueCat continua dizendo que não foi configurado. Ou seja: o “fonte da verdade” do app e o “fonte da verdade” do SDK ficaram desencontrados.
 
-## Problema
+O que corrigir:
 
-O erro `"Purchases must be configured before calling this function"` acontece porque o guard que adicionei tem um bug de closure do React:
+1. Tornar a inicialização do RevenueCat idempotente e baseada no SDK real
+- Em `src/hooks/useRevenueCat.ts`, parar de confiar só em `initializedRef`.
+- Antes de qualquer `getOfferings`, `restorePurchases`, `getCustomerInfo` ou `logIn`, consultar `Purchases.isConfigured()`.
+- Se não estiver configurado, chamar `Purchases.configure(...)` e só então seguir.
+- Evitar chamadas concorrentes criando uma promise/ref de inicialização única, para dois componentes não tentarem configurar ao mesmo tempo.
 
-1. `purchaseMonthly()` verifica `if (!initialized)` → é `false`
-2. Chama `await initRevenueCat()` → que faz `setInitialized(true)`
-3. Mas `initialized` na closure de `purchaseMonthly` **continua `false`** (stale closure)
-4. Retorna `false` sem nunca tentar a compra
-5. Ou pior: em cenários de race condition, tenta comprar antes do configure terminar
+2. Remover a cadeia que hoje chama métodos dependentes logo após um “configure” otimista
+- Hoje `initRevenueCat()` já faz `checkExistingSubscription()` e `fetchPrice()` em sequência.
+- Vou reorganizar isso para:
+  - garantir configuração real primeiro;
+  - só depois buscar assinatura/preço;
+  - não marcar `initialized=true` até confirmar via `isConfigured()`.
 
-O código original **não tinha esse guard** e funcionava porque o `useEffect` já cuidava da inicialização. Minha mudança quebrou isso.
+3. Blindar os fluxos de compra/restauração/login
+- `purchaseMonthly()` e `restorePurchases()` devem sempre passar por `ensureRevenueCatReady()`.
+- O efeito que faz `loginToRevenueCat(user.id)` também deve usar esse mesmo guard.
+- Assim nenhum caminho consegue chamar o SDK “cru” antes da configuração nativa estar pronta.
 
-## Correção
+4. Endurecer o controller nativo
+- Em `ios/App/App/MyViewController.swift`, ajustar o override para chamar `super.capacitorDidLoad()` antes/depois do registro manual do plugin customizado.
+- Isso reduz o risco de interferir no bootstrap padrão dos plugins do Capacitor, incluindo o plugin `Purchases`.
 
-**Arquivo: `src/hooks/useRevenueCat.ts`**
+5. Melhorar diagnóstico sem mascarar falhas
+- Adicionar logs claros no hook:
+  - plataforma detectada,
+  - resultado de `isConfigured()`,
+  - momento exato do `configure`,
+  - primeira chamada que falhou.
+- Manter toasts para o usuário, mas com causa mais útil quando o SDK ainda não estiver pronto.
 
-1. Adicionar um `useRef` para rastrear inicialização (refs não sofrem de stale closure):
-   ```typescript
-   const initializedRef = useRef(false);
-   ```
+Arquivos envolvidos:
+- `src/hooks/useRevenueCat.ts`
+- `ios/App/App/MyViewController.swift`
 
-2. Em `initRevenueCat`, setar tanto o state quanto o ref:
-   ```typescript
-   setInitialized(true);
-   initializedRef.current = true;
-   ```
+Resultado esperado:
+- `Purchases.getOfferings()` só roda depois de o plugin confirmar configuração real.
+- O botão “Assinar via App Store” deixa de cair no erro “Purchases must be configured before calling this function”.
+- O fluxo fica estável mesmo com múltiplos componentes usando `useRevenueCat()` ao mesmo tempo.
 
-3. Em `purchaseMonthly` e `restorePurchases`, usar o ref no guard:
-   ```typescript
-   if (!initializedRef.current) {
-     await initRevenueCat();
-     if (!initializedRef.current) {
-       // mostrar erro e retornar false
-       return false;
-     }
-   }
-   ```
-
-Isso garante que o guard funcione corretamente sem stale closures, mantendo a proteção contra chamadas antes do configure.
-
+Detalhe técnico importante:
+Hoje o projeto tem pelo menos dois pontos consumindo `useRevenueCat()` (`AuthCard` e `SubscriptionRequired`). Isso aumenta a chance de corrida de inicialização. A correção principal é centralizar a inicialização numa rotina única e verificar `Purchases.isConfigured()` em vez de depender de estado local do hook.
