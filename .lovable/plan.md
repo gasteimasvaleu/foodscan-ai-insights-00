@@ -1,68 +1,61 @@
 
 Diagnóstico
 
-Do I know what the issue is? Yes.
+- Não, isso não significa que o projeto “quebrou o git”.
+- O que o terminal mostra agora não é um erro novo do app; é o Git abrindo o editor para finalizar um merge.
+- A prova está no próprio output:
+  - `Auto-merging ios/App/Podfile`
+  - `Waiting for your editor to close the file...`
+- Isso acontece porque seu branch local e o `origin/main` passaram a ter commits diferentes. Como houve mudança remota no `ios/App/Podfile` e seu histórico local também andou, o `git pull` está tentando criar um merge commit.
 
-O erro atual não é de TypeScript, RevenueCat ou Apple Sign In. O build está falhando por um problema de assinatura dos Pods nativos no iOS.
+Plano para corrigir de vez
 
-O que identifiquei:
-- A captura mostra apenas erros de signing nos targets gerados pelo CocoaPods:
-  - `Capacitor-Capacitor`
-  - `CapacitorCordova-CapacitorCordova`
-  - `PurchasesHybridCommon-PurchasesHybridCommon`
-  - `RevenueCat-RevenueCat`
-- O `ios/App/Podfile` hoje usa `use_frameworks!`, então esses Pods viram frameworks no Xcode.
-- O `post_install` atual apenas remove chaves:
-  - `CODE_SIGNING_ALLOWED`
-  - `CODE_SIGNING_REQUIRED`
-  - `CODE_SIGN_IDENTITY`
-- Em builds para device, remover essas chaves não garante que o Xcode deixe de exigir assinatura. Para esses targets, normalmente é preciso desabilitar signing explicitamente com `NO` ou então injetar `DEVELOPMENT_TEAM`.
+1. Sair do estado atual de merge
+- Primeiro encerrar o merge atual:
+  - concluir o merge salvando a mensagem do commit, ou
+  - abortar o merge atual se você não quer esse pull agora.
+- Enquanto esse merge estiver aberto, o Git vai continuar parecendo “travado”.
 
-Arquivos relevantes
-- `ios/App/Podfile`
-- `ios/App/Podfile.lock`
-- `ios/App/App.xcodeproj/project.pbxproj`
-- `src/lib/revenuecat.ts`
-- `src/lib/nativeAppleSignIn.ts`
-- `src/hooks/useRevenueCat.ts`
+2. Parar de abrir editor em pulls futuros
+- Definir uma estratégia fixa de pull no seu clone local:
+  - `pull.rebase true`: melhor opção se você usa Lovable + mudanças locais e quer evitar merge commit automático
+  - `pull.ff only`: melhor opção se você quer que o pull falhe sem merge quando houver divergência
+  - `pull.rebase false`: mantém o comportamento atual de abrir merge commit quando necessário
 
-Plano de correção
+3. Alinhar o workflow com o Lovable
+- Como o Lovable também envia commits para o `main`, o fluxo mais estável no seu Mac é:
+  - fazer seu commit local
+  - puxar com rebase
+  - resolver conflito só quando existir
+  - depois enviar para o GitHub
+- Se você não quer preservar mudanças locais, é melhor alinhar sua cópia local ao remoto do que continuar fazendo merge manual.
 
-1. Corrigir o `Podfile` de forma mais segura
-- Trocar a estratégia de `delete` por configuração explícita nos targets dos Pods:
-  - `CODE_SIGNING_ALLOWED = NO`
-  - `CODE_SIGNING_REQUIRED = NO`
-  - `EXPANDED_CODE_SIGN_IDENTITY = ""`
-  - `CODE_SIGN_IDENTITY = ""`
-- Manter isso restrito ao projeto de Pods, sem mexer no target principal `App`.
+4. Reduzir o conflito recorrente no Podfile
+- O arquivo que virou ponto de colisão é o `ios/App/Podfile`.
+- Se ele continuar sendo alterado tanto localmente quanto pelo Lovable, ele vai continuar aparecendo nos pulls com merge.
+- A correção real não é “mexer mais no Podfile”, e sim estabilizar a estratégia de sincronização do repositório.
 
-2. Preservar a lógica de RevenueCat e Apple Sign In
-- Não reverter `src/lib/revenuecat.ts`, `src/lib/nativeAppleSignIn.ts` e `src/hooks/useRevenueCat.ts` agora, porque eles não são a causa do erro mostrado.
-- Só revisar esses arquivos depois se aparecer erro de compilação Swift/TS diferente.
+O que eu implementaria/orientaria em seguida
 
-3. Adicionar fallback caso o Xcode continue exigindo team
-- Se mesmo com signing desabilitado o Xcode insistir, aplicar fallback no `post_install`:
-  - setar `DEVELOPMENT_TEAM` para os pod targets, ou
-  - avaliar remover `use_frameworks!` / usar linkage estático, se compatível com os plugins instalados.
-- Isso fica como plano B, não como primeira mudança.
+- Cenário A: manter trabalho local + Lovable
+  - padronizar `git pull` com rebase
+  - usar merge só quando você quiser explicitamente
 
-4. Validar o fluxo nativo depois da correção
-- Confirmar que o app volta a compilar no iOS.
-- Depois testar:
-  - inicialização do RevenueCat
-  - compra
-  - restore purchases
-  - Apple Sign In
-- Separar erro de build de erro funcional, para não misturar os problemas.
+- Cenário B: usar o GitHub/Lovable como fonte principal
+  - descartar divergências locais quando necessário
+  - manter a máquina sempre espelhada no remoto
+
+- Cenário C: continuar com merge tradicional
+  - aceitar que o editor de commit vai abrir sempre que local e remoto divergirem
 
 Detalhes técnicos
+
 ```text
-Problema real:
-Pods framework targets estão pedindo assinatura no Xcode.
+Isto não é o Git “quebrado”.
+É um merge commit interativo aberto porque o histórico local e o remoto divergiram.
 
-Causa provável:
-`use_frameworks!` + `post_install` usando `delete` em vez de forçar `NO`.
-
-Correção principal:
-desabilitar code signing explicitamente nos Pods, sem alterar o signing do target App.
+Gatilho visível agora:
+- origin/main recebeu novos commits
+- seu clone local também tem histórico próprio
+- o arquivo ios/App/Podfile entrou no merge automático
 ```
