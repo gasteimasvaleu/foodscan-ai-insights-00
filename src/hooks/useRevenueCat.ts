@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNativePlatform } from './useNativePlatform';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,11 +23,19 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [initError, setInitError] = useState(false);
+  const loggedInUserId = useRef<string | null>(null);
 
+  // Initialize RevenueCat as anonymous (no user required)
   useEffect(() => {
-    if (!isNative || !isIOS || !user?.id) return;
+    if (!isNative || !isIOS) return;
     initRevenueCat();
-  }, [isNative, isIOS, user?.id]);
+  }, [isNative, isIOS]);
+
+  // When user logs in, associate with RevenueCat via logIn
+  useEffect(() => {
+    if (!initialized || !user?.id || loggedInUserId.current === user.id) return;
+    loginToRevenueCat(user.id);
+  }, [initialized, user?.id]);
 
   const syncToSupabase = async (customerInfo: any) => {
     if (!user?.id || !user?.email) return;
@@ -56,11 +64,30 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
     }
   };
 
+  const loginToRevenueCat = async (userId: string) => {
+    try {
+      const { Purchases } = await import('@revenuecat/purchases-capacitor');
+      const { customerInfo } = await Purchases.logIn({ appUserID: userId });
+      loggedInUserId.current = userId;
+      console.log('[RevenueCat] logIn success for', userId);
+
+      const activeEntitlements = customerInfo.entitlements.active;
+      if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
+        setHasPurchased(true);
+        await syncToSupabase(customerInfo);
+      }
+    } catch (err) {
+      console.error('[RevenueCat] logIn error:', err);
+    }
+  };
+
   const initRevenueCat = async () => {
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
       
-      await Purchases.configure({ apiKey: RC_API_KEY, appUserID: user?.id });
+      // Configure anonymously — no appUserID needed
+      await Purchases.configure({ apiKey: RC_API_KEY });
+      console.log('[RevenueCat] Configured anonymously');
       setInitialized(true);
 
       await checkExistingSubscription();
@@ -80,6 +107,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
       const { customerInfo } = await Purchases.getCustomerInfo();
+      console.log('[RevenueCat] customerInfo entitlements:', JSON.stringify(customerInfo.entitlements));
       
       const activeEntitlements = customerInfo.entitlements.active;
       if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
@@ -139,7 +167,6 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       return true;
     } catch (err: any) {
       if (err?.code === 1) {
-        // User cancelled
         return false;
       }
       console.error('Purchase error:', err);
