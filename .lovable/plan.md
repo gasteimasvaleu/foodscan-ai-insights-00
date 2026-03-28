@@ -1,47 +1,37 @@
 
-Plano para destravar isso agora
 
-1. Sair do merge pendente
-- Seu repositório ficou no meio de um merge anterior.
-- Antes de qualquer novo `git pull`, você precisa escolher uma destas opções:
+# Plano: Remover hook useRevenueCat e usar lib diretamente no AuthCard
 
-Opção A — cancelar esse merge e voltar ao estado anterior
-```bash
-git merge --abort
-```
+## Problema
+O erro "Código: desconhecido" ocorre na compra via RevenueCat. O outro projeto funciona porque importa diretamente de `@/lib/revenuecat` e gerencia estado localmente com `useState`, sem passar pelo hook `useRevenueCat`.
 
-Opção B — concluir esse merge
-```bash
-git status
-git add .
-git commit
-```
-- Se abrir editor no `git commit`, salve e feche.
-- Só faça isso se você realmente quer manter o merge que ficou pendente.
+## Causa provável
+O hook `useRevenueCat` adiciona camadas extras (efeitos de inicialização, checagem de status, logIn automático) que podem interferir no fluxo de compra — por exemplo, chamando `checkSubscriptionStatus()` ou `logInRevenueCat()` antes do SDK estar pronto, ou re-renderizando durante a compra.
 
-2. Depois fazer o pull do jeito certo
-- Assim que o merge pendente for resolvido, rode:
-```bash
-git pull --rebase
-```
+## O que vai mudar
 
-3. Evitar que isso volte a acontecer
-- Configure seu clone para usar rebase por padrão:
-```bash
-git config pull.rebase true
-```
+### 1. Refatorar `AuthCard.tsx`
+- Remover import do `useRevenueCat`
+- Importar diretamente de `@/lib/revenuecat`: `initRevenueCat`, `getSubscriptionPrice`, `purchaseMonthly`, `restorePurchases`, `checkSubscriptionStatus`
+- Gerenciar `price`, `hasPurchased`, `rcLoading` com `useState` local
+- Inicializar RevenueCat em um `useEffect` simples (só no iOS nativo)
+- Chamar `purchaseMonthly` diretamente no handler, com try/catch local e melhor tratamento do erro (log do objeto completo do erro)
 
-4. Caminho recomendado no seu caso
-- Como você quer só destravar e seguir:
-```bash
-git merge --abort
-git config pull.rebase true
-git pull --rebase
-```
+### 2. Refatorar `SubscriptionRequired.tsx`
+- Mesmo padrão: remover `useRevenueCat`, importar direto da lib
+- Estado local para `loading` e `price`
 
-Detalhe técnico
+### 3. Manter `useRevenueCat.ts` e `revenuecat.ts` intactos
+- Não deletar o hook (pode ser útil futuramente), apenas parar de usá-lo nos componentes críticos
+
+### Detalhe técnico
+O padrão do outro projeto que funciona:
 ```text
-MERGE_HEAD exists = existe um merge inacabado gravado no Git.
-Enquanto ele existir, qualquer novo git pull vai falhar.
-Primeiro precisa concluir ou abortar esse merge antigo.
+Componente → useState local → import { purchaseMonthly } from '@/lib/revenuecat'
 ```
+vs o padrão atual que falha:
+```text
+Componente → useRevenueCat hook → useEffect init → useEffect logIn → purchaseMonthly wrapper
+```
+A simplificação elimina race conditions entre os múltiplos useEffects do hook.
+
