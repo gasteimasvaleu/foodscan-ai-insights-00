@@ -29,6 +29,7 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
         });
 
         if (error) {
+          console.error('[AppleSignIn] signInWithIdToken error:', error.message, error);
           toast({
             title: 'Erro no login com Apple',
             description: error.message,
