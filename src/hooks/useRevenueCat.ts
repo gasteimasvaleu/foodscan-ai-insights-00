@@ -90,6 +90,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       await Purchases.configure({ apiKey: RC_API_KEY });
       console.log('[RevenueCat] Configured anonymously');
       setInitialized(true);
+      initializedRef.current = true;
 
       await checkExistingSubscription();
       await fetchPrice();
