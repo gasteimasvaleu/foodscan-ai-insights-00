@@ -146,6 +146,21 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const purchaseMonthly = async (): Promise<boolean> => {
+    if (!initialized) {
+      toast({
+        title: 'Aguarde',
+        description: 'Conectando à App Store...',
+      });
+      await initRevenueCat();
+      if (!initialized) {
+        toast({
+          title: 'Erro de conexão',
+          description: 'Não foi possível conectar à App Store. Tente novamente.',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    }
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
@@ -170,9 +185,10 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
         return false;
       }
       console.error('Purchase error:', err);
+      console.error('Purchase error details:', JSON.stringify(err));
       toast({
         title: 'Erro na compra',
-        description: `Não foi possível completar a compra. Código: ${err?.code || 'desconhecido'}`,
+        description: `Não foi possível completar a compra. ${err?.message || 'Código: ' + (err?.code || 'desconhecido')}`,
         variant: 'destructive',
       });
       return false;
@@ -182,6 +198,17 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const restorePurchases = async (): Promise<boolean> => {
+    if (!initialized) {
+      await initRevenueCat();
+      if (!initialized) {
+        toast({
+          title: 'Erro de conexão',
+          description: 'Não foi possível conectar à App Store. Tente novamente.',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    }
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
