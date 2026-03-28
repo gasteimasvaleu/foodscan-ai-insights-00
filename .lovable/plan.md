@@ -1,53 +1,42 @@
 
 
-## Diagnóstico real
+## Problema
 
-O código nativo **já está no padrão correto** (CAPPlugin + .m + MyViewController + AppDelegate). A estrutura é idêntica ao seu outro projeto que funciona.
+O erro `"Purchases must be configured before calling this function"` acontece porque o guard que adicionei tem um bug de closure do React:
 
-O problema real é o arquivo **`AppDelegate 2.swift`** — ele tem uma segunda classe `AppDelegate` com `@UIApplicationMain`, criando um conflito de compilação. O Xcode pode estar usando a versão errada ou ignorando arquivos silenciosamente.
+1. `purchaseMonthly()` verifica `if (!initialized)` → é `false`
+2. Chama `await initRevenueCat()` → que faz `setInitialized(true)`
+3. Mas `initialized` na closure de `purchaseMonthly` **continua `false`** (stale closure)
+4. Retorna `false` sem nunca tentar a compra
+5. Ou pior: em cenários de race condition, tenta comprar antes do configure terminar
 
-Sobre o erro de compra ("Código: desconhecido"): `purchaseMonthly()` não verifica se o RevenueCat foi inicializado antes de tentar comprar.
+O código original **não tinha esse guard** e funcionava porque o `useEffect` já cuidava da inicialização. Minha mudança quebrou isso.
 
-## Correções
+## Correção
 
-### 1. Remover `ios/App/App/AppDelegate 2.swift`
-Este arquivo duplicado tem `@UIApplicationMain` e conflita com o `AppDelegate.swift` principal. Deve ser deletado.
+**Arquivo: `src/hooks/useRevenueCat.ts`**
 
-### 2. Adicionar guard de inicialização em `useRevenueCat.ts`
-Em `purchaseMonthly()` e `restorePurchases()`, verificar `initialized` antes de chamar o SDK:
+1. Adicionar um `useRef` para rastrear inicialização (refs não sofrem de stale closure):
+   ```typescript
+   const initializedRef = useRef(false);
+   ```
 
-```typescript
-const purchaseMonthly = async (): Promise<boolean> => {
-  if (!initialized) {
-    toast({
-      title: 'Aguarde',
-      description: 'Conectando à App Store...',
-      variant: 'destructive',
-    });
-    await initRevenueCat();
-    if (!initialized) return false;
-  }
-  // ... resto do código existente
-};
-```
+2. Em `initRevenueCat`, setar tanto o state quanto o ref:
+   ```typescript
+   setInitialized(true);
+   initializedRef.current = true;
+   ```
 
-Mesma lógica para `restorePurchases()`.
+3. Em `purchaseMonthly` e `restorePurchases`, usar o ref no guard:
+   ```typescript
+   if (!initializedRef.current) {
+     await initRevenueCat();
+     if (!initializedRef.current) {
+       // mostrar erro e retornar false
+       return false;
+     }
+   }
+   ```
 
-Também melhorar a mensagem de erro para incluir `err?.message`:
-```typescript
-description: `Não foi possível completar a compra. ${err?.message || 'Código: ' + (err?.code || 'desconhecido')}`,
-```
-
-### Arquivos
-| Arquivo | Ação |
-|---|---|
-| `ios/App/App/AppDelegate 2.swift` | Deletar |
-| `src/hooks/useRevenueCat.ts` | Guard de initialized + melhor erro |
-
-### Após deploy
-1. `git pull`
-2. No Xcode: verificar que `AppDelegate 2.swift` não está no projeto
-3. Product → Clean Build Folder
-4. `npx cap sync ios`
-5. Rebuild no device
+Isso garante que o guard funcione corretamente sem stale closures, mantendo a proteção contra chamadas antes do configure.
 
