@@ -170,16 +170,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
 
   const fallbackBannerUrl = "https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp";
 
-  // Fetch profile name when logged in
-  useEffect(() => {
-    if (!user?.id) return;
-    const fetchProfile = async () => {
-      const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single();
-      if (data?.name) setProfileName(data.name);
-    };
-    fetchProfile();
-  }, [user?.id]);
-
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
