@@ -1,70 +1,68 @@
 
+Diagnóstico
 
-## Diagnóstico
+Do I know what the issue is? Yes.
 
-A arquitetura do seu outro projeto que funciona usa **funções standalone** em `src/lib/revenuecat.ts` — sem React hooks, sem state, sem closures. Este projeto usa um `useRevenueCat` hook com `useState`, que causa problemas de stale closures e race conditions quando múltiplos componentes o consomem.
+O erro atual não é de TypeScript, RevenueCat ou Apple Sign In. O build está falhando por um problema de assinatura dos Pods nativos no iOS.
 
-O problema fundamental: `Purchases.isConfigured()` pode não estar disponível ou funcionar diferente na v12.3.0 do `@revenuecat/purchases-capacitor`. Se `isConfigured()` retorna `false` mesmo após `configure()`, o SDK nunca é considerado pronto.
+O que identifiquei:
+- A captura mostra apenas erros de signing nos targets gerados pelo CocoaPods:
+  - `Capacitor-Capacitor`
+  - `CapacitorCordova-CapacitorCordova`
+  - `PurchasesHybridCommon-PurchasesHybridCommon`
+  - `RevenueCat-RevenueCat`
+- O `ios/App/Podfile` hoje usa `use_frameworks!`, então esses Pods viram frameworks no Xcode.
+- O `post_install` atual apenas remove chaves:
+  - `CODE_SIGNING_ALLOWED`
+  - `CODE_SIGNING_REQUIRED`
+  - `CODE_SIGN_IDENTITY`
+- Em builds para device, remover essas chaves não garante que o Xcode deixe de exigir assinatura. Para esses targets, normalmente é preciso desabilitar signing explicitamente com `NO` ou então injetar `DEVELOPMENT_TEAM`.
 
-Além disso, o `configurePromise` é resetado para `null` no `finally`, então chamadas subsequentes tentam configurar novamente, potencialmente causando conflitos.
+Arquivos relevantes
+- `ios/App/Podfile`
+- `ios/App/Podfile.lock`
+- `ios/App/App.xcodeproj/project.pbxproj`
+- `src/lib/revenuecat.ts`
+- `src/lib/nativeAppleSignIn.ts`
+- `src/hooks/useRevenueCat.ts`
 
-## Plano: Reestruturar para a arquitetura que funciona
+Plano de correção
 
-### 1. Criar `src/lib/revenuecat.ts` (novo arquivo)
-Módulo standalone com funções puras (sem React):
+1. Corrigir o `Podfile` de forma mais segura
+- Trocar a estratégia de `delete` por configuração explícita nos targets dos Pods:
+  - `CODE_SIGNING_ALLOWED = NO`
+  - `CODE_SIGNING_REQUIRED = NO`
+  - `EXPANDED_CODE_SIGN_IDENTITY = ""`
+  - `CODE_SIGN_IDENTITY = ""`
+- Manter isso restrito ao projeto de Pods, sem mexer no target principal `App`.
 
-- `initRevenueCat()` — configura o SDK uma única vez, com flag booleana simples (`let isConfiguredFlag = false`)
-- `purchaseMonthly()` — busca offerings e compra
-- `restorePurchases()` — restaura compras
-- `getSubscriptionPrice()` — retorna preço
-- `checkSubscriptionStatus()` — verifica entitlements
-- `syncSubscriptionAfterLogin(userId, email)` — upsert no Supabase
-- `logInRevenueCat(userId)` / `logOutRevenueCat()` — associa/desassocia user
+2. Preservar a lógica de RevenueCat e Apple Sign In
+- Não reverter `src/lib/revenuecat.ts`, `src/lib/nativeAppleSignIn.ts` e `src/hooks/useRevenueCat.ts` agora, porque eles não são a causa do erro mostrado.
+- Só revisar esses arquivos depois se aparecer erro de compilação Swift/TS diferente.
 
-Diferença-chave: em vez de confiar em `Purchases.isConfigured()`, usar uma flag local no módulo (`let configured = false`) que é setada após `Purchases.configure()` completar com sucesso. E usar um mutex (promise singleton) para evitar chamadas concorrentes.
+3. Adicionar fallback caso o Xcode continue exigindo team
+- Se mesmo com signing desabilitado o Xcode insistir, aplicar fallback no `post_install`:
+  - setar `DEVELOPMENT_TEAM` para os pod targets, ou
+  - avaliar remover `use_frameworks!` / usar linkage estático, se compatível com os plugins instalados.
+- Isso fica como plano B, não como primeira mudança.
 
-### 2. Criar `src/lib/nativeAppleSignIn.ts` (novo arquivo)
-Mover a lógica de Apple Sign In para um módulo utilitário standalone (já existe em `src/plugins/NativeAppleSignIn.ts` mas como tipo; aqui seria uma função `nativeAppleSignIn()` que chama o plugin e retorna o resultado).
+4. Validar o fluxo nativo depois da correção
+- Confirmar que o app volta a compilar no iOS.
+- Depois testar:
+  - inicialização do RevenueCat
+  - compra
+  - restore purchases
+  - Apple Sign In
+- Separar erro de build de erro funcional, para não misturar os problemas.
 
-### 3. Simplificar `src/hooks/useRevenueCat.ts`
-O hook passa a ser um **wrapper fino** que:
-- Chama as funções de `src/lib/revenuecat.ts`
-- Gerencia apenas o estado React para a UI (price, hasPurchased, loading)
-- Não faz configure/isConfigured diretamente
-
-### 4. Atualizar Podfile com hardening de code signing
-Adicionar remoção de `CODE_SIGNING_ALLOWED`, `CODE_SIGNING_REQUIRED`, `CODE_SIGN_IDENTITY` no `post_install` (conforme memória do projeto).
-
-### Arquivos
-
-| Arquivo | Ação |
-|---|---|
-| `src/lib/revenuecat.ts` | Criar — funções standalone |
-| `src/lib/nativeAppleSignIn.ts` | Criar — wrapper do plugin |
-| `src/hooks/useRevenueCat.ts` | Reescrever — wrapper fino sobre lib |
-| `ios/App/Podfile` | Atualizar — hardening post_install |
-
-### Detalhes técnicos da `src/lib/revenuecat.ts`
-
+Detalhes técnicos
 ```text
-Module-level state (no React):
-  let configured = false
-  let configuringPromise: Promise<void> | null = null
+Problema real:
+Pods framework targets estão pedindo assinatura no Xcode.
 
-initRevenueCat():
-  if (configured) return
-  if (configuringPromise) await configuringPromise; return
-  configuringPromise = Purchases.configure({ apiKey })
-  configured = true
+Causa provável:
+`use_frameworks!` + `post_install` usando `delete` em vez de forçar `NO`.
 
-purchaseMonthly():
-  await initRevenueCat()  // ensures configured
-  offerings = await Purchases.getOfferings()
-  result = await Purchases.purchasePackage(...)
-  return customerInfo
-
-// Same pattern for restorePurchases, getPrice, etc.
+Correção principal:
+desabilitar code signing explicitamente nos Pods, sem alterar o signing do target App.
 ```
-
-Isso elimina 100% dos problemas de stale closure e race condition porque o estado de configuração vive no módulo, não no React.
-
