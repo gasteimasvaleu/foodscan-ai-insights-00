@@ -20,6 +20,8 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
       if (isNative && isIOS) {
         // Native flow: use Capacitor plugin
         const result = await NativeAppleSignIn.authorize();
+        console.log('[AppleSignIn] Plugin authorize success, token preview:', result.identityToken?.substring(0, 20));
+        console.log('[AppleSignIn] givenName:', result.givenName, 'familyName:', result.familyName, 'email:', result.email);
 
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
@@ -27,6 +29,7 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
         });
 
         if (error) {
+          console.error('[AppleSignIn] signInWithIdToken error:', error.message, error);
           toast({
             title: 'Erro no login com Apple',
             description: error.message,
@@ -62,11 +65,13 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
       }
     } catch (err: any) {
       if (err?.code === '1001') {
-        return; // User cancelled
+        console.log('[AppleSignIn] User cancelled');
+        return;
       }
+      console.error('[AppleSignIn] Unexpected error:', err);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível fazer login com Apple.',
+        title: 'Erro no login com Apple',
+        description: err?.message || 'Não foi possível fazer login com Apple.',
         variant: 'destructive',
       });
     } finally {
