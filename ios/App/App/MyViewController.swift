@@ -3,6 +3,7 @@ import Capacitor
 
 class MyViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
+        super.capacitorDidLoad()
         bridge?.registerPluginInstance(NativeAppleSignInPlugin())
     }
 }

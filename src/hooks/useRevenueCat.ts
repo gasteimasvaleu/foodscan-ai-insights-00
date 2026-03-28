@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNativePlatform } from './useNativePlatform';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,51 @@ interface UseRevenueCatReturn {
 
 const RC_API_KEY = 'appl_XcPKgINorAUFAGLjSAjImHHPiJD';
 
+// Singleton promise to prevent concurrent configure calls across hook instances
+let configurePromise: Promise<boolean> | null = null;
+
+const ensureRevenueCatReady = async (): Promise<boolean> => {
+  try {
+    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+    
+    // Check if SDK is already configured natively
+    const { isConfigured } = await Purchases.isConfigured();
+    console.log('[RevenueCat] isConfigured check:', isConfigured);
+    
+    if (isConfigured) return true;
+
+    // If another call is already configuring, wait for it
+    if (configurePromise) {
+      console.log('[RevenueCat] Waiting for existing configure promise...');
+      return await configurePromise;
+    }
+
+    // Configure the SDK
+    configurePromise = (async () => {
+      try {
+        console.log('[RevenueCat] Configuring SDK with API key...');
+        await Purchases.configure({ apiKey: RC_API_KEY });
+        
+        // Verify it actually worked
+        const { isConfigured: nowConfigured } = await Purchases.isConfigured();
+        console.log('[RevenueCat] Post-configure isConfigured:', nowConfigured);
+        return nowConfigured;
+      } catch (err) {
+        console.error('[RevenueCat] configure() failed:', err);
+        return false;
+      } finally {
+        configurePromise = null;
+      }
+    })();
+
+    return await configurePromise;
+  } catch (err) {
+    console.error('[RevenueCat] ensureRevenueCatReady failed:', err);
+    configurePromise = null;
+    return false;
+  }
+};
+
 export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const { isNative, isIOS } = useNativePlatform();
   const [price, setPrice] = useState<string | null>(null);
@@ -24,21 +69,8 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [initialized, setInitialized] = useState(false);
   const [initError, setInitError] = useState(false);
   const loggedInUserId = useRef<string | null>(null);
-  const initializedRef = useRef(false);
 
-  // Initialize RevenueCat as anonymous (no user required)
-  useEffect(() => {
-    if (!isNative || !isIOS) return;
-    initRevenueCat();
-  }, [isNative, isIOS]);
-
-  // When user logs in, associate with RevenueCat via logIn
-  useEffect(() => {
-    if (!initialized || !user?.id || loggedInUserId.current === user.id) return;
-    loginToRevenueCat(user.id);
-  }, [initialized, user?.id]);
-
-  const syncToSupabase = async (customerInfo: any) => {
+  const syncToSupabase = useCallback(async (customerInfo: any) => {
     if (!user?.id || !user?.email) return;
     
     try {
@@ -63,47 +95,55 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
     } catch (err) {
       console.error('[RevenueCat] Error syncing to Supabase:', err);
     }
-  };
+  }, [user?.id, user?.email]);
 
-  const loginToRevenueCat = async (userId: string) => {
-    try {
-      const { Purchases } = await import('@revenuecat/purchases-capacitor');
-      const { customerInfo } = await Purchases.logIn({ appUserID: userId });
-      loggedInUserId.current = userId;
-      console.log('[RevenueCat] logIn success for', userId);
-
-      const activeEntitlements = customerInfo.entitlements.active;
-      if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
-        setHasPurchased(true);
-        await syncToSupabase(customerInfo);
+  // Initialize on mount (native iOS only)
+  useEffect(() => {
+    if (!isNative || !isIOS) return;
+    
+    console.log('[RevenueCat] Platform: native iOS, starting init...');
+    
+    (async () => {
+      const ready = await ensureRevenueCatReady();
+      if (ready) {
+        setInitialized(true);
+        await checkExistingSubscription();
+        await fetchPrice();
+      } else {
+        setInitError(true);
+        toast({
+          title: 'Erro ao inicializar compras',
+          description: 'Não foi possível conectar à App Store. Tente novamente mais tarde.',
+          variant: 'destructive',
+        });
       }
-    } catch (err) {
-      console.error('[RevenueCat] logIn error:', err);
-    }
-  };
+    })();
+  }, [isNative, isIOS]);
 
-  const initRevenueCat = async () => {
-    try {
-      const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  // When user logs in, associate with RevenueCat
+  useEffect(() => {
+    if (!isNative || !isIOS || !user?.id || loggedInUserId.current === user.id) return;
+    
+    (async () => {
+      const ready = await ensureRevenueCatReady();
+      if (!ready) return;
       
-      // Configure anonymously — no appUserID needed
-      await Purchases.configure({ apiKey: RC_API_KEY });
-      console.log('[RevenueCat] Configured anonymously');
-      setInitialized(true);
-      initializedRef.current = true;
+      try {
+        const { Purchases } = await import('@revenuecat/purchases-capacitor');
+        const { customerInfo } = await Purchases.logIn({ appUserID: user.id });
+        loggedInUserId.current = user.id;
+        console.log('[RevenueCat] logIn success for', user.id);
 
-      await checkExistingSubscription();
-      await fetchPrice();
-    } catch (err) {
-      console.error('RevenueCat init error:', err);
-      setInitError(true);
-      toast({
-        title: 'Erro ao inicializar compras',
-        description: 'Não foi possível conectar à App Store. Tente novamente mais tarde.',
-        variant: 'destructive',
-      });
-    }
-  };
+        const activeEntitlements = customerInfo.entitlements.active;
+        if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
+          setHasPurchased(true);
+          await syncToSupabase(customerInfo);
+        }
+      } catch (err) {
+        console.error('[RevenueCat] logIn error:', err);
+      }
+    })();
+  }, [isNative, isIOS, user?.id, syncToSupabase]);
 
   const checkExistingSubscription = async () => {
     try {
@@ -114,10 +154,9 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       const activeEntitlements = customerInfo.entitlements.active;
       if (activeEntitlements && Object.keys(activeEntitlements).length > 0) {
         setHasPurchased(true);
-        await syncToSupabase(customerInfo);
       }
     } catch (err) {
-      console.error('Error checking subscription:', err);
+      console.error('[RevenueCat] Error checking subscription:', err);
     }
   };
 
@@ -130,7 +169,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       if (currentOffering?.monthly) {
         setPrice(currentOffering.monthly.product.priceString);
       } else {
-        console.warn('No monthly offering found');
+        console.warn('[RevenueCat] No monthly offering found');
         toast({
           title: 'Produto não disponível',
           description: 'Não foi possível carregar o plano de assinatura.',
@@ -138,7 +177,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
         });
       }
     } catch (err) {
-      console.error('Error fetching price:', err);
+      console.error('[RevenueCat] Error fetching price:', err);
       toast({
         title: 'Erro ao carregar preço',
         description: 'Não foi possível obter informações do plano.',
@@ -148,21 +187,16 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const purchaseMonthly = async (): Promise<boolean> => {
-    if (!initializedRef.current) {
+    const ready = await ensureRevenueCatReady();
+    if (!ready) {
       toast({
-        title: 'Aguarde',
-        description: 'Conectando à App Store...',
+        title: 'Erro de conexão',
+        description: 'Não foi possível conectar à App Store. Tente novamente.',
+        variant: 'destructive',
       });
-      await initRevenueCat();
-      if (!initializedRef.current) {
-        toast({
-          title: 'Erro de conexão',
-          description: 'Não foi possível conectar à App Store. Tente novamente.',
-          variant: 'destructive',
-        });
-        return false;
-      }
+      return false;
     }
+
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
@@ -186,8 +220,8 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       if (err?.code === 1) {
         return false;
       }
-      console.error('Purchase error:', err);
-      console.error('Purchase error details:', JSON.stringify(err));
+      console.error('[RevenueCat] Purchase error:', err);
+      console.error('[RevenueCat] Purchase error details:', JSON.stringify(err));
       toast({
         title: 'Erro na compra',
         description: `Não foi possível completar a compra. ${err?.message || 'Código: ' + (err?.code || 'desconhecido')}`,
@@ -200,17 +234,16 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const restorePurchases = async (): Promise<boolean> => {
-    if (!initializedRef.current) {
-      await initRevenueCat();
-      if (!initializedRef.current) {
-        toast({
-          title: 'Erro de conexão',
-          description: 'Não foi possível conectar à App Store. Tente novamente.',
-          variant: 'destructive',
-        });
-        return false;
-      }
+    const ready = await ensureRevenueCatReady();
+    if (!ready) {
+      toast({
+        title: 'Erro de conexão',
+        description: 'Não foi possível conectar à App Store. Tente novamente.',
+        variant: 'destructive',
+      });
+      return false;
     }
+
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
@@ -224,7 +257,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       }
       return false;
     } catch (err) {
-      console.error('Restore purchases error:', err);
+      console.error('[RevenueCat] Restore purchases error:', err);
       toast({
         title: 'Erro ao restaurar',
         description: 'Não foi possível restaurar suas compras. Tente novamente.',
