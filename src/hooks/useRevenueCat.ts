@@ -198,6 +198,17 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const restorePurchases = async (): Promise<boolean> => {
+    if (!initialized) {
+      await initRevenueCat();
+      if (!initialized) {
+        toast({
+          title: 'Erro de conexão',
+          description: 'Não foi possível conectar à App Store. Tente novamente.',
+          variant: 'destructive',
+        });
+        return false;
+      }
+    }
     setLoading(true);
     try {
       const { Purchases } = await import('@revenuecat/purchases-capacitor');
