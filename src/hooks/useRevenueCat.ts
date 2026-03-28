@@ -24,6 +24,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [initialized, setInitialized] = useState(false);
   const [initError, setInitError] = useState(false);
   const loggedInUserId = useRef<string | null>(null);
+  const initializedRef = useRef(false);
 
   // Initialize RevenueCat as anonymous (no user required)
   useEffect(() => {
