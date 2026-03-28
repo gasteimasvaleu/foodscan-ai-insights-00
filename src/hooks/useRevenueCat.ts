@@ -24,6 +24,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   const [initialized, setInitialized] = useState(false);
   const [initError, setInitError] = useState(false);
   const loggedInUserId = useRef<string | null>(null);
+  const initializedRef = useRef(false);
 
   // Initialize RevenueCat as anonymous (no user required)
   useEffect(() => {
@@ -89,6 +90,7 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
       await Purchases.configure({ apiKey: RC_API_KEY });
       console.log('[RevenueCat] Configured anonymously');
       setInitialized(true);
+      initializedRef.current = true;
 
       await checkExistingSubscription();
       await fetchPrice();
@@ -146,13 +148,13 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const purchaseMonthly = async (): Promise<boolean> => {
-    if (!initialized) {
+    if (!initializedRef.current) {
       toast({
         title: 'Aguarde',
         description: 'Conectando à App Store...',
       });
       await initRevenueCat();
-      if (!initialized) {
+      if (!initializedRef.current) {
         toast({
           title: 'Erro de conexão',
           description: 'Não foi possível conectar à App Store. Tente novamente.',
@@ -198,9 +200,9 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const restorePurchases = async (): Promise<boolean> => {
-    if (!initialized) {
+    if (!initializedRef.current) {
       await initRevenueCat();
-      if (!initialized) {
+      if (!initializedRef.current) {
         toast({
           title: 'Erro de conexão',
           description: 'Não foi possível conectar à App Store. Tente novamente.',
