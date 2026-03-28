@@ -20,6 +20,8 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
       if (isNative && isIOS) {
         // Native flow: use Capacitor plugin
         const result = await NativeAppleSignIn.authorize();
+        console.log('[AppleSignIn] Plugin authorize success, token preview:', result.identityToken?.substring(0, 20));
+        console.log('[AppleSignIn] givenName:', result.givenName, 'familyName:', result.familyName, 'email:', result.email);
 
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
