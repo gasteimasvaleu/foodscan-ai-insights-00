@@ -1,22 +1,34 @@
 
 
-## Corrigir faixa branca do Tubelight Navbar
+## Expandir opções pré-definidas de porção
 
-A faixa branca (linha 104) tem `rounded-t-3xl` que não deveria estar lá — originalmente era sem border-radius e ocupava toda a largura.
+Adicionar mais opções aos dois seletores de porção, organizando por categorias para facilitar a escolha.
 
-### Alteração
+### Novas opções a adicionar
 
-**`src/components/ui/tubelight-navbar.tsx`** (linha 104):
+**Talheres e utensílios:**
+- Colher de Sopa (15g), Colher de Servir (45g), Concha Média (120g), Concha Grande (180g), Espátula (30g)
 
-De:
-```
-<div className="absolute inset-x-0 -top-3 -bottom-2 bg-white rounded-t-3xl -z-10" />
-```
+**Copos e xícaras:**
+- Xícara de Chá (180g), Xícara de Café (50g), Caneca (300g)
 
-Para:
-```
-<div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
-```
+**Pratos e tigelas:**
+- Tigela Pequena (200g), Tigela Média (350g), Tigela Grande (500g), Pires (100g)
 
-Remove o `rounded-t-3xl` para que a faixa branca fique reta no topo e ocupe toda a linha horizontal. O menu rosa não será alterado.
+**Unidades e pedaços:**
+- Unidade Pequena (50g), Unidade Média (100g), Unidade Grande (150g), Pedaço Pequeno (30g), Pedaço Médio (60g), Pedaço Grande (120g), Fatia Fina (40g), Fatia Grossa (120g)
+
+**Medidas de mão:**
+- Punhado (30g), Palma da Mão (100g)
+
+**Embalagens:**
+- Sachê (10g), Pacote Individual (25g), Porção de Restaurante (300g)
+
+### Arquivos editados
+| Arquivo | Mudança |
+|---|---|
+| `src/components/PortionSelector.tsx` | Expandir array `portionOptions` |
+| `src/components/MultipleElementsPortionSelector.tsx` | Expandir array `portionOptions` (mesmo conteúdo) |
+
+As opções existentes (Prato Pequeno/Médio/Grande, Copo Pequeno/Médio/Grande, Fatia, Colher de Chá) permanecem inalteradas.
 
