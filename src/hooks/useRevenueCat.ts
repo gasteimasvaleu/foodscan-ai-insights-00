@@ -185,9 +185,10 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
         return false;
       }
       console.error('Purchase error:', err);
+      console.error('Purchase error details:', JSON.stringify(err));
       toast({
         title: 'Erro na compra',
-        description: `Não foi possível completar a compra. Código: ${err?.code || 'desconhecido'}`,
+        description: `Não foi possível completar a compra. ${err?.message || 'Código: ' + (err?.code || 'desconhecido')}`,
         variant: 'destructive',
       });
       return false;
