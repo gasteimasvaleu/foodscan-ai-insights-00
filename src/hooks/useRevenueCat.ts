@@ -148,13 +148,13 @@ export const useRevenueCat = (user?: User | null): UseRevenueCatReturn => {
   };
 
   const purchaseMonthly = async (): Promise<boolean> => {
-    if (!initialized) {
+    if (!initializedRef.current) {
       toast({
         title: 'Aguarde',
         description: 'Conectando à App Store...',
       });
       await initRevenueCat();
-      if (!initialized) {
+      if (!initializedRef.current) {
         toast({
           title: 'Erro de conexão',
           description: 'Não foi possível conectar à App Store. Tente novamente.',
