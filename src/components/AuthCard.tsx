@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
+
 import {
   initRevenueCat,
   getSubscriptionPrice,
