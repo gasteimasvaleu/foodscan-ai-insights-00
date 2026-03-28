@@ -1,44 +1,45 @@
 
 
-## Diagnóstico: Bug no fluxo de inicialização do RevenueCat
+## Fix: "NativeAppleSignIn plugin is not implemented on ios"
 
-### Problema encontrado
+### Causa raiz
 
-No `useRevenueCat.ts` (linha 30-32), a inicialização do RevenueCat **só acontece quando existe um `user?.id`**:
+O `AppDelegate.swift` (linha 9-11) usa o view controller padrão do Capacitor:
 
-```text
-useEffect(() => {
-  if (!isNative || !isIOS || !user?.id) return;  // ← BLOQUEIO
-  initRevenueCat();
-}, [isNative, isIOS, user?.id]);
+```swift
+func application(...) -> Bool {
+    return true  // ← usa CAPBridgeViewController padrão
+}
 ```
 
-Na tela de login (`AuthCard.tsx`), o usuário **ainda não está logado**, então `user` é `null`. Consequências:
+O plugin é registrado em `MyViewController.swift` via `bridge?.registerPluginInstance(NativeAppleSignInPlugin())`, mas esse controller **nunca é instanciado** porque o AppDelegate não o utiliza.
 
-1. `Purchases.configure()` nunca é chamado
-2. `purchaseMonthly()` tenta usar o SDK sem configurar — pode funcionar se houver cache de sessão anterior, mas é instável
-3. Após compra bem-sucedida, `hasPurchased = true` fica apenas em memória. Se o componente re-renderizar, `checkExistingSubscription()` nunca roda (precisa de configure), e `hasPurchased` volta para `false`, **desabilitando o botão Apple Sign In novamente**
+O arquivo `AppDelegate 2.swift` tem a versão correta que cria `MyViewController()` manualmente, mas o arquivo principal `AppDelegate.swift` foi sobrescrito (provavelmente por um `npx cap sync`).
 
-### Plano de correção
+### Correção
 
-**`src/hooks/useRevenueCat.ts`**:
-- Remover a dependência de `user?.id` para inicializar o RevenueCat no iOS nativo
-- Chamar `Purchases.configure()` com `appUserID` anônimo (passando `undefined` ou `null`) quando não houver usuário
-- Quando houver `user?.id`, chamar `Purchases.logIn(user.id)` para associar o ID do Supabase
-- Garantir que `purchaseMonthly()` e `restorePurchases()` chamem `configure` se ainda não inicializado
-- Manter `syncToSupabase` condicionado ao `user?.id` (só sincroniza quando logado)
+**`ios/App/App/AppDelegate.swift`** — substituir `didFinishLaunchingWithOptions` para instanciar `MyViewController`:
 
-### Resultado esperado
-
-```text
-App abre (sem login) → RevenueCat configura anônimo → preço carrega
-→ Usuário compra → hasPurchased = true (persiste via SDK)
-→ Botão Apple Sign In habilitado → Login funciona
-→ Purchases.logIn(userId) associa a compra ao usuário
+```swift
+func application(_ application: UIApplication, 
+                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    let vc = MyViewController()
+    window = UIWindow(frame: UIScreen.main.bounds)
+    window?.rootViewController = vc
+    window?.makeKeyAndVisible()
+    return true
+}
 ```
+
+### Ação necessária após deploy
+
+Após a alteração, no terminal local:
+1. `git pull`
+2. `npx cap sync ios`
+3. Rebuild no Xcode e testar no device
 
 ### Arquivo editado
 | Arquivo | Mudança |
 |---|---|
-| `src/hooks/useRevenueCat.ts` | Inicializar RevenueCat sem depender de user, usar login após autenticação |
+| `ios/App/App/AppDelegate.swift` | Usar `MyViewController` como root view controller |
 
