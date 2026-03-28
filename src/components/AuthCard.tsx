@@ -96,6 +96,16 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     return () => clearInterval(timer);
   }, [banners.length]);
 
+  // Fetch profile name when logged in
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchProfile = async () => {
+      const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single();
+      if (data?.name) setProfileName(data.name);
+    };
+    fetchProfile();
+  }, [user?.id]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await signIn(formData.email, formData.password);
