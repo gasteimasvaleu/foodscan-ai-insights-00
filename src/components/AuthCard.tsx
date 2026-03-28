@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
+
 import {
   initRevenueCat,
   getSubscriptionPrice,
@@ -35,6 +36,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   const isNativeIOS = isNative && isIOS;
 
@@ -93,6 +95,16 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     }, 10000);
     return () => clearInterval(timer);
   }, [banners.length]);
+
+  // Fetch profile name when logged in
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchProfile = async () => {
+      const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single();
+      if (data?.name) setProfileName(data.name);
+    };
+    fetchProfile();
+  }, [user?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,7 +171,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const fallbackBannerUrl = "https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1774529760024_8eac27be_1774529764977_e41a0ea0.webp";
 
   if (user) {
-    const userName = user.user_metadata?.name || user.email;
+    const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
 
     return (
