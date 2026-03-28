@@ -315,7 +315,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
 
   // ─── Web Flow ───
   return (
-    <div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center">
+    <div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center overflow-y-auto py-6">
     <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full">
       <CardHeader>
         <div className="flex justify-center mb-2">
