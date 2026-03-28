@@ -1,35 +1,44 @@
 
 
-## Diagnóstico: Login com Apple falha após assinatura
+## Diagnóstico: Bug no fluxo de inicialização do RevenueCat
 
-### Problema identificado
+### Problema encontrado
 
-No `AppleSignInButton.tsx`, o bloco `catch` (linha 63-71) captura **qualquer** erro mas descarta a mensagem real, mostrando apenas o genérico "Não foi possível fazer login com Apple." Isso impede o diagnóstico.
+No `useRevenueCat.ts` (linha 30-32), a inicialização do RevenueCat **só acontece quando existe um `user?.id`**:
 
-As causas mais prováveis são:
+```text
+useEffect(() => {
+  if (!isNative || !isIOS || !user?.id) return;  // ← BLOQUEIO
+  initRevenueCat();
+}, [isNative, isIOS, user?.id]);
+```
 
-1. **Provider Apple não configurado no Supabase** — `signInWithIdToken({ provider: 'apple', token })` exige que o provider Apple esteja habilitado no dashboard Supabase (Authentication > Providers > Apple) com o Bundle ID correto (`app.dietainteligente`)
-2. **Erro no token** — o identity token do sandbox pode ter um formato inesperado
+Na tela de login (`AuthCard.tsx`), o usuário **ainda não está logado**, então `user` é `null`. Consequências:
+
+1. `Purchases.configure()` nunca é chamado
+2. `purchaseMonthly()` tenta usar o SDK sem configurar — pode funcionar se houver cache de sessão anterior, mas é instável
+3. Após compra bem-sucedida, `hasPurchased = true` fica apenas em memória. Se o componente re-renderizar, `checkExistingSubscription()` nunca roda (precisa de configure), e `hasPurchased` volta para `false`, **desabilitando o botão Apple Sign In novamente**
 
 ### Plano de correção
 
-**`src/components/AppleSignInButton.tsx`** — melhorar o tratamento de erro para expor a causa real:
+**`src/hooks/useRevenueCat.ts`**:
+- Remover a dependência de `user?.id` para inicializar o RevenueCat no iOS nativo
+- Chamar `Purchases.configure()` com `appUserID` anônimo (passando `undefined` ou `null`) quando não houver usuário
+- Quando houver `user?.id`, chamar `Purchases.logIn(user.id)` para associar o ID do Supabase
+- Garantir que `purchaseMonthly()` e `restorePurchases()` chamem `configure` se ainda não inicializado
+- Manter `syncToSupabase` condicionado ao `user?.id` (só sincroniza quando logado)
 
-- No bloco `catch`, logar `err` completo no console e incluir `err.message` no toast
-- No bloco do `signInWithIdToken` error (linha 29), logar também o token parcial para debug (primeiros 20 chars)
-- Adicionar log após `NativeAppleSignIn.authorize()` para confirmar que o plugin retornou com sucesso
+### Resultado esperado
 
-### Verificação manual necessária
-
-- Confirmar no dashboard Supabase (Authentication > Providers > Apple) que o provider está habilitado com:
-  - **Bundle ID**: `app.dietainteligente`
-  - **Service ID** e **Key ID** corretos (do Apple Developer)
-  - **Private Key** (arquivo .p8) configurado
-
-Sem essa configuração, `signInWithIdToken` sempre falhará.
+```text
+App abre (sem login) → RevenueCat configura anônimo → preço carrega
+→ Usuário compra → hasPurchased = true (persiste via SDK)
+→ Botão Apple Sign In habilitado → Login funciona
+→ Purchases.logIn(userId) associa a compra ao usuário
+```
 
 ### Arquivo editado
 | Arquivo | Mudança |
 |---|---|
-| `src/components/AppleSignInButton.tsx` | Logs detalhados + mensagem de erro real no toast |
+| `src/hooks/useRevenueCat.ts` | Inicializar RevenueCat sem depender de user, usar login após autenticação |
 
