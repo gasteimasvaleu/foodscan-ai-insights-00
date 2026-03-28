@@ -1,45 +1,53 @@
 
 
-## Fix: "NativeAppleSignIn plugin is not implemented on ios"
+## Diagnóstico real
 
-### Causa raiz
+O código nativo **já está no padrão correto** (CAPPlugin + .m + MyViewController + AppDelegate). A estrutura é idêntica ao seu outro projeto que funciona.
 
-O `AppDelegate.swift` (linha 9-11) usa o view controller padrão do Capacitor:
+O problema real é o arquivo **`AppDelegate 2.swift`** — ele tem uma segunda classe `AppDelegate` com `@UIApplicationMain`, criando um conflito de compilação. O Xcode pode estar usando a versão errada ou ignorando arquivos silenciosamente.
 
-```swift
-func application(...) -> Bool {
-    return true  // ← usa CAPBridgeViewController padrão
-}
+Sobre o erro de compra ("Código: desconhecido"): `purchaseMonthly()` não verifica se o RevenueCat foi inicializado antes de tentar comprar.
+
+## Correções
+
+### 1. Remover `ios/App/App/AppDelegate 2.swift`
+Este arquivo duplicado tem `@UIApplicationMain` e conflita com o `AppDelegate.swift` principal. Deve ser deletado.
+
+### 2. Adicionar guard de inicialização em `useRevenueCat.ts`
+Em `purchaseMonthly()` e `restorePurchases()`, verificar `initialized` antes de chamar o SDK:
+
+```typescript
+const purchaseMonthly = async (): Promise<boolean> => {
+  if (!initialized) {
+    toast({
+      title: 'Aguarde',
+      description: 'Conectando à App Store...',
+      variant: 'destructive',
+    });
+    await initRevenueCat();
+    if (!initialized) return false;
+  }
+  // ... resto do código existente
+};
 ```
 
-O plugin é registrado em `MyViewController.swift` via `bridge?.registerPluginInstance(NativeAppleSignInPlugin())`, mas esse controller **nunca é instanciado** porque o AppDelegate não o utiliza.
+Mesma lógica para `restorePurchases()`.
 
-O arquivo `AppDelegate 2.swift` tem a versão correta que cria `MyViewController()` manualmente, mas o arquivo principal `AppDelegate.swift` foi sobrescrito (provavelmente por um `npx cap sync`).
-
-### Correção
-
-**`ios/App/App/AppDelegate.swift`** — substituir `didFinishLaunchingWithOptions` para instanciar `MyViewController`:
-
-```swift
-func application(_ application: UIApplication, 
-                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    let vc = MyViewController()
-    window = UIWindow(frame: UIScreen.main.bounds)
-    window?.rootViewController = vc
-    window?.makeKeyAndVisible()
-    return true
-}
+Também melhorar a mensagem de erro para incluir `err?.message`:
+```typescript
+description: `Não foi possível completar a compra. ${err?.message || 'Código: ' + (err?.code || 'desconhecido')}`,
 ```
 
-### Ação necessária após deploy
-
-Após a alteração, no terminal local:
-1. `git pull`
-2. `npx cap sync ios`
-3. Rebuild no Xcode e testar no device
-
-### Arquivo editado
-| Arquivo | Mudança |
+### Arquivos
+| Arquivo | Ação |
 |---|---|
-| `ios/App/App/AppDelegate.swift` | Usar `MyViewController` como root view controller |
+| `ios/App/App/AppDelegate 2.swift` | Deletar |
+| `src/hooks/useRevenueCat.ts` | Guard de initialized + melhor erro |
+
+### Após deploy
+1. `git pull`
+2. No Xcode: verificar que `AppDelegate 2.swift` não está no projeto
+3. Product → Clean Build Folder
+4. `npx cap sync ios`
+5. Rebuild no device
 
