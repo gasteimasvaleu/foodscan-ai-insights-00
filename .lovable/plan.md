@@ -1,24 +1,34 @@
 
 
-## Corrigir largura da faixa branca
+## Expandir opções pré-definidas de porção
 
-O problema: a faixa branca (linha 104) usa `absolute inset-x-0`, mas está contida dentro do div pai que tem `max-w-[98vw]` e está centralizado. Por isso, a faixa branca herda essa largura limitada.
+Adicionar mais opções aos dois seletores de porção, organizando por categorias para facilitar a escolha.
 
-### Solução
+### Novas opções a adicionar
 
-Mover a faixa branca para **fora** do container do menu, como um elemento `fixed` independente que ocupa 100% da largura da tela.
+**Talheres e utensílios:**
+- Colher de Sopa (15g), Colher de Servir (45g), Concha Média (120g), Concha Grande (180g), Espátula (30g)
 
-**`src/components/ui/tubelight-navbar.tsx`** — linha 104:
+**Copos e xícaras:**
+- Xícara de Chá (180g), Xícara de Café (50g), Caneca (300g)
 
-De:
-```
-<div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
-```
+**Pratos e tigelas:**
+- Tigela Pequena (200g), Tigela Média (350g), Tigela Grande (500g), Pires (100g)
 
-Para:
-```
-<div className="fixed bottom-0 left-0 right-0 h-[calc(env(safe-area-inset-bottom)+4.5rem)] bg-white -z-10" />
-```
+**Unidades e pedaços:**
+- Unidade Pequena (50g), Unidade Média (100g), Unidade Grande (150g), Pedaço Pequeno (30g), Pedaço Médio (60g), Pedaço Grande (120g), Fatia Fina (40g), Fatia Grossa (120g)
 
-Isso faz a faixa branca ser `fixed`, ocupar toda a largura (`left-0 right-0`), ancorada ao fundo da tela, com altura suficiente para cobrir o menu rosa + safe area. O menu rosa não será alterado.
+**Medidas de mão:**
+- Punhado (30g), Palma da Mão (100g)
+
+**Embalagens:**
+- Sachê (10g), Pacote Individual (25g), Porção de Restaurante (300g)
+
+### Arquivos editados
+| Arquivo | Mudança |
+|---|---|
+| `src/components/PortionSelector.tsx` | Expandir array `portionOptions` |
+| `src/components/MultipleElementsPortionSelector.tsx` | Expandir array `portionOptions` (mesmo conteúdo) |
+
+As opções existentes (Prato Pequeno/Médio/Grande, Copo Pequeno/Médio/Grande, Fatia, Colher de Chá) permanecem inalteradas.
 
