@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lock, Crown, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-
-import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
+import { toast } from '@/hooks/use-toast';
+import {
+  initRevenueCat,
+  getSubscriptionPrice,
+  purchaseMonthly as rcPurchaseMonthly,
+  syncSubscriptionAfterLogin,
+} from '@/lib/revenuecat';
 
 interface SubscriptionRequiredProps {
   children: React.ReactNode;
@@ -13,15 +19,47 @@ interface SubscriptionRequiredProps {
 
 export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ children }) => {
   const { user, subscription } = useAuth();
-  const { purchaseMonthly, loading: rcLoading, price } = useRevenueCat(user);
+  const { isNative, isIOS } = useNativePlatform();
+  const [loading, setLoading] = useState(false);
+  const [price, setPrice] = useState<string | null>(null);
 
-  // If not logged in, redirect to auth page
+  const isNativeIOS = isNative && isIOS;
+
+  useEffect(() => {
+    if (!isNativeIOS) return;
+    (async () => {
+      try {
+        await initRevenueCat();
+        const priceStr = await getSubscriptionPrice();
+        if (priceStr) setPrice(priceStr);
+      } catch (err) {
+        console.error('[SubscriptionRequired] RC init error:', err);
+      }
+    })();
+  }, [isNativeIOS]);
+
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  // If logged in but no subscription, show subscription required page
   if (!subscription.subscriptionStatus.subscribed) {
+    const handlePurchase = async () => {
+      setLoading(true);
+      try {
+        const customerInfo = await rcPurchaseMonthly();
+        if (customerInfo && user.id && user.email) {
+          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+          toast({ title: '✅ Assinatura realizada!' });
+          window.location.reload();
+        }
+      } catch (err: any) {
+        console.error('[SubscriptionRequired] Purchase error:', JSON.stringify(err));
+        toast({ title: 'Erro na compra', description: err?.message || 'Tente novamente.', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gradient-primary flex items-center justify-center px-4">
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 max-w-md w-full">
@@ -60,12 +98,12 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
 
             <div className="space-y-3">
               <Button 
-                onClick={() => purchaseMonthly()}
+                onClick={handlePurchase}
                 className="w-full"
                 size="lg"
-                disabled={rcLoading}
+                disabled={loading}
               >
-                {rcLoading ? 'Processando...' : `Assinar${price ? ` por ${price}/mês` : ''}`}
+                {loading ? 'Processando...' : `Assinar${price ? ` por ${price}/mês` : ''}`}
               </Button>
               
               <Button 
@@ -82,6 +120,5 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
     );
   }
 
-  // If user is subscribed, render the children
   return <>{children}</>;
 };

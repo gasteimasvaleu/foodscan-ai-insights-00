@@ -1,13 +1,21 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  initRevenueCat,
+  getSubscriptionPrice,
+  purchaseMonthly as rcPurchaseMonthly,
+  restorePurchases as rcRestorePurchases,
+  checkSubscriptionStatus,
+  logInRevenueCat,
+  syncSubscriptionAfterLogin,
+} from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
 import { Separator } from '@/components/ui/separator';
@@ -21,12 +29,49 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
-  const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
+  const [price, setPrice] = useState<string | null>(null);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [rcLoading, setRcLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
   const isNativeIOS = isNative && isIOS;
+
+  // RevenueCat init (native iOS only)
+  useEffect(() => {
+    if (!isNativeIOS) return;
+    (async () => {
+      try {
+        await initRevenueCat();
+        const hasActive = await checkSubscriptionStatus();
+        if (hasActive) setHasPurchased(true);
+        const priceStr = await getSubscriptionPrice();
+        if (priceStr) setPrice(priceStr);
+      } catch (err) {
+        console.error('[AuthCard] RevenueCat init error:', err);
+        toast({ title: 'Erro ao inicializar compras', description: 'Tente novamente mais tarde.', variant: 'destructive' });
+      }
+    })();
+  }, [isNativeIOS]);
+
+  // Associate user with RevenueCat after login
+  useEffect(() => {
+    if (!isNativeIOS || !user?.id) return;
+    (async () => {
+      try {
+        const customerInfo = await logInRevenueCat(user.id);
+        if (!customerInfo) return;
+        const active = customerInfo.entitlements?.active;
+        if (active && Object.keys(active).length > 0) {
+          setHasPurchased(true);
+          if (user.email) await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+      } catch (err) {
+        console.error('[AuthCard] RevenueCat logIn error:', err);
+      }
+    })();
+  }, [isNativeIOS, user?.id, user?.email]);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -62,18 +107,42 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   };
 
   const handlePurchase = async () => {
-    const success = await purchaseMonthly();
-    if (success) {
-      toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
+    setRcLoading(true);
+    try {
+      const customerInfo = await rcPurchaseMonthly();
+      if (customerInfo) {
+        setHasPurchased(true);
+        if (user?.id && user?.email) {
+          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+        toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
+      }
+    } catch (err: any) {
+      console.error('[AuthCard] Purchase error (full):', JSON.stringify(err));
+      toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
+    } finally {
+      setRcLoading(false);
     }
   };
 
   const handleRestore = async () => {
-    const found = await restorePurchases();
-    if (found) {
-      toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
-    } else {
-      toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
+    setRcLoading(true);
+    try {
+      const customerInfo = await rcRestorePurchases();
+      if (customerInfo) {
+        setHasPurchased(true);
+        if (user?.id && user?.email) {
+          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+        toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+      } else {
+        toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('[AuthCard] Restore error:', err);
+      toast({ title: 'Erro ao restaurar', description: 'Tente novamente.', variant: 'destructive' });
+    } finally {
+      setRcLoading(false);
     }
   };
 
