@@ -1,13 +1,21 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  initRevenueCat,
+  getSubscriptionPrice,
+  purchaseMonthly as rcPurchaseMonthly,
+  restorePurchases as rcRestorePurchases,
+  checkSubscriptionStatus,
+  logInRevenueCat,
+  syncSubscriptionAfterLogin,
+} from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
 import { Separator } from '@/components/ui/separator';
