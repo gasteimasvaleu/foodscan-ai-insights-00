@@ -107,18 +107,42 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   };
 
   const handlePurchase = async () => {
-    const success = await purchaseMonthly();
-    if (success) {
-      toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
+    setRcLoading(true);
+    try {
+      const customerInfo = await rcPurchaseMonthly();
+      if (customerInfo) {
+        setHasPurchased(true);
+        if (user?.id && user?.email) {
+          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+        toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
+      }
+    } catch (err: any) {
+      console.error('[AuthCard] Purchase error (full):', JSON.stringify(err));
+      toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
+    } finally {
+      setRcLoading(false);
     }
   };
 
   const handleRestore = async () => {
-    const found = await restorePurchases();
-    if (found) {
-      toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
-    } else {
-      toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
+    setRcLoading(true);
+    try {
+      const customerInfo = await rcRestorePurchases();
+      if (customerInfo) {
+        setHasPurchased(true);
+        if (user?.id && user?.email) {
+          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+        toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+      } else {
+        toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('[AuthCard] Restore error:', err);
+      toast({ title: 'Erro ao restaurar', description: 'Tente novamente.', variant: 'destructive' });
+    } finally {
+      setRcLoading(false);
     }
   };
 
