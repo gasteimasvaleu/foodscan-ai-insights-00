@@ -29,12 +29,49 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
-  const { price, hasPurchased, loading: rcLoading, purchaseMonthly, restorePurchases } = useRevenueCat(user);
+  const [price, setPrice] = useState<string | null>(null);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [rcLoading, setRcLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
 
   const isNativeIOS = isNative && isIOS;
+
+  // RevenueCat init (native iOS only)
+  useEffect(() => {
+    if (!isNativeIOS) return;
+    (async () => {
+      try {
+        await initRevenueCat();
+        const hasActive = await checkSubscriptionStatus();
+        if (hasActive) setHasPurchased(true);
+        const priceStr = await getSubscriptionPrice();
+        if (priceStr) setPrice(priceStr);
+      } catch (err) {
+        console.error('[AuthCard] RevenueCat init error:', err);
+        toast({ title: 'Erro ao inicializar compras', description: 'Tente novamente mais tarde.', variant: 'destructive' });
+      }
+    })();
+  }, [isNativeIOS]);
+
+  // Associate user with RevenueCat after login
+  useEffect(() => {
+    if (!isNativeIOS || !user?.id) return;
+    (async () => {
+      try {
+        const customerInfo = await logInRevenueCat(user.id);
+        if (!customerInfo) return;
+        const active = customerInfo.entitlements?.active;
+        if (active && Object.keys(active).length > 0) {
+          setHasPurchased(true);
+          if (user.email) await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+        }
+      } catch (err) {
+        console.error('[AuthCard] RevenueCat logIn error:', err);
+      }
+    })();
+  }, [isNativeIOS, user?.id, user?.email]);
 
   useEffect(() => {
     const fetchBanners = async () => {
