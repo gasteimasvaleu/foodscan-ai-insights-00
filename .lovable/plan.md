@@ -1,34 +1,35 @@
 
 
-## Expandir opções pré-definidas de porção
+## Diagnóstico: Login com Apple falha após assinatura
 
-Adicionar mais opções aos dois seletores de porção, organizando por categorias para facilitar a escolha.
+### Problema identificado
 
-### Novas opções a adicionar
+No `AppleSignInButton.tsx`, o bloco `catch` (linha 63-71) captura **qualquer** erro mas descarta a mensagem real, mostrando apenas o genérico "Não foi possível fazer login com Apple." Isso impede o diagnóstico.
 
-**Talheres e utensílios:**
-- Colher de Sopa (15g), Colher de Servir (45g), Concha Média (120g), Concha Grande (180g), Espátula (30g)
+As causas mais prováveis são:
 
-**Copos e xícaras:**
-- Xícara de Chá (180g), Xícara de Café (50g), Caneca (300g)
+1. **Provider Apple não configurado no Supabase** — `signInWithIdToken({ provider: 'apple', token })` exige que o provider Apple esteja habilitado no dashboard Supabase (Authentication > Providers > Apple) com o Bundle ID correto (`app.dietainteligente`)
+2. **Erro no token** — o identity token do sandbox pode ter um formato inesperado
 
-**Pratos e tigelas:**
-- Tigela Pequena (200g), Tigela Média (350g), Tigela Grande (500g), Pires (100g)
+### Plano de correção
 
-**Unidades e pedaços:**
-- Unidade Pequena (50g), Unidade Média (100g), Unidade Grande (150g), Pedaço Pequeno (30g), Pedaço Médio (60g), Pedaço Grande (120g), Fatia Fina (40g), Fatia Grossa (120g)
+**`src/components/AppleSignInButton.tsx`** — melhorar o tratamento de erro para expor a causa real:
 
-**Medidas de mão:**
-- Punhado (30g), Palma da Mão (100g)
+- No bloco `catch`, logar `err` completo no console e incluir `err.message` no toast
+- No bloco do `signInWithIdToken` error (linha 29), logar também o token parcial para debug (primeiros 20 chars)
+- Adicionar log após `NativeAppleSignIn.authorize()` para confirmar que o plugin retornou com sucesso
 
-**Embalagens:**
-- Sachê (10g), Pacote Individual (25g), Porção de Restaurante (300g)
+### Verificação manual necessária
 
-### Arquivos editados
+- Confirmar no dashboard Supabase (Authentication > Providers > Apple) que o provider está habilitado com:
+  - **Bundle ID**: `app.dietainteligente`
+  - **Service ID** e **Key ID** corretos (do Apple Developer)
+  - **Private Key** (arquivo .p8) configurado
+
+Sem essa configuração, `signInWithIdToken` sempre falhará.
+
+### Arquivo editado
 | Arquivo | Mudança |
 |---|---|
-| `src/components/PortionSelector.tsx` | Expandir array `portionOptions` |
-| `src/components/MultipleElementsPortionSelector.tsx` | Expandir array `portionOptions` (mesmo conteúdo) |
-
-As opções existentes (Prato Pequeno/Médio/Grande, Copo Pequeno/Médio/Grande, Fatia, Colher de Chá) permanecem inalteradas.
+| `src/components/AppleSignInButton.tsx` | Logs detalhados + mensagem de erro real no toast |
 
