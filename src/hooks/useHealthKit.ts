@@ -282,7 +282,7 @@ export const useHealthKit = () => {
         limit: 20,
       });
       console.log('[HealthKit] queryWorkouts raw result:', JSON.stringify(result));
-      const workouts: RecentWorkout[] = (result?.workouts ?? result?.samples ?? []).map((s: any) => ({
+      const workouts: RecentWorkout[] = ((result as any)?.workouts ?? []).map((s: any) => ({
         sourceName: s.sourceName ?? s.source ?? 'Apple Health',
         value: s.duration ?? s.value ?? 0,
         startDate: s.startDate ?? '',
