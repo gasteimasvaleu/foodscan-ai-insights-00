@@ -14,11 +14,18 @@ interface ExerciseStats {
   currentStreak: number;
 }
 
-interface ExerciseDashboardProps {
-  healthKitCalories?: number;
+interface WeeklyDataPoint {
+  date: string;
+  steps: number;
+  calories: number;
 }
 
-export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardProps) {
+interface ExerciseDashboardProps {
+  healthKitCalories?: number;
+  healthKitWeeklyData?: WeeklyDataPoint[];
+}
+
+export function ExerciseDashboard({ healthKitCalories = 0, healthKitWeeklyData = [] }: ExerciseDashboardProps) {
   const { user } = useAuth();
   const [stats, setStats] = useState<ExerciseStats>({
     todayCalories: 0,
