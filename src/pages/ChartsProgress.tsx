@@ -73,7 +73,19 @@ export default function ChartsProgress() {
         supabase.from("exercise_records").select("calories_burned").eq("user_id", user?.id),
         supabase.from("weekly_summaries").select("date", { count: "exact", head: true }).eq("user_id", user?.id),
       ]);
-      const totalCaloriesBurned = exercisesResult.data?.reduce((sum, record) => sum + Number(record.calories_burned), 0) || 0;
+      let totalCaloriesBurned = exercisesResult.data?.reduce((sum, record) => sum + Number(record.calories_burned), 0) || 0;
+
+      // Incluir calorias do Apple Health
+      if (hkConnected) {
+        try {
+          const hkData = await getHKWeeklyData();
+          const hkCalories = hkData.reduce((sum, d) => sum + d.calories, 0);
+          totalCaloriesBurned += hkCalories;
+        } catch (e) {
+          console.error('[ChartsProgress] Erro ao carregar calorias do HealthKit:', e);
+        }
+      }
+
       setStats({
         totalMeals: mealsResult.count || 0,
         totalCaloriesBurned: Math.round(totalCaloriesBurned),
