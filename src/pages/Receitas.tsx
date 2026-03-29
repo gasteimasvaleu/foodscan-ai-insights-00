@@ -110,7 +110,7 @@ const Receitas = () => {
   return (
     <div className="min-h-screen bg-background pb-32">
       <Navbar />
-      <div className="container max-w-lg mx-auto px-4 pt-20">
+      <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)]">
         {/* Header */}
         <div className="mb-6 animate-fade-in">
           <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
