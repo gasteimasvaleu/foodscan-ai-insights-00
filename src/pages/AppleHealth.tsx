@@ -218,8 +218,87 @@ export default function AppleHealth() {
                       </div>
                     );
                   })}
+                </div>
 
-            {/* Guia de conexão */}
+                {/* Calories bars */}
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                  <Flame className="w-3 h-3 text-orange-500" /> Calorias
+                </p>
+                <div className="flex items-end gap-1 h-20">
+                  {weeklyData.map((d) => {
+                    const maxCal = Math.max(...weeklyData.map(w => w.calories), 1);
+                    const height = Math.max((d.calories / maxCal) * 100, 4);
+                    const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'narrow' });
+                    return (
+                      <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
+                        <span className="text-[10px] text-muted-foreground">{d.calories > 0 ? d.calories : ''}</span>
+                        <div
+                          className="w-full bg-orange-400 rounded-t-md transition-all"
+                          style={{ height: `${height}%` }}
+                        />
+                        <span className="text-[10px] text-muted-foreground">{dayLabel}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Connected Apps Workouts */}
+            <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Smartphone className="w-5 h-5 text-[#FD46A1]" />
+                Atividades de Apps Conectados
+              </h3>
+
+              {recentWorkouts.length === 0 ? (
+                <div className="text-center py-6">
+                  <Watch className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum treino recente encontrado.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Treinos do Strava, Garmin, Nike Run Club e outros apps aparecerão aqui automaticamente.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentWorkouts.map((workout, index) => {
+                    const style = getSourceStyle(workout.sourceName);
+                    const IconComponent = style.icon;
+                    const date = new Date(workout.startDate);
+                    const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                    const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center gap-3 p-3 rounded-xl ${style.bg} transition-all`}
+                      >
+                        <div className={`p-2 rounded-lg bg-white/70 shadow-sm`}>
+                          <IconComponent className={`w-5 h-5 ${style.color}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-semibold text-sm ${style.color} truncate`}>
+                            {workout.sourceName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {dateStr} às {timeStr}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-foreground">
+                            {formatDuration(workout.value)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Guia de conexão de apps externos */}
             <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-[#FD46A1]" />
@@ -304,86 +383,6 @@ export default function AppleHealth() {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </div>
-
-            </div>
-
-                {/* Calories bars */}
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Flame className="w-3 h-3 text-orange-500" /> Calorias
-                </p>
-                <div className="flex items-end gap-1 h-20">
-                  {weeklyData.map((d) => {
-                    const maxCal = Math.max(...weeklyData.map(w => w.calories), 1);
-                    const height = Math.max((d.calories / maxCal) * 100, 4);
-                    const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'narrow' });
-                    return (
-                      <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-[10px] text-muted-foreground">{d.calories > 0 ? d.calories : ''}</span>
-                        <div
-                          className="w-full bg-orange-400 rounded-t-md transition-all"
-                          style={{ height: `${height}%` }}
-                        />
-                        <span className="text-[10px] text-muted-foreground">{dayLabel}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Connected Apps Workouts */}
-            <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-[#FD46A1]" />
-                Atividades de Apps Conectados
-              </h3>
-
-              {recentWorkouts.length === 0 ? (
-                <div className="text-center py-6">
-                  <Watch className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">
-                    Nenhum treino recente encontrado.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Treinos do Strava, Garmin, Nike Run Club e outros apps aparecerão aqui automaticamente.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {recentWorkouts.map((workout, index) => {
-                    const style = getSourceStyle(workout.sourceName);
-                    const IconComponent = style.icon;
-                    const date = new Date(workout.startDate);
-                    const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                    const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-                    return (
-                      <div
-                        key={index}
-                        className={`flex items-center gap-3 p-3 rounded-xl ${style.bg} transition-all`}
-                      >
-                        <div className={`p-2 rounded-lg bg-white/70 shadow-sm`}>
-                          <IconComponent className={`w-5 h-5 ${style.color}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`font-semibold text-sm ${style.color} truncate`}>
-                            {workout.sourceName}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {dateStr} às {timeStr}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-bold text-foreground">
-                            {formatDuration(workout.value)}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         )}
