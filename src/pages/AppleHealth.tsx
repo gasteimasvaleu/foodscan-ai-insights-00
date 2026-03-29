@@ -8,8 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Heart, Footprints, Flame, Scale, RefreshCw, Unlink,
-  ArrowLeft, Smartphone, Watch, Activity
+  ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings
 } from "lucide-react";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger
+} from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
