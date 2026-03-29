@@ -48,6 +48,27 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
                 .eq('id', data.user.id);
             }
           }
+
+          // Sync RevenueCat subscription to subscribers table
+          if (data.user) {
+            try {
+              const { logInRevenueCat, checkSubscriptionStatus, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');
+              await logInRevenueCat(data.user.id);
+              const isActive = await checkSubscriptionStatus();
+              if (isActive) {
+                const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                const { customerInfo: fullInfo } = await Purchases.getCustomerInfo();
+                await syncSubscriptionAfterLogin(
+                  data.user.id,
+                  data.user.email || '',
+                  fullInfo
+                );
+                console.log('[AppleSignIn] Subscription synced to subscribers table');
+              }
+            } catch (err) {
+              console.error('[AppleSignIn] RC sync error:', err);
+            }
+          }
         }
       } else {
         // Web flow: OAuth redirect
