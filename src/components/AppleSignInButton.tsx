@@ -52,18 +52,31 @@ export const AppleSignInButton = ({ disabled = false, label }: AppleSignInButton
           // Sync RevenueCat subscription to subscribers table
           if (data.user) {
             try {
-              const { logInRevenueCat, checkSubscriptionStatus, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');
+              const { logInRevenueCat, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');
               await logInRevenueCat(data.user.id);
-              const isActive = await checkSubscriptionStatus();
-              if (isActive) {
-                const { Purchases } = await import('@revenuecat/purchases-capacitor');
-                const { customerInfo: fullInfo } = await Purchases.getCustomerInfo();
-                await syncSubscriptionAfterLogin(
+              // Always fetch fresh customerInfo after logIn
+              const { Purchases } = await import('@revenuecat/purchases-capacitor');
+              const { customerInfo: fullInfo } = await Purchases.getCustomerInfo();
+              console.log('[AppleSignIn] Post-login entitlements:', JSON.stringify(fullInfo.entitlements));
+              const active = fullInfo.entitlements?.active;
+              if (active && Object.keys(active).length > 0) {
+                const result = await syncSubscriptionAfterLogin(
                   data.user.id,
                   data.user.email || '',
                   fullInfo
                 );
-                console.log('[AppleSignIn] Subscription synced to subscribers table');
+                if (result.success) {
+                  console.log('[AppleSignIn] Subscription synced to subscribers table');
+                } else {
+                  console.error('[AppleSignIn] Sync failed:', result.error);
+                  toast({
+                    title: 'Aviso',
+                    description: 'Login realizado, mas houve um erro ao sincronizar sua assinatura. Tente restaurar compras.',
+                    variant: 'destructive',
+                  });
+                }
+              } else {
+                console.log('[AppleSignIn] No active entitlements found after login');
               }
             } catch (err) {
               console.error('[AppleSignIn] RC sync error:', err);

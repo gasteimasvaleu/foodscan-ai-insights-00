@@ -119,6 +119,19 @@ Deno.serve(async (req) => {
         });
     }
 
+    // Check if appUserId is an anonymous RC ID (not a valid UUID)
+    const isAnonymousId = appUserId.startsWith("$RCAnonymousID:");
+
+    if (isAnonymousId) {
+      console.log(
+        `[RevenueCat Webhook] Anonymous user ${appUserId}, skipping (no Supabase user to match)`
+      );
+      return new Response(JSON.stringify({ success: true, skipped: "anonymous_user" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Try to update by user_id first
     const { data: existing } = await supabaseClient
       .from("subscribers")
@@ -141,29 +154,36 @@ Deno.serve(async (req) => {
       }
     } else {
       // Try to find by looking up the user's email from auth
-      const { data: authUser } =
-        await supabaseClient.auth.admin.getUserById(appUserId);
+      try {
+        const { data: authUser } =
+          await supabaseClient.auth.admin.getUserById(appUserId);
 
-      if (authUser?.user?.email) {
-        const { error } = await supabaseClient.from("subscribers").upsert(
-          {
-            user_id: appUserId,
-            email: authUser.user.email,
-            ...updateData,
-          },
-          { onConflict: "email" }
-        );
+        if (authUser?.user?.email) {
+          const { error } = await supabaseClient.from("subscribers").upsert(
+            {
+              user_id: appUserId,
+              email: authUser.user.email,
+              ...updateData,
+            },
+            { onConflict: "email" }
+          );
 
-        if (error) {
-          console.error("[RevenueCat Webhook] Upsert error:", error);
-          return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
+          if (error) {
+            console.error("[RevenueCat Webhook] Upsert error:", error);
+            return new Response(JSON.stringify({ error: error.message }), {
+              status: 500,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        } else {
+          console.error(
+            `[RevenueCat Webhook] No subscriber or auth user found for ${appUserId}`
+          );
         }
-      } else {
+      } catch (authErr) {
         console.error(
-          `[RevenueCat Webhook] No subscriber or auth user found for ${appUserId}`
+          `[RevenueCat Webhook] Error looking up auth user ${appUserId}:`,
+          authErr
         );
       }
     }
