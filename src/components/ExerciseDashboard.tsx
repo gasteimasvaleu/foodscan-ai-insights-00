@@ -14,11 +14,18 @@ interface ExerciseStats {
   currentStreak: number;
 }
 
-interface ExerciseDashboardProps {
-  healthKitCalories?: number;
+interface WeeklyDataPoint {
+  date: string;
+  steps: number;
+  calories: number;
 }
 
-export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardProps) {
+interface ExerciseDashboardProps {
+  healthKitCalories?: number;
+  healthKitWeeklyData?: WeeklyDataPoint[];
+}
+
+export function ExerciseDashboard({ healthKitCalories = 0, healthKitWeeklyData = [] }: ExerciseDashboardProps) {
   const { user } = useAuth();
   const [stats, setStats] = useState<ExerciseStats>({
     todayCalories: 0,
@@ -123,6 +130,8 @@ export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardPr
   }
 
   const totalTodayCalories = stats.todayCalories + healthKitCalories;
+  const healthKitWeeklyCalories = healthKitWeeklyData.reduce((sum, d) => sum + d.calories, 0);
+  const totalWeeklyCalories = stats.weeklyCalories + healthKitWeeklyCalories;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -154,9 +163,14 @@ export function ExerciseDashboard({ healthKitCalories = 0 }: ExerciseDashboardPr
             <div>
               <p className="text-sm font-semibold text-muted-foreground mb-2">Últimos 7 Dias</p>
               <div className="flex items-center gap-2">
-                <p className="text-3xl font-bold text-[#FD46A1]">{stats.weeklyCalories}</p>
+                <p className="text-3xl font-bold text-[#FD46A1]">{totalWeeklyCalories}</p>
                 <Badge variant="secondary" className="text-xs font-semibold bg-pink-100 text-pink-800">cal</Badge>
               </div>
+              {healthKitWeeklyCalories > 0 && (
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {stats.weeklyCalories} app + {healthKitWeeklyCalories} Apple Health
+                </p>
+              )}
             </div>
             <div className="p-3 rounded-full bg-pink-500/20 backdrop-blur-sm group-hover:bg-pink-500/30 transition-colors">
               <Calendar className="h-8 w-8 text-pink-500 group-hover:scale-110 transition-transform" />
