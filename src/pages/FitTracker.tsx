@@ -151,7 +151,7 @@ export default function FitTracker() {
                   </Button>
                 </>
               )}
-              <ExerciseDashboard key={refreshTrigger} healthKitCalories={isConnected ? dailyCalories : 0} />
+              <ExerciseDashboard key={refreshTrigger} healthKitCalories={isConnected ? dailyCalories : 0} healthKitWeeklyData={isConnected ? weeklyData : []} />
             </TabsContent>
 
             <TabsContent value="history" className="space-y-6">
