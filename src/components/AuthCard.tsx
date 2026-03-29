@@ -9,12 +9,10 @@ import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
 
 import {
-  initRevenueCat,
   getSubscriptionPrice,
   purchaseMonthly as rcPurchaseMonthly,
   restorePurchases as rcRestorePurchases,
   checkSubscriptionStatus,
-  logInRevenueCat,
   syncSubscriptionAfterLogin,
 } from '@/lib/revenuecat';
 
@@ -40,48 +38,37 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
 
   const isNativeIOS = isNative && isIOS;
 
-  // RevenueCat init (native iOS only)
+  // Check purchase status & load price (native iOS only)
   useEffect(() => {
     if (!isNativeIOS) return;
     (async () => {
       try {
-        await initRevenueCat();
         const hasActive = await checkSubscriptionStatus();
         if (hasActive) setHasPurchased(true);
         const priceStr = await getSubscriptionPrice();
         if (priceStr) setPrice(priceStr);
       } catch (err) {
-        console.error('[AuthCard] RevenueCat init error:', err);
+        console.error('[AuthCard] RevenueCat check error:', err);
         toast({ title: 'Erro ao inicializar compras', description: 'Tente novamente mais tarde.', variant: 'destructive' });
       }
     })();
   }, [isNativeIOS]);
 
-  // Associate user with RevenueCat after login — always fetch customerInfo independently
+  // On mount for native iOS: silently restore purchases to detect existing subscriptions
   useEffect(() => {
-    if (!isNativeIOS || !user?.id) return;
+    if (!isNativeIOS || hasPurchased) return;
     (async () => {
       try {
-        await logInRevenueCat(user.id);
-        // Always fetch fresh customerInfo regardless of logIn return value
-        const { Purchases } = await import('@revenuecat/purchases-capacitor');
-        const { customerInfo } = await Purchases.getCustomerInfo();
-        console.log('[AuthCard] Post-login customerInfo:', JSON.stringify(customerInfo.entitlements));
-        const active = customerInfo.entitlements?.active;
-        if (active && Object.keys(active).length > 0) {
+        const restored = await rcRestorePurchases();
+        if (restored) {
           setHasPurchased(true);
-          if (user.email) {
-            const result = await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
-            if (!result.success) {
-              console.error('[AuthCard] Sync failed after login:', result.error);
-            }
-          }
+          console.log('[AuthCard] Restored purchase detected on mount');
         }
       } catch (err) {
-        console.error('[AuthCard] RevenueCat logIn/sync error:', err);
+        console.warn('[AuthCard] Silent restore failed:', err);
       }
     })();
-  }, [isNativeIOS, user?.id, user?.email]);
+  }, [isNativeIOS]);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -132,13 +119,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       const customerInfo = await rcPurchaseMonthly();
       if (customerInfo) {
         setHasPurchased(true);
-        if (user?.id && user?.email) {
-          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
-        }
         toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
       }
     } catch (err: any) {
-      console.error('[AuthCard] Purchase error (full):', JSON.stringify(err));
+      console.error('[AuthCard] Purchase error:', JSON.stringify(err));
       toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
     } finally {
       setRcLoading(false);
@@ -151,9 +135,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       const customerInfo = await rcRestorePurchases();
       if (customerInfo) {
         setHasPurchased(true);
-        if (user?.id && user?.email) {
-          await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
-        }
         toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
@@ -197,7 +178,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
             ))}
-            {/* Dots */}
             {bannerImages.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
                 {bannerImages.map((_, index) => (
@@ -205,9 +185,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
                     key={index}
                     onClick={() => setCurrentBanner(index)}
                     className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentBanner
-                        ? 'bg-white w-4'
-                        : 'bg-white/50'
+                      index === currentBanner ? 'bg-white w-4' : 'bg-white/50'
                     }`}
                   />
                 ))}
@@ -222,7 +200,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </h3>
           </CardContent>
         </Card>
-        
       </>
     );
   }
@@ -249,7 +226,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Apple Sign In — disabled until purchased */}
           <AppleSignInButton disabled={!hasPurchased} />
           {!hasPurchased && (
             <p className="text-xs text-muted-foreground text-center -mt-2">
@@ -257,7 +233,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </p>
           )}
 
-          {/* Subscribe via App Store */}
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground text-center">
               Caso ainda não tenha assinatura, clique antes em:
@@ -271,14 +246,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             </Button>
           </div>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
             <span className="text-xs text-muted-foreground">ou</span>
             <Separator className="flex-1" />
           </div>
 
-          {/* Email/Password form */}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -291,7 +264,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             <Button type="submit" className="w-full">Entrar</Button>
           </form>
 
-          {/* Restore Purchases */}
           <button
             type="button"
             onClick={handleRestore}
@@ -301,12 +273,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             Restaurar Compras
           </button>
 
-          {/* Legal text — Apple Guideline 3.1.2c */}
           <p className="text-[10px] text-muted-foreground text-center leading-tight">
             A assinatura é renovada automaticamente, a menos que seja cancelada pelo menos 24 horas antes do término do período atual. O pagamento será cobrado na sua conta do iTunes. A gestão da assinatura pode ser feita nas Definições da conta após a compra.
           </p>
 
-          {/* Privacy & Terms links */}
           <div className="flex justify-center gap-4 text-[11px]">
             <button type="button" onClick={() => navigate('/politica-de-privacidade')} className="text-primary underline">
               Política de Privacidade

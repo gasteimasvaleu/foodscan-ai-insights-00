@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useSubscription } from './useSubscription';
+import { Capacitor } from '@capacitor/core';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -13,12 +13,39 @@ export const useAuth = () => {
   const subscription = useSubscription(user);
 
   useEffect(() => {
+    const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // ─── RevenueCat sync on login (native iOS only) ───
+        if (isNativeIOS && session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          // Use setTimeout to avoid blocking the auth state change
+          setTimeout(async () => {
+            try {
+              const { identifyUser, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');
+              const userId = session.user.id;
+              const email = session.user.email || '';
+
+              console.log('[useAuth] Auth event:', event, '- identifying user with RevenueCat:', userId);
+              await identifyUser(userId);
+
+              console.log('[useAuth] Starting subscription sync...');
+              const result = await syncSubscriptionAfterLogin(userId, email);
+              if (result.success) {
+                console.log('[useAuth] Subscription synced successfully');
+              } else {
+                console.log('[useAuth] Sync result:', result.error);
+              }
+            } catch (err) {
+              console.error('[useAuth] RevenueCat sync error:', err);
+            }
+          }, 0);
+        }
       }
     );
 
@@ -39,9 +66,7 @@ export const useAuth = () => {
       email,
       password,
       options: {
-        data: {
-          name: name
-        },
+        data: { name },
         emailRedirectTo: redirectUrl
       }
     });
@@ -64,10 +89,7 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast({
@@ -86,15 +108,22 @@ export const useAuth = () => {
     setSession(null);
     setUser(null);
 
-    // Se não há sessão ativa, não tentar logout no servidor
-    if (!session) {
-      return;
+    // Logout RevenueCat on native iOS
+    const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+    if (isNativeIOS) {
+      try {
+        const { logOutRevenueCat } = await import('@/lib/revenuecat');
+        await logOutRevenueCat();
+        console.log('[useAuth] RevenueCat logout done');
+      } catch (err) {
+        console.warn('[useAuth] RevenueCat logout error:', err);
+      }
     }
+
+    if (!session) return;
 
     try {
       const { error } = await supabase.auth.signOut();
-      
-      // Ignorar erro se a sessão já não existe no servidor
       if (error && !error.message.toLowerCase().includes('session')) {
         toast({
           title: "Erro ao sair",
@@ -103,7 +132,6 @@ export const useAuth = () => {
         });
       }
     } catch (err) {
-      // Estado local já foi limpo, então não mostrar erro crítico
       console.warn('Logout error (estado local limpo):', err);
     }
   };

@@ -6,6 +6,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const log = (msg: string, data?: unknown) => {
+  const extra = data ? ` - ${JSON.stringify(data)}` : '';
+  console.log(`[RevenueCat Webhook] ${msg}${extra}`);
+};
+
+const isValidUUID = (s: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -29,25 +37,23 @@ Deno.serve(async (req) => {
     const event = body.event;
 
     if (!event) {
-      console.error("[RevenueCat Webhook] No event in payload");
       return new Response(JSON.stringify({ error: "No event" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const eventType = event.type;
-    const appUserId = event.app_user_id;
+    const eventType: string = event.type;
+    const appUserId: string = event.app_user_id;
     const expirationDate = event.expiration_at_ms
       ? new Date(event.expiration_at_ms).toISOString()
       : null;
+    const originalTransactionId: string | null =
+      event.original_transaction_id || event.transaction_id || null;
 
-    console.log(
-      `[RevenueCat Webhook] Event: ${eventType}, User: ${appUserId}, Expiration: ${expirationDate}`
-    );
+    log(`Event: ${eventType}`, { user: appUserId, exp: expirationDate, txn: originalTransactionId });
 
     if (!appUserId) {
-      console.error("[RevenueCat Webhook] No app_user_id in event");
       return new Response(JSON.stringify({ error: "No app_user_id" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -59,138 +65,157 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Determine update based on event type
-    let updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
-      payment_provider: "apple",
-    };
+    // Determine subscription state based on event type
+    let subscribed = true;
+    let subscriptionStatus = "active";
 
     switch (eventType) {
       case "INITIAL_PURCHASE":
       case "RENEWAL":
       case "UNCANCELLATION":
-        updateData.subscribed = true;
-        updateData.subscription_tier = "Premium";
-        if (expirationDate) {
-          updateData.subscription_end = expirationDate;
-        }
-        break;
-
-      case "CANCELLATION":
-        // Keep active until expiration, just log the intent
-        if (expirationDate) {
-          updateData.subscription_end = expirationDate;
-        }
-        console.log(
-          `[RevenueCat Webhook] Cancellation for ${appUserId}, active until ${expirationDate}`
-        );
-        break;
-
-      case "EXPIRATION":
-        updateData.subscribed = false;
-        break;
-
-      case "BILLING_ISSUE":
-        console.warn(
-          `[RevenueCat Webhook] Billing issue for user ${appUserId}`
-        );
-        // Don't change subscription status yet, Apple retries billing
-        break;
-
       case "PRODUCT_CHANGE":
-        updateData.subscription_tier = "Premium";
-        if (expirationDate) {
-          updateData.subscription_end = expirationDate;
-        }
+        subscribed = true;
+        subscriptionStatus = "active";
         break;
-
+      case "CANCELLATION":
+        // Keep active until expiration
+        subscribed = true;
+        subscriptionStatus = "cancelled";
+        break;
+      case "EXPIRATION":
+        subscribed = false;
+        subscriptionStatus = "expired";
+        break;
+      case "BILLING_ISSUE":
+        subscribed = true;
+        subscriptionStatus = "pending";
+        break;
       case "REFUND":
-        updateData.subscribed = false;
-        updateData.subscription_end = new Date().toISOString();
+        subscribed = false;
+        subscriptionStatus = "expired";
         break;
-
       default:
-        console.log(
-          `[RevenueCat Webhook] Unhandled event type: ${eventType}`
-        );
+        log(`Unhandled event type: ${eventType}`);
         return new Response(JSON.stringify({ success: true }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }
 
-    // Check if appUserId is an anonymous RC ID (not a valid UUID)
-    const isAnonymousId = appUserId.startsWith("$RCAnonymousID:");
+    const isAnonymous = appUserId.startsWith("$RCAnonymousID:");
+    const isUUID = isValidUUID(appUserId);
 
-    if (isAnonymousId) {
-      console.log(
-        `[RevenueCat Webhook] Anonymous user ${appUserId}, skipping (no Supabase user to match)`
-      );
-      return new Response(JSON.stringify({ success: true, skipped: "anonymous_user" }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const updateData: Record<string, unknown> = {
+      subscribed,
+      subscription_status: subscriptionStatus,
+      subscription_tier: "Premium",
+      payment_provider: "apple",
+      product_source: "revenuecat",
+      transaction_id: originalTransactionId,
+      updated_at: new Date().toISOString(),
+    };
+    if (expirationDate) {
+      updateData.subscription_end = expirationDate;
     }
 
-    // Try to update by user_id first
-    const { data: existing } = await supabaseClient
-      .from("subscribers")
-      .select("id")
-      .eq("user_id", appUserId)
-      .maybeSingle();
+    if (isUUID) {
+      // ─── Known user (real UUID) ───
+      log(`Processing for known user: ${appUserId}`);
 
-    if (existing) {
-      const { error } = await supabaseClient
+      const { data: existing } = await supabaseClient
         .from("subscribers")
-        .update(updateData)
-        .eq("user_id", appUserId);
+        .select("id")
+        .eq("user_id", appUserId)
+        .maybeSingle();
 
-      if (error) {
-        console.error("[RevenueCat Webhook] Update error:", error);
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+      if (existing) {
+        const { error } = await supabaseClient
+          .from("subscribers")
+          .update(updateData)
+          .eq("user_id", appUserId);
+        if (error) {
+          log("Update error", error);
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else {
+        // Try to find user email from auth
+        let email = `user_${appUserId}@revenuecat.local`;
+        try {
+          const { data: authUser } =
+            await supabaseClient.auth.admin.getUserById(appUserId);
+          if (authUser?.user?.email) {
+            email = authUser.user.email;
+          }
+        } catch (e) {
+          log("Could not fetch auth user email", e);
+        }
+
+        const { error } = await supabaseClient.from("subscribers").insert({
+          user_id: appUserId,
+          email,
+          ...updateData,
         });
+        if (error) {
+          log("Insert error", error);
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      log(`Successfully processed ${eventType} for ${appUserId}`);
+    } else if (isAnonymous) {
+      // ─── Anonymous user → create/update orphan record ───
+      const orphanEmail = originalTransactionId
+        ? `anonymous+${originalTransactionId}@revenuecat.local`
+        : `anonymous+${appUserId.replace('$RCAnonymousID:', '')}@revenuecat.local`;
+
+      log(`Creating/updating orphan for anonymous user`, { orphanEmail, txn: originalTransactionId });
+
+      // Try to find existing orphan by transaction_id first
+      let existingOrphan = null;
+      if (originalTransactionId) {
+        const { data } = await supabaseClient
+          .from("subscribers")
+          .select("id")
+          .eq("transaction_id", originalTransactionId)
+          .maybeSingle();
+        existingOrphan = data;
+      }
+
+      // Fallback: find by orphan email
+      if (!existingOrphan) {
+        const { data } = await supabaseClient
+          .from("subscribers")
+          .select("id")
+          .eq("email", orphanEmail)
+          .maybeSingle();
+        existingOrphan = data;
+      }
+
+      if (existingOrphan) {
+        const { error } = await supabaseClient
+          .from("subscribers")
+          .update(updateData)
+          .eq("id", existingOrphan.id);
+        if (error) log("Orphan update error", error);
+        else log("Orphan updated successfully");
+      } else {
+        const { error } = await supabaseClient.from("subscribers").insert({
+          email: orphanEmail,
+          user_id: null,
+          ...updateData,
+        });
+        if (error) log("Orphan insert error", error);
+        else log("Orphan created successfully");
       }
     } else {
-      // Try to find by looking up the user's email from auth
-      try {
-        const { data: authUser } =
-          await supabaseClient.auth.admin.getUserById(appUserId);
-
-        if (authUser?.user?.email) {
-          const { error } = await supabaseClient.from("subscribers").upsert(
-            {
-              user_id: appUserId,
-              email: authUser.user.email,
-              ...updateData,
-            },
-            { onConflict: "email" }
-          );
-
-          if (error) {
-            console.error("[RevenueCat Webhook] Upsert error:", error);
-            return new Response(JSON.stringify({ error: error.message }), {
-              status: 500,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
-          }
-        } else {
-          console.error(
-            `[RevenueCat Webhook] No subscriber or auth user found for ${appUserId}`
-          );
-        }
-      } catch (authErr) {
-        console.error(
-          `[RevenueCat Webhook] Error looking up auth user ${appUserId}:`,
-          authErr
-        );
-      }
+      log(`Unknown app_user_id format, skipping: ${appUserId}`);
     }
-
-    console.log(
-      `[RevenueCat Webhook] Successfully processed ${eventType} for ${appUserId}`
-    );
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
