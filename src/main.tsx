@@ -7,12 +7,9 @@ import './index.css'
 const isNative = Capacitor.isNativePlatform();
 
 // Skip OTA Live Updates when running locally via Xcode (capacitor://localhost)
-// so the app always uses the bundle built by `npm run build && npx cap sync`.
-// In production (published OTA), the URL will NOT contain "localhost".
 const isLocalDev = isNative && window.location.hostname === 'localhost';
 
 if (isNative && !isLocalDev) {
-  // ── Live Updates (OTA) ──
   console.log('[LiveUpdates] Platform:', Capacitor.getPlatform(), '| Starting sync...');
 
   liveUpdateSync().then(result => {
@@ -23,7 +20,6 @@ if (isNative && !isLocalDev) {
     }
   }).catch(err => console.warn('[LiveUpdates] Sync failed:', err));
 
-  // Re-sync when the app comes back to foreground
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       console.log('[LiveUpdates] App resumed – syncing...');
@@ -37,6 +33,15 @@ if (isNative && !isLocalDev) {
   });
 } else if (isLocalDev) {
   console.log('[LiveUpdates] Skipped – running local Xcode build (localhost)');
+}
+
+// ─── Initialize RevenueCat on app start (native iOS only) ───
+if (isNative && Capacitor.getPlatform() === 'ios') {
+  import('./lib/revenuecat').then(({ initRevenueCat }) => {
+    initRevenueCat()
+      .then(() => console.log('[main] RevenueCat initialized at app start'))
+      .catch(err => console.warn('[main] RevenueCat init error:', err));
+  });
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

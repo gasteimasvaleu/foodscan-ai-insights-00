@@ -6,9 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
+const log = (step: string, details?: unknown) => {
+  const extra = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[CHECK-SUBSCRIPTION] ${step}${extra}`);
 };
 
 serve(async (req) => {
@@ -23,7 +23,7 @@ serve(async (req) => {
   );
 
   try {
-    logStep("Function started");
+    log("Function started");
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -33,58 +33,80 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    log("User authenticated", { userId: user.id, email: user.email });
 
-    // Check for existing subscription
-    const { data: existingSubscription } = await supabaseClient
+    // ─── Step 1: Check by user_id ───
+    let subscription = null;
+    const { data: byUserId } = await supabaseClient
       .from("subscribers")
       .select("*")
       .eq("user_id", user.id)
-      .single();
-    
-    logStep("Existing subscription check", { 
-      found: !!existingSubscription,
-      provider: existingSubscription?.payment_provider,
-      subscribed: existingSubscription?.subscribed,
-      tier: existingSubscription?.subscription_tier,
-      end: existingSubscription?.subscription_end
-    });
+      .maybeSingle();
 
-    if (!existingSubscription) {
-      logStep("No subscription record found");
+    if (byUserId) {
+      subscription = byUserId;
+      log("Found by user_id");
+    }
+
+    // ─── Step 2: Fallback — check by email ───
+    if (!subscription) {
+      const { data: byEmail } = await supabaseClient
+        .from("subscribers")
+        .select("*")
+        .eq("email", user.email)
+        .maybeSingle();
+
+      if (byEmail) {
+        subscription = byEmail;
+        log("Found by email", { hasUserId: !!byEmail.user_id });
+
+        // Claim orphan: if record has no user_id, bind it now
+        if (!byEmail.user_id) {
+          log("Claiming orphan record by email");
+          await supabaseClient
+            .from("subscribers")
+            .update({ user_id: user.id, updated_at: new Date().toISOString() })
+            .eq("id", byEmail.id);
+        }
+      }
+    }
+
+    if (!subscription) {
+      log("No subscription record found");
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
 
-    // Validate subscription_end for all providers
-    const subEnd = existingSubscription.subscription_end 
-      ? new Date(existingSubscription.subscription_end) : null;
+    // Validate subscription_end
+    const subEnd = subscription.subscription_end
+      ? new Date(subscription.subscription_end) : null;
     const isActive = subEnd ? subEnd > new Date() : false;
 
-    logStep("Subscription validation", {
-      provider: existingSubscription.payment_provider,
-      tier: existingSubscription.subscription_tier,
-      end: existingSubscription.subscription_end,
-      subscribed: existingSubscription.subscribed,
-      isActive
+    log("Subscription validation", {
+      provider: subscription.payment_provider,
+      tier: subscription.subscription_tier,
+      end: subscription.subscription_end,
+      subscribed: subscription.subscribed,
+      isActive,
     });
 
     // If expired but still marked as subscribed, update
-    if (!isActive && existingSubscription.subscribed) {
-      logStep("⏰ Subscription expired, marking as inactive");
+    if (!isActive && subscription.subscribed) {
+      log("⏰ Subscription expired, marking as inactive");
       await supabaseClient.from("subscribers").update({
         subscribed: false,
+        subscription_status: 'expired',
         updated_at: new Date().toISOString(),
-      }).eq("user_id", user.id);
+      }).eq("id", subscription.id);
     }
 
     return new Response(JSON.stringify({
       subscribed: isActive,
-      subscription_tier: existingSubscription.subscription_tier,
-      subscription_end: existingSubscription.subscription_end,
-      payment_provider: existingSubscription.payment_provider
+      subscription_tier: subscription.subscription_tier,
+      subscription_end: subscription.subscription_end,
+      payment_provider: subscription.payment_provider,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
@@ -92,7 +114,7 @@ serve(async (req) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
+    log("ERROR", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
