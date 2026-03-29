@@ -1,30 +1,28 @@
 
 
-## Corrigir leitura de treinos do Strava (sem quebrar conexão existente)
+## Guia in-app: Como conectar apps externos ao WeDiet via Apple Health
 
-### Garantia de compatibilidade
-- Permissões existentes (`steps`, `calories`, `weight`) não são alteradas
-- Apenas **adiciona** `'workouts'` ao array `read` — iOS preserva autorizações anteriores
-- Funções `getDailySteps`, `getDailyActiveCalories`, `getWeight` permanecem intactas
+### O que será feito
+Adicionar um card/seção expansível (Accordion) na página `/apple-health` com um guia passo-a-passo visual explicando como conectar Strava, Garmin e Nike Run Club ao WeDiet através do Apple Health.
 
-### Alterações em `src/hooks/useHealthKit.ts`
+### Localização
+Na página `src/pages/AppleHealth.tsx`, logo após o card "Atividades de Apps Conectados" (quando conectado) ou após o botão "Acessar FitTracker" (quando desconectado).
 
-**1. requestPermissions** — adicionar `'workouts'` ao read:
-```ts
-read: ['steps', 'calories', 'weight', 'workouts'],
-```
+### Design do componente
+Um card com ícone de ajuda e título "Como conectar apps externos", usando `Accordion` do shadcn para manter compacto:
 
-**2. getRecentWorkouts** — trocar `Health.readSamples({ dataType: 'workout' as any })` por `Health.queryWorkouts()`:
-```ts
-const result = await Health.queryWorkouts({
-  startDate: sevenDaysAgo.toISOString(),
-  endDate: now.toISOString(),
-  limit: 20,
-});
-```
+- **Item 1 — Strava**: 3 passos (Abrir Strava → Configurações → Saúde → Ativar Apple Health → Permitir escrita de treinos)
+- **Item 2 — Garmin Connect**: 3 passos similares (Garmin Connect → Configurações → Saúde → Apple Health)
+- **Item 3 — Nike Run Club**: 3 passos similares
+- **Item 4 — Verificação**: Como confirmar que funciona (Ajustes iOS → Saúde → Acesso e Dispositivos → verificar que o app aparece com permissões ativas)
 
-**3. Adaptar mapeamento** dos campos retornados por `queryWorkouts()` na interface `RecentWorkout`.
+Cada item terá o ícone e cor do respectivo app (reutilizando `SOURCE_STYLES` já existente) e instruções numeradas com texto curto.
 
-### Ação do usuário após deploy
-- Desconectar e reconectar o HealthKit no app para que o iOS solicite a permissão de leitura de treinos
+### Alterações
+
+**1. `src/pages/AppleHealth.tsx`**
+- Importar `Accordion, AccordionContent, AccordionItem, AccordionTrigger` de `@/components/ui/accordion`
+- Importar `HelpCircle, CheckCircle2, Settings` de lucide
+- Adicionar novo card após o card de "Atividades de Apps Conectados" com o guia expansível
+- Cada accordion item mostra passos numerados com ícones coloridos por app
 
