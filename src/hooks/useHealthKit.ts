@@ -96,7 +96,7 @@ export const useHealthKit = () => {
       try {
         const authResult = await withTimeout(
           Health.requestAuthorization({
-            read: ['steps', 'calories', 'weight'],
+            read: ['steps', 'calories', 'weight', 'workouts'],
             write: ['calories'],
           }),
           60000,
