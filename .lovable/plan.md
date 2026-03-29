@@ -1,24 +1,30 @@
 
 
-## Atualização em tempo real do nome do perfil
+## Corrigir leitura de treinos do Strava (sem quebrar conexão existente)
 
-### O que será feito
-Adicionar listeners Supabase Realtime nos componentes `WelcomeMessage` e `AuthCard` para que o nome exibido na página principal atualize automaticamente quando alterado no Perfil.
+### Garantia de compatibilidade
+- Permissões existentes (`steps`, `calories`, `weight`) não são alteradas
+- Apenas **adiciona** `'workouts'` ao array `read` — iOS preserva autorizações anteriores
+- Funções `getDailySteps`, `getDailyActiveCalories`, `getWeight` permanecem intactas
 
-### Pré-requisito (manual)
-Habilitar Realtime na tabela `profiles` no dashboard Supabase: **Database → Replication → habilitar `profiles`**.
+### Alterações em `src/hooks/useHealthKit.ts`
 
-### Alterações
+**1. requestPermissions** — adicionar `'workouts'` ao read:
+```ts
+read: ['steps', 'calories', 'weight', 'workouts'],
+```
 
-**1. `src/components/WelcomeMessage.tsx`**
-- No `useEffect` existente, após o fetch inicial, adicionar um `supabase.channel('welcome-profile')` com listener `postgres_changes` filtrado por `event: 'UPDATE'`, `table: 'profiles'`, `filter: id=eq.{user.id}`
-- No callback, atualizar `setProfileName(payload.new.name)`
-- Cleanup: `supabase.removeChannel(channel)` no return
+**2. getRecentWorkouts** — trocar `Health.readSamples({ dataType: 'workout' as any })` por `Health.queryWorkouts()`:
+```ts
+const result = await Health.queryWorkouts({
+  startDate: sevenDaysAgo.toISOString(),
+  endDate: now.toISOString(),
+  limit: 20,
+});
+```
 
-**2. `src/components/AuthCard.tsx`**
-- No `useEffect` que busca o profile (linhas ~94-102), adicionar o mesmo padrão com `supabase.channel('authcard-profile')` e listener `postgres_changes` filtrado pelo `user.id`
-- Atualizar `setProfileName(payload.new.name)` no callback
-- Cleanup no return do useEffect
+**3. Adaptar mapeamento** dos campos retornados por `queryWorkouts()` na interface `RecentWorkout`.
 
-Ambos os canais usam nomes distintos para evitar conflito. O padrão é idêntico nos dois componentes.
+### Ação do usuário após deploy
+- Desconectar e reconectar o HealthKit no app para que o iOS solicite a permissão de leitura de treinos
 
