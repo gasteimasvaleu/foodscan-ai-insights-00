@@ -276,16 +276,15 @@ export const useHealthKit = () => {
     try {
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const result = await Health.readSamples({
-        dataType: 'workout' as any,
+      const result = await Health.queryWorkouts({
         startDate: sevenDaysAgo.toISOString(),
         endDate: now.toISOString(),
         limit: 20,
-        ascending: false,
       });
-      const workouts: RecentWorkout[] = (result?.samples ?? []).map((s: any) => ({
-        sourceName: s.sourceName ?? 'Apple Health',
-        value: s.value ?? 0,
+      console.log('[HealthKit] queryWorkouts raw result:', JSON.stringify(result));
+      const workouts: RecentWorkout[] = (result?.workouts ?? result?.samples ?? []).map((s: any) => ({
+        sourceName: s.sourceName ?? s.source ?? 'Apple Health',
+        value: s.duration ?? s.value ?? 0,
         startDate: s.startDate ?? '',
         endDate: s.endDate ?? '',
         unit: s.unit ?? 'min',
