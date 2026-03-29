@@ -31,6 +31,7 @@ export default function FitTracker() {
     dailySteps,
     dailyCalories,
     weight,
+    weeklyData,
     debugStatus,
     requestPermissions,
     disconnect,
