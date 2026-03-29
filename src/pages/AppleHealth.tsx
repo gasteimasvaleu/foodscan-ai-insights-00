@@ -218,7 +218,95 @@ export default function AppleHealth() {
                       </div>
                     );
                   })}
-                </div>
+
+            {/* Guia de conexão */}
+            <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-[#FD46A1]" />
+                Como conectar apps externos
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Para que seus treinos apareçam aqui, ative a integração com o Apple Health no app de origem:
+              </p>
+
+              <Accordion type="single" collapsible className="space-y-2">
+                {/* Strava */}
+                <AccordionItem value="strava" className="border rounded-xl px-3 bg-orange-50/50 border-orange-200/50">
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-semibold text-orange-600">Strava</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="space-y-2 text-xs text-muted-foreground list-decimal list-inside">
+                      <li>Abra o <strong>Strava</strong> e toque no seu perfil</li>
+                      <li>Vá em <strong>Configurações → Aplicativos, Serviços e Dispositivos</strong></li>
+                      <li>Toque em <strong>Saúde</strong> e ative <strong>Apple Health</strong></li>
+                      <li>Na tela de permissões, ative <strong>"Treinos"</strong> para escrita</li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Garmin */}
+                <AccordionItem value="garmin" className="border rounded-xl px-3 bg-blue-50/50 border-blue-200/50">
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-2">
+                      <Watch className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-semibold text-blue-600">Garmin Connect</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="space-y-2 text-xs text-muted-foreground list-decimal list-inside">
+                      <li>Abra o <strong>Garmin Connect</strong> e toque em <strong>"Mais" (⋯)</strong></li>
+                      <li>Vá em <strong>Configurações → Saúde e Bem-estar</strong></li>
+                      <li>Ative a integração com <strong>Apple Health</strong></li>
+                      <li>Permita o acesso para <strong>leitura e escrita</strong> de treinos</li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Nike Run Club */}
+                <AccordionItem value="nike" className="border rounded-xl px-3 bg-green-50/50 border-green-200/50">
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-600">Nike Run Club</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="space-y-2 text-xs text-muted-foreground list-decimal list-inside">
+                      <li>Abra o <strong>Nike Run Club</strong> e vá em <strong>Configurações</strong></li>
+                      <li>Toque em <strong>Apple Health</strong></li>
+                      <li>Ative <strong>todas as categorias</strong> de dados para sincronização</li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Verificação */}
+                <AccordionItem value="verify" className="border rounded-xl px-3 bg-muted/30 border-border/50">
+                  <AccordionTrigger className="hover:no-underline py-3">
+                    <div className="flex items-center gap-2">
+                      <Settings className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-semibold text-foreground">Como verificar</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ol className="space-y-2 text-xs text-muted-foreground list-decimal list-inside">
+                      <li>Abra <strong>Ajustes</strong> do iPhone → <strong>Saúde</strong></li>
+                      <li>Toque em <strong>Acesso e Dispositivos</strong></li>
+                      <li>Verifique que o app (Strava, Garmin, etc.) aparece com permissões <strong>ativas</strong></li>
+                      <li className="flex items-start gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" />
+                        <span>Após um treino, volte aqui e toque em <strong>"Atualizar"</strong></span>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+
+            </div>
 
                 {/* Calories bars */}
                 <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
