@@ -91,7 +91,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     return () => clearInterval(timer);
   }, [banners.length]);
 
-  // Fetch profile name when logged in
+  // Fetch profile name when logged in + realtime updates
   useEffect(() => {
     if (!user?.id) return;
     const fetchProfile = async () => {
@@ -99,6 +99,22 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       if (data?.name) setProfileName(data.name);
     };
     fetchProfile();
+
+    const channel = supabase
+      .channel('authcard-profile')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles',
+        filter: `id=eq.${user.id}`,
+      }, (payload: any) => {
+        if (payload.new?.name) setProfileName(payload.new.name);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {

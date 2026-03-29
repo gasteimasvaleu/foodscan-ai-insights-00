@@ -14,6 +14,22 @@ export const WelcomeMessage = () => {
       if (data?.name) setProfileName(data.name);
     };
     fetchProfile();
+
+    const channel = supabase
+      .channel('welcome-profile')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles',
+        filter: `id=eq.${user.id}`,
+      }, (payload: any) => {
+        if (payload.new?.name) setProfileName(payload.new.name);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   if (!user) return null;
