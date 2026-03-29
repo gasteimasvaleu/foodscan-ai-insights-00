@@ -1,40 +1,44 @@
 
 
-# Plano: Corrigir botão "Continuar com Apple" não responsivo no iPhone 17 Pro Max
+# Plano: Criar registro em `subscribers` apos login com Apple
 
-## Problema
+## Problema raiz
 
-O revisor da Apple reportou que o botão "Continuar com Apple" estava **unresponsive** especificamente no iPhone 17 Pro Max (iOS 26.4). O problema é de layout: o card do fluxo iOS nativo tem muito conteúdo (logo, preço, botão Apple, botão assinar, formulário email/senha, restaurar compras, texto legal, links) e o wrapper usa `min-h-[calc(100vh-env(safe-area-inset-top)-2rem)]` com `flex items-center justify-center`. Em telas com proporções específicas ou com o teclado virtual, o conteúdo do card pode ultrapassar a viewport e ficar cortado/inacessível sem scroll.
+O fluxo atual e: Assinar (anonimo) → Login com Apple. No `handlePurchase`, `syncSubscriptionAfterLogin` so executa se `user?.id && user?.email` — mas nesse momento o usuario ainda nao fez login, entao `user` e `null` e o sync e ignorado. Depois, no `AppleSignInButton`, o login funciona mas ninguem cria o registro em `subscribers`.
 
-## Solução
+Nao e problema de sandbox — e um bug de sequencia logica.
 
-Tornar o container do fluxo iOS nativo **scrollável** para que todo o conteúdo seja sempre acessível, independentemente do tamanho da tela.
+## Solucao
 
-## Alterações
+Apos o login com Apple ser bem-sucedido no `AppleSignInButton.tsx`, verificar o status da assinatura no RevenueCat (usando `logInRevenueCat` + `checkSubscriptionStatus`) e, se ativa, chamar `syncSubscriptionAfterLogin` para criar o registro na tabela `subscribers`.
 
-### `src/components/AuthCard.tsx` — wrapper do fluxo iOS nativo (~linha 225)
+## Alteracoes
 
-**De:**
-```html
-<div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center">
+### `src/components/AppleSignInButton.tsx`
+
+Apos o `signInWithIdToken` retornar sucesso (linha 38-50), adicionar:
+
+```typescript
+// After profile upsert, sync RevenueCat subscription
+if (data.user) {
+  try {
+    const { logInRevenueCat, checkSubscriptionStatus, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');
+    const customerInfo = await logInRevenueCat(data.user.id);
+    const isActive = await checkSubscriptionStatus();
+    if (isActive) {
+      const { Purchases } = await import('@revenuecat/purchases-capacitor');
+      const { customerInfo: fullInfo } = await Purchases.getCustomerInfo();
+      await syncSubscriptionAfterLogin(
+        data.user.id,
+        data.user.email || '',
+        fullInfo
+      );
+    }
+  } catch (err) {
+    console.error('[AppleSignIn] RC sync error:', err);
+  }
+}
 ```
 
-**Para:**
-```html
-<div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center overflow-y-auto">
-```
-
-Adicionalmente, adicionar `py-6` ao wrapper para garantir padding vertical adequado e evitar que o conteúdo cole nas bordas em telas menores:
-
-```html
-<div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center overflow-y-auto py-6">
-```
-
-### Mesma correção no fluxo Web (~linha 310)
-
-Aplicar `overflow-y-auto py-6` também no wrapper do fluxo Web para consistência.
-
-## Resultado
-
-O card será sempre rolável quando o conteúdo exceder a viewport, garantindo que todos os botões (incluindo "Continuar com Apple") sejam sempre acessíveis em qualquer iPhone, incluindo o 17 Pro Max.
+Isso garante que, independente da ordem (assinar primeiro ou logar primeiro), o registro em `subscribers` sera criado assim que o login com Apple for concluido e houver assinatura ativa no RevenueCat.
 
