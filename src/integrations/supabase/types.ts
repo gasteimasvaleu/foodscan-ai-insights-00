@@ -600,9 +600,12 @@ export type Database = {
           email: string
           id: string
           payment_provider: string | null
+          product_source: string | null
           subscribed: boolean
           subscription_end: string | null
+          subscription_status: string | null
           subscription_tier: string | null
+          transaction_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -611,9 +614,12 @@ export type Database = {
           email: string
           id?: string
           payment_provider?: string | null
+          product_source?: string | null
           subscribed?: boolean
           subscription_end?: string | null
+          subscription_status?: string | null
           subscription_tier?: string | null
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -622,9 +628,12 @@ export type Database = {
           email?: string
           id?: string
           payment_provider?: string | null
+          product_source?: string | null
           subscribed?: boolean
           subscription_end?: string | null
+          subscription_status?: string | null
           subscription_tier?: string | null
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
