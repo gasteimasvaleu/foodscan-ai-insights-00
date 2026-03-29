@@ -139,30 +139,61 @@ export const syncSubscriptionAfterLogin = async (
   userId: string,
   email: string,
   customerInfo: any,
-): Promise<void> => {
+): Promise<{ success: boolean; error?: string }> => {
   try {
     const entitlements = customerInfo.entitlements?.active;
-    if (!entitlements || Object.keys(entitlements).length === 0) return;
+    if (!entitlements || Object.keys(entitlements).length === 0) {
+      console.log('[RevenueCat] No active entitlements to sync');
+      return { success: false, error: 'No active entitlements' };
+    }
 
     const firstKey = Object.keys(entitlements)[0];
     const firstEntitlement = entitlements[firstKey];
     const expirationDate = firstEntitlement.expirationDate || null;
 
-    await supabase.from('subscribers').upsert(
-      {
-        user_id: userId,
-        email,
-        subscribed: true,
-        subscription_tier: 'Premium',
-        subscription_end: expirationDate,
-        payment_provider: 'apple',
-        updated_at: new Date().toISOString(),
-      },
+    const upsertData = {
+      user_id: userId,
+      email,
+      subscribed: true,
+      subscription_tier: 'Premium',
+      subscription_end: expirationDate,
+      payment_provider: 'apple',
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('[RevenueCat] Attempting upsert to subscribers:', JSON.stringify(upsertData));
+
+    // Try upsert by email first (existing flow)
+    const { data, error } = await supabase.from('subscribers').upsert(
+      upsertData,
       { onConflict: 'email' },
     );
 
-    console.log('[RevenueCat] Synced subscription to Supabase', { expirationDate });
-  } catch (err) {
+    if (error) {
+      console.error('[RevenueCat] Upsert by email failed:', error.message, error.code, error.details);
+      // Fallback: try to update by user_id
+      const { error: updateError } = await supabase
+        .from('subscribers')
+        .update({
+          subscribed: true,
+          subscription_tier: 'Premium',
+          subscription_end: expirationDate,
+          payment_provider: 'apple',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId);
+
+      if (updateError) {
+        console.error('[RevenueCat] Update by user_id also failed:', updateError.message);
+        return { success: false, error: `Upsert: ${error.message}, Update: ${updateError.message}` };
+      }
+      console.log('[RevenueCat] Fallback update by user_id succeeded');
+    }
+
+    console.log('[RevenueCat] Synced subscription to Supabase', { expirationDate, userId });
+    return { success: true };
+  } catch (err: any) {
     console.error('[RevenueCat] Error syncing to Supabase:', err);
+    return { success: false, error: err?.message || 'Unknown error' };
   }
 };

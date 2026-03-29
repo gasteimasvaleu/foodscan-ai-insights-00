@@ -57,20 +57,28 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     })();
   }, [isNativeIOS]);
 
-  // Associate user with RevenueCat after login
+  // Associate user with RevenueCat after login — always fetch customerInfo independently
   useEffect(() => {
     if (!isNativeIOS || !user?.id) return;
     (async () => {
       try {
-        const customerInfo = await logInRevenueCat(user.id);
-        if (!customerInfo) return;
+        await logInRevenueCat(user.id);
+        // Always fetch fresh customerInfo regardless of logIn return value
+        const { Purchases } = await import('@revenuecat/purchases-capacitor');
+        const { customerInfo } = await Purchases.getCustomerInfo();
+        console.log('[AuthCard] Post-login customerInfo:', JSON.stringify(customerInfo.entitlements));
         const active = customerInfo.entitlements?.active;
         if (active && Object.keys(active).length > 0) {
           setHasPurchased(true);
-          if (user.email) await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+          if (user.email) {
+            const result = await syncSubscriptionAfterLogin(user.id, user.email, customerInfo);
+            if (!result.success) {
+              console.error('[AuthCard] Sync failed after login:', result.error);
+            }
+          }
         }
       } catch (err) {
-        console.error('[AuthCard] RevenueCat logIn error:', err);
+        console.error('[AuthCard] RevenueCat logIn/sync error:', err);
       }
     })();
   }, [isNativeIOS, user?.id, user?.email]);
