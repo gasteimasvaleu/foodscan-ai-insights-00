@@ -18,6 +18,7 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
+const HIDDEN_WORKOUTS_KEY = 'healthkit_hidden_workouts';
 
 const SOURCE_STYLES: Record<string, { color: string; bg: string; icon: typeof Smartphone }> = {
   'Strava': { color: 'text-orange-600', bg: 'bg-orange-50', icon: Activity },
