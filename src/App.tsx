@@ -48,8 +48,10 @@ const navItems = [
 ];
 
 const AuthAwareNavbar = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const { isIOS: isNativeIOS } = useNativePlatform();
   if (!user) return null;
+  if (isNativeIOS && !subscription.loading && !subscription.subscriptionStatus.subscribed) return null;
   return <TubelightNavbar items={navItems} />;
 };
 
