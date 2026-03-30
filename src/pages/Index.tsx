@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
@@ -9,27 +9,25 @@ import SplashScreen from '@/components/SplashScreen';
 import PaywallScreen from '@/components/PaywallScreen';
 
 const Index = () => {
-  const { user, subscription } = useAuth();
+  const { user, authReady, subscriptionReady, subscriptionStatus, checkSubscription } = useAuth();
   const { isNative, isIOS } = useNativePlatform();
   const isNativeIOS = isNative && isIOS;
-  
+
   const [showSplash, setShowSplash] = useState(() => {
     const shouldSkipSplash = sessionStorage.getItem('skipSplash');
     if (shouldSkipSplash) {
       sessionStorage.removeItem('skipSplash');
       return false;
     }
-    
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                   (window.navigator as any).standalone === true;
-    
+
     if (isPWA) return true;
-    
+
     const hasShownInSession = sessionStorage.getItem('splashShown');
     return !hasShownInSession;
   });
-
-  const [paywallDismissed, setPaywallDismissed] = useState(false);
 
   const handleSplashComplete = () => {
     setShowSplash(false);
@@ -40,24 +38,70 @@ const Index = () => {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
-  // Show paywall for native iOS users who are logged in but not subscribed
-  const showPaywall = user && isNativeIOS && !subscription.subscriptionStatus.subscribed && !subscription.loading && !paywallDismissed;
+  // Wait for auth to be ready before making any UI decisions
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
+        <div className="animate-pulse">
+          <img
+            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logoapp.png"
+            alt="We Diet"
+            className="h-16 object-contain opacity-60"
+          />
+        </div>
+      </div>
+    );
+  }
 
-  if (showPaywall) {
+  // Not logged in → show login card
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-primary font-inter pb-0 pt-4">
+          <div className="container mx-auto py-0 px-[13px]">
+            <div className="max-w-4xl mx-auto space-y-6">
+              <AuthCard />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // User is logged in on native iOS — wait for subscription check before deciding
+  if (isNativeIOS && !subscriptionReady) {
+    return (
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
+        <div className="animate-pulse">
+          <img
+            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/logoapp.png"
+            alt="We Diet"
+            className="h-16 object-contain opacity-60"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in on native iOS, subscription checked, not subscribed → paywall
+  if (isNativeIOS && !subscriptionStatus.subscribed) {
     return (
       <PaywallScreen
         user={{ id: user.id, email: user.email }}
-        onSubscribed={() => {
-          setPaywallDismissed(true);
-          subscription.checkSubscription();
+        onSubscribed={async () => {
+          // Re-validate subscription from backend before entering app
+          await checkSubscription();
         }}
       />
     );
   }
 
-  return <>
+  // Logged in and subscribed (or not native iOS) → full app
+  return (
+    <>
       <Navbar />
-      <div className={`min-h-screen bg-gradient-primary font-inter ${user ? 'pb-20 pt-[calc(env(safe-area-inset-top)+2.5rem)]' : 'pb-0 pt-4'}`}>
+      <div className={`min-h-screen bg-gradient-primary font-inter pb-20 pt-[calc(env(safe-area-inset-top)+2.5rem)]`}>
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-6">
             <AuthCard />
@@ -65,6 +109,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </>;
+    </>
+  );
 };
+
 export default Index;

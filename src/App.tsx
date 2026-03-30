@@ -1,6 +1,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,10 +50,16 @@ const navItems = [
 ];
 
 const AuthAwareNavbar = () => {
-  const { user, subscription } = useAuth();
-  const { isIOS: isNativeIOS } = useNativePlatform();
-  if (!user) return null;
-  if (isNativeIOS && !subscription.loading && !subscription.subscriptionStatus.subscribed) return null;
+  const { user, authReady, subscriptionReady, subscriptionStatus } = useAuth();
+  const { isNative, isIOS } = useNativePlatform();
+  const isNativeIOS = isNative && isIOS;
+
+  // Don't render navbar until auth is ready
+  if (!authReady || !user) return null;
+
+  // On native iOS, wait for subscription check and hide if not subscribed
+  if (isNativeIOS && (!subscriptionReady || !subscriptionStatus.subscribed)) return null;
+
   return <TubelightNavbar items={navItems} />;
 };
 
@@ -61,43 +68,44 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      
-      <BrowserRouter>
-        <AuthAwareNavbar />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/workout" element={<WorkoutPlan />} />
-          <Route path="/profile/assessment" element={<PhysicalAssessment />} />
-          <Route path="/profile/diets" element={<MyDiets />} />
-          <Route path="/graficos-progresso" element={<ChartsProgress />} />
-          <Route path="/foodscan" element={<FoodScan />} />
-          <Route path="/controle-diario" element={<DailyControl />} />
-          <Route path="/fit-tracker" element={<FitTracker />} />
-          <Route path="/masterchef" element={<MasterCheFIT />} />
-          
-          <Route path="/sobre" element={<About />} />
-          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
-          <Route path="/termos-de-uso" element={<TermsOfUse />} />
-          <Route path="/servinutri" element={<ServiNUTRI />} />
-          <Route path="/receitas" element={<Receitas />} />
-          <Route path="/comunidade" element={<Comunidade />} />
-          <Route path="/nutri-coach" element={<NutriCoach />} />
-          <Route path="/apple-health" element={<AppleHealth />} />
-          <Route path="/treinos" element={<Treinos />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/banners" element={<AdminBanners />} />
-          <Route path="/admin/treinos" element={<AdminTreinos />} />
-          <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
-          
-          <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
-          <Route path="/auth" element={<Auth />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <AuthAwareNavbar />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/workout" element={<WorkoutPlan />} />
+            <Route path="/profile/assessment" element={<PhysicalAssessment />} />
+            <Route path="/profile/diets" element={<MyDiets />} />
+            <Route path="/graficos-progresso" element={<ChartsProgress />} />
+            <Route path="/foodscan" element={<FoodScan />} />
+            <Route path="/controle-diario" element={<DailyControl />} />
+            <Route path="/fit-tracker" element={<FitTracker />} />
+            <Route path="/masterchef" element={<MasterCheFIT />} />
+            
+            <Route path="/sobre" element={<About />} />
+            <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos-de-uso" element={<TermsOfUse />} />
+            <Route path="/servinutri" element={<ServiNUTRI />} />
+            <Route path="/receitas" element={<Receitas />} />
+            <Route path="/comunidade" element={<Comunidade />} />
+            <Route path="/nutri-coach" element={<NutriCoach />} />
+            <Route path="/apple-health" element={<AppleHealth />} />
+            <Route path="/treinos" element={<Treinos />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/banners" element={<AdminBanners />} />
+            <Route path="/admin/treinos" element={<AdminTreinos />} />
+            <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
+            
+            <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
+            <Route path="/auth" element={<Auth />} />
 
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

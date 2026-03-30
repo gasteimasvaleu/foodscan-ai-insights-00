@@ -14,7 +14,7 @@ import {
 
 interface PaywallScreenProps {
   user: { id: string; email?: string };
-  onSubscribed: () => void;
+  onSubscribed: () => Promise<void>;
 }
 
 const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
@@ -45,7 +45,8 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
         } catch (err) {
           console.warn('[PaywallScreen] Sync after purchase error:', err);
         }
-        onSubscribed();
+        // Re-validate subscription before entering app
+        await onSubscribed();
       }
     } catch (err: any) {
       console.error('[PaywallScreen] Purchase error:', JSON.stringify(err));
@@ -66,7 +67,8 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
         } catch (err) {
           console.warn('[PaywallScreen] Sync after restore error:', err);
         }
-        onSubscribed();
+        // Re-validate subscription before entering app
+        await onSubscribed();
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
       }
