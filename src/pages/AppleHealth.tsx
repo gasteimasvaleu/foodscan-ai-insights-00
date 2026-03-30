@@ -8,15 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Heart, Footprints, Flame, Scale, RefreshCw, Unlink,
-  ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings
+  ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings, Trash2
 } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger
 } from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
+const HIDDEN_WORKOUTS_KEY = 'healthkit_hidden_workouts';
 
 const SOURCE_STYLES: Record<string, { color: string; bg: string; icon: typeof Smartphone }> = {
   'Strava': { color: 'text-orange-600', bg: 'bg-orange-50', icon: Activity },
@@ -58,16 +60,37 @@ export default function AppleHealth() {
     refreshData,
   } = useHealthKit();
 
+  const [hiddenWorkouts, setHiddenWorkouts] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(HIDDEN_WORKOUTS_KEY);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+
   useEffect(() => {
     if (isConnected) {
       refreshData();
     }
   }, [isConnected]);
 
+  const handleHideWorkout = useCallback((startDate: string) => {
+    setHiddenWorkouts(prev => {
+      const next = new Set(prev);
+      next.add(startDate);
+      localStorage.setItem(HIDDEN_WORKOUTS_KEY, JSON.stringify([...next]));
+      return next;
+    });
+    toast.success("Atividade removida da lista");
+  }, []);
+
   const handleDisconnect = () => {
     disconnect();
     localStorage.removeItem(HEALTHKIT_DISMISSED_KEY);
+    localStorage.removeItem(HIDDEN_WORKOUTS_KEY);
+    setHiddenWorkouts(new Set());
   };
+
+  const visibleWorkouts = recentWorkouts.filter(w => !hiddenWorkouts.has(w.startDate));
 
   const stepsGoal = 10000;
   const stepsPercent = Math.min((dailySteps / stepsGoal) * 100, 100);
@@ -251,7 +274,7 @@ export default function AppleHealth() {
                 Atividades de Apps Conectados
               </h3>
 
-              {recentWorkouts.length === 0 ? (
+              {visibleWorkouts.length === 0 ? (
                 <div className="text-center py-6">
                   <Watch className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
@@ -263,7 +286,7 @@ export default function AppleHealth() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {recentWorkouts.map((workout, index) => {
+                  {visibleWorkouts.map((workout, index) => {
                     const style = getSourceStyle(workout.sourceName);
                     const IconComponent = style.icon;
                     const date = new Date(workout.startDate);
@@ -272,7 +295,7 @@ export default function AppleHealth() {
 
                     return (
                       <div
-                        key={index}
+                        key={workout.startDate + index}
                         className={`flex items-center gap-3 p-3 rounded-xl ${style.bg} transition-all`}
                       >
                         <div className={`p-2 rounded-lg bg-white/70 shadow-sm`}>
@@ -286,11 +309,19 @@ export default function AppleHealth() {
                             {dateStr} às {timeStr}
                           </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right mr-1">
                           <p className="text-sm font-bold text-foreground">
                             {formatDuration(workout.value)}
                           </p>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                          onClick={() => handleHideWorkout(workout.startDate)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     );
                   })}
