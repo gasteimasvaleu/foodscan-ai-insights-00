@@ -60,16 +60,37 @@ export default function AppleHealth() {
     refreshData,
   } = useHealthKit();
 
+  const [hiddenWorkouts, setHiddenWorkouts] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(HIDDEN_WORKOUTS_KEY);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+
   useEffect(() => {
     if (isConnected) {
       refreshData();
     }
   }, [isConnected]);
 
+  const handleHideWorkout = useCallback((startDate: string) => {
+    setHiddenWorkouts(prev => {
+      const next = new Set(prev);
+      next.add(startDate);
+      localStorage.setItem(HIDDEN_WORKOUTS_KEY, JSON.stringify([...next]));
+      return next;
+    });
+    toast.success("Atividade removida da lista");
+  }, []);
+
   const handleDisconnect = () => {
     disconnect();
     localStorage.removeItem(HEALTHKIT_DISMISSED_KEY);
+    localStorage.removeItem(HIDDEN_WORKOUTS_KEY);
+    setHiddenWorkouts(new Set());
   };
+
+  const visibleWorkouts = recentWorkouts.filter(w => !hiddenWorkouts.has(w.startDate));
 
   const stepsGoal = 10000;
   const stepsPercent = Math.min((dailySteps / stepsGoal) * 100, 100);
