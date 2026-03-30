@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, X } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -17,20 +17,20 @@ interface VideoModalProps {
 }
 
 export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
-  console.log('VideoModal rendering:', { isOpen, workout });
+  const [videoError, setVideoError] = useState(false);
+
   if (!workout) return null;
 
   const isValidUrl = (url: string) => {
     try {
       new URL(url);
-      return url.includes('youtube.com') || url.includes('youtu.be') || url.endsWith('.mp4') || url.endsWith('.webm');
+      return true;
     } catch {
       return false;
     }
   };
 
   const getEmbedUrl = (url: string) => {
-    // Convert YouTube URLs to embed format
     if (url.includes('youtube.com/watch')) {
       const videoId = url.split('v=')[1]?.split('&')[0];
       return `https://www.youtube.com/embed/${videoId}`;
@@ -39,7 +39,6 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
       const videoId = url.split('youtu.be/')[1]?.split('?')[0];
       return `https://www.youtube.com/embed/${videoId}`;
     }
-    // For other URLs, return as is
     return url;
   };
 
@@ -64,7 +63,6 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto flex flex-col gap-4">
-          {/* Video Container */}
           <div className="aspect-video flex-shrink-0 bg-black rounded-lg overflow-hidden">
             {!isValidVideoUrl ? (
               <div className="w-full h-full flex items-center justify-center text-white">
@@ -77,24 +75,34 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
               <iframe
                 src={embedUrl}
                 title={workout.title}
-                className="w-full aspect-video"
+                className="w-full h-full"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
+            ) : videoError ? (
+              <div className="w-full h-full flex items-center justify-center text-white">
+                <div className="text-center space-y-3">
+                  <p className="text-lg">Não foi possível reproduzir o vídeo</p>
+                  <Button onClick={openInNewTab} variant="outline" className="gap-2 text-white border-white hover:bg-white/20">
+                    <ExternalLink className="w-4 h-4" />
+                    Abrir externamente
+                  </Button>
+                </div>
+              </div>
             ) : (
               <video
                 src={workout.video_url}
                 controls
-                className="w-full object-contain"
+                className="w-full h-full object-contain"
                 preload="metadata"
+                onError={() => setVideoError(true)}
               >
                 Seu navegador não suporta o elemento de vídeo.
               </video>
             )}
           </div>
 
-          {/* Description */}
           {workout.description && (
             <div className="p-4 bg-muted/50 rounded-lg">
               <p className="text-sm text-muted-foreground leading-relaxed">

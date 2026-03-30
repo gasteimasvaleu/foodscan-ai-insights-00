@@ -100,7 +100,7 @@ const Treinos = () => {
     if (!url) return false;
     try {
       new URL(url);
-      return url.includes('youtube.com') || url.includes('youtu.be') || url.endsWith('.mp4') || url.endsWith('.webm');
+      return true;
     } catch {
       return false;
     }
@@ -268,7 +268,7 @@ const Treinos = () => {
                             size="lg" 
                             className="gap-2 bg-white/90 text-primary hover:bg-white transform scale-90 group-hover:scale-100 transition-all duration-300"
                             onClick={() => handleWatchClick(workout)}
-                            disabled={!isValidVideoUrl(workout.video_url)}
+                            disabled={!workout.video_url}
                           >
                             <Play className="w-5 h-5" />
                             Assistir Agora
