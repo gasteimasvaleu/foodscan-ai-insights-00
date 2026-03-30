@@ -86,7 +86,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4 pt-[calc(env(safe-area-inset-top)+1rem)]">
+    <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
       <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl w-full max-w-md">
         <CardHeader className="pb-2 text-center">
           <div className="flex justify-center mb-3">

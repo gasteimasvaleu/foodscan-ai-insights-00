@@ -1,5 +1,6 @@
 
 import { useAuth } from "@/hooks/useAuth";
+import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,8 +49,10 @@ const navItems = [
 ];
 
 const AuthAwareNavbar = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const { isIOS: isNativeIOS } = useNativePlatform();
   if (!user) return null;
+  if (isNativeIOS && !subscription.loading && !subscription.subscriptionStatus.subscribed) return null;
   return <TubelightNavbar items={navItems} />;
 };
 
