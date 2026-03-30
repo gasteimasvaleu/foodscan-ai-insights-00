@@ -100,7 +100,7 @@ const Treinos = () => {
     if (!url) return false;
     try {
       new URL(url);
-      return url.includes('youtube.com') || url.includes('youtu.be') || url.endsWith('.mp4') || url.endsWith('.webm');
+      return true;
     } catch {
       return false;
     }
