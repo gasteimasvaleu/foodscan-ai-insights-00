@@ -1,57 +1,46 @@
 
 
-## Corrigir rejeição App Store: Login com Apple + Vídeos
+## Corrigir fluxo de login iOS + PaywallScreen
 
-Sim, o fluxo que você descreveu está correto e é a abordagem ideal para compliance com a Apple. Vou detalhar o plano completo incluindo também a correção dos vídeos (segundo bug reportado).
+### Problemas identificados
 
-### Fluxo revisado
+1. **PaywallScreen aparece antes do login** — o card com "Assinar via App Store" é exibido diretamente, mas o correto é primeiro mostrar a tela de login (Apple Sign In + email/senha)
+2. **Menu inferior (TubelightNavbar) aparece no paywall** — o `AuthAwareNavbar` em `App.tsx` mostra a navbar quando `user` existe, mas no paywall o user já está logado
+3. **Card do paywall não está centralizado verticalmente**
+
+### Fluxo correto
 
 ```text
-App abre → Tela de Login (Apple Sign In sempre habilitado)
-  → Login → Verifica assinatura (apenas iOS nativo)
-    → Sem assinatura → PaywallScreen (compra/restaurar)
-    → Com assinatura → App normal
-  → Web: pula verificação → App normal
+Tela de Login (Apple Sign In + email/senha) → Login
+  → Verifica assinatura
+    → Sem assinatura → PaywallScreen (SEM navbar inferior)
+    → Com assinatura → App normal (COM navbar)
 ```
 
 ### Alterações
 
-**1. `src/components/AuthCard.tsx` — Simplificar tela de login iOS**
-- Remover `disabled={!hasPurchased}` do `AppleSignInButton` (linha 245)
-- Remover texto condicional "Assine primeiro abaixo..." (linhas 246-249)
-- Remover bloco de compra/assinatura (botão "Assinar via App Store", preço, separador) — linhas 252-263
-- Manter: Apple Sign In (sempre habilitado), formulário email/senha, "Restaurar Compras", textos legais
-- Remover imports e estado de `purchaseMonthly`, `getSubscriptionPrice`, `checkSubscriptionStatus`, `hasPurchased`, `price` já que a compra sai da tela de login
+**1. `src/pages/Index.tsx`**
+- Quando `showPaywall` for true, retornar `<PaywallScreen>` SEM o `<Navbar />` e SEM renderizar nada mais (já faz isso, está correto)
+- O problema real é o `AuthAwareNavbar` no `App.tsx`
 
-**2. Novo arquivo: `src/components/PaywallScreen.tsx`**
-- Mover toda a lógica de compra para este componente dedicado
-- Exibir: logo, preço (via `getSubscriptionPrice`), lista de benefícios, botão "Assinar via App Store", "Restaurar Compras", textos legais
-- Após compra bem-sucedida: chamar `syncSubscriptionAfterLogin` e liberar acesso (reload ou callback)
-- Estilo visual consistente com o card rosa existente
+**2. `src/App.tsx` — Esconder TubelightNavbar no paywall**
+- O `AuthAwareNavbar` precisa também verificar se o usuário tem assinatura ativa em iOS nativo. Duas opções:
+  - Opção A: Passar um estado global/context indicando "paywall ativo"
+  - Opção B (mais simples): No `AuthAwareNavbar`, verificar `isNativeIOS && !subscribed` e retornar null
+- Implementar opção B: adicionar `useNativePlatform` e `useAuth` (subscription) no `AuthAwareNavbar`, retornar null se `isNativeIOS && !subscription.subscriptionStatus.subscribed && !subscription.loading`
 
-**3. `src/pages/Index.tsx` — Adicionar verificação de paywall**
-- Após login (user existe), se `isNativeIOS`:
-  - Verificar `subscription.subscriptionStatus.subscribed`
-  - Se não assinante → renderizar `<PaywallScreen />`
-  - Se assinante → renderizar app normal (`QuickActions`, etc.)
-- No web: manter fluxo atual sem paywall
+**3. `src/components/PaywallScreen.tsx` — Centralização vertical**
+- O container já tem `min-h-screen flex items-center justify-center`, mas a screenshot mostra que não centraliza. Ajustar para garantir centralização real: remover `pt-[calc(env(safe-area-inset-top)+1rem)]` e usar padding uniforme com safe area em todos os lados
 
-**4. `src/components/VideoModal.tsx` — Corrigir validação de URL**
-- Alterar `isValidUrl` para aceitar qualquer URL válida (remover filtro por domínio/extensão)
-- Adicionar `h-full` ao iframe do YouTube (linha 80)
-- Adicionar `onError` handler no `<video>` com fallback "Abrir externamente"
+**4. `src/components/AuthCard.tsx` — Tela de login iOS já está correta**
+- Verificar: o fluxo nativo iOS (linhas 168-230) já mostra Apple Sign In + email/senha + Restaurar Compras + textos legais, sem botão de compra. Isso está correto conforme o screenshot de referência (Mandato Intelligence).
 
-**5. `src/pages/Treinos.tsx` — Corrigir validação de URL**
-- Alterar `isValidVideoUrl` (linha 99-107) para aceitar qualquer URL válida
-- Remover filtro por extensão/domínio
+### Resumo técnico
 
-**6. `ios/App/App.xcodeproj/project.pbxproj`**
-- Incrementar `CURRENT_PROJECT_VERSION` de `10` para `11`
+| Arquivo | O que muda |
+|---|---|
+| `src/App.tsx` | `AuthAwareNavbar` retorna null quando paywall está ativo (iOS nativo sem assinatura) |
+| `src/components/PaywallScreen.tsx` | Corrigir centralização vertical do card |
 
-### Detalhes técnicos
-
-- O `PaywallScreen` recebe `user` e `onSubscribed` como props
-- A verificação de assinatura usa o hook `useAuth` que já expõe `subscription.subscriptionStatus.subscribed`
-- No `Index.tsx`, o fluxo fica: `!user` → AuthCard, `user && !subscribed && isNativeIOS` → PaywallScreen, caso contrário → app normal
-- O `SubscriptionRequired` existente continua funcionando para rotas individuais como fallback
+Nenhuma mudança no `AuthCard.tsx` (já está correto) nem no `Index.tsx` (já renderiza PaywallScreen sem Navbar de topo).
 
