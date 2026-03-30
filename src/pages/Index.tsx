@@ -3,11 +3,15 @@ import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
 import { useAuth } from '@/hooks/useAuth';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
 
 import SplashScreen from '@/components/SplashScreen';
+import PaywallScreen from '@/components/PaywallScreen';
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const { isNative, isIOS } = useNativePlatform();
+  const isNativeIOS = isNative && isIOS;
   
   const [showSplash, setShowSplash] = useState(() => {
     const shouldSkipSplash = sessionStorage.getItem('skipSplash');
@@ -25,6 +29,8 @@ const Index = () => {
     return !hasShownInSession;
   });
 
+  const [paywallDismissed, setPaywallDismissed] = useState(false);
+
   const handleSplashComplete = () => {
     setShowSplash(false);
     sessionStorage.setItem('splashShown', 'true');
@@ -32,6 +38,21 @@ const Index = () => {
 
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  // Show paywall for native iOS users who are logged in but not subscribed
+  const showPaywall = user && isNativeIOS && !subscription.subscriptionStatus.subscribed && !subscription.loading && !paywallDismissed;
+
+  if (showPaywall) {
+    return (
+      <PaywallScreen
+        user={{ id: user.id, email: user.email }}
+        onSubscribed={() => {
+          setPaywallDismissed(true);
+          subscription.checkSubscription();
+        }}
+      />
+    );
   }
 
   return <>
@@ -44,9 +65,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-      
-
-
     </>;
 };
 export default Index;

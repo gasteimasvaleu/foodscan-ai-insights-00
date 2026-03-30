@@ -9,11 +9,7 @@ import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
 
 import {
-  getSubscriptionPrice,
-  purchaseMonthly as rcPurchaseMonthly,
   restorePurchases as rcRestorePurchases,
-  checkSubscriptionStatus,
-  syncSubscriptionAfterLogin,
 } from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
@@ -28,8 +24,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const { user, signUp, signIn, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
-  const [price, setPrice] = useState<string | null>(null);
-  const [hasPurchased, setHasPurchased] = useState(false);
   const [rcLoading, setRcLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
@@ -37,38 +31,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const [profileName, setProfileName] = useState<string | null>(null);
 
   const isNativeIOS = isNative && isIOS;
-
-  // Check purchase status & load price (native iOS only)
-  useEffect(() => {
-    if (!isNativeIOS) return;
-    (async () => {
-      try {
-        const hasActive = await checkSubscriptionStatus();
-        if (hasActive) setHasPurchased(true);
-        const priceStr = await getSubscriptionPrice();
-        if (priceStr) setPrice(priceStr);
-      } catch (err) {
-        console.error('[AuthCard] RevenueCat check error:', err);
-        toast({ title: 'Erro ao inicializar compras', description: 'Tente novamente mais tarde.', variant: 'destructive' });
-      }
-    })();
-  }, [isNativeIOS]);
-
-  // On mount for native iOS: silently restore purchases to detect existing subscriptions
-  useEffect(() => {
-    if (!isNativeIOS || hasPurchased) return;
-    (async () => {
-      try {
-        const restored = await rcRestorePurchases();
-        if (restored) {
-          setHasPurchased(true);
-          console.log('[AuthCard] Restored purchase detected on mount');
-        }
-      } catch (err) {
-        console.warn('[AuthCard] Silent restore failed:', err);
-      }
-    })();
-  }, [isNativeIOS]);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -129,28 +91,11 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handlePurchase = async () => {
-    setRcLoading(true);
-    try {
-      const customerInfo = await rcPurchaseMonthly();
-      if (customerInfo) {
-        setHasPurchased(true);
-        toast({ title: '✅ Assinatura realizada!', description: 'Agora faça login com sua conta Apple.' });
-      }
-    } catch (err: any) {
-      console.error('[AuthCard] Purchase error:', JSON.stringify(err));
-      toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
-    } finally {
-      setRcLoading(false);
-    }
-  };
-
   const handleRestore = async () => {
     setRcLoading(true);
     try {
       const customerInfo = await rcRestorePurchases();
       if (customerInfo) {
-        setHasPurchased(true);
         toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
@@ -220,7 +165,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     );
   }
 
-  // ─── Native iOS Flow ───
+  // ─── Native iOS Flow (simplified: no purchase gate) ───
   if (isNativeIOS) {
     return (
       <div className="min-h-[calc(100vh-env(safe-area-inset-top)-2rem)] flex items-center justify-center overflow-y-auto py-6">
@@ -237,30 +182,9 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
           <CardTitle className="text-center text-gray-800 text-lg">
             We Diet - Dieta Inteligente
           </CardTitle>
-          <p className="text-center text-2xl font-bold text-primary">
-            {price || 'R$ 49,90'} <span className="text-sm font-normal text-muted-foreground">/mês</span>
-          </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          <AppleSignInButton disabled={!hasPurchased} />
-          {!hasPurchased && (
-            <p className="text-xs text-muted-foreground text-center -mt-2">
-              Assine primeiro abaixo para habilitar o login com Apple
-            </p>
-          )}
-
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground text-center">
-              Caso ainda não tenha assinatura, clique antes em:
-            </p>
-            <Button
-              onClick={handlePurchase}
-              disabled={rcLoading || hasPurchased}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              {rcLoading ? 'Processando...' : hasPurchased ? '✅ Assinatura ativa' : 'Assinar via App Store'}
-            </Button>
-          </div>
+          <AppleSignInButton />
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
