@@ -14,7 +14,8 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger
 } from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 
