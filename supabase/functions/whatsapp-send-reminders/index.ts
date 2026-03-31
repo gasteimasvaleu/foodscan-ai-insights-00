@@ -62,7 +62,14 @@ serve(async (req: Request) => {
     if (!reminders || reminders.length === 0) {
       console.log("✅ No reminders to send right now");
       return new Response(
-        JSON.stringify({ success: true, sent: 0 }),
+        JSON.stringify({
+          success: true,
+          sent: 0,
+          total: 0,
+          skipped_no_subscription: 0,
+          skipped_pref_disabled: 0,
+          send_errors: 0,
+        }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -80,6 +87,9 @@ serve(async (req: Request) => {
     console.log(`📋 Found ${pendingReminders.length} pending reminders to send`);
 
     let sentCount = 0;
+    let skippedNoSubscriptionCount = 0;
+    let skippedPrefDisabledCount = 0;
+    let sendErrorsCount = 0;
 
     for (const reminder of pendingReminders) {
       // Get user's WhatsApp subscription
@@ -88,17 +98,21 @@ serve(async (req: Request) => {
         .select("phone_number, preferences")
         .eq("user_id", reminder.user_id)
         .eq("verified", true)
-        .single();
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
       if (subError || !subscription) {
-        console.log(`⚠️ No verified WhatsApp for user ${reminder.user_id}`);
+        skippedNoSubscriptionCount++;
+        console.log(`⚠️ Skipping reminder ${reminder.id}: no verified WhatsApp subscription for user ${reminder.user_id}`);
         continue;
       }
 
       // Check if reminders preference is enabled
       const prefs = subscription.preferences as Record<string, boolean> | null;
       if (prefs && prefs.reminders === false) {
-        console.log(`⚠️ Reminders disabled for user ${reminder.user_id}`);
+        skippedPrefDisabledCount++;
+        console.log(`⚠️ Skipping reminder ${reminder.id}: reminders disabled in preferences for user ${reminder.user_id}`);
         continue;
       }
 
@@ -156,17 +170,28 @@ serve(async (req: Request) => {
           sentCount++;
           console.log(`✅ Reminder ${reminder.id} sent to ${cleanPhone}`);
         } else {
+          sendErrorsCount++;
           console.error(`❌ Failed to send reminder ${reminder.id}:`, zapiResult);
         }
       } catch (sendError) {
+        sendErrorsCount++;
         console.error(`❌ Error sending reminder ${reminder.id}:`, sendError);
       }
     }
 
-    console.log(`📊 Total sent: ${sentCount}/${pendingReminders.length}`);
+    console.log(
+      `📊 Summary | sent: ${sentCount}, total: ${pendingReminders.length}, skipped_no_subscription: ${skippedNoSubscriptionCount}, skipped_pref_disabled: ${skippedPrefDisabledCount}, send_errors: ${sendErrorsCount}`
+    );
 
     return new Response(
-      JSON.stringify({ success: true, sent: sentCount, total: pendingReminders.length }),
+      JSON.stringify({
+        success: true,
+        sent: sentCount,
+        total: pendingReminders.length,
+        skipped_no_subscription: skippedNoSubscriptionCount,
+        skipped_pref_disabled: skippedPrefDisabledCount,
+        send_errors: sendErrorsCount,
+      }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {

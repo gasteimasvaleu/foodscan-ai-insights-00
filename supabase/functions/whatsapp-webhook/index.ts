@@ -95,7 +95,9 @@ serve(async (req) => {
       .select('user_id, verified')
       .eq('phone_number', phoneNumber)
       .eq('verified', true)
-      .single();
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
     
     // If not found and number has 13 chars (missing the '9'), try alternative format
     if (!subscription && phoneNumber.length === 13 && phoneNumber.startsWith('+55')) {
@@ -110,7 +112,9 @@ serve(async (req) => {
         .select('user_id, verified')
         .eq('phone_number', alternativeFormat)
         .eq('verified', true)
-        .single();
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
       
       if (altSubscription) {
         console.log('✅ Found with alternative format!');
