@@ -14,7 +14,7 @@ export interface HydrationNutritionInput {
   calories?: number;
 }
 
-export const hydrationCatalog: HydrationBeverage[] = [
+const baseHydrationCatalog: HydrationBeverage[] = [
   {
     key: "water",
     name: "Água",
@@ -505,6 +505,14 @@ const ESTIMATED_CARBS_PER_100ML: Record<string, number> = {
   vodka: 0,
   sake: 5,
 };
+
+export const hydrationCatalog: HydrationBeverage[] = baseHydrationCatalog.map((beverage) => ({
+  ...beverage,
+  defaultCarbohydratesPer100ml:
+    typeof beverage.defaultCarbohydratesPer100ml === 'number'
+      ? beverage.defaultCarbohydratesPer100ml
+      : ESTIMATED_CARBS_PER_100ML[beverage.key] ?? Math.max(Math.round(beverage.defaultCaloriesPer100ml / 4), 0),
+}));
 
 export const getBeverageCarbsPer100ml = (beverageKey: string): number => {
   const beverage = hydrationCatalog.find((item) => item.key === beverageKey);
