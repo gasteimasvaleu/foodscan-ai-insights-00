@@ -165,7 +165,10 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
       }
 
       for (const date of weekDates) {
-        const dayMeals = (mealRecords || []).filter((meal) => meal.meal_time.startsWith(date));
+        const dayMeals = (mealRecords || []).filter((meal) => {
+          const mealDate = new Date(meal.meal_time).toISOString().split('T')[0];
+          return mealDate === date;
+        });
         const dayHydration = (hydrationRecords || []).filter((record) => record.consumption_date === date);
 
         const mealTotals = dayMeals.reduce(

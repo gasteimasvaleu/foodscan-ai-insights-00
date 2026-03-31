@@ -16,7 +16,7 @@ import { Navbar } from "@/components/Navbar";
 
 interface Stats {
   totalMeals: number;
-  totalCaloriesBurned: number;
+  totalCaloriesConsumed: number;
   totalExercises: number;
   activeDays: number;
 }
@@ -38,7 +38,7 @@ export default function ChartsProgress() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { isConnected: hkConnected, getWeeklyData: getHKWeeklyData } = useHealthKit();
-  const [stats, setStats] = useState<Stats>({ totalMeals: 0, totalCaloriesBurned: 0, totalExercises: 0, activeDays: 0 });
+  const [stats, setStats] = useState<Stats>({ totalMeals: 0, totalCaloriesConsumed: 0, totalExercises: 0, activeDays: 0 });
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
   const [calorieBalanceData, setCalorieBalanceData] = useState<CalorieBalanceData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,25 +70,19 @@ export default function ChartsProgress() {
     try {
       const [mealsResult, exercisesResult, summariesResult] = await Promise.all([
         supabase.from("meal_records").select("*", { count: "exact", head: true }).eq("user_id", user?.id),
+        supabase.from("meal_records").select("calories").eq("user_id", user?.id),
+        supabase.from("hydration_records").select("calories").eq("user_id", user?.id),
         supabase.from("exercise_records").select("calories_burned").eq("user_id", user?.id),
         supabase.from("weekly_summaries").select("date", { count: "exact", head: true }).eq("user_id", user?.id),
       ]);
-      let totalCaloriesBurned = exercisesResult.data?.reduce((sum, record) => sum + Number(record.calories_burned), 0) || 0;
-
-      // Incluir calorias do Apple Health
-      if (hkConnected) {
-        try {
-          const hkData = await getHKWeeklyData();
-          const hkCalories = hkData.reduce((sum, d) => sum + d.calories, 0);
-          totalCaloriesBurned += hkCalories;
-        } catch (e) {
-          console.error('[ChartsProgress] Erro ao carregar calorias do HealthKit:', e);
-        }
-      }
+      const mealsCaloriesResult = arguments[0];
+      const hydrationCaloriesResult = arguments[1];
+      const mealsCalories = (mealsCaloriesResult?.data || []).reduce((sum: number, record: { calories: number }) => sum + Number(record.calories || 0), 0);
+      const hydrationCalories = (hydrationCaloriesResult?.data || []).reduce((sum: number, record: { calories: number }) => sum + Number(record.calories || 0), 0);
 
       setStats({
         totalMeals: mealsResult.count || 0,
-        totalCaloriesBurned: Math.round(totalCaloriesBurned),
+        totalCaloriesConsumed: Math.round(mealsCalories + hydrationCalories),
         totalExercises: exercisesResult.data?.length || 0,
         activeDays: summariesResult.count || 0,
       });
@@ -136,13 +130,22 @@ export default function ChartsProgress() {
       const today = new Date();
       const sevenDaysAgo = new Date(today);
       sevenDaysAgo.setDate(today.getDate() - 6);
-      const { data: mealsData, error: mealsError } = await supabase
-        .from("meal_records")
-        .select("calories, created_at")
-        .eq("user_id", user?.id)
-        .gte("created_at", sevenDaysAgo.toISOString())
-        .lte("created_at", today.toISOString());
+      const [{ data: mealsData, error: mealsError }, { data: hydrationData, error: hydrationError }] = await Promise.all([
+        supabase
+          .from("meal_records")
+          .select("calories, created_at")
+          .eq("user_id", user?.id)
+          .gte("created_at", sevenDaysAgo.toISOString())
+          .lte("created_at", today.toISOString()),
+        supabase
+          .from("hydration_records")
+          .select("calories, consumed_at")
+          .eq("user_id", user?.id)
+          .gte("consumed_at", sevenDaysAgo.toISOString())
+          .lte("consumed_at", today.toISOString()),
+      ]);
       if (mealsError) throw mealsError;
+      if (hydrationError) throw hydrationError;
       const { data: exercisesData, error: exercisesError } = await supabase
         .from("exercise_records")
         .select("calories_burned, date")
@@ -161,6 +164,12 @@ export default function ChartsProgress() {
         const dateKey = new Date(meal.created_at).toISOString().split('T')[0];
         if (balanceMap.has(dateKey)) {
           balanceMap.get(dateKey)!.consumed += Number(meal.calories);
+        }
+      });
+      hydrationData?.forEach((record) => {
+        const dateKey = new Date(record.consumed_at).toISOString().split('T')[0];
+        if (balanceMap.has(dateKey)) {
+          balanceMap.get(dateKey)!.consumed += Number(record.calories);
         }
       });
       exercisesData?.forEach((exercise) => {
@@ -289,7 +298,7 @@ export default function ChartsProgress() {
                 </div>
                 <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
                   <Flame className="w-8 h-8 mx-auto mb-2 text-pink-500" />
-                  <p className="text-2xl font-bold text-[#FD46A1]">{stats.totalCaloriesBurned.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#FD46A1]">{stats.totalCaloriesConsumed.toLocaleString()}</p>
                   <p className="text-sm text-muted-foreground">Calorias</p>
                 </div>
                 <div className="text-center p-4 rounded-2xl bg-[#F9FAFB]">
