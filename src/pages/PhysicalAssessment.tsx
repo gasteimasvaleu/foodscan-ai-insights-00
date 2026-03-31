@@ -204,11 +204,12 @@ export default function PhysicalAssessment() {
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label>Data</Label>
                     <Input
                       type="date"
+                      className="w-full min-w-0 pr-2"
                       value={formData.assessment_date}
                       onChange={(e) =>
                         setFormData({ ...formData, assessment_date: e.target.value })
