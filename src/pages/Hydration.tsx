@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Droplets, Plus, Save, Target } from "lucide-react";
+import { Droplets, Plus, Save, Target, Trash2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { AuthCard } from "@/components/AuthCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ export default function Hydration() {
   const [selectedBeverageKey, setSelectedBeverageKey] = useState(hydrationCatalog[0].key);
   const [volumeMl, setVolumeMl] = useState(hydrationCatalog[0].defaultVolumeOptions[0]);
   const [savingRecord, setSavingRecord] = useState(false);
+  const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
 
   const todayDate = useMemo(() => formatDateOnly(new Date()), []);
 
@@ -201,6 +202,29 @@ export default function Hydration() {
     }
   };
 
+  const handleDeleteRecord = async (recordId: string) => {
+    if (!user) return;
+
+    setDeletingRecordId(recordId);
+    try {
+      const { error } = await supabase
+        .from("hydration_records")
+        .delete()
+        .eq("id", recordId)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      toast.success("Bebida removida");
+      await loadHydrationData();
+    } catch (error) {
+      console.error("Erro ao remover bebida:", error);
+      toast.error("Não foi possível remover a bebida");
+    } finally {
+      setDeletingRecordId(null);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <>
@@ -341,12 +365,25 @@ export default function Hydration() {
                           </p>
                         </div>
                       </div>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {new Date(record.consumed_at).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <p className="text-xs font-semibold text-muted-foreground">
+                          {new Date(record.consumed_at).toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteRecord(record.id)}
+                          disabled={deletingRecordId === record.id}
+                          className="h-7 px-2 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          {deletingRecordId === record.id ? "Removendo..." : "Remover"}
+                        </Button>
+                      </div>
                     </div>
                   );
                 })
