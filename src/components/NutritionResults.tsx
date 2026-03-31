@@ -160,6 +160,8 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
         </div>
       </div>
 
+      <MealTypeSelector value={mealType} onChange={setMealType} />
+
       <div className="flex justify-center">
         <Button
           onClick={handleSaveMeal}

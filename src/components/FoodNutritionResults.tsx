@@ -226,6 +226,8 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           }}
         />
 
+      <MealTypeSelector value={mealType} onChange={setMealType} />
+
       <div className="flex flex-col sm:flex-row justify-center gap-4">
         <Button
           onClick={onReset}
