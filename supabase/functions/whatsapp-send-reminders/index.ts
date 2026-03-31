@@ -30,11 +30,12 @@ serve(async (req: Request) => {
       );
     }
 
-    // Get current time in UTC
+    // Get current time in Brazil timezone (UTC-3)
     const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 8); // HH:MM:SS
+    const brNow = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+    const currentTime = brNow.toISOString().slice(11, 19); // HH:MM:SS in BRT
 
-    console.log(`⏰ Checking reminders at ${currentTime} (UTC)`);
+    console.log(`⏰ Checking reminders at ${currentTime} (BRT, UTC was ${now.toISOString().slice(11, 19)})`);
 
     // Query active reminders for today, within ±5 min window, not yet sent today
     const { data: reminders, error: remindersError } = await supabase
@@ -49,7 +50,7 @@ serve(async (req: Request) => {
         last_whatsapp_sent_at
       `)
       .eq("is_active", true)
-      .eq("reminder_date", now.toISOString().split("T")[0])
+      .eq("reminder_date", brNow.toISOString().split("T")[0])
       .gte("reminder_time", _subtractMinutes(currentTime, 5))
       .lte("reminder_time", _addMinutes(currentTime, 5));
 
