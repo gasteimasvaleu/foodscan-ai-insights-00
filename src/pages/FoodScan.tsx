@@ -4,6 +4,7 @@ import { FoodNutritionResults } from '@/components/FoodNutritionResults';
 import { LoadingState } from '@/components/LoadingState';
 import { OpenFoodFactsLoadingState } from '@/components/OpenFoodFactsLoadingState';
 import { EmptyState } from '@/components/EmptyState';
+import { RecentScans } from '@/components/RecentScans';
 import { Navbar } from '@/components/Navbar';
 
 import { AuthCard } from '@/components/AuthCard';
