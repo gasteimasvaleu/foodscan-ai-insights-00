@@ -1,29 +1,30 @@
 
-Objetivo: corrigir o campo **Data** no modal de `/profile/assessment` para que ele não invada/encoste no campo **Peso (kg)** no viewport mobile (390x640), mantendo o layout visual limpo.
+Objetivo: trocar os inputs nativos de arquivo em **Foto Antes** e **Foto Depois** por botões brancos com texto rosa **“Adicionar Foto”**, mantendo o upload atual funcionando no modal de `/profile/assessment`.
 
-1) Diagnóstico do problema (fonte real)
-- O input selecionado é estático em `src/pages/PhysicalAssessment.tsx` (linha do `<Input type="date" />`).
-- Ele está dentro de um grid fixo `grid-cols-2 gap-4`, que no modal estreito gera pouco espaço por coluna.
-- Em alguns navegadores mobile, o ícone nativo do calendário aumenta a largura útil do `type="date"` e causa “vazamento” visual no lado direito.
+1) Atualizar `src/pages/PhysicalAssessment.tsx` no formulário do modal
+- Substituir os dois `<Input type="file" ... />` visíveis por:
+  - um `<input type="file" className="hidden" id="before-photo-input" ... />`
+  - um `<input type="file" className="hidden" id="after-photo-input" ... />`
+- Manter os mesmos `accept="image/*"` e `onChange` atuais (`setBeforePhoto` / `setAfterPhoto`).
 
-2) Ajuste principal (responsivo, sem regressão)
-- No bloco dos campos do formulário, trocar:
-  - de `grid grid-cols-2 gap-4`
-  - para `grid grid-cols-1 sm:grid-cols-2 gap-4`
-- Resultado: no mobile os campos ficam em 1 coluna (evita colisão entre Data e Peso), e em telas maiores volta para 2 colunas.
+2) Criar gatilho visual com botão branco + texto rosa
+- Para cada campo, usar `Button` com `type="button"` e estilo:
+  - fundo branco (`bg-white`)
+  - texto rosa (`text-primary` ou `text-[#FD46A1]`)
+  - borda suave e largura total (`w-full`)
+- O botão dispara o input oculto via `label htmlFor` ou `ref + click()`.
 
-3) Ajuste fino específico do campo Data
-- Adicionar classe específica no input de data para controlar melhor o espaço do ícone nativo (padding à direita e largura interna consistente), por exemplo:
-  - `className="w-full pr-2"` + utilitário para indicador webkit se necessário.
-- Se ainda houver deslocamento em iOS/Safari, aplicar classe utilitária focada em `::-webkit-calendar-picker-indicator` para reduzir offset horizontal sem alterar os outros inputs.
+3) Texto solicitado no botão
+- Label padrão dos dois campos: **“Adicionar Foto”**.
+- (Opcional no mesmo ajuste) após seleção, exibir abaixo o nome do arquivo para feedback sem mudar a lógica de envio.
 
-4) Garantia de consistência visual
-- Manter o mesmo componente `Input` global (`src/components/ui/input.tsx`) sem alteração estrutural ampla, para não impactar outros formulários.
-- Fazer ajuste local no `PhysicalAssessment.tsx` (layout + classe do campo Data) para mudança segura e isolada.
+4) Preservar comportamento funcional
+- Não alterar `handleSubmit`, `uploadToSupabase`, nem estrutura do payload.
+- Garantir que `beforePhoto` e `afterPhoto` continuem chegando como `File` e que salvar/editar continue igual.
 
-5) Validação funcional planejada
-- Verificar no modal em 390x640:
-  - campo Data alinhado e sem sobrepor o campo ao lado;
-  - abertura do calendário funcionando normalmente;
-  - sem quebra dos demais campos (altura, espaçamento, scroll).
-- Verificar também em desktop/tablet que o grid 2 colunas continua correto.
+5) Validação visual e funcional (390x640)
+- Abrir modal e confirmar:
+  - os dois botões aparecem brancos com texto rosa;
+  - toque no botão abre seletor de imagem;
+  - seleção de arquivo atualiza estado;
+  - envio da avaliação continua funcionando sem regressão.
