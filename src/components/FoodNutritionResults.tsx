@@ -113,6 +113,26 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
     setIsSaving(true);
 
     try {
+      // Upload image to storage if available
+      let uploadedImageUrl: string | null = null;
+      if (imageUrl) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const fileExt = blob.type.split('/')[1] || 'jpg';
+          const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from('assessments')
+            .upload(fileName, blob, { cacheControl: '3600', upsert: false });
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('assessments').getPublicUrl(fileName);
+            uploadedImageUrl = urlData.publicUrl;
+          }
+        } catch (uploadErr) {
+          console.warn('Erro ao fazer upload da imagem:', uploadErr);
+        }
+      }
+
       const { data: savedData, error } = await supabase.from('meal_records').insert([
         {
           food_name: data.foodName,
@@ -126,6 +146,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
           meal_time: new Date().toISOString(),
           meal_type: mealType,
           user_id: user.id,
+          image_url: uploadedImageUrl,
         },
       ]).select().single();
 
