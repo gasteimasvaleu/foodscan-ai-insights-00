@@ -205,4 +205,15 @@
   .animate-pulse-glow {
     animation: pulse-glow 1s ease-in-out infinite;
   }
+
+  .wheel-picker-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .wheel-picker-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 }
