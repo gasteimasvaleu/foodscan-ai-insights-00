@@ -34,20 +34,20 @@ export const RecentScans: React.FC = () => {
       <h3 className="text-lg font-semibold text-gray-800 mb-3 px-1">
         Últimas Análises
       </h3>
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex flex-col gap-3">
         {recentMeals.map((meal) => (
           <div
             key={meal.id}
-            className="flex-shrink-0 w-36 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-white/30 overflow-hidden"
+            className="w-full flex flex-row items-center gap-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-white/30 p-2 overflow-hidden"
           >
             <img
               src={meal.image_url!}
               alt={meal.food_name}
-              className="w-full h-24 object-cover"
+              className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
               loading="lazy"
             />
-            <div className="p-2">
-              <p className="text-xs font-semibold text-gray-800 truncate">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate">
                 {meal.food_name}
               </p>
               <div className="flex items-center gap-1 mt-1">
