@@ -1,57 +1,54 @@
 
 Objetivo
-- Completar a seção **“Escolha a bebida”** com as bebidas dos screenshots, mantendo o layout atual e adicionando **scroll interno** nessa área para suportar lista grande no mobile.
+- Incluir calorias das bebidas em todos os cards pedidos.
+- Como você confirmou “Carboidratos: Considerar sempre”, incluir também carboidratos estimados das bebidas em todos os resumos de carboidrato.
 
-Escopo confirmado
-- Calorias: **Estimativa padrão** (kcal por 100 ml).
-- Conflitos de percentual com bebidas já existentes: **manter valores atuais do app**.
-- Alterar apenas o necessário em:
-  - `src/data/hydrationCatalog.ts`
-  - `src/pages/Hydration.tsx`
+Decisão funcional (carboidratos)
+- Não deixar carboidratos “de fora”.
+- Adotar cálculo por estimativa nutricional por bebida (g/100ml) no catálogo, igual já feito com kcal/100ml.
+- Calcular carboidrato da bebida por registro: `carbs = (volume_ml / 100) * carbsPer100ml`.
+- Exibir somente totais combinados (refeições + bebidas), sem destacar origem.
 
-Plano de implementação
+Arquivos e mudanças
 
-1) Expandir catálogo fixo de bebidas
-- Adicionar no `hydrationCatalog` as bebidas faltantes vistas nos screenshots (ex.: garrafa de água, chás específicos, cafés, leites e versões vegetais, isotônico, kombucha, vinhos e destilados, etc.).
-- Para cada nova bebida, preencher:
-  - `key` único e estável
-  - `name`
-  - `hydrationFactor` conforme screenshot (para novas bebidas)
-  - `defaultCaloriesPer100ml` por pesquisa nutricional média (estimativa padrão)
-  - `defaultVolumeOptions` coerente com tipo da bebida
-  - `icon`
-- Manter intactas as bebidas já existentes mesmo quando houver divergência no screenshot (regra aprovada).
+1) `src/data/hydrationCatalog.ts`
+- Adicionar campo `defaultCarbohydratesPer100ml` no tipo `HydrationBeverage`.
+- Preencher estimativas para todas as bebidas (inclusive já existentes).
+- Manter fórmula de hidratação e calorias atuais intactas.
 
-2) Pesquisa e padronização de calorias
-- Usar valores médios por 100 ml de referências nutricionais públicas e consistentes.
-- Aplicar arredondamento simples para manter previsibilidade no cálculo do app.
-- Em bebidas de alta variabilidade, usar valor médio conservador (sem bloquear inclusão da bebida).
+2) `src/pages/DailyControl.tsx`
+- Buscar também `hydration_records` do dia atual junto com `meal_records`.
+- Calcular `beveragesTotals` (calorias + carboidratos) a partir de `beverage_key`, `volume_ml` e catálogo.
+- Combinar totais de refeições + bebidas para:
+  - Card “Metas Diárias” (via props para `DailyGoals`).
+  - Payload de “Encerrar Dia” (`consumed.calories` e `consumed.carbohydrates`).
+  - `saveWeeklySummary` (salvar total combinado do dia).
 
-3) Scroll interno na seção “Escolha a bebida”
-- Manter o mesmo grid visual atual (2 colunas mobile / 3 no sm).
-- Envolver a grade em container com altura máxima e rolagem vertical:
-  - exemplo de estratégia: `max-h-[38vh] overflow-y-auto pr-1`.
-- Preservar aparência atual (chips/cards iguais), mudando apenas comportamento de overflow.
+3) `src/components/DailyGoals.tsx`
+- Ajustar props para receber totais extras de bebidas (ou total já combinado).
+- Somar calorias e carboidratos de bebidas no cálculo exibido dos progressos.
+- Proteínas e gorduras de bebidas permanecem 0 quando não houver dado.
 
-4) Compatibilidade com o modal atual
-- Não alterar estrutura principal do dialog (estilo já aprovado).
-- Garantir que, com a lista longa, o restante do modal continue acessível:
-  - seleção de quantidade
-  - prévia
-  - botão salvar
-- Evitar “duplo problema de rolagem” ajustando limites para o scroll interno da lista + scroll geral do modal.
+4) `src/components/WeeklySummary.tsx`
+- Refatorar agregação semanal para usar refeições + hidratação no mesmo intervalo.
+- Atualizar:
+  - Card do dia selecionado (kcal e carboidratos combinados).
+  - Card “Médias da Semana” (kcal/dia e carb/dia combinados).
+- Manter listagem detalhada de refeições como está (sem criar seção extra de bebidas), já que você pediu só computar no total.
 
-5) Validação funcional (mobile-first 390x640)
-- Conferir no `/hidratacao`:
-  - novas bebidas aparecem em “Escolha a bebida”;
-  - lista rola suavemente dentro da seção;
-  - seleção da bebida atualiza opções de volume;
-  - cálculo de calorias/impacto na prévia segue funcionando;
-  - layout geral permanece igual ao que você aprovou.
+5) `src/pages/ChartsProgress.tsx`
+- `loadCalorieBalance`: somar calorias de `hydration_records` ao lado “consumed” do gráfico.
+- Card “Calorias” em “Estatísticas Gerais”:
+  - trocar para total consumido (refeições + bebidas), para refletir exatamente o pedido.
+  - manter demais cards (Refeições, Exercícios, Dias Ativos) sem regressão.
 
-Detalhes técnicos
-- Fórmulas existentes serão preservadas:
-  - `hydration_impact_ml = volume_ml * (hydrationFactor / 100)`
-  - `calories = round((volume_ml / 100) * defaultCaloriesPer100ml)`
-- Nenhuma mudança de banco ou migração necessária.
-- Mudança 100% client-side e retrocompatível com registros já salvos.
+Critérios de validação (mobile 390x640)
+- `/controle-diario`:
+  - Card “Metas Diárias” aumenta kcal/carb ao registrar bebida.
+  - “Encerrar Dia” grava resumo semanal com total combinado.
+- `/graficos-progresso`:
+  - Card “Calorias” inclui bebidas.
+  - Gráfico “Balanço Calórico” mostra “Consumidas” com refeições + bebidas.
+- “Resumo Semanal”:
+  - Card do dia e “Médias da Semana” incluem bebidas em kcal e carboidratos.
+- Sem alterar layout aprovado dos modais/hidratação.
