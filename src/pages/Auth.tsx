@@ -42,11 +42,30 @@ const Auth = () => {
       if (result.data?.user) {
         // Auto-login após signup
         await supabase.auth.signInWithPassword({ email, password });
+
+        // Ativar assinatura VIP se houver token
+        if (token) {
+          console.log('🔑 Ativando assinatura VIP com token:', token);
+          const { data: vipData, error: vipError } = await supabase.functions.invoke('activate-vip-subscription', {
+            body: { token },
+          });
+
+          if (vipError) {
+            console.error('❌ Erro ao ativar VIP:', vipError);
+            toast({
+              title: "⚠️ Cadastro feito, mas houve um erro ao ativar o acesso VIP",
+              description: "Entre em contato com o suporte.",
+              variant: "destructive",
+            });
+          } else {
+            console.log('✅ VIP ativado:', vipData);
+          }
+        }
       }
 
       toast({
         title: "✅ Cadastro realizado com sucesso!",
-        description: "Agora baixe o app para começar sua jornada.",
+        description: token ? "Seu acesso VIP foi ativado! Baixe o app." : "Agora baixe o app para começar sua jornada.",
       });
 
       setRegistered(true);
