@@ -48,6 +48,107 @@ const formatDuration = (minutes: number) => {
   return m > 0 ? `${h}h ${m}min` : `${h}h`;
 };
 
+const FRIENDLY_DETAIL_LABELS: Record<string, string> = {
+  indoorWorkout: 'Ambiente',
+  isIndoorWorkout: 'Ambiente',
+  averageHeartRate: 'Frequência cardíaca média',
+  avgHeartRate: 'Frequência cardíaca média',
+  maxHeartRate: 'Frequência cardíaca máxima',
+  heartRateAverage: 'Frequência cardíaca média',
+  heartRateMax: 'Frequência cardíaca máxima',
+  elevationAscended: 'Elevação acumulada',
+  flightsClimbed: 'Andares subidos',
+  averageSpeed: 'Velocidade média',
+  avgSpeed: 'Velocidade média',
+  maxSpeed: 'Velocidade máxima',
+  averagePace: 'Ritmo médio',
+  cadence: 'Cadência',
+  averageCadence: 'Cadência média',
+  lapLength: 'Tamanho da volta',
+  stepCount: 'Passos',
+  deviceName: 'Dispositivo',
+  brandName: 'Dispositivo',
+  workoutBrandName: 'App que registrou',
+  location: 'Local',
+  city: 'Cidade',
+  country: 'País',
+  swimmingStrokeStyle: 'Estilo de nado',
+};
+
+const PRIMARY_DETAIL_KEYS = new Set([
+  'sourceName', 'source', 'appName', 'duration', 'value', 'totalDuration', 'startDate', 'dateFrom',
+  'endDate', 'dateTo', 'unit', 'sourceId', 'bundleIdentifier', 'bundleId', 'workoutType',
+  'activityType', 'type', 'workoutActivityType', 'title', 'name', 'calories', 'caloriesUnit',
+  'totalEnergyBurned', 'activeEnergyBurned', 'energyBurned', 'distance', 'totalDistance',
+  'distanceWalkingRunning', 'distanceUnit', 'lengthUnit', 'distanceMeasurementUnit', 'notes',
+  'description', 'metadata', 'workoutStatistics',
+]);
+
+const TECHNICAL_KEY_PATTERN = /(uuid|identifier|bundle|schema|sync|version|url|uri|debug|internal|raw)/i;
+
+const isUuidLike = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+const isBundleLike = (value: string) =>
+  /^[a-z0-9-]+(\.[a-z0-9-]+){2,}$/i.test(value);
+
+const isUrlLike = (value: string) =>
+  /^(https?:\/\/|[a-z]+:\/\/)/i.test(value);
+
+const formatTechnicalValue = (value: unknown) => {
+  if (value === null || value === undefined || value === '') return '—';
+  if (typeof value === 'object') return JSON.stringify(value, null, 2);
+  return String(value);
+};
+
+const formatFriendlyValue = (key: string, value: unknown): string | null => {
+  if (value === null || value === undefined || value === '') return null;
+
+  if (typeof value === 'boolean') {
+    if (key === 'indoorWorkout' || key === 'isIndoorWorkout') {
+      return value ? 'Ambiente interno' : 'Ambiente externo';
+    }
+    return value ? 'Sim' : 'Não';
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (/heartRate/i.test(key)) return `${value.toLocaleString('pt-BR')} bpm`;
+    if (/elevation|lapLength/i.test(key)) return `${value.toLocaleString('pt-BR')} m`;
+    return value.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+  }
+
+  if (Array.isArray(value) && value.every((item) => ['string', 'number', 'boolean'].includes(typeof item))) {
+    return value.map((item) => String(item)).join(', ');
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed || isUuidLike(trimmed) || isBundleLike(trimmed) || isUrlLike(trimmed)) return null;
+    return trimmed;
+  }
+
+  return null;
+};
+
+const collectFriendlyDetails = (workout: RecentWorkout) => {
+  const displayMap = new Map<string, string>();
+  const sources = [workout.rawData, workout.metadata ?? {}];
+
+  for (const source of sources) {
+    for (const [key, value] of Object.entries(source)) {
+      if (PRIMARY_DETAIL_KEYS.has(key) || TECHNICAL_KEY_PATTERN.test(key)) continue;
+
+      const label = FRIENDLY_DETAIL_LABELS[key];
+      if (!label || displayMap.has(label)) continue;
+
+      const formattedValue = formatFriendlyValue(key, value);
+      if (formattedValue) displayMap.set(label, formattedValue);
+    }
+  }
+
+  return Array.from(displayMap, ([label, value]) => ({ label, value }));
+};
+
 export default function AppleHealth() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -129,16 +230,15 @@ export default function AppleHealth() {
     return `${workout.distance.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} ${workout.distanceUnit ?? ''}`.trim();
   };
 
-  const formatRawValue = (value: unknown) => {
-    if (value === null || value === undefined || value === '') return '—';
-    if (typeof value === 'object') return JSON.stringify(value);
-    return String(value);
-  };
+  const workoutSummaryDetails = selectedWorkout ? collectFriendlyDetails(selectedWorkout) : [];
 
-  const workoutDetails = selectedWorkout
-    ? Object.entries(selectedWorkout.rawData)
-        .filter(([key, value]) => !['sourceName', 'source', 'appName', 'duration', 'value', 'startDate', 'dateFrom', 'endDate', 'dateTo', 'unit'].includes(key) && value !== null && value !== undefined && value !== '')
-        .map(([key, value]) => ({ key, value: formatRawValue(value) }))
+  const technicalDetails = selectedWorkout
+    ? [
+        ...Object.entries(selectedWorkout.rawData),
+        ...Object.entries(selectedWorkout.metadata ?? {}).map(([key, value]) => [`metadata.${key}`, value] as const),
+      ]
+        .filter(([key, value]) => !PRIMARY_DETAIL_KEYS.has(key) && value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => ({ key, value: formatTechnicalValue(value) }))
     : [];
 
   if (authLoading) {
@@ -475,7 +575,7 @@ export default function AppleHealth() {
             </div>
 
             <Dialog open={!!selectedWorkout} onOpenChange={(open) => !open && setSelectedWorkout(null)}>
-              <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl border-2 border-primary bg-white/70 shadow-xl backdrop-blur-md">
+              <DialogContent className="flex max-h-[85vh] w-[calc(100%-2rem)] max-w-md flex-col rounded-2xl border-2 border-primary bg-white/70 shadow-xl backdrop-blur-md">
                 {selectedWorkout && (
                   <>
                     <DialogHeader>
@@ -484,7 +584,7 @@ export default function AppleHealth() {
                       </DialogTitle>
                     </DialogHeader>
 
-                    <div className="space-y-4">
+                    <div className="flex-1 space-y-4 overflow-y-auto pr-1">
                       <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Origem</p>
@@ -518,38 +618,47 @@ export default function AppleHealth() {
                               : '—'}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
-                          <p className="text-xs text-muted-foreground">Source ID</p>
-                          <p className="mt-1 break-all text-sm font-semibold text-foreground">{selectedWorkout.sourceId || '—'}</p>
-                        </div>
                       </div>
 
                       {selectedWorkout.notes && (
                         <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Observações</p>
-                          <p className="mt-1 text-sm text-foreground">{selectedWorkout.notes}</p>
+                          <p className="mt-1 break-words text-sm text-foreground">{selectedWorkout.notes}</p>
                         </div>
                       )}
 
-                      {selectedWorkout.metadata && (
+                      {workoutSummaryDetails.length > 0 && (
                         <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
-                          <p className="text-xs text-muted-foreground">Metadata</p>
-                          <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words text-xs text-foreground">{JSON.stringify(selectedWorkout.metadata, null, 2)}</pre>
-                        </div>
-                      )}
-
-                      {workoutDetails.length > 0 && (
-                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
-                          <p className="text-xs text-muted-foreground">Campos retornados pelo plugin</p>
+                          <p className="text-xs text-muted-foreground">Informações adicionais</p>
                           <div className="mt-2 space-y-2">
-                            {workoutDetails.map((detail) => (
-                              <div key={detail.key} className="rounded-lg border border-primary/20 bg-background/90 px-3 py-2">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{detail.key}</p>
+                            {workoutSummaryDetails.map((detail) => (
+                              <div key={detail.label} className="rounded-lg border border-primary/20 bg-background/90 px-3 py-2">
+                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{detail.label}</p>
                                 <p className="mt-1 break-words text-sm text-foreground">{detail.value}</p>
                               </div>
                             ))}
                           </div>
                         </div>
+                      )}
+
+                      {technicalDetails.length > 0 && (
+                        <Accordion type="single" collapsible>
+                          <AccordionItem value="technical-details" className="rounded-xl border border-primary/30 bg-background/75 px-3 shadow-sm">
+                            <AccordionTrigger className="py-3 text-xs text-muted-foreground hover:no-underline">
+                              Detalhes técnicos
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="max-h-40 space-y-2 overflow-y-auto pb-1">
+                                {technicalDetails.map((detail) => (
+                                  <div key={detail.key} className="rounded-lg border border-primary/20 bg-background/90 px-3 py-2">
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{detail.key}</p>
+                                    <pre className="mt-1 whitespace-pre-wrap break-words text-xs text-foreground">{detail.value}</pre>
+                                  </div>
+                                ))}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                       )}
                     </div>
                   </>
