@@ -35,6 +35,7 @@ export interface MealRecord {
   fats: number;
   portion: string;
   meal_time: string;
+  meal_type?: string;
   user_id?: string;
   created_at?: string;
 }

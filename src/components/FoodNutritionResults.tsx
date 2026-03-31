@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { NutritionData, ElementPortion } from '@/types/nutrition';
+import { MealTypeSelector } from './MealTypeSelector';
 
 interface FoodNutritionResultsProps {
   data: NutritionData;

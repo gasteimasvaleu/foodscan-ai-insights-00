@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useHealthKit } from '@/hooks/useHealthKit';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { MealTypeSelector } from './MealTypeSelector';
 
 interface NutritionData {
   nome_alimento: string;
