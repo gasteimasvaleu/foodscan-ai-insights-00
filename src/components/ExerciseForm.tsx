@@ -242,31 +242,34 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
         </form>
 
         <Drawer open={isActivityDrawerOpen} onOpenChange={handleActivityDrawerOpenChange}>
-          <DrawerContent className="max-h-[78vh]">
-            <DrawerHeader>
-              <DrawerTitle>Tipo de Atividade</DrawerTitle>
+          <DrawerContent className="max-h-[78vh] w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+            <DrawerHeader className="border-b border-border/60">
+              <DrawerTitle className="text-foreground">Tipo de Atividade</DrawerTitle>
             </DrawerHeader>
 
             <div className="px-4 pb-2">
-              <WheelPicker
-                value={pendingActivityType}
-                onChange={setPendingActivityType}
-                options={ACTIVITY_TYPES}
-                visibleItems={5}
-                itemHeight={44}
-              />
+              <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+                <WheelPicker
+                  value={pendingActivityType}
+                  onChange={setPendingActivityType}
+                  options={ACTIVITY_TYPES}
+                  visibleItems={5}
+                  itemHeight={44}
+                />
+              </div>
             </div>
 
-            <DrawerFooter>
+            <DrawerFooter className="border-t border-border/60">
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-xl"
                   onClick={() => setIsActivityDrawerOpen(false)}
                 >
                   Cancelar
                 </Button>
-                <Button type="button" onClick={confirmActivitySelection}>
+                <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmActivitySelection}>
                   Confirmar
                 </Button>
               </div>
