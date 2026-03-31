@@ -17,7 +17,7 @@ interface FoodNutritionResultsProps {
   imageUrl?: string;
 }
 
-export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
+export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset, imageUrl }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentPortion, setCurrentPortion] = useState<string>('');
