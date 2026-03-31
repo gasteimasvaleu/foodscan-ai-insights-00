@@ -73,6 +73,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
           fats: fats,
           portion: currentPortion || `${portionGrams}g`,
           meal_time: new Date().toISOString(),
+          meal_type: mealType,
           user_id: user.id,
         },
       ]).select().single();
