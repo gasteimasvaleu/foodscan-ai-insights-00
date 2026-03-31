@@ -137,7 +137,7 @@ export function WheelPicker({
           role="listbox"
           aria-label={label}
           tabIndex={0}
-          className="overflow-y-auto overscroll-contain touch-pan-y scrollbar-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-xl"
+          className="wheel-picker-scroll overflow-y-auto overscroll-contain touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-xl"
           style={{
             height: pickerHeight,
             scrollSnapType: "y mandatory",
