@@ -285,19 +285,43 @@ export default function PhysicalAssessment() {
                 </div>
                 <div>
                   <Label>Foto Antes</Label>
-                  <Input
+                  <input
+                    id="before-photo-input"
                     type="file"
                     accept="image/*"
+                    className="hidden"
                     onChange={(e) => setBeforePhoto(e.target.files?.[0] || null)}
                   />
+                  <Button
+                    asChild
+                    type="button"
+                    variant="outline"
+                    className="mt-2 w-full bg-background text-primary hover:bg-background/95"
+                  >
+                    <label htmlFor="before-photo-input" className="cursor-pointer">
+                      Adicionar Foto
+                    </label>
+                  </Button>
                 </div>
                 <div>
                   <Label>Foto Depois</Label>
-                  <Input
+                  <input
+                    id="after-photo-input"
                     type="file"
                     accept="image/*"
+                    className="hidden"
                     onChange={(e) => setAfterPhoto(e.target.files?.[0] || null)}
                   />
+                  <Button
+                    asChild
+                    type="button"
+                    variant="outline"
+                    className="mt-2 w-full bg-background text-primary hover:bg-background/95"
+                  >
+                    <label htmlFor="after-photo-input" className="cursor-pointer">
+                      Adicionar Foto
+                    </label>
+                  </Button>
                 </div>
                 <div>
                   <Label>Observações</Label>
