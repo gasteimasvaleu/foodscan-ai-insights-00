@@ -277,6 +277,7 @@ const FoodScan = () => {
         description: food.detailed_description || food.description,
         detailed_description: food.detailed_description,
         category: food.category,
+        estimated_weight: food.estimated_weight ? parseNutritionValue(food.estimated_weight) : undefined,
         preparation_analysis: food.preparation_analysis ? {
           primary_method: food.preparation_analysis.primary_method || "",
           secondary_methods: food.preparation_analysis.secondary_methods || [],
@@ -316,6 +317,7 @@ const FoodScan = () => {
       
       return data.elementos.map((elemento: any) => ({
         name: elemento.nome || elemento.name || "Elemento",
+        estimated_weight: elemento.estimated_weight ? parseNutritionValue(elemento.estimated_weight) : undefined,
         nutrition: {
           calories: parseNutritionValue(elemento.calorias || elemento.calories || 0),
           carbohydrates: parseNutritionValue(elemento.carboidratos || elemento.carbohydrates || 0),
@@ -334,6 +336,7 @@ const FoodScan = () => {
       return data.elements.map((element: any) => ({
         name: element.name || "Elemento",
         description: element.description,
+        estimated_weight: element.estimated_weight ? parseNutritionValue(element.estimated_weight) : undefined,
         nutrition: {
           calories: parseNutritionValue(element.nutrition?.calories || 0),
           carbohydrates: parseNutritionValue(element.nutrition?.carbohydrates || 0),

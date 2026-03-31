@@ -63,8 +63,8 @@ export const MultipleElementsPortionSelector: React.FC<MultipleElementsPortionSe
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>(
     elements.map(element => ({
       elementName: element.name,
-      portion: '',
-      grams: 100
+      portion: `${element.estimated_weight || 100}g`,
+      grams: element.estimated_weight || 100
     }))
   );
 

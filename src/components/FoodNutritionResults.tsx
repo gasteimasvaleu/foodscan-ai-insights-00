@@ -34,8 +34,8 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
     if (hasMultipleElements && data.elements && elementPortions.length === 0) {
       const defaultPortions: ElementPortion[] = data.elements.map(element => ({
         elementName: element.name,
-        portion: '100g',
-        grams: 100
+        portion: `${element.estimated_weight || 100}g`,
+        grams: element.estimated_weight || 100
       }));
       setElementPortions(defaultPortions);
     }

@@ -42,10 +42,12 @@ serve(async (req) => {
 
 Comece com uma descrição geral do prato, depois detalhe cada alimento usando o formato:
 
-**Nome do Alimento**: Descrição detalhada incluindo método de preparo, características visuais, temperos aparentes, textura e qualidade.
+**Nome do Alimento** (~Xg): Descrição detalhada incluindo método de preparo, características visuais, temperos aparentes, textura e qualidade.
+
+IMPORTANTE: Estime o peso aproximado em gramas de cada alimento visível no prato, baseando-se no tamanho visual, proporções do prato/recipiente e referências comuns. Inclua a estimativa entre parênteses após o nome, no formato (~Xg).
 
 Exemplo:
-"Este prato apresenta uma refeição típica brasileira com arroz, feijão e carne grelhada. **Arroz Branco**: Grãos soltos e bem cozidos, preparados de forma tradicional, apresentando coloração branca uniforme e textura macia. **Feijão Preto**: Caldo escuro e cremoso, tempero aparentemente caseiro com cebola e alho, textura consistente típica do feijão bem refogado."
+"Este prato apresenta uma refeição típica brasileira com arroz, feijão e carne grelhada. **Arroz Branco** (~150g): Grãos soltos e bem cozidos, preparados de forma tradicional, apresentando coloração branca uniforme e textura macia. **Feijão Preto** (~120g): Caldo escuro e cremoso, tempero aparentemente caseiro com cebola e alho, textura consistente típica do feijão bem refogado."
 
 Mantenha o texto natural e fluido, sem usar estruturas de lista ou markdown pesado. Foque na descrição visual e culinária dos alimentos.
 
@@ -92,6 +94,7 @@ Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada)
   "elements": [
     {
       "name": "Nome do elemento 1",
+      "estimated_weight": peso_estimado_em_gramas,
       "nutrition": {
         "calories": valor_por_100g,
         "carbohydrates": valor_por_100g,
@@ -117,6 +120,7 @@ Se for UM elemento único, use o formato:
   "foodName": "Nome específico do alimento",
   "description": "Descrição nutricional",
   "quantity": "Porção típica",
+  "estimated_weight": peso_estimado_em_gramas,
   "nutrition": {
     "calories": número_por_porção,
     "carbohydrates": gramas_por_porção,
@@ -127,7 +131,11 @@ Se for UM elemento único, use o formato:
   }
 }
 
-IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`;
+IMPORTANTE: 
+- Para múltiplos elementos, calcule valores nutricionais por 100g de cada elemento.
+- Se a descrição contiver estimativas de peso (ex: ~150g), use esses valores no campo "estimated_weight".
+- Se não houver estimativa na descrição, estime o peso baseado em porções típicas brasileiras.
+- O campo "estimated_weight" representa quanto daquele alimento está no prato (em gramas).`;
 
     const nutritionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
