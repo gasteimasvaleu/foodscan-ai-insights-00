@@ -14,6 +14,7 @@ import { MealTypeSelector } from './MealTypeSelector';
 interface FoodNutritionResultsProps {
   data: NutritionData;
   onReset: () => void;
+  imageUrl?: string;
 }
 
 export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data, onReset }) => {
