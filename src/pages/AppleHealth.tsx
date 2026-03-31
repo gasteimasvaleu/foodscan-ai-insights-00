@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Heart, Footprints, Flame, Scale, RefreshCw, Unlink,
   ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings, Trash2
 } from "lucide-react";
@@ -66,6 +72,7 @@ export default function AppleHealth() {
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [selectedWorkout, setSelectedWorkout] = useState<RecentWorkout | null>(null);
 
   useEffect(() => {
     if (isConnected) {
@@ -94,6 +101,45 @@ export default function AppleHealth() {
 
   const stepsGoal = 10000;
   const stepsPercent = Math.min((dailySteps / stepsGoal) * 100, 100);
+
+  const formatDateTime = (dateString?: string) => {
+    if (!dateString) return '—';
+
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '—';
+
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDistance = (workout: RecentWorkout) => {
+    if (typeof workout.distance !== 'number') return '—';
+
+    const unit = workout.distanceUnit?.toLowerCase();
+    if (unit === 'm' || unit === 'meter' || unit === 'meters') {
+      return workout.distance >= 1000
+        ? `${(workout.distance / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} km`
+        : `${workout.distance.toLocaleString('pt-BR')} m`;
+    }
+
+    return `${workout.distance.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} ${workout.distanceUnit ?? ''}`.trim();
+  };
+
+  const formatRawValue = (value: unknown) => {
+    if (value === null || value === undefined || value === '') return '—';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
+  };
+
+  const workoutDetails = selectedWorkout
+    ? Object.entries(selectedWorkout.rawData)
+        .filter(([key, value]) => !['sourceName', 'source', 'appName', 'duration', 'value', 'startDate', 'dateFrom', 'endDate', 'dateTo', 'unit'].includes(key) && value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => ({ key, value: formatRawValue(value) }))
+    : [];
 
   if (authLoading) {
     return (
@@ -296,7 +342,16 @@ export default function AppleHealth() {
                     return (
                       <div
                         key={workout.startDate + index}
-                        className={`flex items-center gap-3 p-3 rounded-xl ${style.bg} transition-all`}
+                        className={`flex items-center gap-3 p-3 rounded-xl ${style.bg} transition-all cursor-pointer`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setSelectedWorkout(workout)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            setSelectedWorkout(workout);
+                          }
+                        }}
                       >
                         <div className={`p-2 rounded-lg bg-white/70 shadow-sm`}>
                           <IconComponent className={`w-5 h-5 ${style.color}`} />
@@ -318,7 +373,10 @@ export default function AppleHealth() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
-                          onClick={() => handleHideWorkout(workout.startDate)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleHideWorkout(workout.startDate);
+                          }}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -415,6 +473,89 @@ export default function AppleHealth() {
                 </AccordionItem>
               </Accordion>
             </div>
+
+            <Dialog open={!!selectedWorkout} onOpenChange={(open) => !open && setSelectedWorkout(null)}>
+              <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-border bg-background/95 shadow-xl backdrop-blur-md">
+                {selectedWorkout && (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle className="pr-8 text-left text-foreground">
+                        {selectedWorkout.title || selectedWorkout.workoutType || selectedWorkout.sourceName}
+                      </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Origem</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{selectedWorkout.sourceName}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Duração</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{formatDuration(selectedWorkout.value)}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Início</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{formatDateTime(selectedWorkout.startDate)}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Fim</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{formatDateTime(selectedWorkout.endDate)}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Tipo</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{selectedWorkout.workoutType || '—'}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Distância</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{formatDistance(selectedWorkout)}</p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Calorias</p>
+                          <p className="mt-1 text-sm font-semibold text-foreground">
+                            {typeof selectedWorkout.calories === 'number'
+                              ? `${selectedWorkout.calories.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} ${selectedWorkout.caloriesUnit ?? 'kcal'}`
+                              : '—'}
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Source ID</p>
+                          <p className="mt-1 break-all text-sm font-semibold text-foreground">{selectedWorkout.sourceId || '—'}</p>
+                        </div>
+                      </div>
+
+                      {selectedWorkout.notes && (
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Observações</p>
+                          <p className="mt-1 text-sm text-foreground">{selectedWorkout.notes}</p>
+                        </div>
+                      )}
+
+                      {selectedWorkout.metadata && (
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Metadata</p>
+                          <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words text-xs text-foreground">{JSON.stringify(selectedWorkout.metadata, null, 2)}</pre>
+                        </div>
+                      )}
+
+                      {workoutDetails.length > 0 && (
+                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                          <p className="text-xs text-muted-foreground">Campos retornados pelo plugin</p>
+                          <div className="mt-2 space-y-2">
+                            {workoutDetails.map((detail) => (
+                              <div key={detail.key} className="rounded-lg bg-background/70 px-3 py-2">
+                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{detail.key}</p>
+                                <p className="mt-1 break-words text-sm text-foreground">{detail.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>

@@ -17,7 +17,40 @@ export interface RecentWorkout {
   startDate: string;
   endDate: string;
   unit: string;
+  sourceId?: string;
+  workoutType?: string;
+  title?: string;
+  calories?: number;
+  caloriesUnit?: string;
+  distance?: number;
+  distanceUnit?: string;
+  notes?: string;
+  metadata?: Record<string, unknown>;
+  rawData: Record<string, unknown>;
 }
+
+const extractNumber = (...values: unknown[]): number | undefined => {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return undefined;
+};
+
+const extractString = (...values: unknown[]): string | undefined => {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value;
+  }
+  return undefined;
+};
+
+const extractObject = (value: unknown): Record<string, unknown> | undefined => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  return value as Record<string, unknown>;
+};
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
@@ -282,13 +315,27 @@ export const useHealthKit = () => {
         limit: 20,
       });
       console.log('[HealthKit] queryWorkouts raw result:', JSON.stringify(result));
-      const workouts: RecentWorkout[] = ((result as any)?.workouts ?? []).map((s: any) => ({
-        sourceName: s.sourceName ?? s.source ?? 'Apple Health',
-        value: s.duration ?? s.value ?? 0,
-        startDate: s.startDate ?? '',
-        endDate: s.endDate ?? '',
-        unit: s.unit ?? 'min',
-      }));
+      const workouts: RecentWorkout[] = ((result as any)?.workouts ?? []).map((s: any) => {
+        const rawData = extractObject(s) ?? {};
+
+        return {
+          sourceName: extractString(s.sourceName, s.source, s.appName) ?? 'Apple Health',
+          value: extractNumber(s.duration, s.value, s.totalDuration) ?? 0,
+          startDate: extractString(s.startDate, s.dateFrom) ?? '',
+          endDate: extractString(s.endDate, s.dateTo) ?? '',
+          unit: extractString(s.unit, s.durationUnit) ?? 'min',
+          sourceId: extractString(s.sourceId, s.bundleIdentifier, s.bundleId),
+          workoutType: extractString(s.workoutType, s.activityType, s.type, s.workoutActivityType),
+          title: extractString(s.title, s.name),
+          calories: extractNumber(s.calories, s.totalEnergyBurned, s.activeEnergyBurned, s.energyBurned),
+          caloriesUnit: extractString(s.caloriesUnit, s.energyUnit) ?? 'kcal',
+          distance: extractNumber(s.distance, s.totalDistance, s.distanceWalkingRunning),
+          distanceUnit: extractString(s.distanceUnit, s.lengthUnit, s.distanceMeasurementUnit),
+          notes: extractString(s.notes, s.description),
+          metadata: extractObject(s.metadata) ?? extractObject(s.workoutStatistics),
+          rawData,
+        };
+      });
       setRecentWorkouts(workouts);
       return workouts;
     } catch (error) {
