@@ -53,6 +53,10 @@ const AuthAwareNavbar = () => {
   const { user, authReady, subscriptionReady, subscriptionStatus } = useAuth();
   const { isNative, isIOS } = useNativePlatform();
   const isNativeIOS = isNative && isIOS;
+  const location = useLocation();
+
+  // Hide navbar on /auth page
+  if (location.pathname === '/auth') return null;
 
   // Don't render navbar until auth is ready
   if (!authReady || !user) return null;
