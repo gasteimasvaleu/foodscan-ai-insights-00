@@ -42,10 +42,12 @@ serve(async (req) => {
 
 Comece com uma descrição geral do prato, depois detalhe cada alimento usando o formato:
 
-**Nome do Alimento**: Descrição detalhada incluindo método de preparo, características visuais, temperos aparentes, textura e qualidade.
+**Nome do Alimento** (~Xg): Descrição detalhada incluindo método de preparo, características visuais, temperos aparentes, textura e qualidade.
+
+IMPORTANTE: Estime o peso aproximado em gramas de cada alimento visível no prato, baseando-se no tamanho visual, proporções do prato/recipiente e referências comuns. Inclua a estimativa entre parênteses após o nome, no formato (~Xg).
 
 Exemplo:
-"Este prato apresenta uma refeição típica brasileira com arroz, feijão e carne grelhada. **Arroz Branco**: Grãos soltos e bem cozidos, preparados de forma tradicional, apresentando coloração branca uniforme e textura macia. **Feijão Preto**: Caldo escuro e cremoso, tempero aparentemente caseiro com cebola e alho, textura consistente típica do feijão bem refogado."
+"Este prato apresenta uma refeição típica brasileira com arroz, feijão e carne grelhada. **Arroz Branco** (~150g): Grãos soltos e bem cozidos, preparados de forma tradicional, apresentando coloração branca uniforme e textura macia. **Feijão Preto** (~120g): Caldo escuro e cremoso, tempero aparentemente caseiro com cebola e alho, textura consistente típica do feijão bem refogado."
 
 Mantenha o texto natural e fluido, sem usar estruturas de lista ou markdown pesado. Foque na descrição visual e culinária dos alimentos.
 
