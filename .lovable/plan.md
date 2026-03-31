@@ -1,56 +1,43 @@
 
-Objetivo: converter todos os campos restantes do card **Registrar Exercício** para o padrão de **painel inferior + Wheel Picker**, incluindo o botão rosa para intensidade.
+Objetivo: aplicar no `/receitas` o mesmo padrão usado no “Registrar Exercício” para os campos **Dieta** e **Culinária** (botão acionador + Drawer com Wheel Picker + Cancelar/Confirmar), mantendo a lógica de busca intacta.
 
-1) Escopo confirmado
-- Converter para Drawer + Wheel Picker:
-  - **Duração (minutos)**
-  - **Peso (kg)**
-  - **Idade**
-  - **Intensidade**
-- Em **Intensidade**, usar botão rosa no padrão visual do app com texto:
-  - **“Selecionar Intensidade”** (quando vazio)
-  - valor escolhido após seleção
+1) Atualizar estrutura da página `src/pages/Receitas.tsx`
+- Adicionar imports de `Drawer`, `DrawerContent`, `DrawerHeader`, `DrawerTitle`, `DrawerFooter`, `WheelPicker` e `ChevronDown`.
+- Remover uso de `Select`/`SelectTrigger`/`SelectContent`/`SelectItem` nesses dois filtros.
 
-2) Estrutura de estado no `ExerciseForm`
-- Adicionar estados de abertura por campo:
-  - `isDurationDrawerOpen`, `isWeightDrawerOpen`, `isAgeDrawerOpen`, `isIntensityDrawerOpen`
-- Adicionar estados temporários (“pending”) para confirmação:
-  - `pendingDuration`, `pendingWeight`, `pendingAge`, `pendingIntensity`
-- Manter `formData` como fonte final (só atualiza no **Confirmar**).
+2) Criar estados locais para cada filtro
+- Controle de abertura:
+  - `isDietDrawerOpen`
+  - `isCuisineDrawerOpen`
+- Valores temporários (pré-confirmação):
+  - `pendingDiet`
+  - `pendingCuisine`
+- Manter `diet` e `cuisine` como fonte final usada no `searchRecipes`.
 
-3) Substituição dos inputs atuais
-- Trocar `<Input type="number">` de duração, peso e idade por botões acionadores (igual ao tipo de atividade) que abrem seus Drawers.
-- Trocar o `RadioGroup` de intensidade por botão rosa:
-  - classes no padrão primário (ex.: `bg-primary hover:bg-primary/90 text-white rounded-xl`).
-- Em cada Drawer:
-  - título do campo,
-  - WheelPicker central,
-  - ações **Cancelar** e **Confirmar** (mesmo padrão visual já aplicado).
+3) Implementar gatilhos visuais no card de busca
+- Substituir os dois selects por botões `variant="outline"` com `ChevronDown`.
+- Exibir label selecionada no botão:
+  - Dieta: valor atual ou “Dieta”
+  - Culinária: valor atual ou “Culinária”
+- Ao abrir Drawer, carregar pending com valor atual; se vazio, iniciar em “Todas”.
 
-4) Opções dos Wheels
-- **Duração:** faixa prática (ex. 5–240 min, passo 5).
-- **Peso:** faixa ampla com decimal (ex. 30.0–250.0, passo 0.5).
-- **Idade:** faixa padrão (ex. 10–100).
-- **Intensidade:** `Leve`, `Moderada`, `Intensa`.
-- Conversões para submit:
-  - armazenar string no `formData`,
-  - `parseFloat/parseInt` continuam funcionando sem alterar backend.
+4) Implementar Drawers com padrão visual dos modais
+- Para Dieta e Culinária, criar um Drawer cada com:
+  - título do campo
+  - `WheelPicker` com opções do array correspondente
+  - ações `Cancelar` e `Confirmar`
+- Aplicar o mesmo estilo glassmorphism já adotado:
+  - `w-[calc(100%-2rem)] max-w-md rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
+  - botões: cancel `rounded-xl`, confirmar `bg-primary hover:bg-primary/90 text-white rounded-xl`.
 
-5) Validação e UX
-- Preservar validação obrigatória atual no envio.
-- Garantir que “Cancelar” não altere valor.
-- Ao abrir cada Drawer, iniciar wheel no valor atual (ou default).
-- Manter estilo glassmorphism dos modais:
-  - `bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl rounded-t-2xl`
-- Ajustar altura e espaçamento para viewport **390x640** sem clipping.
+5) Ajuste de dados e compatibilidade da busca
+- Usar opções em formato `{ label, value }` no Wheel para preservar texto PT-BR e valor enviado à API.
+- Tratar “Todas” como valor vazio (`""`) ao confirmar, para manter:
+  - `diet: diet || undefined`
+  - `cuisine: cuisine || undefined`
+- Garantir que `clearSearch()` continue resetando ambos para vazio sem quebrar UI.
 
-6) Compatibilidade funcional
-- Não alterar lógica de `handleSubmit` além de consumir os novos valores vindos dos Drawers.
-- Manter integração com:
-  - edge function `calculate-exercise-calories`
-  - insert em `exercise_records` e `calorie_adjustments`.
-
-Detalhes técnicos
-- Arquivo principal: `src/components/ExerciseForm.tsx`.
-- Reuso de padrão já existente no campo “Tipo de Atividade” para garantir consistência visual e comportamental.
-- Sem mudanças em banco, migrations ou edge functions.
+6) Validação funcional (390x640)
+- Abrir cada Drawer, girar Wheel, cancelar e confirmar.
+- Confirmar exibição correta dos textos nos botões.
+- Buscar receitas com e sem filtros e validar paginação (“Carregar mais”) sem regressões.
