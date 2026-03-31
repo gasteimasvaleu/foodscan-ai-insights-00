@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 
 type WheelOption = string | { label: string; value: string };
@@ -99,7 +99,7 @@ export function WheelPicker({
     }, 120);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowUp") {
       event.preventDefault();
       snapToIndex(selectedIndex - 1);
