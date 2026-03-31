@@ -94,6 +94,7 @@ Se houver MÚLTIPLOS elementos distintos (como carne + arroz + feijão + salada)
   "elements": [
     {
       "name": "Nome do elemento 1",
+      "estimated_weight": peso_estimado_em_gramas,
       "nutrition": {
         "calories": valor_por_100g,
         "carbohydrates": valor_por_100g,
@@ -119,6 +120,7 @@ Se for UM elemento único, use o formato:
   "foodName": "Nome específico do alimento",
   "description": "Descrição nutricional",
   "quantity": "Porção típica",
+  "estimated_weight": peso_estimado_em_gramas,
   "nutrition": {
     "calories": número_por_porção,
     "carbohydrates": gramas_por_porção,
@@ -129,7 +131,11 @@ Se for UM elemento único, use o formato:
   }
 }
 
-IMPORTANTE: Para múltiplos elementos, calcule valores individuais por 100g de cada elemento.`;
+IMPORTANTE: 
+- Para múltiplos elementos, calcule valores nutricionais por 100g de cada elemento.
+- Se a descrição contiver estimativas de peso (ex: ~150g), use esses valores no campo "estimated_weight".
+- Se não houver estimativa na descrição, estime o peso baseado em porções típicas brasileiras.
+- O campo "estimated_weight" representa quanto daquele alimento está no prato (em gramas).`;
 
     const nutritionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

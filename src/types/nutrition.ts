@@ -29,6 +29,7 @@ export interface FoodElement {
   color_analysis?: string;
   size_reference?: string;
   confidence_level?: string;
+  estimated_weight?: number;
   quality_indicators?: QualityIndicators;
   nutritional_preview?: NutritionalPreview;
   nutrition: {
