@@ -9,6 +9,10 @@ import { useCountUp } from '@/hooks/useCountUp';
 interface DailyGoalsProps {
   goals: DailyGoal;
   meals: MealRecord[];
+  hydrationTotals?: {
+    calories: number;
+    carbohydrates: number;
+  };
   onEditGoals: () => void;
 }
 
@@ -31,7 +35,7 @@ const AnimatedCounter: React.FC<{ value: number; className?: string; delay?: num
   );
 };
 
-export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoals }) => {
+export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, hydrationTotals, onEditGoals }) => {
   // Calcular totais consumidos
   const consumed = meals.reduce(
     (acc, meal) => ({
@@ -43,10 +47,17 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
     { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
   );
 
+  const combinedConsumed = {
+    calories: consumed.calories + (hydrationTotals?.calories ?? 0),
+    carbohydrates: consumed.carbohydrates + (hydrationTotals?.carbohydrates ?? 0),
+    proteins: consumed.proteins,
+    fats: consumed.fats,
+  };
+
   const progressItems = [
     {
       label: 'Calorias',
-      consumed: consumed.calories,
+      consumed: combinedConsumed.calories,
       goal: goals.calories,
       unit: 'kcal',
       color: 'text-[#FD46A1]',
@@ -54,7 +65,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
     },
     {
       label: 'Carboidratos',
-      consumed: consumed.carbohydrates,
+      consumed: combinedConsumed.carbohydrates,
       goal: goals.carbohydrates,
       unit: 'g',
       color: 'text-[#FD46A1]',
@@ -62,7 +73,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
     },
     {
       label: 'Proteínas',
-      consumed: consumed.proteins,
+      consumed: combinedConsumed.proteins,
       goal: goals.proteins,
       unit: 'g',
       color: 'text-[#FD46A1]',
@@ -70,7 +81,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
     },
     {
       label: 'Gorduras',
-      consumed: consumed.fats,
+      consumed: combinedConsumed.fats,
       goal: goals.fats,
       unit: 'g',
       color: 'text-[#FD46A1]',
