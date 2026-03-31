@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { WheelPicker } from "@/components/ui/wheel-picker";
 import { Info, Plus } from "lucide-react";
 import { EXERCISE_CATALOG } from "@/data/exerciseCatalog";
 
@@ -22,6 +23,21 @@ interface AddExerciseModalProps {
   onOpenChange: (open: boolean) => void;
   onAdd: (exercise: Exercise) => void;
 }
+
+const SETS_OPTIONS = Array.from({ length: 20 }, (_, i) => String(i + 1));
+const REPS_OPTIONS = [
+  "4-6",
+  "6-8",
+  "8-10",
+  "10-12",
+  "12-15",
+  "15-20",
+  "20-25",
+  "30s",
+  "45s",
+  "60s",
+  "90s",
+];
 
 export function AddExerciseModal({ open, onOpenChange, onAdd }: AddExerciseModalProps) {
   const [muscleGroup, setMuscleGroup] = useState("");
@@ -122,23 +138,20 @@ export function AddExerciseModal({ open, onOpenChange, onAdd }: AddExerciseModal
 
           {/* Séries e Repetições */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Séries</Label>
-              <Input
-                type="number"
-                min={1}
-                value={sets}
-                onChange={(e) => setSets(parseInt(e.target.value) || 1)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Repetições</Label>
-              <Input
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
-                placeholder="Ex: 10-12"
-              />
-            </div>
+            <WheelPicker
+              label="Séries"
+              value={String(sets)}
+              options={SETS_OPTIONS}
+              itemHeight={36}
+              onChange={(value) => setSets(Number(value))}
+            />
+            <WheelPicker
+              label="Repetições"
+              value={reps}
+              options={REPS_OPTIONS}
+              itemHeight={36}
+              onChange={setReps}
+            />
           </div>
 
           {/* Observações */}
