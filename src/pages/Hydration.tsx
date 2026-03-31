@@ -364,15 +364,15 @@ export default function Hydration() {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl border-primary/30 bg-background">
-              <DialogHeader>
+            <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-background/70 backdrop-blur-md border-2 border-primary shadow-xl p-4 sm:p-6">
+              <DialogHeader className="pr-8">
                 <DialogTitle>Registrar bebida</DialogTitle>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-4 pr-1 sm:pr-0">
                 <div className="space-y-2">
                   <Label>Escolha a bebida</Label>
-                  <div className="flex gap-2 overflow-x-auto pb-1">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {hydrationCatalog.map((beverage) => (
                       <button
                         key={beverage.key}
@@ -381,14 +381,14 @@ export default function Hydration() {
                           setSelectedBeverageKey(beverage.key);
                           setVolumeMl(beverage.defaultVolumeOptions[0]);
                         }}
-                        className={`min-w-fit px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
+                        className={`w-full px-3 py-2 rounded-xl border text-sm font-medium transition-colors flex items-center justify-center gap-1 min-h-10 ${
                           selectedBeverageKey === beverage.key
                             ? "bg-primary text-primary-foreground border-primary"
                             : "bg-background text-foreground border-border"
                         }`}
                       >
-                        <span className="mr-1">{beverage.icon}</span>
-                        {beverage.name}
+                        <span>{beverage.icon}</span>
+                        <span className="truncate">{beverage.name}</span>
                       </button>
                     ))}
                   </div>
@@ -396,13 +396,14 @@ export default function Hydration() {
 
                 <div className="space-y-2">
                   <Label>Quantidade (ml)</Label>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="grid grid-cols-3 gap-2">
                     {selectedBeverage.defaultVolumeOptions.map((option) => (
                       <Button
                         key={option}
                         type="button"
                         variant={volumeMl === option ? "default" : "outline"}
                         size="sm"
+                        className="w-full"
                         onClick={() => setVolumeMl(option)}
                       >
                         {option} ml
