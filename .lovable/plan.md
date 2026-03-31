@@ -1,15 +1,19 @@
 
 
-## Alterar layout do RecentScans para lista vertical
+## Modal de detalhes da refeição no RecentScans
 
-### Alteração em `src/components/RecentScans.tsx`
+### Arquivo: `src/components/RecentScans.tsx`
 
-Trocar o layout de scroll horizontal (cards lado a lado) para uma lista vertical onde cada item ocupa uma linha inteira, com a imagem à esquerda (thumbnail pequena) e informações à direita, empilhados um abaixo do outro.
+**Alterações:**
+1. Expandir a query para buscar todos os campos nutricionais: `proteins`, `carbohydrates`, `fats`, `portion`, `meal_type`, `meal_time`
+2. Adicionar state para controlar o modal e a refeição selecionada
+3. Tornar cada card clicável com `cursor-pointer` e `onClick`
+4. Adicionar um `Dialog` (seguindo o padrão glassmorphism do app: `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`) exibindo:
+   - Imagem grande da refeição (arredondada, aspect-ratio)
+   - Nome do alimento
+   - Porção e tipo de refeição
+   - Macros detalhados: calorias, proteínas, carboidratos, gorduras (com ícones coloridos)
+   - Data/hora da análise
 
-**Mudanças:**
-- Substituir o container `flex gap-3 overflow-x-auto` por `flex flex-col gap-3`
-- Cada card passa de vertical (imagem em cima, texto embaixo) para horizontal (imagem à esquerda, texto à direita) usando `flex flex-row`
-- Thumbnail quadrada pequena (~16x16 / 64px) com `rounded-xl`
-- Remover `flex-shrink-0 w-36` e usar `w-full`
-- Nome, calorias e horário ficam à direita da imagem
+Nenhum outro arquivo precisa ser modificado.
 
