@@ -3,8 +3,15 @@ export interface HydrationBeverage {
   name: string;
   hydrationFactor: number;
   defaultCaloriesPer100ml: number;
+  defaultCarbohydratesPer100ml?: number;
   defaultVolumeOptions: number[];
   icon: string;
+}
+
+export interface HydrationNutritionInput {
+  beverage_key: string;
+  volume_ml: number;
+  calories?: number;
 }
 
 export const hydrationCatalog: HydrationBeverage[] = [
@@ -441,3 +448,92 @@ export const hydrationCatalog: HydrationBeverage[] = [
     icon: "🍶",
   },
 ];
+
+const ESTIMATED_CARBS_PER_100ML: Record<string, number> = {
+  water: 0,
+  bottle_water: 0,
+  sparkling_water: 0,
+  coconut_water: 4,
+  tea: 0,
+  black_tea: 0,
+  green_tea: 0,
+  fruit_tea: 3,
+  herbal_tea: 0,
+  decaf_tea: 0,
+  matcha: 1,
+  coffee: 0,
+  espresso: 1,
+  decaf_coffee: 0,
+  coffee_with_milk: 3,
+  cappuccino: 5,
+  chocolate_drink: 12,
+  hot_chocolate: 13,
+  juice: 11,
+  syrup_drink: 10,
+  lemonade: 7,
+  smoothie: 12,
+  milkshake: 18,
+  milk: 5,
+  vegan_milk: 6,
+  skim_milk: 5,
+  almond_milk: 1,
+  oat_milk: 7,
+  soy_milk: 4,
+  coconut_milk: 1,
+  protein_shake: 7,
+  sports_drink: 6,
+  soda: 11,
+  diet_soda: 0,
+  energy_drink: 11,
+  kombucha: 5,
+  beer: 3,
+  alcohol_free_beer: 6,
+  wine: 3,
+  red_wine: 3,
+  white_wine: 3,
+  rose_wine: 3,
+  cider: 6,
+  strong_liqueur: 35,
+  cocktail: 17,
+  vermouth: 14,
+  champagne: 2,
+  whiskey: 0,
+  brandy: 2,
+  tequila: 0,
+  gin: 0,
+  rum: 0,
+  vodka: 0,
+  sake: 5,
+};
+
+export const getBeverageCarbsPer100ml = (beverageKey: string): number => {
+  const beverage = hydrationCatalog.find((item) => item.key === beverageKey);
+  if (!beverage) return 0;
+  if (typeof beverage.defaultCarbohydratesPer100ml === 'number') {
+    return beverage.defaultCarbohydratesPer100ml;
+  }
+  if (typeof ESTIMATED_CARBS_PER_100ML[beverageKey] === 'number') {
+    return ESTIMATED_CARBS_PER_100ML[beverageKey];
+  }
+  return Math.max(Math.round(beverage.defaultCaloriesPer100ml / 4), 0);
+};
+
+export const calculateHydrationNutritionTotals = (records: HydrationNutritionInput[]) => {
+  return records.reduce(
+    (acc, record) => {
+      const volume = Number(record.volume_ml) || 0;
+      const caloriesFromRecord = Number(record.calories);
+      const caloriesPer100ml =
+        Number.isFinite(caloriesFromRecord) && caloriesFromRecord >= 0 && volume > 0
+          ? (caloriesFromRecord / volume) * 100
+          : hydrationCatalog.find((item) => item.key === record.beverage_key)?.defaultCaloriesPer100ml ?? 0;
+      const carbsPer100ml = getBeverageCarbsPer100ml(record.beverage_key);
+
+      acc.calories += Math.round((volume / 100) * caloriesPer100ml);
+      acc.carbohydrates += Math.round((volume / 100) * carbsPer100ml);
+
+      return acc;
+    },
+    { calories: 0, carbohydrates: 0 }
+  );
+};
