@@ -1,53 +1,24 @@
 
-Objetivo: implementar um seletor tipo “wheel picker” (roleta) no app, com aparência iOS, no fluxo de treino.
+Objetivo: ocultar a barra de rolagem do Wheel Picker sem perder o gesto de arrastar com o dedo.
 
-1) Definir escopo funcional (antes de codar)
-- Confirmar em quais campos ele entra primeiro (ex.: `Séries`, `Repetições`, `Duração`).
-- Definir comportamento esperado:
-  - faixa de valores (ex.: 1–20 séries),
-  - valor padrão,
-  - se permite digitação manual ou só roleta.
+1) Ajuste no componente
+- Atualizar `src/components/ui/wheel-picker.tsx` para remover dependência de `scrollbar-none` e aplicar uma classe dedicada (ex.: `wheel-picker-scroll`) no container rolável.
+- Manter `overflow-y-auto`, `touch-pan-y`, `scrollSnapType` e lógica atual de snap/teclado exatamente como estão.
 
-2) Escolher abordagem técnica
-- Opção recomendada (mais rápida): Wheel picker em React (web + Capacitor), usando:
-  - lista com `scroll-snap`,
-  - item central destacado,
-  - feedback háptico opcional em iOS.
-- Opção avançada (100% nativa iOS): plugin Capacitor com `UIPickerView`.
-  - Mais trabalho e manutenção, só vale se você quiser comportamento nativo estrito.
+2) CSS cross-browser (escopo local)
+- Em `src/index.css`, criar utilitário específico para esse picker:
+  - `scrollbar-width: none;` (Firefox)
+  - `-ms-overflow-style: none;` (legacy Edge/IE)
+  - `::-webkit-scrollbar { width: 0; height: 0; display: none; }` (WebKit/Chrome/Safari)
+- Escopo só para a classe do Wheel Picker, para não impactar outras áreas que precisam de scrollbar visível.
 
-3) Implementar componente reutilizável
-- Criar componente `WheelPicker` com props:
-  - `value`, `onChange`, `options`, `label`, `itemHeight`.
-- Garantir acessibilidade:
-  - navegação por teclado,
-  - área de toque confortável,
-  - contraste no item selecionado.
+3) Compatibilidade com seu padrão atual
+- Preservar a regra global existente de esconder scroll apenas em `display-mode: standalone`.
+- O novo utilitário garante que, no wheel, a barra também fique escondida no preview/web normal (como você pediu), mas com rolagem por toque funcionando.
 
-4) Integrar na tela alvo
-- Substituir `Input`/`Select` atuais no `AddExerciseModal` (ou tela que você indicar) pelos wheels.
-- Manter compatibilidade com estado atual do formulário (`sets`, `reps`, etc.).
-- Preservar visual atual do app (cores/estilo já usados em `Treinos`/`WorkoutPlan`).
-
-5) Ajustes para mobile (390x640)
-- Validar altura da roleta e evitar overflow no modal.
-- Garantir que o item selecionado fique sempre centralizado.
-- Ajustar espaçamento para uso confortável com uma mão.
-
-6) QA e validação
-- Testar fluxo completo:
-  - abrir modal,
-  - selecionar valores na roleta,
-  - salvar exercício,
-  - conferir persistência no plano.
-- Testar no iOS (Capacitor) e web para confirmar consistência.
-
-Dependências/pré-requisitos
-- Não precisa backend novo.
-- Não precisa migration.
-- Apenas componente de UI + integração no formulário.
-- Se optar pela versão nativa iOS (`UIPickerView`), aí sim precisa plugin Capacitor adicional.
-
-Estimativa
-- Abordagem React (recomendada): baixa a média complexidade.
-- Abordagem plugin nativo iOS: média a alta complexidade.
+4) Validação
+- Testar no fluxo `/profile/workout`:
+  - abrir modal de adicionar exercício,
+  - rolar “Séries” e “Repetições” com o dedo,
+  - confirmar ausência visual da barra e snap no item central.
+- Validar também navegação por teclado (setas/Home/End) para não regredir acessibilidade.
