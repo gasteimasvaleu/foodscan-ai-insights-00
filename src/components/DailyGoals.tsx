@@ -96,7 +96,7 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, onEditGoal
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {progressItems.map((item, index) => {
           const percentage = Math.min((item.consumed / item.goal) * 100, 100);
           const remaining = Math.max(item.goal - item.consumed, 0);
