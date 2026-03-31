@@ -105,18 +105,11 @@
     @apply border-border;
   }
 
-  /* Hide scrollbar for native app feel */
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
   body {
     @apply bg-background text-foreground;
     /* PWA specific styles */
     overscroll-behavior: none;
     touch-action: manipulation;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
     padding-bottom: 0px;
   }
 
@@ -161,10 +154,17 @@
 
   /* PWA standalone mode adjustments */
   @media all and (display-mode: standalone) {
+    /* Hide scrollbar for native app feel */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
     body {
       margin: 0;
       padding: 0;
       background-color: #F7FAFB;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   }
 
