@@ -1,57 +1,38 @@
 
 
-## Estimativa de peso na análise + inputs pré-preenchidos
+## Adicionar Tipo de Refeição ao FoodScan + Agrupamento no Controle Diário
 
 ### Resumo
 
-Três camadas de mudança: prompts da edge function, tipo TypeScript, e dois componentes frontend.
+Adicionar um seletor de tipo de refeição (Café da Manhã, Lanche, Almoço, Jantar, Ceia) antes do botão "Salvar Refeição" no FoodScan. No Controle Diário, agrupar as refeições por tipo no card "Refeições de Hoje".
 
-### 1. Edge function `analyze-nutrition` -- Prompt do Passo 1 (imagem)
+### Plano
 
-Adicionar ao prompt do GPT-4o a instrução para estimar peso em gramas de cada alimento. O formato da descrição passa a incluir `(~Xg)` ao lado de cada item:
+#### 1. Migration — adicionar coluna `meal_type` à tabela `meal_records`
+- `ALTER TABLE meal_records ADD COLUMN meal_type text DEFAULT 'outro';`
 
-> "**Arroz Branco** (~150g): Grãos soltos e bem cozidos..."
+#### 2. Criar componente `MealTypeSelector`
+- Novo arquivo `src/components/MealTypeSelector.tsx`
+- Switch/chips horizontais com as opções: ☕ Café da Manhã, 🍎 Lanche, 🍽️ Almoço, 🌙 Jantar, 🌜 Ceia
+- Recebe `value` e `onChange` como props
+- Reutiliza o padrão visual já existente no app (badges/botões arredondados com cor rosa)
 
-### 2. Edge function `analyze-nutrition` -- Prompt do Passo 2 (nutricional)
+#### 3. Integrar nos componentes de salvar refeição
+- **`FoodNutritionResults.tsx`** — adicionar estado `mealType`, renderizar `<MealTypeSelector>` acima do botão "Salvar Refeição", incluir `meal_type` no insert
+- **`NutritionResults.tsx`** — mesma integração
 
-- Instruir o GPT-4.1 a **usar os pesos estimados** da descrição para calcular os valores nutricionais (em vez de 100g genérico)
-- Adicionar campo `estimated_weight` em cada elemento do JSON de resposta
-- Os valores de `nutrition` de cada elemento continuam **por 100g** (para o seletor de porção funcionar), mas o peso estimado vem separado
+#### 4. Atualizar `MealRecord` interface
+- Em `src/pages/DailyControl.tsx`, adicionar `meal_type?: string` à interface `MealRecord`
 
-### 3. Tipo `FoodElement` em `src/types/nutrition.ts`
+#### 5. Atualizar `MealsList` para agrupar por tipo
+- Agrupar `meals` por `meal_type`
+- Renderizar seções com header (emoji + nome do tipo) e os cards de cada refeição dentro
+- Tipos sem refeições ficam ocultos
+- Manter layout e cores atuais dos cards individuais
 
-Adicionar campo opcional:
-```typescript
-estimated_weight?: number; // peso estimado em gramas pela IA
-```
+#### 6. Regenerar types do Supabase
+- Atualizar `src/integrations/supabase/types.ts` para incluir `meal_type` na tabela `meal_records`
 
-### 4. `FoodNutritionResults.tsx` -- Inicializar porções com peso estimado
-
-Alterar o `useEffect` (linhas 33-42) que inicializa `elementPortions` para usar `element.estimated_weight` em vez de 100g fixo:
-
-```typescript
-grams: element.estimated_weight || 100
-```
-
-### 5. `MultipleElementsPortionSelector.tsx` -- Receber peso inicial dos elementos
-
-Alterar o `useState` inicial (linha 67-71) para usar o `estimated_weight` de cada elemento como valor default em vez de 100g. Mostrar o peso estimado no placeholder do input.
-
-### 6. `FoodScan.tsx` -- Extrair `estimated_weight` dos elementos
-
-No `extractElements` (linhas 268-351), incluir `estimated_weight` ao mapear cada elemento da resposta da IA.
-
-### Arquivos editados
-
-| Arquivo | Mudança |
-|---------|---------|
-| `supabase/functions/analyze-nutrition/index.ts` | Dois prompts de texto |
-| `src/types/nutrition.ts` | +1 campo opcional |
-| `src/components/FoodNutritionResults.tsx` | useEffect usa estimated_weight |
-| `src/components/MultipleElementsPortionSelector.tsx` | Estado inicial usa estimated_weight |
-| `src/pages/FoodScan.tsx` | extractElements inclui estimated_weight |
-
-### Risco
-
-Baixo. Os prompts são texto, o campo é opcional com fallback para 100g, e a estrutura JSON de resposta não quebra.
+### Resultado
+No FoodScan, o usuário escolhe o tipo de refeição antes de salvar. No Controle Diário, as refeições aparecem organizadas por seções (Café da Manhã, Almoço, etc.) em vez de uma lista flat.
 
