@@ -21,21 +21,39 @@ export const MealTypeSelector: React.FC<MealTypeSelectorProps> = ({ value, onCha
   return (
     <div className="mb-4">
       <p className="text-sm font-medium text-gray-700 mb-2">Tipo de Refeição</p>
-      <div className="flex flex-wrap gap-2">
-        {MEAL_TYPES.map((type) => (
-          <button
-            key={type.value}
-            type="button"
-            onClick={() => onChange(type.value)}
-            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
-              value === type.value
-                ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
-                : 'bg-white/80 text-gray-700 border-gray-200 hover:border-primary/50 hover:bg-primary/10'
-            }`}
-          >
-            {type.emoji} {type.label}
-          </button>
-        ))}
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          {MEAL_TYPES.slice(0, 2).map((type) => (
+            <button
+              key={type.value}
+              type="button"
+              onClick={() => onChange(type.value)}
+              className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                value === type.value
+                  ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
+                  : 'bg-white/80 text-gray-700 border-gray-200 hover:border-primary/50 hover:bg-primary/10'
+              }`}
+            >
+              {type.emoji} {type.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          {MEAL_TYPES.slice(2, 5).map((type) => (
+            <button
+              key={type.value}
+              type="button"
+              onClick={() => onChange(type.value)}
+              className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                value === type.value
+                  ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
+                  : 'bg-white/80 text-gray-700 border-gray-200 hover:border-primary/50 hover:bg-primary/10'
+              }`}
+            >
+              {type.emoji} {type.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
