@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { WheelPicker } from "@/components/ui/wheel-picker";
 import { Calculator, ChevronDown } from "lucide-react";
@@ -17,6 +15,11 @@ const ACTIVITY_TYPES = [
   'Alongamento', 'Crossfit', 'Spinning', 'Aeróbica', 'Zumba'
 ];
 
+const DURATION_OPTIONS = Array.from({ length: 48 }, (_, index) => `${(index + 1) * 5}`);
+const WEIGHT_OPTIONS = Array.from({ length: 441 }, (_, index) => (30 + index * 0.5).toFixed(1));
+const AGE_OPTIONS = Array.from({ length: 91 }, (_, index) => `${index + 10}`);
+const INTENSITY_OPTIONS = ['Leve', 'Moderada', 'Intensa'];
+
 interface ExerciseFormProps {
   onExerciseAdded: () => void;
 }
@@ -25,7 +28,15 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isActivityDrawerOpen, setIsActivityDrawerOpen] = useState(false);
+  const [isDurationDrawerOpen, setIsDurationDrawerOpen] = useState(false);
+  const [isWeightDrawerOpen, setIsWeightDrawerOpen] = useState(false);
+  const [isAgeDrawerOpen, setIsAgeDrawerOpen] = useState(false);
+  const [isIntensityDrawerOpen, setIsIntensityDrawerOpen] = useState(false);
   const [pendingActivityType, setPendingActivityType] = useState("");
+  const [pendingDuration, setPendingDuration] = useState("");
+  const [pendingWeight, setPendingWeight] = useState("");
+  const [pendingAge, setPendingAge] = useState("");
+  const [pendingIntensity, setPendingIntensity] = useState("");
   const [formData, setFormData] = useState({
     activityType: '',
     weight: '',
@@ -41,6 +52,15 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
       toast({
         title: "Selecione uma atividade",
         description: "Escolha o tipo de atividade para continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.durationMinutes || !formData.weight || !formData.age || !formData.intensity) {
+      toast({
+        title: "Preencha todos os campos",
+        description: "Duração, peso, idade e intensidade são obrigatórios.",
         variant: "destructive",
       });
       return;
@@ -139,6 +159,62 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
     setIsActivityDrawerOpen(false);
   };
 
+  const handleDurationDrawerOpenChange = (open: boolean) => {
+    if (open) {
+      setPendingDuration(formData.durationMinutes || DURATION_OPTIONS[0]);
+    }
+    setIsDurationDrawerOpen(open);
+  };
+
+  const confirmDurationSelection = () => {
+    if (pendingDuration) {
+      setFormData((prev) => ({ ...prev, durationMinutes: pendingDuration }));
+    }
+    setIsDurationDrawerOpen(false);
+  };
+
+  const handleWeightDrawerOpenChange = (open: boolean) => {
+    if (open) {
+      setPendingWeight(formData.weight || WEIGHT_OPTIONS[0]);
+    }
+    setIsWeightDrawerOpen(open);
+  };
+
+  const confirmWeightSelection = () => {
+    if (pendingWeight) {
+      setFormData((prev) => ({ ...prev, weight: pendingWeight }));
+    }
+    setIsWeightDrawerOpen(false);
+  };
+
+  const handleAgeDrawerOpenChange = (open: boolean) => {
+    if (open) {
+      setPendingAge(formData.age || AGE_OPTIONS[0]);
+    }
+    setIsAgeDrawerOpen(open);
+  };
+
+  const confirmAgeSelection = () => {
+    if (pendingAge) {
+      setFormData((prev) => ({ ...prev, age: pendingAge }));
+    }
+    setIsAgeDrawerOpen(false);
+  };
+
+  const handleIntensityDrawerOpenChange = (open: boolean) => {
+    if (open) {
+      setPendingIntensity(formData.intensity || INTENSITY_OPTIONS[0]);
+    }
+    setIsIntensityDrawerOpen(open);
+  };
+
+  const confirmIntensitySelection = () => {
+    if (pendingIntensity) {
+      setFormData((prev) => ({ ...prev, intensity: pendingIntensity }));
+    }
+    setIsIntensityDrawerOpen(false);
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
       <CardHeader>
@@ -170,65 +246,75 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="duration" className="font-medium">Duração (minutos)</Label>
-              <Input
+              <Button
                 id="duration"
-                type="number"
-                placeholder="Ex: 30"
-                value={formData.durationMinutes}
-                onChange={(e) => setFormData({...formData, durationMinutes: e.target.value})}
-                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
-                required
-              />
+                type="button"
+                variant="outline"
+                onClick={() => handleDurationDrawerOpenChange(true)}
+                className="w-full justify-between hover:bg-accent/50 transition-colors duration-200 hover:shadow-md"
+                aria-haspopup="dialog"
+                aria-expanded={isDurationDrawerOpen}
+                aria-label="Selecionar duração"
+              >
+                <span className={formData.durationMinutes ? "text-foreground" : "text-muted-foreground"}>
+                  {formData.durationMinutes ? `${formData.durationMinutes} min` : "Selecionar duração"}
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="weight" className="font-medium">Peso (kg)</Label>
-              <Input
+              <Button
                 id="weight"
-                type="number"
-                step="0.1"
-                placeholder="Ex: 70.5"
-                value={formData.weight}
-                onChange={(e) => setFormData({...formData, weight: e.target.value})}
-                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
-                required
-              />
+                type="button"
+                variant="outline"
+                onClick={() => handleWeightDrawerOpenChange(true)}
+                className="w-full justify-between hover:bg-accent/50 transition-colors duration-200 hover:shadow-md"
+                aria-haspopup="dialog"
+                aria-expanded={isWeightDrawerOpen}
+                aria-label="Selecionar peso"
+              >
+                <span className={formData.weight ? "text-foreground" : "text-muted-foreground"}>
+                  {formData.weight ? `${formData.weight} kg` : "Selecionar peso"}
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="age" className="font-medium">Idade</Label>
-              <Input
+              <Button
                 id="age"
-                type="number"
-                placeholder="Ex: 25"
-                value={formData.age}
-                onChange={(e) => setFormData({...formData, age: e.target.value})}
-                className="hover:bg-accent/50 focus:bg-accent/30 transition-all duration-200 hover:shadow-md focus:shadow-md"
-                required
-              />
+                type="button"
+                variant="outline"
+                onClick={() => handleAgeDrawerOpenChange(true)}
+                className="w-full justify-between hover:bg-accent/50 transition-colors duration-200 hover:shadow-md"
+                aria-haspopup="dialog"
+                aria-expanded={isAgeDrawerOpen}
+                aria-label="Selecionar idade"
+              >
+                <span className={formData.age ? "text-foreground" : "text-muted-foreground"}>
+                  {formData.age ? `${formData.age} anos` : "Selecionar idade"}
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
           </div>
 
           <div className="space-y-4 p-4 rounded-lg bg-[#F9FAFB] border border-accent/50">
             <Label className="font-medium text-lg text-center block">Intensidade do Exercício</Label>
-            <RadioGroup 
-              value={formData.intensity} 
-              onValueChange={(value) => setFormData({...formData, intensity: value})}
-              className="flex flex-col space-y-3"
+            <Button
+              type="button"
+              onClick={() => handleIntensityDrawerOpenChange(true)}
+              className="w-full justify-between rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-md"
+              aria-haspopup="dialog"
+              aria-expanded={isIntensityDrawerOpen}
+              aria-label="Selecionar intensidade"
             >
-              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
-                <RadioGroupItem value="Leve" id="leve" />
-                <Label htmlFor="leve" className="cursor-pointer">Leve - Respiração normal, conversa fácil</Label>
-              </div>
-              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
-                <RadioGroupItem value="Moderada" id="moderada" />
-                <Label htmlFor="moderada" className="cursor-pointer">Moderada - Respiração acelerada, conversa possível</Label>
-              </div>
-              <div className="flex items-center space-x-3 p-3 rounded-md hover:bg-accent/50 transition-colors cursor-pointer">
-                <RadioGroupItem value="Intensa" id="intensa" />
-                <Label htmlFor="intensa" className="cursor-pointer">Intensa - Respiração difícil, conversa limitada</Label>
-              </div>
-            </RadioGroup>
+              <span>{formData.intensity || "Selecionar Intensidade"}</span>
+              <ChevronDown className="h-4 w-4" />
+            </Button>
           </div>
 
           <Button 
@@ -270,6 +356,150 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
                   Cancelar
                 </Button>
                 <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmActivitySelection}>
+                  Confirmar
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={isDurationDrawerOpen} onOpenChange={handleDurationDrawerOpenChange}>
+          <DrawerContent className="max-h-[78vh] w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+            <DrawerHeader className="border-b border-border/60">
+              <DrawerTitle className="text-foreground">Duração (minutos)</DrawerTitle>
+            </DrawerHeader>
+
+            <div className="px-4 pb-2">
+              <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+                <WheelPicker
+                  value={pendingDuration}
+                  onChange={setPendingDuration}
+                  options={DURATION_OPTIONS}
+                  visibleItems={5}
+                  itemHeight={44}
+                />
+              </div>
+            </div>
+
+            <DrawerFooter className="border-t border-border/60">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setIsDurationDrawerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmDurationSelection}>
+                  Confirmar
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={isWeightDrawerOpen} onOpenChange={handleWeightDrawerOpenChange}>
+          <DrawerContent className="max-h-[78vh] w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+            <DrawerHeader className="border-b border-border/60">
+              <DrawerTitle className="text-foreground">Peso (kg)</DrawerTitle>
+            </DrawerHeader>
+
+            <div className="px-4 pb-2">
+              <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+                <WheelPicker
+                  value={pendingWeight}
+                  onChange={setPendingWeight}
+                  options={WEIGHT_OPTIONS}
+                  visibleItems={5}
+                  itemHeight={44}
+                />
+              </div>
+            </div>
+
+            <DrawerFooter className="border-t border-border/60">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setIsWeightDrawerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmWeightSelection}>
+                  Confirmar
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={isAgeDrawerOpen} onOpenChange={handleAgeDrawerOpenChange}>
+          <DrawerContent className="max-h-[78vh] w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+            <DrawerHeader className="border-b border-border/60">
+              <DrawerTitle className="text-foreground">Idade</DrawerTitle>
+            </DrawerHeader>
+
+            <div className="px-4 pb-2">
+              <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+                <WheelPicker
+                  value={pendingAge}
+                  onChange={setPendingAge}
+                  options={AGE_OPTIONS}
+                  visibleItems={5}
+                  itemHeight={44}
+                />
+              </div>
+            </div>
+
+            <DrawerFooter className="border-t border-border/60">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setIsAgeDrawerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmAgeSelection}>
+                  Confirmar
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={isIntensityDrawerOpen} onOpenChange={handleIntensityDrawerOpenChange}>
+          <DrawerContent className="max-h-[78vh] w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+            <DrawerHeader className="border-b border-border/60">
+              <DrawerTitle className="text-foreground">Intensidade do Exercício</DrawerTitle>
+            </DrawerHeader>
+
+            <div className="px-4 pb-2">
+              <div className="rounded-xl border border-border/60 bg-background/70 p-2">
+                <WheelPicker
+                  value={pendingIntensity}
+                  onChange={setPendingIntensity}
+                  options={INTENSITY_OPTIONS}
+                  visibleItems={5}
+                  itemHeight={44}
+                />
+              </div>
+            </div>
+
+            <DrawerFooter className="border-t border-border/60">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setIsIntensityDrawerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="button" className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground" onClick={confirmIntensitySelection}>
                   Confirmar
                 </Button>
               </div>
