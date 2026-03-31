@@ -3,9 +3,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Dumbbell, Calculator } from "lucide-react";
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
+import { Calculator, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +24,8 @@ interface ExerciseFormProps {
 export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isActivityDrawerOpen, setIsActivityDrawerOpen] = useState(false);
+  const [pendingActivityType, setPendingActivityType] = useState("");
   const [formData, setFormData] = useState({
     activityType: '',
     weight: '',
@@ -34,6 +37,14 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!formData.activityType) {
+      toast({
+        title: "Selecione uma atividade",
+        description: "Escolha o tipo de atividade para continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
 
@@ -114,6 +125,20 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
     }
   };
 
+  const handleActivityDrawerOpenChange = (open: boolean) => {
+    if (open) {
+      setPendingActivityType(formData.activityType || ACTIVITY_TYPES[0]);
+    }
+    setIsActivityDrawerOpen(open);
+  };
+
+  const confirmActivitySelection = () => {
+    if (pendingActivityType) {
+      setFormData((prev) => ({ ...prev, activityType: pendingActivityType }));
+    }
+    setIsActivityDrawerOpen(false);
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto bg-[#FFD1E7] backdrop-blur-sm rounded-3xl shadow-xl border border-white/20">
       <CardHeader>
@@ -126,22 +151,21 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="activityType" className="font-medium">Tipo de Atividade</Label>
-              <Select 
-                value={formData.activityType} 
-                onValueChange={(value) => setFormData({...formData, activityType: value})}
-                required
+              <Button
+                id="activityType"
+                type="button"
+                variant="outline"
+                onClick={() => handleActivityDrawerOpenChange(true)}
+                className="w-full justify-between hover:bg-accent/50 transition-colors duration-200 hover:shadow-md"
+                aria-haspopup="dialog"
+                aria-expanded={isActivityDrawerOpen}
+                aria-label="Selecionar tipo de atividade"
               >
-                <SelectTrigger className="hover:bg-accent/50 transition-colors duration-200 hover:shadow-md">
-                  <SelectValue placeholder="Selecione a atividade" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ACTIVITY_TYPES.map((activity) => (
-                    <SelectItem key={activity} value={activity}>
-                      {activity}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <span className={formData.activityType ? "text-foreground" : "text-muted-foreground"}>
+                  {formData.activityType || "Selecione a atividade"}
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
 
             <div className="space-y-2">
@@ -216,6 +240,39 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
             {isLoading ? "Calculando..." : "Calcular e Registrar"}
           </Button>
         </form>
+
+        <Drawer open={isActivityDrawerOpen} onOpenChange={handleActivityDrawerOpenChange}>
+          <DrawerContent className="max-h-[78vh]">
+            <DrawerHeader>
+              <DrawerTitle>Tipo de Atividade</DrawerTitle>
+            </DrawerHeader>
+
+            <div className="px-4 pb-2">
+              <WheelPicker
+                value={pendingActivityType}
+                onChange={setPendingActivityType}
+                options={ACTIVITY_TYPES}
+                visibleItems={5}
+                itemHeight={44}
+              />
+            </div>
+
+            <DrawerFooter>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsActivityDrawerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="button" onClick={confirmActivitySelection}>
+                  Confirmar
+                </Button>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </CardContent>
     </Card>
   );
