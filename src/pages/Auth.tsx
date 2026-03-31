@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Crown, CheckCircle2, Apple } from 'lucide-react';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id000000000'; // placeholder
+const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id6761124021';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
