@@ -685,6 +685,8 @@ const FoodScan = () => {
                     isAnalyzing={isAnalyzing || isBarcodeAnalyzing}
                   />
                 </div>
+
+                {!selectedImage && !imageDescription && <RecentScans />}
                 
                 {(selectedImage || imageDescription) && (
                   <div data-description-section className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
