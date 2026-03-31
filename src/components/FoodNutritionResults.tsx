@@ -22,6 +22,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>([]);
+  const [mealType, setMealType] = useState<string>('almoco');
   const [isSaving, setIsSaving] = useState(false);
 
   const hasMultipleElements = data.elements && data.elements.length > 1;
