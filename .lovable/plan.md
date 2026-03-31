@@ -1,35 +1,29 @@
 
-Objetivo: testar o Wheel Picker no campo **“Tipo de Atividade”** do card **Registrar Exercício** em `/fit-tracker`, abrindo em **painel inferior** (Drawer).
+Objetivo: alinhar o Drawer do campo “Tipo de Atividade” (em `/fit-tracker`) ao mesmo padrão visual dos modais do app.
 
-1) Mapear integração no formulário
-- Alterar `src/components/ExerciseForm.tsx` no bloco de `activityType`.
-- Substituir o `Select` atual por um campo acionador (botão/input read-only) que mostra o valor selecionado e abre o painel.
+Plano de implementação
+1) Ajustar apenas o Drawer desse fluxo (sem alterar o componente global):
+- Arquivo: `src/components/ExerciseForm.tsx`
+- No `DrawerContent` do seletor de atividade, aplicar classes do padrão de modal:
+  - `bg-white/70`
+  - `backdrop-blur-md`
+  - `border-2 border-primary`
+  - `shadow-xl`
+  - `rounded-t-2xl` (mantendo comportamento de sheet inferior)
 
-2) Reutilizar componentes existentes
-- Usar `Drawer` de `src/components/ui/drawer.tsx`.
-- Usar `WheelPicker` de `src/components/ui/wheel-picker.tsx` com `ACTIVITY_TYPES` como opções.
-- Manter `formData.activityType` como fonte única de verdade para o submit atual.
+2) Harmonizar elementos internos com o padrão existente:
+- Garantir que header/título/botões mantenham contraste e legibilidade sobre fundo translúcido.
+- Ajustar (se necessário) o fundo do WheelPicker/container interno para combinar com o visual glassmorphism sem perder leitura.
 
-3) Fluxo de seleção no painel inferior
-- Ao abrir: iniciar Wheel com valor atual (ou primeiro item se vazio).
-- Dentro do Drawer: título “Tipo de Atividade”, Wheel central, ações **Cancelar** e **Confirmar**.
-- `Cancelar`: fecha sem alterar `formData.activityType`.
-- `Confirmar`: aplica valor escolhido em `formData.activityType` e fecha.
+3) Preservar comportamento atual:
+- Não mudar lógica de abertura/fechamento.
+- Manter fluxo `Cancelar`/`Confirmar` e atualização de `activityType` exatamente como está.
 
-4) Ajustes de UX mobile (390x640)
-- Definir altura confortável do painel (sem cobrir tudo).
-- Garantir área de toque adequada e rolagem suave no Wheel.
-- Preservar visual do app (glass/pink style já usado no projeto).
-
-5) Compatibilidade e validação funcional
-- Continuar exigindo `activityType` como obrigatório no envio.
-- Garantir que `handleSubmit` continue enviando `activityType` corretamente para a Edge Function e para `exercise_records`.
-- Validar fluxo: abrir card Registrar → tocar Tipo de Atividade → selecionar no Wheel → confirmar → enviar formulário com sucesso.
+4) Validação visual e funcional no viewport atual (390x640):
+- Abrir “Tipo de Atividade” e confirmar que o Drawer segue o mesmo estilo dos modais.
+- Verificar se não há overflow, clipping, ou perda de contraste no texto/controles.
+- Confirmar que seleção + submit continuam funcionando normalmente.
 
 Detalhes técnicos
-- Arquivo principal: `src/components/ExerciseForm.tsx`.
-- Componentes reutilizados: `Drawer`, `WheelPicker`, `Button`, `Label`.
-- Estado recomendado:
-  - `isActivityDrawerOpen` (boolean)
-  - `pendingActivityType` (string temporária do Wheel)
-- Sem necessidade de backend/migration; mudança apenas de UI/estado local.
+- Escopo intencionalmente local (`ExerciseForm`) para evitar regressão em outros Drawers da aplicação.
+- Se o resultado ficar muito diferente do `Dialog`, posso fazer um segundo ajuste fino de opacidade/borda para ficar idêntico ao padrão salvo de modais.
