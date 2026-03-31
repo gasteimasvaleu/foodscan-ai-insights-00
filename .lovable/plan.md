@@ -1,39 +1,43 @@
 
-Objetivo: conceder status de admin ao usuário `admin@wediet.app` adicionando registro em `public.user_roles`.
-
-Contexto validado:
-- Usuário existe em `auth.users` com `id = 9051a4db-edf7-45db-97f0-72f2021ee4b6`.
-- Atualmente não há registro desse usuário em `public.user_roles`.
+Objetivo: testar agora a automação `whatsapp-send-reminders` para o usuário `38e9fc76-aced-4ef1-bb0a-bda4d606f8ec` e confirmar se a mensagem chegou no WhatsApp.
 
 Plano de execução:
-1. Inserir papel `admin` em `public.user_roles` para esse `user_id`.
-2. Evitar duplicidade com verificação prévia (ou `ON CONFLICT DO NOTHING` se houver constraint adequada).
-3. Validar resultado consultando `user_roles` + `has_role(...)`.
-4. Confirmar no app acessando `/admin` com esse usuário.
 
-SQL a executar no Supabase SQL Editor:
-```sql
--- 1) conferir antes
-select id, email
-from auth.users
-where email = 'admin@wediet.app';
+1) Validar pré-condições do lembrete
+- Consultar `reminders` desse usuário e confirmar:
+  - `is_active = true`
+  - `reminder_date = hoje (BRT)`
+  - `reminder_time` dentro da janela de ±5 minutos do horário atual (BRT)
+  - `last_whatsapp_sent_at` não enviado hoje
 
-select *
-from public.user_roles
-where user_id = '9051a4db-edf7-45db-97f0-72f2021ee4b6';
+2) Validar pré-condições de envio WhatsApp
+- Consultar `whatsapp_subscriptions` do usuário e confirmar:
+  - `verified = true`
+  - telefone preenchido/normalizado
+  - `preferences.reminders != false`
 
--- 2) inserir role admin
-insert into public.user_roles (user_id, role)
-values ('9051a4db-edf7-45db-97f0-72f2021ee4b6', 'admin');
+3) Disparar a automação manualmente
+- Invocar a edge function `whatsapp-send-reminders` (trigger manual do job) para executar o mesmo fluxo do agendamento.
 
--- 3) validar
-select user_id, role, created_at
-from public.user_roles
-where user_id = '9051a4db-edf7-45db-97f0-72f2021ee4b6';
+4) Confirmar resultado técnico
+- Ler logs da `whatsapp-send-reminders` para verificar:
+  - lembrete encontrado
+  - tentativa de envio para Z-API
+  - resposta de sucesso/erro do provedor
+- Conferir inserção em `whatsapp_messages` com:
+  - `user_id = 38e9fc76-aced-4ef1-bb0a-bda4d606f8ec`
+  - `direction = outbound`
+  - `message_type = reminder`
+  - `status = sent` (ou erro)
 
-select public.has_role('9051a4db-edf7-45db-97f0-72f2021ee4b6', 'admin');
-```
+5) Se não enviar, aplicar correção mínima e retestar
+- Causas mais prováveis:
+  - lembrete fora da janela de horário
+  - `reminder_date` diferente de hoje em BRT
+  - preferência de lembrete desativada
+  - assinatura WhatsApp não verificada
+  - erro retornado pela Z-API
+- Ajustar somente o necessário (ex.: horário/data do lembrete para cair na janela), rodar novamente e revalidar logs + `whatsapp_messages`.
 
-Detalhes técnicos:
-- O `AdminDashboard` já valida admin por `supabase.rpc('has_role', { _user_id, _role: 'admin' })`.
-- Após inserir em `user_roles`, o acesso administrativo passa a funcionar sem alteração de código.
+Critério de sucesso:
+- Existe registro outbound em `whatsapp_messages` para esse usuário com status de envio, e os logs da função mostram envio concluído sem erro.
