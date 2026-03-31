@@ -1,20 +1,15 @@
 
 
-## Atualizar link da App Store na página /auth
+## Esconder Navbar e TubelightNavbar na página /auth
 
-### Alteração
+### Problema
+Após o cadastro VIP na `/auth`, o usuário é auto-logado (`signInWithPassword`). Isso faz `user` ficar truthy, e tanto a `Navbar` quanto a `TubelightNavbar` aparecem — mas essa página deveria ser limpa, sem navegação.
 
-**Arquivo:** `src/pages/Auth.tsx` (linha 13)
+### Alterações
 
-De:
-```
-const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id000000000'; // placeholder
-```
+**1. `src/App.tsx` — AuthAwareNavbar**
+Adicionar `useLocation()` e retornar `null` quando `pathname === '/auth'`.
 
-Para:
-```
-const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id6761124021';
-```
-
-Isso faz o botão "Baixar na App Store" no card pós-cadastro VIP apontar para o app real.
+**2. `src/pages/Auth.tsx`**
+Remover o `<Navbar />` do render (linha 74). A página /auth não deve exibir navbar em nenhum cenário.
 
