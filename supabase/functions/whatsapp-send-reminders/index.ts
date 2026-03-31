@@ -50,7 +50,7 @@ serve(async (req: Request) => {
         last_whatsapp_sent_at
       `)
       .eq("is_active", true)
-      .eq("reminder_date", now.toISOString().split("T")[0])
+      .eq("reminder_date", brNow.toISOString().split("T")[0])
       .gte("reminder_time", _subtractMinutes(currentTime, 5))
       .lte("reminder_time", _addMinutes(currentTime, 5));
 
