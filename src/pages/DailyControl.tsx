@@ -8,6 +8,7 @@ import { GoalsForm } from '@/components/GoalsForm';
 import { DietAnalysis } from '@/components/DietAnalysis';
 import { AuthCard } from '@/components/AuthCard';
 import { WeeklySummary, saveWeeklySummary } from '@/components/WeeklySummary';
+import { calculateHydrationNutritionTotals } from '@/data/hydrationCatalog';
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -51,6 +52,7 @@ const DailyControl = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hydrationTotals, setHydrationTotals] = useState({ calories: 0, carbohydrates: 0 });
   const analysisRef = useRef<HTMLDivElement>(null);
   const goalsFormRef = useRef<HTMLDivElement>(null);
   const webhookUrl = 'https://hook.us2.make.com/vjfnqzqryuq9hyay7698pztkyt06chj7';
@@ -82,18 +84,25 @@ const DailyControl = () => {
         setGoals(goalsData);
       }
 
-      // Carregar refeições do dia
+      // Carregar refeições e hidratação do dia
       const today = new Date().toISOString().split('T')[0];
-      const {
-        data: mealsData,
-        error: mealsError
-      } = await supabase.from('meal_records').select('*').eq('user_id', user.id).gte('created_at', `${today}T00:00:00.000Z`).lt('created_at', `${today}T23:59:59.999Z`).order('created_at', {
-        ascending: false
-      });
+      const [{ data: mealsData, error: mealsError }, { data: hydrationData, error: hydrationError }] = await Promise.all([
+        supabase.from('meal_records').select('*').eq('user_id', user.id).gte('created_at', `${today}T00:00:00.000Z`).lt('created_at', `${today}T23:59:59.999Z`).order('created_at', {
+          ascending: false
+        }),
+        supabase.from('hydration_records').select('beverage_key, volume_ml, calories').eq('user_id', user.id).eq('consumption_date', today)
+      ]);
+
       if (mealsError) {
         console.error('Erro ao carregar refeições:', mealsError);
       } else {
         setMeals(mealsData || []);
+      }
+
+      if (hydrationError) {
+        console.error('Erro ao carregar hidratação:', hydrationError);
+      } else {
+        setHydrationTotals(calculateHydrationNutritionTotals(hydrationData || []));
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -172,6 +181,12 @@ const DailyControl = () => {
       proteins: 0,
       fats: 0
     });
+    const combinedConsumed = {
+      calories: consumed.calories + hydrationTotals.calories,
+      carbohydrates: consumed.carbohydrates + hydrationTotals.carbohydrates,
+      proteins: consumed.proteins,
+      fats: consumed.fats
+    };
     const payload = {
       date: new Date().toISOString().split('T')[0],
       goals: {
@@ -182,10 +197,10 @@ const DailyControl = () => {
         diet_objective: goals.diet_objective
       },
       consumed: {
-        calories: Math.round(consumed.calories),
-        carbohydrates: Math.round(consumed.carbohydrates),
-        proteins: Math.round(consumed.proteins),
-        fats: Math.round(consumed.fats)
+        calories: Math.round(combinedConsumed.calories),
+        carbohydrates: Math.round(combinedConsumed.carbohydrates),
+        proteins: Math.round(combinedConsumed.proteins),
+        fats: Math.round(combinedConsumed.fats)
       },
       meals: meals.map(meal => ({
         food_name: meal.food_name,
@@ -198,10 +213,10 @@ const DailyControl = () => {
       })),
       summary: {
         total_meals: meals.length,
-        calorie_difference: consumed.calories - goals.calories,
-        carb_difference: consumed.carbohydrates - goals.carbohydrates,
-        protein_difference: consumed.proteins - goals.proteins,
-        fat_difference: consumed.fats - goals.fats
+        calorie_difference: combinedConsumed.calories - goals.calories,
+        carb_difference: combinedConsumed.carbohydrates - goals.carbohydrates,
+        protein_difference: combinedConsumed.proteins - goals.proteins,
+        fat_difference: combinedConsumed.fats - goals.fats
       }
     };
     try {
@@ -225,7 +240,7 @@ const DailyControl = () => {
 
         // Salvar dados do resumo semanal
         if (user) {
-          await saveWeeklySummary(user.id, consumed);
+          await saveWeeklySummary(user.id, combinedConsumed);
           setWeeklyDataUpdateKey(prev => prev + 1); // Força atualização do componente semanal
         }
 
@@ -342,7 +357,7 @@ const DailyControl = () => {
             </div>
 
             {goals ? (
-              <DailyGoals goals={goals} meals={meals} onEditGoals={handleEditGoals} />
+              <DailyGoals goals={goals} meals={meals} hydrationTotals={hydrationTotals} onEditGoals={handleEditGoals} />
             ) : (
               <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">

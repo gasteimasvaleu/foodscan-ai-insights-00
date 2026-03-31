@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { calculateHydrationNutritionTotals } from '@/data/hydrationCatalog';
 
 interface DayMeal {
   id: string;
@@ -134,47 +135,64 @@ export const WeeklySummary: React.FC<WeeklySummaryProps> = ({ className }) => {
     if (!user) return;
 
     try {
-      // Calcular dados dos últimos 7 dias a partir das refeições registradas
+      // Calcular dados dos últimos 7 dias (refeições + hidratação)
       const weekDates = getCurrentWeekDates(new Date());
       const weekData: WeeklySummaryData[] = [];
+      const firstDate = weekDates[0];
+      const lastDate = weekDates[weekDates.length - 1];
+
+      const [{ data: mealRecords, error: mealsError }, { data: hydrationRecords, error: hydrationError }] = await Promise.all([
+        supabase
+          .from('meal_records')
+          .select('meal_time, calories, carbohydrates, proteins, fats')
+          .eq('user_id', user.id)
+          .gte('meal_time', `${firstDate}T00:00:00.000Z`)
+          .lt('meal_time', `${lastDate}T23:59:59.999Z`),
+        supabase
+          .from('hydration_records')
+          .select('consumption_date, beverage_key, volume_ml, calories')
+          .eq('user_id', user.id)
+          .gte('consumption_date', firstDate)
+          .lte('consumption_date', lastDate),
+      ]);
+
+      if (mealsError) {
+        console.error('Erro ao buscar refeições:', mealsError);
+      }
+
+      if (hydrationError) {
+        console.error('Erro ao buscar hidratação:', hydrationError);
+      }
 
       for (const date of weekDates) {
-        // Buscar todas as refeições do dia
-        const { data: mealRecords, error } = await supabase
-          .from('meal_records')
-          .select('calories, carbohydrates, proteins, fats')
-          .eq('user_id', user.id)
-          .gte('meal_time', `${date}T00:00:00.000Z`)
-          .lt('meal_time', `${date}T23:59:59.999Z`);
+        const dayMeals = (mealRecords || []).filter((meal) => {
+          const mealDate = new Date(meal.meal_time).toISOString().split('T')[0];
+          return mealDate === date;
+        });
+        const dayHydration = (hydrationRecords || []).filter((record) => record.consumption_date === date);
 
-        if (error) {
-          console.error('Erro ao buscar refeições:', error);
-          continue;
-        }
+        const mealTotals = dayMeals.reduce(
+          (acc, meal) => ({
+            calories: acc.calories + (meal.calories || 0),
+            carbohydrates: acc.carbohydrates + (meal.carbohydrates || 0),
+            proteins: acc.proteins + (meal.proteins || 0),
+            fats: acc.fats + (meal.fats || 0),
+          }),
+          { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
+        );
 
-        if (mealRecords && mealRecords.length > 0) {
-          // Calcular totais do dia
-          const dayTotals = mealRecords.reduce(
-            (acc, meal) => ({
-              calories: acc.calories + (meal.calories || 0),
-              carbohydrates: acc.carbohydrates + (meal.carbohydrates || 0),
-              proteins: acc.proteins + (meal.proteins || 0),
-              fats: acc.fats + (meal.fats || 0)
-            }),
-            { calories: 0, carbohydrates: 0, proteins: 0, fats: 0 }
-          );
+        const hydrationTotals = calculateHydrationNutritionTotals(dayHydration || []);
 
-          // Salvar/atualizar automaticamente no Supabase
-          const dailyData = {
-            user_id: user.id,
-            date,
-            calories: dayTotals.calories,
-            carbohydrates: dayTotals.carbohydrates,
-            proteins: dayTotals.proteins,
-            fats: dayTotals.fats
-          };
+        const dailyData = {
+          user_id: user.id,
+          date,
+          calories: mealTotals.calories + hydrationTotals.calories,
+          carbohydrates: mealTotals.carbohydrates + hydrationTotals.carbohydrates,
+          proteins: mealTotals.proteins,
+          fats: mealTotals.fats,
+        };
 
-          // Salvar no weekly_summaries para persistência
+        if (dailyData.calories > 0 || dailyData.carbohydrates > 0 || dailyData.proteins > 0 || dailyData.fats > 0) {
           await supabase
             .from('weekly_summaries')
             .upsert(dailyData, { onConflict: 'user_id,date' });
