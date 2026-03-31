@@ -1,24 +1,35 @@
 
-Objetivo: ocultar a barra de rolagem do Wheel Picker sem perder o gesto de arrastar com o dedo.
+Objetivo: testar o Wheel Picker no campo **“Tipo de Atividade”** do card **Registrar Exercício** em `/fit-tracker`, abrindo em **painel inferior** (Drawer).
 
-1) Ajuste no componente
-- Atualizar `src/components/ui/wheel-picker.tsx` para remover dependência de `scrollbar-none` e aplicar uma classe dedicada (ex.: `wheel-picker-scroll`) no container rolável.
-- Manter `overflow-y-auto`, `touch-pan-y`, `scrollSnapType` e lógica atual de snap/teclado exatamente como estão.
+1) Mapear integração no formulário
+- Alterar `src/components/ExerciseForm.tsx` no bloco de `activityType`.
+- Substituir o `Select` atual por um campo acionador (botão/input read-only) que mostra o valor selecionado e abre o painel.
 
-2) CSS cross-browser (escopo local)
-- Em `src/index.css`, criar utilitário específico para esse picker:
-  - `scrollbar-width: none;` (Firefox)
-  - `-ms-overflow-style: none;` (legacy Edge/IE)
-  - `::-webkit-scrollbar { width: 0; height: 0; display: none; }` (WebKit/Chrome/Safari)
-- Escopo só para a classe do Wheel Picker, para não impactar outras áreas que precisam de scrollbar visível.
+2) Reutilizar componentes existentes
+- Usar `Drawer` de `src/components/ui/drawer.tsx`.
+- Usar `WheelPicker` de `src/components/ui/wheel-picker.tsx` com `ACTIVITY_TYPES` como opções.
+- Manter `formData.activityType` como fonte única de verdade para o submit atual.
 
-3) Compatibilidade com seu padrão atual
-- Preservar a regra global existente de esconder scroll apenas em `display-mode: standalone`.
-- O novo utilitário garante que, no wheel, a barra também fique escondida no preview/web normal (como você pediu), mas com rolagem por toque funcionando.
+3) Fluxo de seleção no painel inferior
+- Ao abrir: iniciar Wheel com valor atual (ou primeiro item se vazio).
+- Dentro do Drawer: título “Tipo de Atividade”, Wheel central, ações **Cancelar** e **Confirmar**.
+- `Cancelar`: fecha sem alterar `formData.activityType`.
+- `Confirmar`: aplica valor escolhido em `formData.activityType` e fecha.
 
-4) Validação
-- Testar no fluxo `/profile/workout`:
-  - abrir modal de adicionar exercício,
-  - rolar “Séries” e “Repetições” com o dedo,
-  - confirmar ausência visual da barra e snap no item central.
-- Validar também navegação por teclado (setas/Home/End) para não regredir acessibilidade.
+4) Ajustes de UX mobile (390x640)
+- Definir altura confortável do painel (sem cobrir tudo).
+- Garantir área de toque adequada e rolagem suave no Wheel.
+- Preservar visual do app (glass/pink style já usado no projeto).
+
+5) Compatibilidade e validação funcional
+- Continuar exigindo `activityType` como obrigatório no envio.
+- Garantir que `handleSubmit` continue enviando `activityType` corretamente para a Edge Function e para `exercise_records`.
+- Validar fluxo: abrir card Registrar → tocar Tipo de Atividade → selecionar no Wheel → confirmar → enviar formulário com sucesso.
+
+Detalhes técnicos
+- Arquivo principal: `src/components/ExerciseForm.tsx`.
+- Componentes reutilizados: `Drawer`, `WheelPicker`, `Button`, `Label`.
+- Estado recomendado:
+  - `isActivityDrawerOpen` (boolean)
+  - `pendingActivityType` (string temporária do Wheel)
+- Sem necessidade de backend/migration; mudança apenas de UI/estado local.
