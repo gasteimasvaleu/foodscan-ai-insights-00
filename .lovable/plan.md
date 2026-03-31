@@ -1,54 +1,39 @@
 
 Objetivo
-- Incluir calorias das bebidas em todos os cards pedidos.
-- Como você confirmou “Carboidratos: Considerar sempre”, incluir também carboidratos estimados das bebidas em todos os resumos de carboidrato.
+- Adicionar a opção de remover uma bebida diretamente no card **“Bebidas consumidas hoje”** na página `/hidratacao`.
 
-Decisão funcional (carboidratos)
-- Não deixar carboidratos “de fora”.
-- Adotar cálculo por estimativa nutricional por bebida (g/100ml) no catálogo, igual já feito com kcal/100ml.
-- Calcular carboidrato da bebida por registro: `carbs = (volume_ml / 100) * carbsPer100ml`.
-- Exibir somente totais combinados (refeições + bebidas), sem destacar origem.
+Escopo
+- Alterar apenas `src/pages/Hydration.tsx`.
+- Sem mudanças de banco/migração (já existe RLS para DELETE em `hydration_records` por `user_id`).
 
-Arquivos e mudanças
+Plano de implementação
 
-1) `src/data/hydrationCatalog.ts`
-- Adicionar campo `defaultCarbohydratesPer100ml` no tipo `HydrationBeverage`.
-- Preencher estimativas para todas as bebidas (inclusive já existentes).
-- Manter fórmula de hidratação e calorias atuais intactas.
+1) Criar ação de exclusão por item
+- Implementar uma função `handleDeleteRecord(recordId: string)` em `Hydration.tsx`.
+- Fluxo da função:
+  - Validar `user`.
+  - Executar `supabase.from("hydration_records").delete().eq("id", recordId).eq("user_id", user.id)`.
+  - Exibir toast de sucesso/erro.
+  - Recarregar dados com `loadHydrationData()` após sucesso.
 
-2) `src/pages/DailyControl.tsx`
-- Buscar também `hydration_records` do dia atual junto com `meal_records`.
-- Calcular `beveragesTotals` (calorias + carboidratos) a partir de `beverage_key`, `volume_ml` e catálogo.
-- Combinar totais de refeições + bebidas para:
-  - Card “Metas Diárias” (via props para `DailyGoals`).
-  - Payload de “Encerrar Dia” (`consumed.calories` e `consumed.carbohydrates`).
-  - `saveWeeklySummary` (salvar total combinado do dia).
+2) Adicionar botão de remover em cada bebida do card
+- No map de `todayRecords`, substituir o bloco da direita (horário) por um container com:
+  - horário (mantido);
+  - botão de remover (ícone de lixeira ou “Remover”) com estilo discreto (`ghost`/`destructive` conforme padrão visual atual).
+- Garantir que o botão fique acessível em mobile (390x640), sem quebrar truncamento do nome/infos.
 
-3) `src/components/DailyGoals.tsx`
-- Ajustar props para receber totais extras de bebidas (ou total já combinado).
-- Somar calorias e carboidratos de bebidas no cálculo exibido dos progressos.
-- Proteínas e gorduras de bebidas permanecem 0 quando não houver dado.
+3) Melhorar UX durante exclusão
+- Adicionar estado local para evitar cliques repetidos (ex.: `deletingRecordId`).
+- Desabilitar o botão do item enquanto remove e, opcionalmente, mostrar micro feedback (“Removendo…”).
 
-4) `src/components/WeeklySummary.tsx`
-- Refatorar agregação semanal para usar refeições + hidratação no mesmo intervalo.
-- Atualizar:
-  - Card do dia selecionado (kcal e carboidratos combinados).
-  - Card “Médias da Semana” (kcal/dia e carb/dia combinados).
-- Manter listagem detalhada de refeições como está (sem criar seção extra de bebidas), já que você pediu só computar no total.
+4) Manter comportamento consistente de totais
+- Como os cards da tela usam `records` carregados de `hydration_records`, ao deletar e recarregar:
+  - lista “Bebidas consumidas hoje” atualiza;
+  - progresso de hidratação e gráfico semanal refletem a remoção automaticamente.
 
-5) `src/pages/ChartsProgress.tsx`
-- `loadCalorieBalance`: somar calorias de `hydration_records` ao lado “consumed” do gráfico.
-- Card “Calorias” em “Estatísticas Gerais”:
-  - trocar para total consumido (refeições + bebidas), para refletir exatamente o pedido.
-  - manter demais cards (Refeições, Exercícios, Dias Ativos) sem regressão.
-
-Critérios de validação (mobile 390x640)
-- `/controle-diario`:
-  - Card “Metas Diárias” aumenta kcal/carb ao registrar bebida.
-  - “Encerrar Dia” grava resumo semanal com total combinado.
-- `/graficos-progresso`:
-  - Card “Calorias” inclui bebidas.
-  - Gráfico “Balanço Calórico” mostra “Consumidas” com refeições + bebidas.
-- “Resumo Semanal”:
-  - Card do dia e “Médias da Semana” incluem bebidas em kcal e carboidratos.
-- Sem alterar layout aprovado dos modais/hidratação.
+Validação
+- Em `/hidratacao`:
+  - Registrar bebida;
+  - Remover no card “Bebidas consumidas hoje”;
+  - Confirmar atualização imediata da lista, progresso e totais;
+  - Testar em viewport 390x640 para garantir layout sem overflow.
