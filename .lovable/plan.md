@@ -1,14 +1,39 @@
 
-Sim — para o projeto funcionar, **não há necessidade** desses arquivos `.p8` no repositório.
+Objetivo: conceder status de admin ao usuário `admin@wediet.app` adicionando registro em `public.user_roles`.
 
-Eles são credenciais privadas da Apple e devem ficar apenas no ambiente seguro (Apple/Appflow/Secrets), não versionados no Git.
+Contexto validado:
+- Usuário existe em `auth.users` com `id = 9051a4db-edf7-45db-97f0-72f2021ee4b6`.
+- Atualmente não há registro desse usuário em `public.user_roles`.
 
-Plano curto e seguro:
-1. Remover do repositório:
-   - `AuthKey_662LGDFC77.p8`
-   - `AuthKey_RQYNV768ZD.p8`
-2. Bloquear recorrência no `.gitignore` com `*.p8`.
-3. Limpar histórico do Git para apagar essas chaves antigas dos commits.
-4. Validar login Apple após a limpeza (o fluxo nativo continua, pois não depende de arquivo `.p8` local no app).
+Plano de execução:
+1. Inserir papel `admin` em `public.user_roles` para esse `user_id`.
+2. Evitar duplicidade com verificação prévia (ou `ON CONFLICT DO NOTHING` se houver constraint adequada).
+3. Validar resultado consultando `user_roles` + `has_role(...)`.
+4. Confirmar no app acessando `/admin` com esse usuário.
 
-Resumo objetivo: manter `.p8` no repo só aumenta risco de segurança e **não é necessário** para runtime do app.
+SQL a executar no Supabase SQL Editor:
+```sql
+-- 1) conferir antes
+select id, email
+from auth.users
+where email = 'admin@wediet.app';
+
+select *
+from public.user_roles
+where user_id = '9051a4db-edf7-45db-97f0-72f2021ee4b6';
+
+-- 2) inserir role admin
+insert into public.user_roles (user_id, role)
+values ('9051a4db-edf7-45db-97f0-72f2021ee4b6', 'admin');
+
+-- 3) validar
+select user_id, role, created_at
+from public.user_roles
+where user_id = '9051a4db-edf7-45db-97f0-72f2021ee4b6';
+
+select public.has_role('9051a4db-edf7-45db-97f0-72f2021ee4b6', 'admin');
+```
+
+Detalhes técnicos:
+- O `AdminDashboard` já valida admin por `supabase.rpc('has_role', { _user_id, _role: 'admin' })`.
+- Após inserir em `user_roles`, o acesso administrativo passa a funcionar sem alteração de código.
