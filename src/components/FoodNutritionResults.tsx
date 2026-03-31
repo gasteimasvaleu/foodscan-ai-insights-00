@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { NutritionData, ElementPortion } from '@/types/nutrition';
+import { MealTypeSelector } from './MealTypeSelector';
 
 interface FoodNutritionResultsProps {
   data: NutritionData;
@@ -21,6 +22,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
   const [elementPortions, setElementPortions] = useState<ElementPortion[]>([]);
+  const [mealType, setMealType] = useState<string>('almoco');
   const [isSaving, setIsSaving] = useState(false);
 
   const hasMultipleElements = data.elements && data.elements.length > 1;
@@ -121,6 +123,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
             ? elementPortions.map(ep => `${ep.elementName}: ${ep.portion}`).join(', ')
             : currentPortion || `${portionGrams}g`,
           meal_time: new Date().toISOString(),
+          meal_type: mealType,
           user_id: user.id,
         },
       ]).select().single();
@@ -222,6 +225,8 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
             serving_context: data.serving_context
           }}
         />
+
+      <MealTypeSelector value={mealType} onChange={setMealType} />
 
       <div className="flex flex-col sm:flex-row justify-center gap-4">
         <Button

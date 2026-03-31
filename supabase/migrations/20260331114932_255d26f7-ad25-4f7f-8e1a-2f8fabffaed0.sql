@@ -1,0 +1,1 @@
+ALTER TABLE public.meal_records ADD COLUMN meal_type text DEFAULT 'outro';

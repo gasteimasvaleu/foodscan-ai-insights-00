@@ -3,12 +3,15 @@ import { Clock, Utensils, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MealRecord } from '@/pages/DailyControl';
+import { MEAL_TYPE_MAP } from './MealTypeSelector';
 
 interface MealsListProps {
   meals: MealRecord[];
   onRefresh: () => void;
   onClearMeals: () => void;
 }
+
+const MEAL_TYPE_ORDER = ['cafe_da_manha', 'lanche', 'almoco', 'jantar', 'ceia', 'outro'];
 
 export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearMeals }) => {
   const formatTime = (dateString: string) => {
@@ -17,6 +20,16 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
       minute: '2-digit'
     });
   };
+
+  // Group meals by meal_type
+  const groupedMeals = meals.reduce<Record<string, MealRecord[]>>((acc, meal) => {
+    const type = meal.meal_type || 'outro';
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(meal);
+    return acc;
+  }, {});
+
+  const sortedTypes = MEAL_TYPE_ORDER.filter(type => groupedMeals[type]?.length > 0);
 
   return (
     <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20">
@@ -49,54 +62,57 @@ export const MealsList: React.FC<MealsListProps> = ({ meals, onRefresh, onClearM
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {meals.map((meal, index) => (
-            <div
-              key={meal.id || index}
-              className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors duration-200"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-lg font-semibold text-gray-800">
-                  {meal.food_name}
+        <div className="space-y-6">
+          {sortedTypes.map((type) => {
+            const info = MEAL_TYPE_MAP[type] || { emoji: '🍴', label: 'Outro' };
+            const typeMeals = groupedMeals[type];
+            return (
+              <div key={type}>
+                <h4 className="text-lg font-bold text-gray-700 mb-3">
+                  {info.emoji} {info.label}
                 </h4>
-                <Badge variant="secondary">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {formatTime(meal.meal_time)}
-                </Badge>
+                <div className="space-y-3">
+                  {typeMeals.map((meal, index) => (
+                    <div
+                      key={meal.id || index}
+                      className="bg-gray-50 rounded-2xl p-4 hover:bg-gray-100 transition-colors duration-200"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="text-base font-semibold text-gray-800">
+                          {meal.food_name}
+                        </h5>
+                        <Badge variant="secondary">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {formatTime(meal.meal_time)}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Porção: {meal.portion}
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-[#FD46A1]">{meal.calories}</div>
+                          <div className="text-xs text-gray-500">kcal</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-[#FD46A1]">{meal.carbohydrates}g</div>
+                          <div className="text-xs text-gray-500">Carboidratos</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-[#FD46A1]">{meal.proteins}g</div>
+                          <div className="text-xs text-gray-500">Proteínas</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-[#FD46A1]">{meal.fats}g</div>
+                          <div className="text-xs text-gray-500">Gorduras</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-                
-              <p className="text-sm text-gray-600 mb-4">
-                Porção: {meal.portion}
-              </p>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-[#FD46A1]">
-                    {meal.calories}
-                  </div>
-                  <div className="text-xs text-gray-500">kcal</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-[#FD46A1]">
-                    {meal.carbohydrates}g
-                  </div>
-                  <div className="text-xs text-gray-500">Carboidratos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-[#FD46A1]">
-                    {meal.proteins}g
-                  </div>
-                  <div className="text-xs text-gray-500">Proteínas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-[#FD46A1]">
-                    {meal.fats}g
-                  </div>
-                  <div className="text-xs text-gray-500">Gorduras</div>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

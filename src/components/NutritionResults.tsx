@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useHealthKit } from '@/hooks/useHealthKit';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { MealTypeSelector } from './MealTypeSelector';
 
 interface NutritionData {
   nome_alimento: string;
@@ -32,6 +33,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
   const { isConnected: hkConnected, saveMealCalories } = useHealthKit();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
+  const [mealType, setMealType] = useState<string>('almoco');
   const [isSaving, setIsSaving] = useState(false);
 
   const handlePortionChange = (portion: string, grams: number) => {
@@ -71,6 +73,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
           fats: fats,
           portion: currentPortion || `${portionGrams}g`,
           meal_time: new Date().toISOString(),
+          meal_type: mealType,
           user_id: user.id,
         },
       ]).select().single();
@@ -156,6 +159,8 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
           <div className="text-2xl font-bold text-yellow-600">{fats} g</div>
         </div>
       </div>
+
+      <MealTypeSelector value={mealType} onChange={setMealType} />
 
       <div className="flex justify-center">
         <Button
