@@ -67,7 +67,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-primary pb-28">
-      <Navbar />
 
       <div className="pt-32 pb-12 px-4">
         <div className="container mx-auto max-w-md">
