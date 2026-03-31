@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Droplets, Plus, Save, Target } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { AuthCard } from "@/components/AuthCard";
@@ -39,6 +37,8 @@ const formatDateOnly = (date: Date) => {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
+
+const WEEKDAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function Hydration() {
   const { user, loading: authLoading } = useAuth();
@@ -115,9 +115,12 @@ export default function Hydration() {
 
   const weeklyData = useMemo(() => {
     const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
     const days = Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() - (6 - index));
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + index);
       const key = formatDateOnly(date);
 
       const dayRecords = records.filter((record) => record.consumption_date === key);
@@ -126,7 +129,7 @@ export default function Hydration() {
 
       return {
         key,
-        label: format(date, "EEE", { locale: ptBR }).replace(".", ""),
+        label: WEEKDAY_LABELS[date.getDay()],
         calories,
         volume,
       };
@@ -306,8 +309,8 @@ export default function Hydration() {
                           style={{ height: `${Math.max(6, barHeight)}%` }}
                         />
                       </div>
-                      <p className="text-[11px] font-semibold uppercase">{day.label}</p>
-                      <p className="text-[11px] text-muted-foreground leading-none">{day.calories} kcal</p>
+                      <p className="text-[10px] leading-none font-semibold uppercase">{day.label}</p>
+                      <p className="text-[10px] leading-none text-muted-foreground">{day.calories} kcal</p>
                     </div>
                   );
                 })}
