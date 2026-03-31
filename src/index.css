@@ -154,10 +154,17 @@
 
   /* PWA standalone mode adjustments */
   @media all and (display-mode: standalone) {
+    /* Hide scrollbar for native app feel */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
     body {
       margin: 0;
       padding: 0;
       background-color: #F7FAFB;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   }
 
