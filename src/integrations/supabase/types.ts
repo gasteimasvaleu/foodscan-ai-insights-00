@@ -195,6 +195,48 @@ export type Database = {
         }
         Relationships: []
       }
+      hydration_records: {
+        Row: {
+          beverage_key: string
+          beverage_name: string
+          calories: number
+          consumed_at: string
+          consumption_date: string
+          created_at: string
+          hydration_factor: number
+          hydration_impact_ml: number
+          id: string
+          user_id: string
+          volume_ml: number
+        }
+        Insert: {
+          beverage_key: string
+          beverage_name: string
+          calories?: number
+          consumed_at?: string
+          consumption_date?: string
+          created_at?: string
+          hydration_factor: number
+          hydration_impact_ml: number
+          id?: string
+          user_id: string
+          volume_ml: number
+        }
+        Update: {
+          beverage_key?: string
+          beverage_name?: string
+          calories?: number
+          consumed_at?: string
+          consumption_date?: string
+          created_at?: string
+          hydration_factor?: number
+          hydration_impact_ml?: number
+          id?: string
+          user_id?: string
+          volume_ml?: number
+        }
+        Relationships: []
+      }
       meal_records: {
         Row: {
           calories: number
@@ -461,6 +503,7 @@ export type Database = {
           avatar_url: string | null
           basal_metabolic_rate: number | null
           created_at: string
+          hydration_goal_ml: number
           id: string
           name: string
           updated_at: string
@@ -469,6 +512,7 @@ export type Database = {
           avatar_url?: string | null
           basal_metabolic_rate?: number | null
           created_at?: string
+          hydration_goal_ml?: number
           id: string
           name: string
           updated_at?: string
@@ -477,6 +521,7 @@ export type Database = {
           avatar_url?: string | null
           basal_metabolic_rate?: number | null
           created_at?: string
+          hydration_goal_ml?: number
           id?: string
           name?: string
           updated_at?: string
