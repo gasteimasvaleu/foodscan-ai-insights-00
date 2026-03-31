@@ -1,14 +1,20 @@
 
 
-## Atualizar Build Number para 13
-
-O build number atual é **12** (Debug e Release). Vou incrementar para **13** nas duas configurações no arquivo `ios/App/App.xcodeproj/project.pbxproj`.
+## Atualizar link da App Store na página /auth
 
 ### Alteração
 
-**Arquivo:** `ios/App/App.xcodeproj/project.pbxproj`
-- Linha 375: `CURRENT_PROJECT_VERSION = 12` → `CURRENT_PROJECT_VERSION = 13` (Debug)
-- Linha 400: `CURRENT_PROJECT_VERSION = 12` → `CURRENT_PROJECT_VERSION = 13` (Release)
+**Arquivo:** `src/pages/Auth.tsx` (linha 13)
 
-Após a alteração, faça `git pull` e `npx cap sync ios` antes de arquivar no Xcode.
+De:
+```
+const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id000000000'; // placeholder
+```
+
+Para:
+```
+const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id6761124021';
+```
+
+Isso faz o botão "Baixar na App Store" no card pós-cadastro VIP apontar para o app real.
 
