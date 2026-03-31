@@ -277,6 +277,7 @@ const FoodScan = () => {
         description: food.detailed_description || food.description,
         detailed_description: food.detailed_description,
         category: food.category,
+        estimated_weight: food.estimated_weight ? parseNutritionValue(food.estimated_weight) : undefined,
         preparation_analysis: food.preparation_analysis ? {
           primary_method: food.preparation_analysis.primary_method || "",
           secondary_methods: food.preparation_analysis.secondary_methods || [],
