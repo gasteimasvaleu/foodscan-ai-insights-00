@@ -672,7 +672,7 @@ const FoodScan = () => {
                     </Badge>
                   </div>
                 )}
-                <FoodNutritionResults data={nutritionData} onReset={handleReset} />
+                <FoodNutritionResults data={nutritionData} onReset={handleReset} imageUrl={selectedImage || undefined} />
               </div>
             ) : (
               <div className="space-y-8">
