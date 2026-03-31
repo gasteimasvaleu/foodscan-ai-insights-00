@@ -317,6 +317,7 @@ const FoodScan = () => {
       
       return data.elementos.map((elemento: any) => ({
         name: elemento.nome || elemento.name || "Elemento",
+        estimated_weight: elemento.estimated_weight ? parseNutritionValue(elemento.estimated_weight) : undefined,
         nutrition: {
           calories: parseNutritionValue(elemento.calorias || elemento.calories || 0),
           carbohydrates: parseNutritionValue(elemento.carboidratos || elemento.carbohydrates || 0),
