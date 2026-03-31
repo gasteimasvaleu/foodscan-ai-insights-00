@@ -475,7 +475,7 @@ export default function AppleHealth() {
             </div>
 
             <Dialog open={!!selectedWorkout} onOpenChange={(open) => !open && setSelectedWorkout(null)}>
-              <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-border bg-background/95 shadow-xl backdrop-blur-md">
+              <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl border-2 border-primary bg-white/70 shadow-xl backdrop-blur-md">
                 {selectedWorkout && (
                   <>
                     <DialogHeader>
@@ -486,31 +486,31 @@ export default function AppleHealth() {
 
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Origem</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{selectedWorkout.sourceName}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Duração</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{formatDuration(selectedWorkout.value)}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Início</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{formatDateTime(selectedWorkout.startDate)}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Fim</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{formatDateTime(selectedWorkout.endDate)}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Tipo</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{selectedWorkout.workoutType || '—'}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Distância</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">{formatDistance(selectedWorkout)}</p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Calorias</p>
                           <p className="mt-1 text-sm font-semibold text-foreground">
                             {typeof selectedWorkout.calories === 'number'
@@ -518,32 +518,32 @@ export default function AppleHealth() {
                               : '—'}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Source ID</p>
                           <p className="mt-1 break-all text-sm font-semibold text-foreground">{selectedWorkout.sourceId || '—'}</p>
                         </div>
                       </div>
 
                       {selectedWorkout.notes && (
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Observações</p>
                           <p className="mt-1 text-sm text-foreground">{selectedWorkout.notes}</p>
                         </div>
                       )}
 
                       {selectedWorkout.metadata && (
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Metadata</p>
                           <pre className="mt-2 max-h-32 overflow-auto whitespace-pre-wrap break-words text-xs text-foreground">{JSON.stringify(selectedWorkout.metadata, null, 2)}</pre>
                         </div>
                       )}
 
                       {workoutDetails.length > 0 && (
-                        <div className="rounded-xl border border-border bg-muted/40 p-3">
+                        <div className="rounded-xl border border-primary/30 bg-background/75 p-3 shadow-sm">
                           <p className="text-xs text-muted-foreground">Campos retornados pelo plugin</p>
                           <div className="mt-2 space-y-2">
                             {workoutDetails.map((detail) => (
-                              <div key={detail.key} className="rounded-lg bg-background/70 px-3 py-2">
+                              <div key={detail.key} className="rounded-lg border border-primary/20 bg-background/90 px-3 py-2">
                                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{detail.key}</p>
                                 <p className="mt-1 break-words text-sm text-foreground">{detail.value}</p>
                               </div>
