@@ -123,6 +123,7 @@ export const FoodNutritionResults: React.FC<FoodNutritionResultsProps> = ({ data
             ? elementPortions.map(ep => `${ep.elementName}: ${ep.portion}`).join(', ')
             : currentPortion || `${portionGrams}g`,
           meal_time: new Date().toISOString(),
+          meal_type: mealType,
           user_id: user.id,
         },
       ]).select().single();
