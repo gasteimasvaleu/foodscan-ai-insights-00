@@ -68,20 +68,19 @@ export default function ChartsProgress() {
 
   const loadStats = async () => {
     try {
-      const [mealsResult, exercisesResult, summariesResult] = await Promise.all([
+      const [mealsCountResult, mealsCaloriesResult, hydrationCaloriesResult, exercisesResult, summariesResult] = await Promise.all([
         supabase.from("meal_records").select("*", { count: "exact", head: true }).eq("user_id", user?.id),
         supabase.from("meal_records").select("calories").eq("user_id", user?.id),
         supabase.from("hydration_records").select("calories").eq("user_id", user?.id),
         supabase.from("exercise_records").select("calories_burned").eq("user_id", user?.id),
         supabase.from("weekly_summaries").select("date", { count: "exact", head: true }).eq("user_id", user?.id),
       ]);
-      const mealsCaloriesResult = arguments[0];
-      const hydrationCaloriesResult = arguments[1];
+
       const mealsCalories = (mealsCaloriesResult?.data || []).reduce((sum: number, record: { calories: number }) => sum + Number(record.calories || 0), 0);
       const hydrationCalories = (hydrationCaloriesResult?.data || []).reduce((sum: number, record: { calories: number }) => sum + Number(record.calories || 0), 0);
 
       setStats({
-        totalMeals: mealsResult.count || 0,
+        totalMeals: mealsCountResult.count || 0,
         totalCaloriesConsumed: Math.round(mealsCalories + hydrationCalories),
         totalExercises: exercisesResult.data?.length || 0,
         activeDays: summariesResult.count || 0,
