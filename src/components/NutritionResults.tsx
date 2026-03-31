@@ -33,6 +33,7 @@ export const NutritionResults: React.FC<NutritionResultsProps> = ({ nutritionDat
   const { isConnected: hkConnected, saveMealCalories } = useHealthKit();
   const [currentPortion, setCurrentPortion] = useState<string>('');
   const [portionGrams, setPortionGrams] = useState<number>(100);
+  const [mealType, setMealType] = useState<string>('almoco');
   const [isSaving, setIsSaving] = useState(false);
 
   const handlePortionChange = (portion: string, grams: number) => {
