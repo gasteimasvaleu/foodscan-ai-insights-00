@@ -1,34 +1,57 @@
 
-Objetivo: corrigir a responsividade do modal de “Registrar bebida” no mobile (390x640) e alinhar 100% ao padrão visual dos demais modais do app.
+Objetivo
+- Completar a seção **“Escolha a bebida”** com as bebidas dos screenshots, mantendo o layout atual e adicionando **scroll interno** nessa área para suportar lista grande no mobile.
 
-1) Padronizar container do modal (arquivo `src/pages/Hydration.tsx`)
-- Atualizar `DialogContent` para o mesmo padrão usado em outras telas:
-  - `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`
-- Adicionar comportamento mobile seguro:
-  - `max-h-[85vh] overflow-y-auto` para evitar corte de conteúdo
-  - espaçamento interno consistente (`p-4 sm:p-6`) e `gap` adequado
+Escopo confirmado
+- Calorias: **Estimativa padrão** (kcal por 100 ml).
+- Conflitos de percentual com bebidas já existentes: **manter valores atuais do app**.
+- Alterar apenas o necessário em:
+  - `src/data/hydrationCatalog.ts`
+  - `src/pages/Hydration.tsx`
 
-2) Ajustar layout interno para não “espremer”
-- Seção “Escolha a bebida”:
-  - trocar lista horizontal apertada por layout responsivo com quebra (grid/flex-wrap), mantendo boa área de toque
-  - garantir labels sem estourar (truncate/line-clamp onde necessário)
-- Seção “Quantidade (ml)”:
-  - manter botões com quebra responsiva e largura mínima confortável
-  - preservar input numérico abaixo dos botões, com spacing consistente
-- Seção “Prévia” e botão “Salvar consumo”:
-  - manter legíveis em uma coluna única, sem overflow lateral
+Plano de implementação
 
-3) Evitar conflito com botão de fechar do Dialog
-- Reservar espaço no topo do conteúdo (`pr-8` no header/conteúdo superior) para o “X” não sobrepor título/textos.
+1) Expandir catálogo fixo de bebidas
+- Adicionar no `hydrationCatalog` as bebidas faltantes vistas nos screenshots (ex.: garrafa de água, chás específicos, cafés, leites e versões vegetais, isotônico, kombucha, vinhos e destilados, etc.).
+- Para cada nova bebida, preencher:
+  - `key` único e estável
+  - `name`
+  - `hydrationFactor` conforme screenshot (para novas bebidas)
+  - `defaultCaloriesPer100ml` por pesquisa nutricional média (estimativa padrão)
+  - `defaultVolumeOptions` coerente com tipo da bebida
+  - `icon`
+- Manter intactas as bebidas já existentes mesmo quando houver divergência no screenshot (regra aprovada).
 
-4) Consistência com padrões do app
-- Aplicar classes de glassmorphism já usadas em outros modais (`bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`).
-- Manter cantos e hierarquia visual iguais aos modais de `Profile`, `MyDiets`, `ChartsProgress`, etc.
+2) Pesquisa e padronização de calorias
+- Usar valores médios por 100 ml de referências nutricionais públicas e consistentes.
+- Aplicar arredondamento simples para manter previsibilidade no cálculo do app.
+- Em bebidas de alta variabilidade, usar valor médio conservador (sem bloquear inclusão da bebida).
 
-5) Validação funcional e visual (mobile-first)
-- Verificar no `/hidratacao` (390x640):
-  - modal abre centralizado, sem corte;
-  - conteúdo rola verticalmente quando necessário;
-  - botões/chips não ficam comprimidos;
-  - botão “Salvar consumo” sempre acessível;
-  - visual consistente com os outros modais do app.
+3) Scroll interno na seção “Escolha a bebida”
+- Manter o mesmo grid visual atual (2 colunas mobile / 3 no sm).
+- Envolver a grade em container com altura máxima e rolagem vertical:
+  - exemplo de estratégia: `max-h-[38vh] overflow-y-auto pr-1`.
+- Preservar aparência atual (chips/cards iguais), mudando apenas comportamento de overflow.
+
+4) Compatibilidade com o modal atual
+- Não alterar estrutura principal do dialog (estilo já aprovado).
+- Garantir que, com a lista longa, o restante do modal continue acessível:
+  - seleção de quantidade
+  - prévia
+  - botão salvar
+- Evitar “duplo problema de rolagem” ajustando limites para o scroll interno da lista + scroll geral do modal.
+
+5) Validação funcional (mobile-first 390x640)
+- Conferir no `/hidratacao`:
+  - novas bebidas aparecem em “Escolha a bebida”;
+  - lista rola suavemente dentro da seção;
+  - seleção da bebida atualiza opções de volume;
+  - cálculo de calorias/impacto na prévia segue funcionando;
+  - layout geral permanece igual ao que você aprovou.
+
+Detalhes técnicos
+- Fórmulas existentes serão preservadas:
+  - `hydration_impact_ml = volume_ml * (hydrationFactor / 100)`
+  - `calories = round((volume_ml / 100) * defaultCaloriesPer100ml)`
+- Nenhuma mudança de banco ou migração necessária.
+- Mudança 100% client-side e retrocompatível com registros já salvos.
