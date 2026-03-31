@@ -1,27 +1,57 @@
 
 
-## Confirmação: Zero impacto no app nativo
-
-### O que será feito
-
-Mover as regras CSS que escondem scrollbar (`::-webkit-scrollbar { display: none }`, `scrollbar-width: none`, `-ms-overflow-style: none`) para dentro do media query `@media all and (display-mode: standalone)` que **já existe** no arquivo `src/index.css`.
-
-### Por que NÃO afeta o app nativo
-
-1. **O app nativo (Capacitor/WebView) roda em `display-mode: standalone`** — então ele continuará entrando nesse media query e as scrollbars permanecerão escondidas no iOS.
-2. **Apenas o browser desktop/web** (que roda em `display-mode: browser`) passará a mostrar scrollbar — exatamente o que você precisa para editar no Lovable.
-3. **Nenhum arquivo Swift, Info.plist, entitlements ou nativo é tocado** — é apenas reorganização de CSS dentro do mesmo arquivo.
-4. **LiveUpdate entrega a mudança OTA** — o shell nativo nem precisa ser recompilado.
-
-### Arquivo editado
-
-- **`src/index.css`**: Mover 3 propriedades CSS de lugar (do escopo global para dentro do `@media (display-mode: standalone)` já existente)
+## Estimativa de peso na análise + inputs pré-preenchidos
 
 ### Resumo
 
-| Contexto | Scrollbar visível? | Muda algo? |
-|---|---|---|
-| App iOS nativo (Capacitor) | ❌ Escondida | **Não muda nada** |
-| PWA standalone | ❌ Escondida | **Não muda nada** |
-| Browser desktop/Lovable | ✅ Visível | **Corrigido** |
+Três camadas de mudança: prompts da edge function, tipo TypeScript, e dois componentes frontend.
+
+### 1. Edge function `analyze-nutrition` -- Prompt do Passo 1 (imagem)
+
+Adicionar ao prompt do GPT-4o a instrução para estimar peso em gramas de cada alimento. O formato da descrição passa a incluir `(~Xg)` ao lado de cada item:
+
+> "**Arroz Branco** (~150g): Grãos soltos e bem cozidos..."
+
+### 2. Edge function `analyze-nutrition` -- Prompt do Passo 2 (nutricional)
+
+- Instruir o GPT-4.1 a **usar os pesos estimados** da descrição para calcular os valores nutricionais (em vez de 100g genérico)
+- Adicionar campo `estimated_weight` em cada elemento do JSON de resposta
+- Os valores de `nutrition` de cada elemento continuam **por 100g** (para o seletor de porção funcionar), mas o peso estimado vem separado
+
+### 3. Tipo `FoodElement` em `src/types/nutrition.ts`
+
+Adicionar campo opcional:
+```typescript
+estimated_weight?: number; // peso estimado em gramas pela IA
+```
+
+### 4. `FoodNutritionResults.tsx` -- Inicializar porções com peso estimado
+
+Alterar o `useEffect` (linhas 33-42) que inicializa `elementPortions` para usar `element.estimated_weight` em vez de 100g fixo:
+
+```typescript
+grams: element.estimated_weight || 100
+```
+
+### 5. `MultipleElementsPortionSelector.tsx` -- Receber peso inicial dos elementos
+
+Alterar o `useState` inicial (linha 67-71) para usar o `estimated_weight` de cada elemento como valor default em vez de 100g. Mostrar o peso estimado no placeholder do input.
+
+### 6. `FoodScan.tsx` -- Extrair `estimated_weight` dos elementos
+
+No `extractElements` (linhas 268-351), incluir `estimated_weight` ao mapear cada elemento da resposta da IA.
+
+### Arquivos editados
+
+| Arquivo | Mudança |
+|---------|---------|
+| `supabase/functions/analyze-nutrition/index.ts` | Dois prompts de texto |
+| `src/types/nutrition.ts` | +1 campo opcional |
+| `src/components/FoodNutritionResults.tsx` | useEffect usa estimated_weight |
+| `src/components/MultipleElementsPortionSelector.tsx` | Estado inicial usa estimated_weight |
+| `src/pages/FoodScan.tsx` | extractElements inclui estimated_weight |
+
+### Risco
+
+Baixo. Os prompts são texto, o campo é opcional com fallback para 100g, e a estrutura JSON de resposta não quebra.
 
