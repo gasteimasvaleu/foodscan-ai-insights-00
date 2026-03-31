@@ -570,6 +570,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          last_whatsapp_sent_at: string | null
           reminder_date: string
           reminder_time: string
           reminder_type: string
@@ -581,6 +582,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          last_whatsapp_sent_at?: string | null
           reminder_date: string
           reminder_time: string
           reminder_type: string
@@ -592,6 +594,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          last_whatsapp_sent_at?: string | null
           reminder_date?: string
           reminder_time?: string
           reminder_type?: string
