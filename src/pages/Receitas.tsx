@@ -7,8 +7,9 @@ import { RecipeDetails } from "@/components/RecipeDetails";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UtensilsCrossed, Search, X } from "lucide-react";
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
+import { UtensilsCrossed, Search, X, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -36,6 +37,10 @@ const Receitas = () => {
   const [query, setQuery] = useState("");
   const [diet, setDiet] = useState("");
   const [cuisine, setCuisine] = useState("");
+  const [pendingDiet, setPendingDiet] = useState("");
+  const [pendingCuisine, setPendingCuisine] = useState("");
+  const [isDietDrawerOpen, setIsDietDrawerOpen] = useState(false);
+  const [isCuisineDrawerOpen, setIsCuisineDrawerOpen] = useState(false);
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -91,10 +96,26 @@ const Receitas = () => {
     setQuery("");
     setDiet("");
     setCuisine("");
+    setPendingDiet("");
+    setPendingCuisine("");
     setRecipes([]);
     setHasSearched(false);
     setTotalResults(0);
     setOffset(0);
+  };
+
+  const getSelectedLabel = (options: { value: string; label: string }[], currentValue: string, placeholder: string) => {
+    return options.find((option) => option.value === currentValue)?.label ?? placeholder;
+  };
+
+  const openDietDrawer = () => {
+    setPendingDiet(diet);
+    setIsDietDrawerOpen(true);
+  };
+
+  const openCuisineDrawer = () => {
+    setPendingCuisine(cuisine);
+    setIsCuisineDrawerOpen(true);
   };
 
   if (authLoading) {
@@ -145,26 +166,25 @@ const Receitas = () => {
           </div>
 
           <div className="flex gap-2">
-            <Select value={diet} onValueChange={setDiet}>
-              <SelectTrigger className="flex-1 h-9 text-xs">
-                <SelectValue placeholder="Dieta" />
-              </SelectTrigger>
-              <SelectContent>
-                {DIETS.map(d => (
-                  <SelectItem key={d.value} value={d.value || "all"}>{d.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={cuisine} onValueChange={setCuisine}>
-              <SelectTrigger className="flex-1 h-9 text-xs">
-                <SelectValue placeholder="Culinária" />
-              </SelectTrigger>
-              <SelectContent>
-                {CUISINES.map(c => (
-                  <SelectItem key={c.value} value={c.value || "all"}>{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 h-9 justify-between text-xs font-normal"
+              onClick={openDietDrawer}
+            >
+              <span>{getSelectedLabel(DIETS, diet, "Dieta")}</span>
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 h-9 justify-between text-xs font-normal"
+              onClick={openCuisineDrawer}
+            >
+              <span>{getSelectedLabel(CUISINES, cuisine, "Culinária")}</span>
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </Button>
           </div>
         </div>
 
@@ -239,6 +259,80 @@ const Receitas = () => {
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
       />
+
+      <Drawer open={isDietDrawerOpen} onOpenChange={setIsDietDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">Selecionar Dieta</DrawerTitle>
+          </DrawerHeader>
+
+          <WheelPicker
+            value={pendingDiet}
+            onChange={setPendingDiet}
+            options={DIETS}
+            visibleItems={5}
+            itemHeight={44}
+          />
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsDietDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                setDiet(pendingDiet);
+                setIsDietDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer open={isCuisineDrawerOpen} onOpenChange={setIsCuisineDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">Selecionar Culinária</DrawerTitle>
+          </DrawerHeader>
+
+          <WheelPicker
+            value={pendingCuisine}
+            onChange={setPendingCuisine}
+            options={CUISINES}
+            visibleItems={5}
+            itemHeight={44}
+          />
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsCuisineDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                setCuisine(pendingCuisine);
+                setIsCuisineDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
