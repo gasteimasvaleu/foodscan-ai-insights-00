@@ -1,0 +1,1 @@
+ALTER TABLE public.reminders ADD COLUMN last_whatsapp_sent_at timestamptz;
