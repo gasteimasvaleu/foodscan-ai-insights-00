@@ -372,25 +372,27 @@ export default function Hydration() {
               <div className="space-y-4 pr-1 sm:pr-0">
                 <div className="space-y-2">
                   <Label>Escolha a bebida</Label>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {hydrationCatalog.map((beverage) => (
-                      <button
-                        key={beverage.key}
-                        type="button"
-                        onClick={() => {
-                          setSelectedBeverageKey(beverage.key);
-                          setVolumeMl(beverage.defaultVolumeOptions[0]);
-                        }}
-                        className={`w-full px-3 py-2 rounded-xl border text-sm font-medium transition-colors flex items-center justify-center gap-1 min-h-10 ${
-                          selectedBeverageKey === beverage.key
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-background text-foreground border-border"
-                        }`}
-                      >
-                        <span>{beverage.icon}</span>
-                        <span className="truncate">{beverage.name}</span>
-                      </button>
-                    ))}
+                  <div className="max-h-[38vh] overflow-y-auto pr-1">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {hydrationCatalog.map((beverage) => (
+                        <button
+                          key={beverage.key}
+                          type="button"
+                          onClick={() => {
+                            setSelectedBeverageKey(beverage.key);
+                            setVolumeMl(beverage.defaultVolumeOptions[0]);
+                          }}
+                          className={`w-full px-3 py-2 rounded-xl border text-sm font-medium transition-colors flex items-center justify-center gap-1 min-h-10 ${
+                            selectedBeverageKey === beverage.key
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background text-foreground border-border"
+                          }`}
+                        >
+                          <span>{beverage.icon}</span>
+                          <span className="truncate">{beverage.name}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
