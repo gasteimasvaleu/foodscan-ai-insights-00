@@ -17,6 +17,7 @@ import { Calendar, Plus, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import VideoOverlay from '@/components/VideoOverlay';
+import { useWidgetSync } from '@/hooks/useWidgetSync';
 export interface DailyGoal {
   id?: string;
   calories: number;
