@@ -1,31 +1,40 @@
 
 
-## Adicionar aviso de WhatsApp nas páginas Objetivos, Jejum e Profile (Lembretes)
+## Corrigir PaywallScreen: garantir identifyUser antes da compra e usar customerInfo direto
 
-### Resumo
+### Problema
 
-Criar um componente reutilizável de aviso que verifica se o usuário tem WhatsApp configurado e verificado. Se não tiver, exibe um banner convidando a habilitar. O banner terá um link/botão para `/whatsapp-settings`.
+1. O `purchaseMonthly()` pode executar antes do `identifyUser()` no AuthProvider (que roda em `setTimeout(..., 0)`), fazendo a compra ficar associada a um usuário anônimo no RevenueCat.
+2. Após a compra, `syncSubscriptionAfterLogin` tenta detectar entitlements com retry de 1.5s, mas pode falhar se o RevenueCat ainda não propagou. Isso faz `checkSubscription()` retornar `subscribed: false`, mantendo o paywall visível e causando dupla cobrança.
 
-### 1. Novo componente: `src/components/WhatsAppNotice.tsx`
+### Alterações
 
-Um banner compacto que:
-- Consulta `whatsapp_subscriptions` para verificar se o usuário tem uma assinatura com `is_verified = true`
-- Se **não** tiver, exibe um card com ícone do WhatsApp, texto curto e botão "Configurar"
-- Se já tiver WhatsApp verificado, **não renderiza nada**
-- Aceita uma prop opcional `className` para espaçamento
+#### 1. `src/components/PaywallScreen.tsx` — `handlePurchase`
 
-Estilo: card sutil com fundo amarelo/âmbar claro, ícone verde do WhatsApp, texto curto como "Habilite o WhatsApp para receber notificações desta página", botão linkando para `/whatsapp-settings`.
+Antes de chamar `rcPurchaseMonthly()`, chamar `identifyUser(user.id)` explicitamente para garantir que a compra será associada ao UUID correto.
 
-### 2. Inserir o componente nas 3 páginas
+Após a compra bem-sucedida, usar o `customerInfo` retornado diretamente pelo `purchaseMonthly()` para gravar no Supabase via upsert direto, sem depender do `syncSubscriptionAfterLogin` e seus retries. Extrair entitlements do `customerInfo` e fazer upsert na tabela `subscribers`.
 
-- **`src/pages/Objetivos.tsx`**: Logo abaixo do header card (após linha 41), antes do card de progresso semanal
-- **`src/pages/IntermittentFasting.tsx`**: Logo abaixo do header card (após linha 225), antes do Timer Card
-- **`src/pages/Profile.tsx`**: Logo abaixo do `<RemindersCard>`, dentro da seção de Lembretes
+Novo fluxo do `handlePurchase`:
+```
+1. await identifyUser(user.id)
+2. customerInfo = await rcPurchaseMonthly()
+3. Extrair entitlement do customerInfo
+4. Upsert direto no Supabase (subscribers)
+5. await onSubscribed() (re-valida via check-subscription)
+```
 
-### Detalhes técnicos
+#### 2. `src/lib/revenuecat.ts` — Nova função `upsertSubscriptionFromCustomerInfo`
 
-- O componente usa `useState` + `useEffect` para buscar `whatsapp_subscriptions` onde `user_id = userId` e `is_verified = true`
-- Se a query retornar resultado, o componente retorna `null`
-- Usa `useNavigate` para o botão "Configurar" redirecionar para `/whatsapp-settings`
-- Recebe `userId: string` como prop obrigatória
+Criar uma função que recebe `userId`, `email` e `customerInfo` e faz o upsert na tabela `subscribers` diretamente, sem precisar buscar entitlements novamente. Reutiliza a lógica de claim de órfãos (steps 4a-4d) já existente em `syncSubscriptionAfterLogin`, mas sem os retries de detecção.
+
+#### 3. `src/components/PaywallScreen.tsx` — `handleRestore`
+
+Aplicar a mesma lógica: chamar `identifyUser` antes, e usar o `customerInfo` retornado por `restorePurchases` para gravar diretamente.
+
+### Resultado esperado
+
+- Compra sempre associada ao UUID correto no RevenueCat
+- Gravação imediata no Supabase sem depender de propagação de entitlements
+- Redirect imediato após primeira compra, eliminando o cenário de dupla cobrança
 
