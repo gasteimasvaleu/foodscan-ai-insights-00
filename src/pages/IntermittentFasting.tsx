@@ -329,6 +329,40 @@ const IntermittentFasting = () => {
           </CardContent>
         </Card>
       </div>
+      {/* Protocol Drawer */}
+      <Drawer open={isProtocolDrawerOpen} onOpenChange={setIsProtocolDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+          <DrawerHeader>
+            <DrawerTitle className="text-center text-foreground">Selecionar Protocolo</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4">
+            <WheelPicker
+              value={pendingProtocol}
+              onChange={setPendingProtocol}
+              options={PROTOCOLS.map(p => ({ label: `${p.label} (${p.hours}h jejum)`, value: p.label }))}
+            />
+          </div>
+          <DrawerFooter className="flex-row gap-2">
+            <Button
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsProtocolDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 rounded-xl"
+              onClick={() => {
+                const proto = PROTOCOLS.find(p => p.label === pendingProtocol);
+                if (proto) setSelectedProtocol(proto);
+                setIsProtocolDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
