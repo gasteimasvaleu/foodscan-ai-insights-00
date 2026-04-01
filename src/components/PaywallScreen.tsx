@@ -9,7 +9,8 @@ import {
   getSubscriptionPrice,
   purchaseMonthly as rcPurchaseMonthly,
   restorePurchases as rcRestorePurchases,
-  syncSubscriptionAfterLogin,
+  identifyUser,
+  upsertSubscriptionFromCustomerInfo,
 } from '@/lib/revenuecat';
 
 interface PaywallScreenProps {
