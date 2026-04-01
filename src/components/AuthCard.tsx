@@ -52,7 +52,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   // Autoplay 5s — pauses when on summary card
   useEffect(() => {
     if (banners.length <= 0) return;
-    const totalSlides = banners.length + 2; // +1 calorie summary +1 hydration
+    const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
     const timer = setInterval(() => {
       setCurrentBanner(prev => {
         const next = prev + 1;
