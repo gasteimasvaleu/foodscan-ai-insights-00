@@ -828,6 +828,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_objectives: {
+        Row: {
+          created_at: string
+          custom_keywords: string[] | null
+          id: string
+          is_active: boolean
+          objective_key: string
+          target_unit: string
+          target_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_keywords?: string[] | null
+          id?: string
+          is_active?: boolean
+          objective_key: string
+          target_unit?: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_keywords?: string[] | null
+          id?: string
+          is_active?: boolean
+          objective_key?: string
+          target_unit?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

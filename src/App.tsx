@@ -39,6 +39,7 @@ import NutriCoach from "./pages/NutriCoach";
 import AppleHealth from "./pages/AppleHealth";
 import Hydration from "./pages/Hydration";
 import IntermittentFasting from "./pages/IntermittentFasting";
+import Objetivos from "./pages/Objetivos";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
@@ -99,6 +100,7 @@ const App = () => (
             <Route path="/apple-health" element={<AppleHealth />} />
             <Route path="/hidratacao" element={<Hydration />} />
             <Route path="/jejum" element={<IntermittentFasting />} />
+            <Route path="/objetivos" element={<Objetivos />} />
             <Route path="/treinos" element={<Treinos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
