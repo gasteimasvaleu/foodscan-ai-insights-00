@@ -1,13 +1,13 @@
 
 
-## Corrigir erro de build: `@capacitor/app` não encontrado
+## Corrigir erro de build: `@capacitor/app` não resolvido pelo Vite
 
 ### Problema
-O arquivo `src/hooks/useWidgetSyncOnLaunch.ts` importa `@capacitor/app`, que só existe no ambiente nativo (Xcode). No Lovable, o pacote não está instalado, causando erro de build.
+O `declare module` em `src/types/capacitor-app.d.ts` resolve apenas os tipos para o TypeScript, mas o **Vite** tenta resolver o import real do módulo em runtime e falha porque o pacote `@capacitor/app` não está instalado no ambiente Lovable.
 
 ### Solução
-Criar um arquivo de declaração de tipos (`src/types/capacitor-app.d.ts`) com `declare module '@capacitor/app'` que exporta os tipos mínimos usados pelo hook. Isso permite que o TypeScript compile sem erro, enquanto no dispositivo o módulo real é usado.
+Usar **import dinâmico** (`await import(...)`) dentro do hook, apenas quando a plataforma for iOS. Assim o Vite não tenta resolver o módulo no build — ele só será carregado em runtime no dispositivo nativo.
 
 ### Alteração
-- **Novo arquivo `src/types/capacitor-app.d.ts`**: declara o módulo `@capacitor/app` com os tipos `App` (método `addListener`) e `AppState` usados no hook.
+- **`src/hooks/useWidgetSyncOnLaunch.ts`**: Remover o import estático `import { App as CapApp } from '@capacitor/app'` e substituir por um `import()` dinâmico dentro do `useEffect`, condicionado a `Capacitor.getPlatform() === 'ios'`. O listener do `appStateChange` será registrado com o módulo importado dinamicamente.
 
