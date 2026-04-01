@@ -1,32 +1,70 @@
 
 
-## Adicionar Sono e Frequência Cardíaca ao Apple Health
+## Página de Objetivos — Gamificação com Monitoramento Automático
 
-### O que será feito
-Adicionar leitura de **sono** (sleep_analysis) e **frequência cardíaca** (heart_rate) do HealthKit, exibindo novos cards na página `/apple-health` e incluindo as permissões na autorização.
+### Conceito
+Criar uma página `/objetivos` onde o usuário configura metas comportamentais (ex: "limitar lanches a 3x/semana") e o sistema monitora automaticamente usando dados já existentes em `meal_records`, `exercise_records` e `hydration_records`. Cada objetivo mostra progresso semanal e status (cumprido/não cumprido), criando um efeito de gamificação.
+
+### Objetivos disponíveis e como monitorar
+
+| Objetivo | Monitoramento | Dados usados |
+|---|---|---|
+| **Limitar lanches** | Contar registros com `meal_type = 'lanche'` na semana | `meal_records` |
+| **Limitar fast food** | Contar refeições cujo `food_name` contenha palavras-chave (pizza, hambúrguer, etc.) | `meal_records` |
+| **Limitar açúcar** | Contar refeições com palavras-chave doces (bolo, sorvete, chocolate, etc.) | `meal_records` |
+| **Não comer em excesso** | Verificar se calorias diárias ficaram dentro da meta do `daily_goals` em X dias da semana | `meal_records` + `daily_goals` |
+| **Alimentação saudável** | Contar dias em que proteínas/fibras atingiram a meta | `meal_records` + `daily_goals` |
+| **Começar a se exercitar** | Contar registros de exercício na semana >= meta | `exercise_records` |
+| **Reduzir carne** | Contar refeições com palavras-chave de carne | `meal_records` |
+| **Origem do alimento** | Manual — o usuário marca quando cozinhou em casa | Novo campo ou check manual |
 
 ### Alterações
 
-**1. Editar `src/hooks/useHealthKit.ts`**
-- Adicionar `'sleep'` e `'heart_rate'` ao array `read` em `requestAuthorization`
-- Criar estados: `heartRate` (repouso/média/máx), `sleepData` (duração da última noite, horários)
-- Novo método `getHeartRate()`: usa `Health.queryAggregated` com `dataType: 'heart_rate'` para obter média e `Health.readSamples` para repouso
-- Novo método `getSleepAnalysis()`: usa `Health.readSamples` com `dataType: 'sleep'` para buscar registros da última noite, calcular duração total
-- Incluir ambos no `refreshData()`
-- Exportar os novos estados e métodos
+**1. Criar tabela `user_objectives` (migração SQL)**
+```sql
+CREATE TABLE user_objectives (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  objective_key text NOT NULL, -- ex: 'limit_snacks'
+  target_value integer NOT NULL, -- ex: 3 (máximo por semana)
+  target_unit text NOT NULL DEFAULT 'per_week', -- 'per_week' ou 'per_day'
+  is_active boolean NOT NULL DEFAULT true,
+  custom_keywords text[], -- palavras-chave personalizadas (opcional)
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+```
+Com RLS para cada usuário ver/editar apenas seus objetivos.
 
-**2. Editar `src/pages/AppleHealth.tsx`**
-- Adicionar dois novos cards após o grid de Calorias/Peso:
-  - **Card Frequência Cardíaca**: ícone `Heart` vermelho, exibe BPM de repouso e média diária
-  - **Card Sono**: ícone `Moon` azul-índigo, exibe duração do sono da última noite (ex: "7h 32min"), horário de dormir e acordar
-- Ambos seguem o mesmo padrão visual dos cards existentes (`bg-card/80 backdrop-blur-xl rounded-2xl`)
+**2. Criar página `src/pages/Objetivos.tsx`**
+- Lista os objetivos ativos do usuário com cards visuais
+- Cada card mostra: nome do objetivo, meta configurada, progresso atual da semana (ex: "2/3 lanches"), barra de progresso, e badge verde/vermelho
+- Botão para adicionar novos objetivos (modal com lista dos tipos disponíveis + configuração do limite)
+- A lógica de contagem consulta `meal_records` e `exercise_records` da semana corrente diretamente no frontend
 
-**3. Editar `ios/App/App/Info.plist`**
-- Já contém `NSHealthShareUsageDescription` — nenhuma alteração necessária (as permissões específicas são solicitadas via código)
+**3. Criar componente `src/components/ObjectiveCard.tsx`**
+- Card individual com ícone, título, progresso animado (estilo similar ao DailyGoals), e indicador de status
+- Cor verde quando dentro da meta, vermelho quando ultrapassou
+
+**4. Criar componente `src/components/AddObjectiveModal.tsx`**
+- Modal para selecionar tipo de objetivo e configurar o limite (ex: "Lanches: máximo ___ vezes por semana")
+- Cada tipo tem sugestões de palavras-chave pré-definidas que o usuário pode personalizar
+
+**5. Criar hook `src/hooks/useObjectives.ts`**
+- Gerencia CRUD dos objetivos e calcula progresso semanal
+- Função `calculateProgress(objective)` que consulta as tabelas relevantes e retorna contagem atual vs meta
+
+**6. Registrar rota em `src/App.tsx`**
+- Adicionar `<Route path="/objetivos" element={<Objetivos />} />`
+
+### Design visual
+- Segue o padrão existente: fundo `bg-[#FFD1E7]`, cards `rounded-3xl`, cores rosa `#FD46A1`
+- Barras de progresso animadas com Framer Motion (como em DailyGoals)
+- Badges: 🟢 "Meta cumprida" / 🔴 "Meta ultrapassada"
+- Ícones Lucide para cada tipo de objetivo (Apple, Dumbbell, Pizza, Cookie, etc.)
 
 ### Detalhes técnicos
-- O plugin `@capgo/capacitor-health` suporta `sleep` como dataType para `readSamples` e `heart_rate` para `queryAggregated`/`readSamples`
-- Sono: filtrar amostras do tipo "asleep" (excluindo "inBed" e "awake") para calcular duração real
-- Frequência cardíaca: usar agregação `avg` para média diária e sample mais recente com source "watch" para repouso
-- Na web/preview, os dados mostrarão "—" (sem dados) já que o HealthKit só funciona no dispositivo nativo
+- As palavras-chave de fast food/açúcar/carne são pré-definidas em português e buscadas via `ilike` ou filtro JS no array de `meal_records`
+- O cálculo de progresso é feito no frontend para simplicidade (query das meals da semana já acontece no WeeklySummary)
+- "Origem do alimento" pode usar um sistema de check diário simples (o usuário marca se cozinhou em casa)
 
