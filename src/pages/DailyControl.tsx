@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import VideoOverlay from '@/components/VideoOverlay';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
+import { WidgetPromoModal } from '@/components/WidgetPromoModal';
 export interface DailyGoal {
   id?: string;
   calories: number;
