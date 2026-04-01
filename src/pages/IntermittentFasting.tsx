@@ -118,7 +118,7 @@ const IntermittentFasting = () => {
   const progress = activeFast ? Math.min((elapsedSeconds / targetSeconds) * 100, 100) : 0;
   const completed = progress >= 100;
 
-  const radius = 80;
+  const radius = 65;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
@@ -236,23 +236,23 @@ const IntermittentFasting = () => {
 
             {/* Ring */}
             <div className="flex justify-center">
-              <div className="relative w-[200px] h-[200px] flex items-center justify-center">
-                <svg width="200" height="200" className="rotate-[-90deg]">
-                  <circle cx="100" cy="100" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="10" />
+              <div className="relative w-[160px] h-[160px] flex items-center justify-center">
+                <svg width="160" height="160" className="rotate-[-90deg]">
+                  <circle cx="80" cy="80" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
                   <circle
-                    cx="100" cy="100" r={radius} fill="none"
+                    cx="80" cy="80" r={radius} fill="none"
                     stroke={completed ? 'hsl(142, 71%, 45%)' : 'hsl(var(--primary))'}
-                    strokeWidth="10" strokeLinecap="round"
+                    strokeWidth="8" strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
                     className="transition-all duration-500"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold text-foreground font-mono">
+                  <span className="text-xl font-bold text-foreground font-mono">
                     {activeFast ? formatTime(elapsedSeconds) : formatTime(0)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground mt-1">
+                  <span className="text-[9px] text-muted-foreground mt-1">
                     Meta: {selectedProtocol.hours}h
                   </span>
                 </div>
