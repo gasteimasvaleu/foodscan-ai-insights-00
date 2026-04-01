@@ -271,6 +271,18 @@ export default function Profile() {
                     <p className="text-xs text-muted-foreground">Monte sua dieta</p>
                   </div>
                 </div>
+                {isNative && isIOS && (
+                  <div
+                    className="bg-[#F9FAFB] rounded-2xl flex flex-row items-center gap-4 py-4 px-5 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => navigate("/widget-guide")}
+                  >
+                    <Smartphone className="h-8 w-8 text-pink-500 shrink-0" />
+                    <div>
+                      <p className="font-semibold">Widget iOS</p>
+                      <p className="text-xs text-muted-foreground">Adicione o widget na tela inicial</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

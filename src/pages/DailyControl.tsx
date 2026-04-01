@@ -448,6 +448,7 @@ const DailyControl = () => {
         </div>
       </div>
       
+      <WidgetPromoModal shouldTrigger={meals.length === 1} />
     </>
   );
 };
