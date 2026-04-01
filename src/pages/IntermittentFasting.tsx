@@ -224,6 +224,7 @@ const IntermittentFasting = () => {
           </div>
           <h1 className="text-lg font-bold text-primary">Jejum Intermitente</h1>
         </div>
+        {user && <WhatsAppNotice userId={user.id} />}
         {/* Timer Card */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">

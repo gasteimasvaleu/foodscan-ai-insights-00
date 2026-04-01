@@ -41,6 +41,8 @@ const Objetivos = () => {
           <h1 className="text-lg font-bold text-primary">Meus Objetivos</h1>
         </div>
 
+        <WhatsAppNotice userId={user.id} />
+
         {totalCount > 0 && (
           <div className="bg-white/50 rounded-xl p-3 flex items-center justify-between shadow">
             <span className="text-sm font-semibold text-foreground">Progresso semanal</span>
