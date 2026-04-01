@@ -45,12 +45,18 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     fetchBanners();
   }, []);
 
-  // Autoplay 10s
+  // Autoplay 5s — pauses when on summary card
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (banners.length <= 0) return;
+    const totalSlides = banners.length + 1; // +1 for summary card
     const timer = setInterval(() => {
-      setCurrentBanner(prev => (prev + 1) % banners.length);
-    }, 10000);
+      setCurrentBanner(prev => {
+        const next = prev + 1;
+        // Stop autoplay at summary card (last slide)
+        if (next >= totalSlides) return prev;
+        return next;
+      });
+    }, 5000);
     return () => clearInterval(timer);
   }, [banners.length]);
 
