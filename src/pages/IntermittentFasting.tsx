@@ -249,10 +249,10 @@ const IntermittentFasting = () => {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold text-foreground font-mono">
+                  <span className="text-xl font-bold text-foreground font-mono">
                     {activeFast ? formatTime(elapsedSeconds) : formatTime(0)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground mt-1">
+                  <span className="text-[9px] text-muted-foreground mt-1">
                     Meta: {selectedProtocol.hours}h
                   </span>
                 </div>
