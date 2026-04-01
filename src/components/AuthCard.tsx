@@ -130,11 +130,39 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
+    const totalSlides = bannerImages.length + 1; // +1 for summary card
+
+    // Swipe handlers
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+    const handleTouchMove = (e: React.TouchEvent) => {
+      touchEndX.current = e.touches[0].clientX;
+    };
+    const handleTouchEnd = () => {
+      const diff = touchStartX.current - touchEndX.current;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && currentBanner < totalSlides - 1) {
+          setCurrentBanner(prev => prev + 1);
+        } else if (diff < 0 && currentBanner > 0) {
+          setCurrentBanner(prev => prev - 1);
+        }
+      }
+    };
 
     return (
       <>
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
-          <div className="aspect-video w-full relative">
+          <div
+            className="aspect-video w-full relative"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Banner images */}
             {bannerImages.map((banner, index) => (
               <img
                 key={banner.id}
@@ -146,9 +174,20 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
                 loading={index === 0 ? 'eager' : 'lazy'}
               />
             ))}
-            {bannerImages.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {bannerImages.map((_, index) => (
+
+            {/* Summary card (last slide) */}
+            <div
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                currentBanner === bannerImages.length ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              <DailyCalorieSummaryCard />
+            </div>
+
+            {/* Dots */}
+            {totalSlides > 1 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+                {Array.from({ length: totalSlides }).map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentBanner(index)}
