@@ -11,6 +11,7 @@ import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { WheelPicker } from '@/components/ui/wheel-picker';
+import { WhatsAppNotice } from '@/components/WhatsAppNotice';
 
 const PROTOCOLS = [
   { label: '16:8', hours: 16 },
