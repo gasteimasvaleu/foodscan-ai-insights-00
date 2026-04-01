@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import { WhatsAppNotice } from '@/components/WhatsAppNotice';
 
 const Objetivos = () => {
   const { user, loading: authLoading } = useAuth();
@@ -39,6 +40,8 @@ const Objetivos = () => {
           </div>
           <h1 className="text-lg font-bold text-primary">Meus Objetivos</h1>
         </div>
+
+        <WhatsAppNotice userId={user.id} />
 
         {totalCount > 0 && (
           <div className="bg-white/50 rounded-xl p-3 flex items-center justify-between shadow">
