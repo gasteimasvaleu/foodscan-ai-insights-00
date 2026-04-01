@@ -82,8 +82,6 @@ export const useHealthKit = () => {
   const [weight, setWeight] = useState<number | null>(null);
   const [weeklyData, setWeeklyData] = useState<WeeklyDataPoint[]>([]);
   const [recentWorkouts, setRecentWorkouts] = useState<RecentWorkout[]>([]);
-  const [heartRate, setHeartRate] = useState<HeartRateData>({ restingBPM: null, averageBPM: null });
-  const [sleepData, setSleepData] = useState<SleepData>({ totalMinutes: null, bedtime: null, wakeTime: null });
 
   const isSupported = isIOS && isNative;
 
