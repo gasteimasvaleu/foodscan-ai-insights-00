@@ -1,27 +1,16 @@
 
 
-## Problema: Widget não recebe valor de hidratação
+## Plano: Restringir Apple Health a steps/calories/weight/workouts
 
-### Causa raiz
+O `refreshData` atual chama `getHeartRate()` e `getSleepAnalysis()` junto com as demais funções. Esses tipos não estão na lista de autorização e podem causar falhas no bridge. Vamos remover essas chamadas do fluxo principal e manter apenas o que funcionava antes.
 
-Duas questões no `useWidgetSync`:
+### Alterações no arquivo `src/hooks/useHealthKit.ts`
 
-1. **`hydrationMl` não tem `Math.round`** — o valor pode ser um decimal (ex: `1500.5`) e o Swift espera `Int`. O `call.getInt()` no plugin nativo retorna `nil` para valores não-inteiros, resultando em `0`.
+1. **Remover `getHeartRate()` e `getSleepAnalysis()` do `refreshData`** (linha 484-492) — manter apenas `getDailySteps`, `getDailyActiveCalories`, `getWeight`, `getWeeklyData`, `getRecentWorkouts`
 
-2. **`hydrationMl` pode ser negativo** — bebidas desidratantes (ex: álcool) têm `hydration_impact_ml` negativo. O `useWidgetSyncOnLaunch` aplica `Math.round(Math.max(0, hydrationMl))`, mas o `useWidgetSync` não.
+2. **Remover as dependências de `getHeartRate` e `getSleepAnalysis` do array de deps do `refreshData`** (linha 496)
 
-### Correção
+3. **Manter as funções `getHeartRate` e `getSleepAnalysis` no hook** — elas continuam disponíveis para uso oportunístico na página `/apple-health`, mas não são chamadas automaticamente no refresh principal
 
-**Arquivo: `src/hooks/useWidgetSync.ts`** (linha 44)
-
-Alterar de:
-```ts
-hydrationMl,
-```
-Para:
-```ts
-hydrationMl: Math.round(Math.max(0, hydrationMl)),
-```
-
-Isso garante que o valor enviado ao plugin nativo seja sempre um inteiro não-negativo, consistente com o que o `useWidgetSyncOnLaunch` já faz.
+Nenhuma outra alteração necessária. O `requestPermissions` já solicita apenas `['steps', 'calories', 'weight', 'workouts']`, o que está correto.
 
