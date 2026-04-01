@@ -172,7 +172,7 @@ serve(async (req: Request) => {
     }
 
     console.log(
-      `📊 Summary | sent: ${sentCount}, total: ${pendingReminders.length}, skipped_no_subscription: ${skippedNoSubscriptionCount}, skipped_pref_disabled: ${skippedPrefDisabledCount}, send_errors: ${sendErrorsCount}`
+      `📊 Summary | sent: ${sentCount}, total: ${pendingReminders.length}, skipped_no_subscription: ${skippedNoSubscriptionCount}, send_errors: ${sendErrorsCount}`
     );
 
     return new Response(
@@ -181,7 +181,6 @@ serve(async (req: Request) => {
         sent: sentCount,
         total: pendingReminders.length,
         skipped_no_subscription: skippedNoSubscriptionCount,
-        skipped_pref_disabled: skippedPrefDisabledCount,
         send_errors: sendErrorsCount,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
