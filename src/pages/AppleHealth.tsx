@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useHealthKit, type WeeklyDataPoint, type RecentWorkout, type HeartRateData, type SleepData } from "@/hooks/useHealthKit";
+import { useHealthKit, type WeeklyDataPoint, type RecentWorkout } from "@/hooks/useHealthKit";
 import { AuthCard } from "@/components/AuthCard";
 import { Navbar } from "@/components/Navbar";
 import { HealthKitConnect } from "@/components/HealthKitConnect";
