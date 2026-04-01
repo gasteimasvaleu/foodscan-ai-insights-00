@@ -28,7 +28,7 @@ export const ObjectiveCard: React.FC<ObjectiveCardProps> = ({ data, onRemove }) 
     ? Math.min((data.currentValue / data.targetValue) * 100, 100)
     : 0;
 
-  const statusLabel = data.isWithinGoal ? 'Meta cumprida ✅' : 'Meta ultrapassada ❌';
+  const statusLabel = data.isWithinGoal ? 'Meta cumprida ✅' : 'Meta não cumprida ❌';
   const unitLabel = data.objective.target_unit === 'per_week' ? '/semana' : '/dia';
 
   return (
