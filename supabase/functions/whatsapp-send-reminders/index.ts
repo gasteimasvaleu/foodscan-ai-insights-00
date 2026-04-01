@@ -88,7 +88,7 @@ serve(async (req: Request) => {
 
     let sentCount = 0;
     let skippedNoSubscriptionCount = 0;
-    let skippedPrefDisabledCount = 0;
+    
     let sendErrorsCount = 0;
 
     for (const reminder of pendingReminders) {
