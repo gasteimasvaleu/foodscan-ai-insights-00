@@ -30,6 +30,8 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const isNativeIOS = isNative && isIOS;
 
