@@ -40,6 +40,7 @@ import AppleHealth from "./pages/AppleHealth";
 import Hydration from "./pages/Hydration";
 import IntermittentFasting from "./pages/IntermittentFasting";
 import Objetivos from "./pages/Objetivos";
+import WidgetGuide from "./pages/WidgetGuide";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
