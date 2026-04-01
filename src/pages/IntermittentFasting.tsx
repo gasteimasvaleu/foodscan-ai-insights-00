@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Timer, Play, Square, Flame, TrendingUp, Calendar } from 'lucide-react';
 import { format, differenceInSeconds, differenceInHours, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Navbar } from '@/components/Navbar';
+import { AuthCard } from '@/components/AuthCard';
 
 const PROTOCOLS = [
   { label: '16:8', hours: 16 },
