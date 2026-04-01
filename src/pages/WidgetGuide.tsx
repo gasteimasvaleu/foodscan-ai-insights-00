@@ -1,8 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Smartphone, Plus, LayoutGrid, ArrowLeft, Flame, Droplets, Apple } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Smartphone, Plus, LayoutGrid, Flame, Droplets, Apple } from 'lucide-react';
 
 const steps = [
   {
@@ -23,24 +21,20 @@ const steps = [
 ];
 
 export default function WidgetGuide() {
-  const navigate = useNavigate();
-
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 pb-32">
         <div className="max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-2xl font-bold">Widget iOS</h1>
+          <div className="mb-6 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Smartphone className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-[#FD46A1]">Widget iOS</h1>
+            </div>
           </div>
-
-          <p className="text-muted-foreground text-sm">
-            Acompanhe suas calorias, macros e hidratação direto na tela inicial do seu iPhone — sem precisar abrir o app!
-          </p>
 
           {/* Steps */}
           <div className="space-y-4">

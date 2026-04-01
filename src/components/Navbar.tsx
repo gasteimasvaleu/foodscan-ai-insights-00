@@ -22,6 +22,7 @@ export const Navbar = () => {
     { label: 'Meu Perfil', href: '/profile' },
     { label: 'Política de Privacidade', href: '/politica-de-privacidade' },
     { label: 'Termos de Uso', href: '/termos-de-uso' },
+    { label: 'Widget iOS', href: '/widget-guide' },
     { label: 'Sobre', href: '/sobre' }
   ];
 
