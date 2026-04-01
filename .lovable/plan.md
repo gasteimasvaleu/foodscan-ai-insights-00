@@ -1,19 +1,16 @@
 
 
-## Envolver o timer circular em um card com fundo cinza
+## Expandir o card do timer para largura total
 
 ### Alteração
-**Editar**: `src/pages/IntermittentFasting.tsx` (linha ~234)
+**Editar**: `src/pages/IntermittentFasting.tsx` (linha ~238-239)
 
-Envolver o `div` do ring timer (`relative w-[160px] h-[160px]`) em um card com fundo cinza claro (`bg-[#F9FAFB]`), cantos arredondados e padding, para destacar visualmente o timer:
+Remover o `flex justify-center` do wrapper e fazer o card cinza ocupar 100% da largura, com o SVG centralizado dentro:
 
 ```tsx
-<div className="flex justify-center">
-  <div className="bg-[#F9FAFB] rounded-2xl p-6 shadow-sm">
-    <div className="relative w-[160px] h-[160px] flex items-center justify-center">
-      {/* SVG e texto existentes */}
-    </div>
-  </div>
-</div>
+<div className="bg-[#F9FAFB] rounded-2xl p-6 shadow-sm">
+  <div className="relative w-[160px] h-[160px] flex items-center justify-center mx-auto">
 ```
+
+O card cinza passa a ter largura total (igual ao botão), e o timer circular fica centralizado dentro dele com `mx-auto`.
 
