@@ -1,78 +1,38 @@
 
 
-## Plano: Infraestrutura para Widget iOS + Instruções de Build
+## Plano: Tela dedicada do Widget + Modal na primeira refeição
 
-### O que o Lovable vai fazer (código web + plugin nativo)
+### O que será feito
 
-#### 1. Plugin Capacitor `SharedDataPlugin`
-- **`ios/App/App/SharedDataPlugin.swift`** — Plugin que salva dados no `UserDefaults(suiteName: "group.app.dietainteligente")` com método `saveWidgetData` e `clearWidgetData`
-- **`ios/App/App/SharedDataPlugin.m`** — Bridge Objective-C
+1. **Tela dedicada "Widget iOS"** — acessível pelo menu do Perfil, com tutorial passo a passo de como adicionar o widget na Home Screen (com ícones ilustrativos e texto em português)
 
-#### 2. Registrar plugin no `MyViewController.swift`
-- Adicionar `bridge?.registerPluginInstance(SharedDataPlugin())` no `capacitorDidLoad()`
+2. **Modal automático na primeira refeição** — após o usuário registrar a primeira refeição, exibe um modal (glassmorphism, padrão do app) explicando que existe um widget disponível, com botão para ir à tela dedicada ou dispensar. Usa `localStorage` para mostrar só uma vez.
 
-#### 3. Hook `useWidgetSync.ts`
-- Novo hook que detecta plataforma nativa e chama `SharedDataPlugin.saveWidgetData()` com dados de calorias, refeições e hidratação
-
-#### 4. Integrar no `DailyControl.tsx`
-- Chamar `useWidgetSync` passando goals, meals e hydrationTotals para sincronizar automaticamente
-
-#### 5. Atualizar `App.entitlements`
-- Adicionar `com.apple.security.application-groups` → `["group.app.dietainteligente"]`
-
-#### 6. Gerar arquivos de referência do Widget (SwiftUI)
-- Criar arquivos em `ios-widget-reference/` com o código SwiftUI do widget (Timeline Provider, View, Entry) para você copiar no Xcode ao criar o Widget Extension target
+3. **Link no Perfil** — adicionar um item no menu do Perfil que leva à tela do Widget (visível apenas em iOS)
 
 ---
 
-### O que você precfazer localmente (passo a passo)
-
-#### Pré-requisitos
-- Mac com Xcode 15+
-- Projeto clonado via GitHub e atualizado (`git pull`)
-
-#### Passos após o Lovable aplicar as mudanças:
-
-1. **Git pull** o projeto atualizado
-
-2. **Instalar dependências e sincronizar**
-   ```bash
-   npm install
-   npm run build
-   npx cap sync ios
-   ```
-
-3. **Abrir no Xcode**
-   ```bash
-   npx cap open ios
-   ```
-
-4. **Configurar App Groups no target principal**
-   - No Xcode, selecione o target **App** → **Signing & Capabilities**
-   - Clique em **+ Capability** → **App Groups**
-   - Adicione: `group.app.dietainteligente`
-
-5. **Criar o Widget Extension**
-   - No Xcode: **File → New → Target → Widget Extension**
-   - Nome: `WeDietWidget`
-   - Desmarcar "Include Configuration App Intent"
-   - Ativar o mesmo App Group (`group.app.dietainteligente`) no target do widget
-   - Substituir o código gerado pelo conteúdo dos arquivos em `ios-widget-reference/`
-
-6. **Build e teste**
-   - Selecione o scheme do app principal (não o do widget)
-   - Build e rode no simulador ou device
-   - O widget aparecerá na galeria de widgets do iOS
-
-7. **Submeter à App Store**
-   - Archive pelo Xcode (Product → Archive)
-   - Upload via App Store Connect
-   - Isso também inclui o fix do PaywallScreen no bundle nativo
-
 ### Detalhes técnicos
 
-- **App Groups** permite que o app principal e o widget compartilhem dados via `UserDefaults(suiteName:)`
-- O plugin salva um JSON com: `caloriesTarget`, `caloriesConsumed`, `mealsCount`, `hydrationMl`, `lastUpdate`
-- O widget usa `TimelineProvider` para ler esses dados e atualizar a cada 15 min
-- Os arquivos de referência SwiftUI terão o layout visual similar ao screenshot (circular progress de calorias, contagem de refeições, indicador de hidratação)
+**Novo arquivo: `src/pages/WidgetGuide.tsx`**
+- Tela com Navbar, título "Widget iOS"
+- 3 passos visuais com ícones (Smartphone, Plus, Layout): segurar tela → buscar "Dieta Inteligente" → escolher tamanho
+- Card com preview descritivo do widget (calorias, macros, hidratação)
+- Estilo consistente com o app
+
+**Novo arquivo: `src/components/WidgetPromoModal.tsx`**
+- Dialog com glassmorphism (`bg-white/70 backdrop-blur-md border-2 border-primary`)
+- Imagem/ícone do widget, texto curto explicando a funcionalidade
+- Botões: "Ver como adicionar" (navega para `/widget-guide`) e "Depois"
+- Só aparece em iOS (check via Capacitor) e apenas 1x (flag `widget_promo_shown` no localStorage)
+
+**Alteração: `src/pages/DailyControl.tsx`**
+- Importar `WidgetPromoModal`
+- Mostrar modal quando `meals.length === 1` e a flag não estiver setada
+
+**Alteração: `src/pages/Profile.tsx`**
+- Adicionar botão/link "Widget iOS" que navega para `/widget-guide` (visível apenas em iOS)
+
+**Alteração: `src/App.tsx`**
+- Adicionar rota `/widget-guide` → `WidgetGuide`
 
