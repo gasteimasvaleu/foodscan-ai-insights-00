@@ -505,6 +505,8 @@ export const useHealthKit = () => {
     weight,
     weeklyData,
     recentWorkouts,
+    heartRate,
+    sleepData,
     requestPermissions,
     disconnect,
     getDailySteps,
@@ -512,6 +514,8 @@ export const useHealthKit = () => {
     getWeight,
     getWeeklyData,
     getRecentWorkouts,
+    getHeartRate,
+    getSleepAnalysis,
     saveMealCalories,
     refreshData,
   };
