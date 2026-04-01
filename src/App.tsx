@@ -38,6 +38,7 @@ import ChartsProgress from "./pages/ChartsProgress";
 import NutriCoach from "./pages/NutriCoach";
 import AppleHealth from "./pages/AppleHealth";
 import Hydration from "./pages/Hydration";
+import IntermittentFasting from "./pages/IntermittentFasting";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
