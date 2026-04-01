@@ -10,10 +10,18 @@ set -e
 
 PBXPROJ="ios/App/App.xcodeproj/project.pbxproj"
 BACKUP="${PBXPROJ}.bak"
+WIDGET_TARGET="WeDietWidget"
 
 # 1. Verificar se o pbxproj existe
 if [ ! -f "$PBXPROJ" ]; then
   echo "❌ Arquivo $PBXPROJ não encontrado. Execute a partir da raiz do projeto."
+  exit 1
+fi
+
+echo "🔍 Validando target do widget antes do sync..."
+if ! grep -q "$WIDGET_TARGET" "$PBXPROJ"; then
+  echo "❌ Target $WIDGET_TARGET não encontrado em $PBXPROJ."
+  echo "   Recrie o Widget Extension no Xcode e faça commit do project.pbxproj antes de sincronizar."
   exit 1
 fi
 
@@ -26,6 +34,13 @@ npx cap sync ios
 echo "♻️ Restaurando project.pbxproj customizado..."
 cp "$BACKUP" "$PBXPROJ"
 rm -f "$BACKUP"
+
+echo "🔍 Validando target do widget após restauração..."
+if ! grep -q "$WIDGET_TARGET" "$PBXPROJ"; then
+  echo "❌ Falha de proteção: target $WIDGET_TARGET ausente após o sync."
+  echo "   O script abortou para evitar continuar com o projeto iOS quebrado."
+  exit 1
+fi
 
 echo "📱 Executando pod install..."
 cd ios/App && pod install --repo-update

@@ -4,6 +4,12 @@ Este arquivo contém o código de referência para criar o Widget Extension no X
 
 ## Como usar
 
+> ⚠️ **Fluxo obrigatório para não perder o widget**
+>
+> - Sempre rode **`npm run cap:sync`** (nunca `npx cap sync ios` direto).
+> - Faça commit de qualquer alteração nativa (`project.pbxproj`, target widget, entitlements) imediatamente.
+> - Se houver conflito em `project.pbxproj` durante pull/rebase, resolva o conflito mantendo o target `WeDietWidget` e o `Embed App Extensions`.
+
 ### 1. Criar Widget Extension no Xcode
 
 1. Abra o projeto: `npx cap open ios`
@@ -32,7 +38,17 @@ Este arquivo contém o código de referência para criar o Widget Extension no X
 3. Na Home Screen, toque e segure → **Editar Home Screen** → **+** → procure "Dieta Inteligente"
 4. Adicione o widget (Small ou Medium)
 
-### 5. Dados
+### 5. Regressão obrigatória (pós-sync/pull)
+
+Após qualquer `git pull` e após `npm run cap:sync`:
+
+1. Abra no Xcode e confirme os targets **App** e **WeDietWidget**
+2. No target **App**, confirme a fase **Embed App Extensions** com `WeDietWidget.appex`
+3. Rode build em iPhone físico
+4. Adicione o widget na Home e valide atualização de calorias/macros/hidratação
+5. Faça novo `git pull` e confirme que o target continua presente
+
+### 6. Dados
 
 O widget lê dados de `UserDefaults(suiteName: "group.app.dietainteligente")` com a chave `"widgetData"`. O app principal salva esses dados automaticamente sempre que as refeições ou metas mudam.
 
