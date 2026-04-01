@@ -211,21 +211,16 @@ const IntermittentFasting = () => {
           <CardContent className="space-y-4">
             {/* Protocol selector */}
             {!activeFast && (
-              <div className="flex flex-wrap gap-2">
-                {PROTOCOLS.map((p) => (
-                  <button
-                    key={p.label}
-                    onClick={() => setSelectedProtocol(p)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                      selectedProtocol.label === p.label
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => {
+                  setPendingProtocol(selectedProtocol.label);
+                  setIsProtocolDrawerOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-primary text-primary rounded-xl font-semibold text-sm"
+              >
+                <span>Selecionar Jejum — {selectedProtocol.label}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
             )}
 
             {activeFast && (
