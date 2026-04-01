@@ -175,13 +175,22 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
               />
             ))}
 
-            {/* Summary card (last slide) */}
+            {/* Summary card (calorie) */}
             <div
               className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
                 currentBanner === bannerImages.length ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
               }`}
             >
               <DailyCalorieSummaryCard />
+            </div>
+
+            {/* Summary card (hydration) */}
+            <div
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                currentBanner === bannerImages.length + 1 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              <DailyHydrationSummaryCard />
             </div>
 
             {/* Dots */}
