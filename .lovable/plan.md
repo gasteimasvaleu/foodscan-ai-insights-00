@@ -1,70 +1,31 @@
 
-Objetivo: transformar os campos técnicos (`metadata`, `sourceId`, payload bruto) em informações úteis para o usuário, em vez de exibir JSON cru no modal de `src/pages/AppleHealth.tsx`.
 
-O que está acontecendo hoje
-- O modal mostra `metadata` como `JSON.stringify(...)`.
-- Também lista “Campos retornados pelo plugin” quase crus.
-- Isso é útil para debug, mas ruim para UX: o usuário final não entende JSON e enxerga “lixo técnico”.
+## Card de Resumo Calórico no Carrossel de Banners
 
-Interpretação correta desses campos
-- `metadata` não é um campo “bonito” pronto para UI.
-- Normalmente ele representa atributos internos do treino, por exemplo:
-  - origem do registro
-  - tipo técnico do workout
-  - identificadores internos
-  - dados auxiliares gravados pelo app de origem
-- Então o ideal não é “mostrar metadata”, e sim:
-  1. extrair significados úteis desses dados
-  2. esconder o restante técnico do usuário comum
+### O que muda
+O carrossel de banners na página principal (`AuthCard.tsx`) ganha suporte a swipe manual, reduz o autoplay de 10s para 5s, e adiciona um card final de resumo calórico do dia (similar ao screenshot) após o último banner.
 
-Plano de ajuste
-1. Remover linguagem técnica da UI
-- Trocar rótulos como:
-  - “Metadata”
-  - “Campos retornados pelo plugin”
-  - “Source ID”
-- Por algo orientado ao usuário, ou ocultar totalmente quando não agregar valor.
+### Como funciona
+1. **Carrossel com swipe** — Adicionar gesture de arrastar (touch events) para navegar entre slides
+2. **Autoplay 5s** — Alterar o intervalo de 10000ms para 5000ms
+3. **Slide extra no final** — Após o último banner, exibir um card com:
+   - Calorias restantes (meta - consumidas) à esquerda
+   - Anel circular central com ícone de fogo (calorias gastas/exercício)
+   - Calorias totais consumidas à direita
+   - 3 barras de progresso embaixo: Carboidratos, Proteínas, Gorduras
+   - Seta/botão para ir ao Controle Diário
+4. **Dados** — Buscar `daily_goals` e `meal_records` do dia atual no Supabase, reutilizando a mesma lógica de `DailyControl.tsx`
+5. **Indicadores** — Os dots do carrossel incluem o slide extra
 
-2. Criar uma camada de interpretação dos dados
-- Em `AppleHealth.tsx`, criar helpers para traduzir chaves técnicas em campos amigáveis.
-- Exemplo de saída útil:
-  - Aplicativo de origem
-  - Tipo de atividade
-  - Data e horário
-  - Duração
-  - Distância
-  - Calorias
-  - Observações
-  - Informações adicionais da atividade
+### Arquivos afetados
+- **`src/components/AuthCard.tsx`** — Lógica de swipe, autoplay 5s, slide extra, fetch de dados diários
+- Potencialmente extrair o card de resumo para um componente separado (`src/components/DailyCalorieSummaryCard.tsx`) para manter o AuthCard limpo
 
-3. Filtrar o que deve aparecer
-- Mostrar só dados compreensíveis e relevantes.
-- Ocultar:
-  - UUIDs
-  - URLs internas
-  - bundle IDs
-  - blobs JSON
-  - estruturas técnicas sem significado claro para o usuário
+### Detalhes técnicos
+- Touch events: `onTouchStart`, `onTouchMove`, `onTouchEnd` com threshold de ~50px para detectar swipe
+- O total de "slides" passa a ser `bannerImages.length + 1`; quando `currentBanner === bannerImages.length`, renderiza o card de resumo em vez de imagem
+- O card de resumo usa o mesmo `aspect-video` para manter proporção consistente
+- Anel circular via SVG com `stroke-dasharray` proporcional às calorias consumidas/meta
+- Busca de dados: `daily_goals` (última meta) + `meal_records` do dia + `hydration_records` do dia, mesma query do DailyControl
+- Se o usuário não tiver metas cadastradas, o card mostra um CTA para configurar metas
 
-4. Resumir `metadata` em texto amigável
-- Em vez de renderizar JSON, converter `metadata` em uma pequena lista de informações legíveis.
-- Se não houver nada útil para exibir, simplesmente não mostrar a seção.
-
-5. Manter detalhes técnicos fora da visão principal
-- Se quiser preservar debug, colocar em área secundária recolhível, algo como:
-  - “Detalhes técnicos”
-- Essa seção deve ser opcional e discreta, não parte principal do modal.
-
-Resultado esperado
-- O modal fica orientado ao usuário final.
-- Some o JSON cru da experiência principal.
-- Os dados passam a parecer “detalhes da atividade”, não “resposta da API”.
-- O conteúdo continua fiel ao plugin, mas apresentado de forma humana.
-
-Detalhes técnicos
-- Arquivo principal: `src/pages/AppleHealth.tsx`
-- Ajustes principais:
-  - substituir `JSON.stringify(selectedWorkout.metadata, null, 2)` por interpretação amigável
-  - filtrar `workoutDetails` para exibir apenas campos úteis
-  - remover ou esconder `sourceId` e outras chaves internas da seção principal
-- Se necessário, aproveitar `selectedWorkout.metadata` e `selectedWorkout.rawData` apenas como fonte para derivar labels amigáveis, não como conteúdo bruto de UI
