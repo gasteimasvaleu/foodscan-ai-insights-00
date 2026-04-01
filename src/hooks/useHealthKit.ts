@@ -29,16 +29,8 @@ export interface RecentWorkout {
   rawData: Record<string, unknown>;
 }
 
-export interface HeartRateData {
-  restingBPM: number | null;
-  averageBPM: number | null;
-}
 
-export interface SleepData {
-  totalMinutes: number | null;
-  bedtime: string | null;
-  wakeTime: string | null;
-}
+
 
 const extractNumber = (...values: unknown[]): number | undefined => {
   for (const value of values) {
