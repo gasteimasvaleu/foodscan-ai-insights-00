@@ -1,6 +1,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
+import { useWidgetSyncOnLaunch } from "@/hooks/useWidgetSyncOnLaunch";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
