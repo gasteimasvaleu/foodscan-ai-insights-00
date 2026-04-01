@@ -317,6 +317,126 @@ export const useHealthKit = () => {
     }
   }, [isConnected, isSupported]);
 
+  const getHeartRate = useCallback(async (): Promise<HeartRateData> => {
+    const empty: HeartRateData = { restingBPM: null, averageBPM: null };
+    if (!isConnected || !isSupported) return empty;
+    try {
+      const now = new Date();
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      // Average BPM today
+      let averageBPM: number | null = null;
+      try {
+        const avgResult = await Health.queryAggregated({
+          dataType: 'heart_rate' as any,
+          startDate: startOfDay.toISOString(),
+          endDate: now.toISOString(),
+          bucket: 'day',
+          aggregation: 'avg' as any,
+        });
+        const val = avgResult?.samples?.[0]?.value;
+        if (typeof val === 'number' && val > 0) averageBPM = Math.round(val);
+      } catch (e) {
+        console.warn('[HealthKit] heart_rate aggregated error:', e);
+      }
+
+      // Resting BPM — most recent sample
+      let restingBPM: number | null = null;
+      try {
+        const restResult = await Health.readSamples({
+          dataType: 'heart_rate' as any,
+          startDate: startOfDay.toISOString(),
+          endDate: now.toISOString(),
+          limit: 1,
+          ascending: false,
+        });
+        const val = restResult?.samples?.[0]?.value;
+        if (typeof val === 'number' && val > 0) restingBPM = Math.round(val);
+      } catch (e) {
+        console.warn('[HealthKit] heart_rate samples error:', e);
+      }
+
+      const data: HeartRateData = { restingBPM, averageBPM };
+      setHeartRate(data);
+      return data;
+    } catch (error) {
+      console.error('[HealthKit] Error reading heart rate:', error);
+      return empty;
+    }
+  }, [isConnected, isSupported]);
+
+  const getSleepAnalysis = useCallback(async (): Promise<SleepData> => {
+    const empty: SleepData = { totalMinutes: null, bedtime: null, wakeTime: null };
+    if (!isConnected || !isSupported) return empty;
+    try {
+      const now = new Date();
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+      const result = await Health.readSamples({
+        dataType: 'sleep' as any,
+        startDate: yesterday.toISOString(),
+        endDate: now.toISOString(),
+        limit: 100,
+        ascending: true,
+      });
+
+      const samples = result?.samples ?? [];
+      console.log('[HealthKit] sleep raw samples:', JSON.stringify(samples));
+
+      // Filter asleep samples (exclude "inBed" and "awake")
+      const asleepSamples = samples.filter((s: any) => {
+        const val = s.value;
+        // Some plugins use numeric values (1=inBed, 2=asleep, 3=awake), others use strings
+        if (typeof val === 'string') {
+          const lower = val.toLowerCase();
+          return lower.includes('asleep') || lower.includes('core') || lower.includes('deep') || lower.includes('rem');
+        }
+        // Numeric: 2 = asleep in some implementations
+        if (typeof val === 'number') return val === 2;
+        return false;
+      });
+
+      if (asleepSamples.length === 0 && samples.length > 0) {
+        // Fallback: use all samples if no asleep-specific ones found
+        let totalMs = 0;
+        let earliest = samples[0].startDate;
+        let latest = samples[samples.length - 1].endDate;
+        for (const s of samples) {
+          const start = new Date(s.startDate).getTime();
+          const end = new Date(s.endDate).getTime();
+          if (end > start) totalMs += end - start;
+        }
+        const data: SleepData = {
+          totalMinutes: totalMs > 0 ? Math.round(totalMs / 60000) : null,
+          bedtime: earliest ?? null,
+          wakeTime: latest ?? null,
+        };
+        setSleepData(data);
+        return data;
+      }
+
+      if (asleepSamples.length === 0) return empty;
+
+      let totalMs = 0;
+      for (const s of asleepSamples) {
+        const start = new Date(s.startDate).getTime();
+        const end = new Date(s.endDate).getTime();
+        if (end > start) totalMs += end - start;
+      }
+
+      const data: SleepData = {
+        totalMinutes: totalMs > 0 ? Math.round(totalMs / 60000) : null,
+        bedtime: asleepSamples[0]?.startDate ?? null,
+        wakeTime: asleepSamples[asleepSamples.length - 1]?.endDate ?? null,
+      };
+      setSleepData(data);
+      return data;
+    } catch (error) {
+      console.error('[HealthKit] Error reading sleep:', error);
+      return empty;
+    }
+  }, [isConnected, isSupported]);
+
   const getRecentWorkouts = useCallback(async (): Promise<RecentWorkout[]> => {
     if (!isConnected || !isSupported) return [];
     try {
