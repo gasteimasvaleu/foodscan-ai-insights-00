@@ -100,6 +100,7 @@ const App = () => (
             <Route path="/apple-health" element={<AppleHealth />} />
             <Route path="/hidratacao" element={<Hydration />} />
             <Route path="/jejum" element={<IntermittentFasting />} />
+            <Route path="/objetivos" element={<Objetivos />} />
             <Route path="/treinos" element={<Treinos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
