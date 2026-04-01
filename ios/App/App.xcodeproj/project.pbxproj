@@ -10,6 +10,8 @@
 		039EEA802F7519380040CA7C /* NativeAppleSignInPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 039EEA7E2F7519380040CA7C /* NativeAppleSignInPlugin.m */; };
 		039EEA812F7519380040CA7C /* NativeAppleSignInPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039EEA7F2F7519380040CA7C /* NativeAppleSignInPlugin.swift */; };
 		039EEA822F7519380040CA7C /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039EEA7D2F7519380040CA7C /* MyViewController.swift */; };
+		039EEA902F7520000040CA7C /* SharedDataPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 039EEA8E2F7520000040CA7C /* SharedDataPlugin.m */; };
+		039EEA912F7520000040CA7C /* SharedDataPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039EEA8F2F7520000040CA7C /* SharedDataPlugin.swift */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
