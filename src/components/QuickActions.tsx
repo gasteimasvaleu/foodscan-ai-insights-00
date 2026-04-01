@@ -39,6 +39,13 @@ export const QuickActions = () => {
       color: "#E24989",
     },
     {
+      icon: Timer,
+      title: "Jejum Intermitente",
+      tags: ["Timer", "Protocolos"],
+      path: "/jejum",
+      color: "#E24989",
+    },
+    {
       icon: MessageCircle,
       title: "WhatsApp",
       tags: ["Automático", "Análises"],
