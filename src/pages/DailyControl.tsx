@@ -64,8 +64,12 @@ const DailyControl = () => {
   } | null>(null);
   const [weeklyDataUpdateKey, setWeeklyDataUpdateKey] = useState(0);
 
+  // Hydration real data for widget sync
+  const [hydrationMl, setHydrationMl] = useState(0);
+  const [hydrationTarget, setHydrationTarget] = useState(3000);
+
   // Sync data to iOS widget via App Groups
-  useWidgetSync({ goals, meals, hydrationTotals });
+  useWidgetSync({ goals, meals, hydrationTotals, hydrationMl, hydrationTarget });
 
   useEffect(() => {
     if (!authLoading && user) {
