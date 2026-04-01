@@ -487,6 +487,8 @@ export const useHealthKit = () => {
         getWeight(),
         getWeeklyData(),
         getRecentWorkouts(),
+        getHeartRate(),
+        getSleepAnalysis(),
       ]);
     } finally {
       setIsLoading(false);
