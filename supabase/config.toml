@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.whatsapp-send-reminders]
 verify_jwt = false
+
+[functions.whatsapp-weekly-objectives]
+verify_jwt = false
