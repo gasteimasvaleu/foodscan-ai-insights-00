@@ -67,15 +67,23 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
   const handleRestore = async () => {
     setLoading(true);
     try {
+      // 1. Ensure user is identified in RevenueCat BEFORE restore
+      console.log('[PaywallScreen] Identifying user before restore:', user.id);
+      await identifyUser(user.id);
+
+      // 2. Restore purchases
       const customerInfo = await rcRestorePurchases();
       if (customerInfo) {
         toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+
+        // 3. Upsert directly from customerInfo
         try {
-          await syncSubscriptionAfterLogin(user.id, user.email || '');
+          await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
         } catch (err) {
-          console.warn('[PaywallScreen] Sync after restore error:', err);
+          console.warn('[PaywallScreen] Upsert after restore error:', err);
         }
-        // Re-validate subscription before entering app
+
+        // 4. Re-validate subscription before entering app
         await onSubscribed();
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
