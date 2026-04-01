@@ -1,8 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Smartphone, Plus, LayoutGrid, ArrowLeft, Flame, Droplets, Apple } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Smartphone, Plus, LayoutGrid, Flame, Droplets, Apple } from 'lucide-react';
 
 const steps = [
   {
