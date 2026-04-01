@@ -1,9 +1,22 @@
 
 
-## Ajustar ordem dos dias da semana — começar pelo domingo
+## Adicionar card de Jejum Intermitente no carrossel da página principal
 
-### Alteração
-**Editar**: `src/pages/IntermittentFasting.tsx`
+### O que será feito
+Criar um novo componente `DailyFastingSummaryCard` (seguindo o padrão dos cards de calorias e hidratação) e adicioná-lo ao carrossel do `AuthCard`, como terceiro slide após o card de hidratação.
 
-Na construção do array `weekDays` (linhas ~153-170), reordenar para que o domingo seja sempre o primeiro elemento da esquerda. Atualmente os dias são gerados como "últimos 7 dias" em ordem cronológica. A lógica será ajustada para encontrar o domingo mais recente e gerar os 7 dias a partir dele (domingo a sábado), mantendo a mesma lógica de busca de registros.
+### Alterações
+
+**1. Criar `src/components/DailyFastingSummaryCard.tsx`**
+- Seguir o mesmo padrão visual do `DailyHydrationSummaryCard`
+- Gradiente roxo/violeta para diferenciar visualmente (ex: `from-purple-500 via-violet-500 to-indigo-600`)
+- Buscar do Supabase (`fasting_records`) o jejum ativo do usuário ou o último completado hoje
+- Exibir: status (em jejum / não jejum), tempo decorrido ou último jejum, ring de progresso com porcentagem vs `target_hours`
+- Botão CTA "Ver Jejum" que navega para `/intermittent-fasting`
+- Ícone: `Timer` do lucide-react
+
+**2. Editar `src/components/AuthCard.tsx`**
+- Importar `DailyFastingSummaryCard`
+- Alterar `totalSlides` de `banners.length + 2` para `banners.length + 3` (linhas 54 e 136)
+- Adicionar o slide do jejum após o de hidratação (índice `bannerImages.length + 2`)
 
