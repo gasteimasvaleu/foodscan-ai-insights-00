@@ -1,26 +1,31 @@
 
 
-## Remover checagens de preferências das automações WhatsApp
+## Adicionar aviso de WhatsApp nas páginas Objetivos, Jejum e Profile (Lembretes)
 
-### Funções afetadas
+### Resumo
 
-Existem **3 edge functions** que verificam `preferences.reminders` antes de enviar:
+Criar um componente reutilizável de aviso que verifica se o usuário tem WhatsApp configurado e verificado. Se não tiver, exibe um banner convidando a habilitar. O banner terá um link/botão para `/whatsapp-settings`.
 
-1. **`whatsapp-scheduled-reminders/index.ts`** (linhas 57-62) — pula usuários com `preferences.reminders !== true`
-2. **`fasting-complete-notification/index.ts`** (linhas 90-97) — pula se `prefs.reminders === false`
-3. **`whatsapp-send-reminders/index.ts`** (linhas 111-117) — pula lembretes se `prefs.reminders === false`
+### 1. Novo componente: `src/components/WhatsAppNotice.tsx`
 
-### Alterações
+Um banner compacto que:
+- Consulta `whatsapp_subscriptions` para verificar se o usuário tem uma assinatura com `is_verified = true`
+- Se **não** tiver, exibe um card com ícone do WhatsApp, texto curto e botão "Configurar"
+- Se já tiver WhatsApp verificado, **não renderiza nada**
+- Aceita uma prop opcional `className` para espaçamento
 
-Remover os blocos de checagem de preferências nas 3 funções, enviando para todos os usuários com WhatsApp verificado independentemente das preferências.
+Estilo: card sutil com fundo amarelo/âmbar claro, ícone verde do WhatsApp, texto curto como "Habilite o WhatsApp para receber notificações desta página", botão linkando para `/whatsapp-settings`.
 
-**`whatsapp-scheduled-reminders/index.ts`**: Remover linhas 56-62 (o bloco `const preferences = sub.preferences || {}` e o `if` que faz `continue`).
+### 2. Inserir o componente nas 3 páginas
 
-**`fasting-complete-notification/index.ts`**: Remover linhas 90-97 (o bloco que checa `prefs.reminders === false` e retorna `reminders_disabled`). Também remover `preferences` do select na linha 75, já que não é mais usado.
+- **`src/pages/Objetivos.tsx`**: Logo abaixo do header card (após linha 41), antes do card de progresso semanal
+- **`src/pages/IntermittentFasting.tsx`**: Logo abaixo do header card (após linha 225), antes do Timer Card
+- **`src/pages/Profile.tsx`**: Logo abaixo do `<RemindersCard>`, dentro da seção de Lembretes
 
-**`whatsapp-send-reminders/index.ts`**: Remover linhas 111-117 (o bloco que checa `prefs.reminders === false` e faz `continue`). Remover `preferences` do select na linha 98 e a variável `skippedPrefDisabledCount` se existir.
+### Detalhes técnicos
 
-### Sobre a nova function `whatsapp-weekly-objectives`
-
-Como ainda não foi criada, já será implementada sem checagem de preferências.
+- O componente usa `useState` + `useEffect` para buscar `whatsapp_subscriptions` onde `user_id = userId` e `is_verified = true`
+- Se a query retornar resultado, o componente retorna `null`
+- Usa `useNavigate` para o botão "Configurar" redirecionar para `/whatsapp-settings`
+- Recebe `userId: string` como prop obrigatória
 
