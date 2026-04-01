@@ -39,7 +39,7 @@ export const useWidgetSync = ({ goals, meals, hydrationTotals, hydrationMl = 0, 
       fatsTarget: goals.fats,
       fatsConsumed: Math.round(consumed.fats),
       mealsCount: meals.length,
-      hydrationMl,
+      hydrationMl: Math.round(Math.max(0, hydrationMl)),
       hydrationTarget,
       lastUpdate: new Date().toISOString(),
     }).catch((err) => {
