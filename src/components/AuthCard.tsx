@@ -134,9 +134,6 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
     const totalSlides = bannerImages.length + 1; // +1 for summary card
 
-    // Swipe handlers
-    const touchStartX = useRef(0);
-    const touchEndX = useRef(0);
 
     const handleTouchStart = (e: React.TouchEvent) => {
       touchStartX.current = e.touches[0].clientX;
