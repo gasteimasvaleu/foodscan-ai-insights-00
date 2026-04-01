@@ -1,13 +1,19 @@
 
 
-## Reduzir tamanho do timer circular
+## Envolver o timer circular em um card com fundo cinza
 
 ### Alteração
-**Editar**: `src/pages/IntermittentFasting.tsx`
+**Editar**: `src/pages/IntermittentFasting.tsx` (linha ~234)
 
-1. Reduzir o `radius` de `80` para `65`
-2. Reduzir o container SVG de `200×200` para `160×160`, com `cx/cy` de `80`
-3. Reduzir o `strokeWidth` de `10` para `8`
-4. Reduzir o texto do timer de `text-2xl` para `text-xl`
-5. Reduzir o texto "Meta:" de `text-[10px]` para `text-[9px]`
+Envolver o `div` do ring timer (`relative w-[160px] h-[160px]`) em um card com fundo cinza claro (`bg-[#F9FAFB]`), cantos arredondados e padding, para destacar visualmente o timer:
+
+```tsx
+<div className="flex justify-center">
+  <div className="bg-[#F9FAFB] rounded-2xl p-6 shadow-sm">
+    <div className="relative w-[160px] h-[160px] flex items-center justify-center">
+      {/* SVG e texto existentes */}
+    </div>
+  </div>
+</div>
+```
 
