@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 import Capacitor
 
 @objc(SharedDataPlugin)
