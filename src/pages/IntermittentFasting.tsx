@@ -194,7 +194,7 @@ const IntermittentFasting = () => {
   return (
     <div className="min-h-screen bg-background pt-[calc(env(safe-area-inset-top)+4rem)] pb-40">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 space-y-4">
+      <div className="container mx-auto px-4 py-4 space-y-4">
         {/* Header */}
         <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
           <Timer className="w-6 h-6 text-primary" />
