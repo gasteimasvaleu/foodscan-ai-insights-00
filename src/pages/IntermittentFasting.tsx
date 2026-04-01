@@ -30,6 +30,7 @@ const IntermittentFasting = () => {
   const [weekHistory, setWeekHistory] = useState<any[]>([]);
   const [stats, setStats] = useState({ streak: 0, avgHours: 0, longestHours: 0 });
   const [loading, setLoading] = useState(true);
+  const notificationSentRef = useRef<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user?.id) return;
