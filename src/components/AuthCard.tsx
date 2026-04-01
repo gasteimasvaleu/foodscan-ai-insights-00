@@ -194,6 +194,15 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
               <DailyHydrationSummaryCard />
             </div>
 
+            {/* Summary card (fasting) */}
+            <div
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                currentBanner === bannerImages.length + 2 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              <DailyFastingSummaryCard />
+            </div>
+
             {/* Dots */}
             {totalSlides > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
