@@ -114,6 +114,20 @@ const IntermittentFasting = () => {
     return () => clearInterval(interval);
   }, [activeFast]);
 
+  // Send WhatsApp notification when fasting goal is reached
+  useEffect(() => {
+    if (!activeFast || !user?.id) return;
+    const currentProgress = Math.min((elapsedSeconds / (selectedProtocol.hours * 3600)) * 100, 100);
+    if (currentProgress >= 100 && notificationSentRef.current !== activeFast.id) {
+      notificationSentRef.current = activeFast.id;
+      supabase.functions.invoke('fasting-complete-notification', {
+        body: { user_id: user.id },
+      }).then(({ error }) => {
+        if (error) console.error('Fasting notification error:', error);
+      });
+    }
+  }, [elapsedSeconds, activeFast, user?.id, selectedProtocol.hours]);
+
   const targetSeconds = selectedProtocol.hours * 3600;
   const progress = activeFast ? Math.min((elapsedSeconds / targetSeconds) * 100, 100) : 0;
   const completed = progress >= 100;
