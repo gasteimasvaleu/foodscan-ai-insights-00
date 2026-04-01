@@ -118,7 +118,7 @@ const IntermittentFasting = () => {
   const progress = activeFast ? Math.min((elapsedSeconds / targetSeconds) * 100, 100) : 0;
   const completed = progress >= 100;
 
-  const radius = 80;
+  const radius = 65;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
