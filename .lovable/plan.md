@@ -1,13 +1,20 @@
 
 
-## Corrigir erro de build: `@capacitor/app` não resolvido pelo Vite
+## Corrigir erro: Vite analisa `import('@capacitor/app')` mesmo sendo dinâmico
 
 ### Problema
-O `declare module` em `src/types/capacitor-app.d.ts` resolve apenas os tipos para o TypeScript, mas o **Vite** tenta resolver o import real do módulo em runtime e falha porque o pacote `@capacitor/app` não está instalado no ambiente Lovable.
+O plugin `vite:import-analysis` resolve **todos** os imports dinâmicos, incluindo `import('@capacitor/app')`. O módulo não existe no ambiente Lovable, então falha.
 
 ### Solução
-Usar **import dinâmico** (`await import(...)`) dentro do hook, apenas quando a plataforma for iOS. Assim o Vite não tenta resolver o módulo no build — ele só será carregado em runtime no dispositivo nativo.
+Tornar o string do import **opaco** para o analisador estático do Vite, usando uma variável intermediária:
+
+```typescript
+const mod = '@capacitor/app';
+const capApp = await import(/* @vite-ignore */ mod);
+```
+
+O comentário `/* @vite-ignore */` instrui o Vite a não tentar resolver esse import dinâmico.
 
 ### Alteração
-- **`src/hooks/useWidgetSyncOnLaunch.ts`**: Remover o import estático `import { App as CapApp } from '@capacitor/app'` e substituir por um `import()` dinâmico dentro do `useEffect`, condicionado a `Capacitor.getPlatform() === 'ios'`. O listener do `appStateChange` será registrado com o módulo importado dinamicamente.
+- **`src/hooks/useWidgetSyncOnLaunch.ts`** (linha 98): substituir `import('@capacitor/app')` por `import(/* @vite-ignore */ '@capacitor/app')` para que o Vite ignore a resolução desse módulo.
 
