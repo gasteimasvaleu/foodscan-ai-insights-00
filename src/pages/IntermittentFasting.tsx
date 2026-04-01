@@ -236,7 +236,8 @@ const IntermittentFasting = () => {
 
             {/* Ring */}
             <div className="flex justify-center">
-              <div className="relative w-[160px] h-[160px] flex items-center justify-center">
+              <div className="bg-[#F9FAFB] rounded-2xl p-6 shadow-sm">
+                <div className="relative w-[160px] h-[160px] flex items-center justify-center">
                 <svg width="160" height="160" className="rotate-[-90deg]">
                   <circle cx="80" cy="80" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
                   <circle
