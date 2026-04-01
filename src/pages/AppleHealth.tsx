@@ -362,42 +362,6 @@ export default function AppleHealth() {
               </div>
             </div>
 
-            {/* Heart Rate + Sleep row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
-                <Heart className="w-5 h-5 text-red-500 mb-2" />
-                <div className="text-3xl font-bold text-red-600">
-                  {isLoading ? '...' : heartRate.averageBPM !== null ? heartRate.averageBPM : '—'}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {heartRate.averageBPM !== null ? 'bpm médio' : 'Sem dados'}
-                </p>
-                {heartRate.restingBPM !== null && (
-                  <p className="text-xs text-red-400 mt-1">
-                    Repouso: {heartRate.restingBPM} bpm
-                  </p>
-                )}
-              </div>
-
-              <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
-                <Moon className="w-5 h-5 text-indigo-500 mb-2" />
-                <div className="text-3xl font-bold text-indigo-600">
-                  {isLoading ? '...' : sleepData.totalMinutes !== null
-                    ? `${Math.floor(sleepData.totalMinutes / 60)}h${sleepData.totalMinutes % 60 > 0 ? ` ${sleepData.totalMinutes % 60}m` : ''}`
-                    : '—'}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {sleepData.totalMinutes !== null ? 'sono última noite' : 'Sem dados'}
-                </p>
-                {sleepData.bedtime && sleepData.wakeTime && (
-                  <p className="text-xs text-indigo-400 mt-1">
-                    {new Date(sleepData.bedtime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    {' → '}
-                    {new Date(sleepData.wakeTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                )}
-              </div>
-            </div>
 
             {/* Weekly chart */}
             {weeklyData.length > 0 && (
