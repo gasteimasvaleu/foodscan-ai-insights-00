@@ -1,51 +1,23 @@
 
-Objetivo: parar de perder o target do widget de forma definitiva.
 
-Diagnóstico (confirmado no código atual):
-- `ios/App/App.xcodeproj/project.pbxproj` hoje tem só o target `App` (não existe `WeDietWidget`, `.appex` nem “Embed App Extensions”).
-- O widget existe apenas como referência em `ios-widget-reference/WeDietWidget.swift` (não está integrado ao projeto iOS real).
-- `npm run cap:sync` já existe e preserva o `project.pbxproj`, mas ele só preserva o que já está lá (não recria target ausente).
-- `AppDebug.entitlements` e `AppRelease.entitlements` não têm App Group; isso pode quebrar a troca de dados com widget mesmo quando o target existir.
+## Rollback completo: remover sono e frequência cardíaca do HealthKit
 
-Plano de correção definitiva:
-1) Recriar e versionar o target do widget no projeto iOS
-- Criar no Xcode o target `WeDietWidget` (Widget Extension, sem App Intent).
-- Copiar o conteúdo de `ios-widget-reference/WeDietWidget.swift` para o arquivo do target.
-- Garantir que os arquivos do widget (Swift + plist + entitlements, se houver) fiquem dentro de `ios/App/...` e versionados no Git.
-- Atualizar `project.pbxproj` com:
-  - `PBXNativeTarget` do widget
-  - produto `WeDietWidget.appex`
-  - fase “Embed App Extensions” no target `App`
-  - dependência `App -> WeDietWidget`
+### Problema
+O plugin `@capgo/capacitor-health` v8.4.2 não suporta `heart_rate` nem `sleep` como dataType. O código atual usa `'heart_rate' as any` e `'sleep' as any`, o que causa erro nativo e impede a conexão com o Apple Health.
 
-2) Corrigir capabilities/entitlements App ↔ Widget
-- Adicionar `com.apple.security.application-groups` com `group.app.dietainteligente` em:
-  - `ios/App/App/AppDebug.entitlements`
-  - `ios/App/App/AppRelease.entitlements`
-- Manter o mesmo App Group também no target do widget.
-- Validar Signing & Capabilities dos dois targets no Xcode.
+### Alterações
 
-3) Blindar para não sumir de novo
-- Manter uso obrigatório de `npm run cap:sync` (não usar `npx cap sync ios` direto).
-- Endurecer `scripts/cap-sync.sh` com verificação:
-  - antes/depois do sync, checar se `project.pbxproj` contém `WeDietWidget`;
-  - se não contiver, abortar com erro explícito (evita seguir com projeto quebrado).
-- Documentar no README interno do iOS o fluxo padrão (sync + resolução de conflito no pbxproj).
+**1. `src/hooks/useHealthKit.ts`**
+- Remover interfaces `HeartRateData` e `SleepData`
+- Remover estados `heartRate` e `sleepData`
+- Remover funções `getHeartRate()` e `getSleepAnalysis()`
+- Remover exports dessas funções/estados
+- Manter apenas: steps, calories, weight, weeklyData, workouts
 
-4) Teste end-to-end de regressão
-- Confirmar no Xcode que existem os targets `App` e `WeDietWidget`.
-- Build em iPhone físico.
-- Adicionar widget na Home e validar dados (calorias/macros/hidratação).
-- Rodar `npm run cap:sync`, reabrir Xcode e confirmar que o target continua.
-- Fazer novo `git pull` (sem reset hard) e confirmar persistência.
+**2. `src/pages/AppleHealth.tsx`**
+- Remover cards de frequência cardíaca e sono (linhas 368-403)
+- Remover imports de `HeartRateData`, `SleepData`, `Moon`
+- Remover destructuring de `heartRate` e `sleepData` do hook
 
-Detalhes técnicos (resumo):
-- O problema principal não é o Swift do widget, é o estado do `project.pbxproj` (target não versionado/perdido em pull/rebase/reset).
-- O script atual protege o pbxproj, mas não recupera um target que já foi removido.
-- Sem App Group em Debug/Release entitlements, o app pode não escrever no container compartilhado que o widget lê.
+Resultado: a autorização volta a pedir apenas `steps`, `calories`, `weight`, `workouts` (que já funcionava), e nenhuma chamada posterior usa tipos não suportados.
 
-Ação emergencial imediata (para sair do bloqueio agora):
-- Se houver rebase pendente, abortar.
-- Recriar o target no Xcode.
-- Commitar imediatamente os arquivos nativos do widget + `project.pbxproj`.
-- A partir daí, usar apenas `npm run cap:sync`.
