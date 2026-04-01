@@ -30,34 +30,23 @@ const Objetivos = () => {
     <div className="min-h-screen bg-background pb-24">
       <Navbar />
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-24 space-y-4">
         {/* Header card */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#FFD1E7] rounded-3xl p-5 shadow-xl"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center">
-              <Target className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Meus Objetivos</h1>
-              <p className="text-sm text-muted-foreground">
-                Gamifique sua alimentação 🎯
-              </p>
-            </div>
+        <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+          <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+            <Target className="w-6 h-6 text-white" />
           </div>
+          <h1 className="text-lg font-bold text-primary">Meus Objetivos</h1>
+        </div>
 
-          {totalCount > 0 && (
-            <div className="mt-3 bg-white/50 rounded-xl p-3 flex items-center justify-between">
-              <span className="text-sm font-semibold text-foreground">Progresso semanal</span>
-              <span className="text-lg font-bold text-primary">
-                {completedCount}/{totalCount} ✅
-              </span>
-            </div>
-          )}
-        </motion.div>
+        {totalCount > 0 && (
+          <div className="bg-white/50 rounded-xl p-3 flex items-center justify-between shadow">
+            <span className="text-sm font-semibold text-foreground">Progresso semanal</span>
+            <span className="text-lg font-bold text-primary">
+              {completedCount}/{totalCount} ✅
+            </span>
+          </div>
+        )}
 
         {/* Add button */}
         <Button
