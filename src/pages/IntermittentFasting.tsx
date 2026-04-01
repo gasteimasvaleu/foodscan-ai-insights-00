@@ -156,13 +156,19 @@ const IntermittentFasting = () => {
   };
 
   // Build week days
+  // Find the most recent Sunday (0 = Sunday)
+  const today = new Date();
+  const currentDayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ...
+  const lastSunday = subDays(today, currentDayOfWeek);
+
   const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const day = subDays(new Date(), 6 - i);
+    const day = subDays(lastSunday, -i); // Sunday + i days
     const dayStart = startOfDay(day);
-    const dayEnd = startOfDay(subDays(new Date(), 6 - i - 1));
+    const nextDay = new Date(dayStart);
+    nextDay.setDate(nextDay.getDate() + 1);
     const record = weekHistory.find(r => {
       const s = new Date(r.started_at);
-      return s >= dayStart && s < dayEnd;
+      return s >= dayStart && s < nextDay;
     });
     const hours = record
       ? Math.round(differenceInSeconds(new Date(record.ended_at), new Date(record.started_at)) / 3600 * 10) / 10
