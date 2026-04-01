@@ -1,16 +1,46 @@
 
 
-## Plano: Restringir Apple Health a steps/calories/weight/workouts
+## Plano: Proteger project.pbxproj durante cap sync
 
-O `refreshData` atual chama `getHeartRate()` e `getSleepAnalysis()` junto com as demais funções. Esses tipos não estão na lista de autorização e podem causar falhas no bridge. Vamos remover essas chamadas do fluxo principal e manter apenas o que funcionava antes.
+### Problema
 
-### Alterações no arquivo `src/hooks/useHealthKit.ts`
+O `npx cap sync` pode sobrescrever o `project.pbxproj`, removendo referências customizadas (plugins nativos, entitlements, capabilities, build settings como DEVELOPMENT_TEAM, MARKETING_VERSION, etc.). Além disso, `SharedDataPlugin.m` e `SharedDataPlugin.swift` existem no diretório mas **não estão referenciados** no pbxproj atual.
 
-1. **Remover `getHeartRate()` e `getSleepAnalysis()` do `refreshData`** (linha 484-492) — manter apenas `getDailySteps`, `getDailyActiveCalories`, `getWeight`, `getWeeklyData`, `getRecentWorkouts`
+### Solução
 
-2. **Remover as dependências de `getHeartRate` e `getSleepAnalysis` do array de deps do `refreshData`** (linha 496)
+Criar um shell script wrapper (`scripts/cap-sync.sh`) que:
 
-3. **Manter as funções `getHeartRate` e `getSleepAnalysis` no hook** — elas continuam disponíveis para uso oportunístico na página `/apple-health`, mas não são chamadas automaticamente no refresh principal
+1. Faz backup do `project.pbxproj` antes de rodar `cap sync`
+2. Executa `npx cap sync`
+3. Restaura o backup do `project.pbxproj` (preservando todos os targets, referências e build settings customizados)
+4. Roda `pod install` para garantir que os pods estejam sincronizados
 
-Nenhuma outra alteração necessária. O `requestPermissions` já solicita apenas `['steps', 'calories', 'weight', 'workouts']`, o que está correto.
+### Alterações
+
+**1. Criar `scripts/cap-sync.sh`**
+
+Script bash que:
+- Copia `ios/App/App.xcodeproj/project.pbxproj` para `ios/App/App.xcodeproj/project.pbxproj.bak`
+- Executa `npx cap sync ios`
+- Restaura o backup sobre o pbxproj gerado pelo cap sync
+- Executa `cd ios/App && pod install`
+- Remove o backup
+- Exibe mensagem de sucesso
+
+**2. Adicionar referências do SharedDataPlugin ao `project.pbxproj`**
+
+Os arquivos `SharedDataPlugin.m` e `SharedDataPlugin.swift` existem no diretório mas não estão no pbxproj. Adicionar:
+- PBXFileReference para ambos os arquivos
+- Entradas no grupo App (PBXGroup)
+- PBXBuildFile entries na seção Sources
+
+**3. Adicionar script npm ao `package.json`**
+
+Adicionar um script `"cap:sync": "bash scripts/cap-sync.sh"` para facilitar o uso via `npm run cap:sync`.
+
+### Detalhes técnicos
+
+O script preserva **todo** o pbxproj customizado (entitlements separados Debug/Release, DEVELOPMENT_TEAM, MARKETING_VERSION, CURRENT_PROJECT_VERSION, bridging header, plugins nativos). O `cap sync` atualiza apenas os web assets (`public/`) e o `capacitor.config.json` dentro do diretório iOS -- essas atualizações **não dependem** do pbxproj, então restaurar o backup é seguro.
+
+O `pod install` no final garante que qualquer novo plugin adicionado ao `package.json` tenha seu pod instalado corretamente, mesmo com o pbxproj preservado.
 
