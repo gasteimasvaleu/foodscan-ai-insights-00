@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { DailyCalorieSummaryCard } from './DailyCalorieSummaryCard';
 import { DailyHydrationSummaryCard } from './DailyHydrationSummaryCard';
+import { DailyFastingSummaryCard } from './DailyFastingSummaryCard';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
