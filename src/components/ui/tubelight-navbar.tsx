@@ -59,6 +59,12 @@ const moreSheetItems = [
     url: "/hidratacao",
     icon: Droplets,
   },
+  {
+    name: "Jejum Intermitente",
+    description: "Controle seus ciclos de jejum",
+    url: "/jejum",
+    icon: Timer,
+  },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
