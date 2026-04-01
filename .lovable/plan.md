@@ -1,13 +1,13 @@
 
 
-## Adicionar Jejum Intermitente no menu "+" e corrigir erro runtime
+## Adicionar Navbar na página de Jejum Intermitente
 
-### Problema atual
-O `Timer` icon foi removido do import em `QuickActions.tsx` mas ainda está referenciado em algum lugar, causando `ReferenceError: Timer is not defined`. Preciso verificar se há resquício do item de jejum no array de actions.
+### Problema
+A página `/jejum` não inclui o componente `<Navbar />` (menu superior com perfil/logout), que está presente em todas as outras páginas do app. Também falta o `<AuthCard />` para exibir login quando o usuário não está autenticado.
 
-### Alterações
-
-1. **`src/components/QuickActions.tsx`** — Verificar e remover qualquer referência residual a `Timer` que está causando o erro runtime.
-
-2. **`src/components/ui/tubelight-navbar.tsx`** — Adicionar "Jejum Intermitente" ao array `moreSheetItems` com ícone `Timer` do lucide-react, descrição e URL `/jejum`, seguindo o mesmo padrão visual dos outros itens.
+### Alteração
+**Editar**: `src/pages/IntermittentFasting.tsx`
+- Importar `Navbar` de `@/components/Navbar` e `AuthCard` de `@/components/AuthCard`
+- Adicionar `<Navbar />` no topo do JSX (antes do header gradiente)
+- Adicionar checagem de `!user` retornando `<AuthCard />` (mesmo padrão de Hydration, Receitas, etc.)
 
