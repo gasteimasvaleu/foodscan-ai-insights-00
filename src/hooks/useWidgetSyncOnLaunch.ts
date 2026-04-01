@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { App as CapApp } from '@capacitor/app';
 import SharedData from '@/plugins/SharedDataPlugin';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateHydrationNutritionTotals } from '@/data/hydrationCatalog';
