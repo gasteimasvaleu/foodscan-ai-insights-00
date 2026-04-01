@@ -95,7 +95,7 @@ export const useWidgetSyncOnLaunch = (userId: string | undefined) => {
 
     // Sync when app returns from background (dynamic import to avoid Vite resolution error)
     let listenerPromise: Promise<{ remove: () => Promise<void> }> | null = null;
-    import('@capacitor/app')
+    import(/* @vite-ignore */ '@capacitor/app')
       .then(({ App }) => {
         listenerPromise = App.addListener('appStateChange', ({ isActive }: { isActive: boolean }) => {
           if (isActive) syncWidget();
