@@ -65,6 +65,12 @@ const moreSheetItems = [
     url: "/jejum",
     icon: Timer,
   },
+  {
+    name: "Objetivos",
+    description: "Monitore suas metas semanais",
+    url: "/objetivos",
+    icon: Target,
+  },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
