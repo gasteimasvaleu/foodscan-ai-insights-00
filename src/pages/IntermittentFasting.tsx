@@ -4,11 +4,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Timer, Play, Square, Flame, TrendingUp, Calendar } from 'lucide-react';
+import { Timer, Play, Square, Flame, TrendingUp, Calendar, ChevronDown } from 'lucide-react';
 import { format, differenceInSeconds, differenceInHours, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { WheelPicker } from '@/components/ui/wheel-picker';
 
 const PROTOCOLS = [
   { label: '16:8', hours: 16 },
@@ -22,6 +24,8 @@ const IntermittentFasting = () => {
   const { user } = useAuth();
   const [selectedProtocol, setSelectedProtocol] = useState(PROTOCOLS[0]);
   const [activeFast, setActiveFast] = useState<any>(null);
+  const [isProtocolDrawerOpen, setIsProtocolDrawerOpen] = useState(false);
+  const [pendingProtocol, setPendingProtocol] = useState(PROTOCOLS[0].label);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [weekHistory, setWeekHistory] = useState<any[]>([]);
   const [stats, setStats] = useState({ streak: 0, avgHours: 0, longestHours: 0 });
@@ -207,21 +211,16 @@ const IntermittentFasting = () => {
           <CardContent className="space-y-4">
             {/* Protocol selector */}
             {!activeFast && (
-              <div className="flex flex-wrap gap-2">
-                {PROTOCOLS.map((p) => (
-                  <button
-                    key={p.label}
-                    onClick={() => setSelectedProtocol(p)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                      selectedProtocol.label === p.label
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => {
+                  setPendingProtocol(selectedProtocol.label);
+                  setIsProtocolDrawerOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-primary text-primary rounded-xl font-semibold text-sm"
+              >
+                <span>Selecionar Jejum — {selectedProtocol.label}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
             )}
 
             {activeFast && (
@@ -330,6 +329,40 @@ const IntermittentFasting = () => {
           </CardContent>
         </Card>
       </div>
+      {/* Protocol Drawer */}
+      <Drawer open={isProtocolDrawerOpen} onOpenChange={setIsProtocolDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+          <DrawerHeader>
+            <DrawerTitle className="text-center text-foreground">Selecionar Protocolo</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4">
+            <WheelPicker
+              value={pendingProtocol}
+              onChange={setPendingProtocol}
+              options={PROTOCOLS.map(p => ({ label: `${p.label} (${p.hours}h jejum)`, value: p.label }))}
+            />
+          </div>
+          <DrawerFooter className="flex-row gap-2">
+            <Button
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsProtocolDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 rounded-xl"
+              onClick={() => {
+                const proto = PROTOCOLS.find(p => p.label === pendingProtocol);
+                if (proto) setSelectedProtocol(proto);
+                setIsProtocolDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
