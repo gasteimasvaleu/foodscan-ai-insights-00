@@ -1,26 +1,32 @@
 
 
-## Enviar lembrete WhatsApp quando o jejum terminar
+## Adicionar Sono e Frequência Cardíaca ao Apple Health
 
-### Abordagem
-Quando o timer do jejum atingir 100% (meta cumprida), o frontend detecta isso e chama uma edge function que envia uma mensagem WhatsApp via Z-API parabenizando o usuário. A infraestrutura Z-API já está configurada e funcional no projeto (usada em `whatsapp-send-reminders`).
+### O que será feito
+Adicionar leitura de **sono** (sleep_analysis) e **frequência cardíaca** (heart_rate) do HealthKit, exibindo novos cards na página `/apple-health` e incluindo as permissões na autorização.
 
 ### Alterações
 
-**1. Criar edge function `supabase/functions/fasting-complete-notification/index.ts`**
-- Recebe `user_id` no body
-- Busca o jejum ativo do usuário (`fasting_records` onde `ended_at IS NULL`)
-- Calcula se o tempo decorrido atingiu o `target_hours`
-- Busca o telefone do usuário em `whatsapp_subscriptions` (verificado)
-- Envia mensagem via Z-API com emoji ⏰ e texto parabenizando (ex: "🎉 *Parabéns! Seu jejum de 16h foi concluído!*\n\nVocê atingiu sua meta! 💪\n\nWe Diet - Cuidando da sua saúde!")
-- Usa os mesmos secrets já configurados: `ZAPI_INSTANCE_ID`, `ZAPI_TOKEN`, `ZAPI_SECURITY_TOKEN`
+**1. Editar `src/hooks/useHealthKit.ts`**
+- Adicionar `'sleep'` e `'heart_rate'` ao array `read` em `requestAuthorization`
+- Criar estados: `heartRate` (repouso/média/máx), `sleepData` (duração da última noite, horários)
+- Novo método `getHeartRate()`: usa `Health.queryAggregated` com `dataType: 'heart_rate'` para obter média e `Health.readSamples` para repouso
+- Novo método `getSleepAnalysis()`: usa `Health.readSamples` com `dataType: 'sleep'` para buscar registros da última noite, calcular duração total
+- Incluir ambos no `refreshData()`
+- Exportar os novos estados e métodos
 
-**2. Editar `src/pages/IntermittentFasting.tsx`**
-- No `useEffect` do timer, quando `progress >= 100` pela primeira vez, chamar `supabase.functions.invoke('fasting-complete-notification', { body: { user_id } })`
-- Usar um `useRef` para garantir que a notificação seja enviada apenas uma vez por sessão de jejum (evitar envios repetidos a cada tick do timer)
+**2. Editar `src/pages/AppleHealth.tsx`**
+- Adicionar dois novos cards após o grid de Calorias/Peso:
+  - **Card Frequência Cardíaca**: ícone `Heart` vermelho, exibe BPM de repouso e média diária
+  - **Card Sono**: ícone `Moon` azul-índigo, exibe duração do sono da última noite (ex: "7h 32min"), horário de dormir e acordar
+- Ambos seguem o mesmo padrão visual dos cards existentes (`bg-card/80 backdrop-blur-xl rounded-2xl`)
 
-### Considerações
-- Só envia se o usuário tiver uma assinatura WhatsApp verificada
-- Se não tiver WhatsApp configurado, simplesmente ignora (sem erro visível)
-- A notificação é enviada no momento em que a meta é atingida, não quando o usuário finaliza manualmente
+**3. Editar `ios/App/App/Info.plist`**
+- Já contém `NSHealthShareUsageDescription` — nenhuma alteração necessária (as permissões específicas são solicitadas via código)
+
+### Detalhes técnicos
+- O plugin `@capgo/capacitor-health` suporta `sleep` como dataType para `readSamples` e `heart_rate` para `queryAggregated`/`readSamples`
+- Sono: filtrar amostras do tipo "asleep" (excluindo "inBed" e "awake") para calcular duração real
+- Frequência cardíaca: usar agregação `avg` para média diária e sample mais recente com source "watch" para repouso
+- Na web/preview, os dados mostrarão "—" (sem dados) já que o HealthKit só funciona no dispositivo nativo
 
