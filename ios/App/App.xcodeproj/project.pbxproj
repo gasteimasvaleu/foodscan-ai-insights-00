@@ -238,6 +238,8 @@
 				039EEA812F7519380040CA7C /* NativeAppleSignInPlugin.swift in Sources */,
 				039EEA822F7519380040CA7C /* MyViewController.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				039EEA902F7520000040CA7C /* SharedDataPlugin.m in Sources */,
+				039EEA912F7520000040CA7C /* SharedDataPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
