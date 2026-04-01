@@ -29,7 +29,7 @@ export default function WidgetGuide() {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 pb-32">
-        <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
+        <div className="max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
