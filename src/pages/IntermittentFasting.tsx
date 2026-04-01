@@ -257,7 +257,6 @@ const IntermittentFasting = () => {
                   </span>
                 </div>
               </div>
-              </div>
             </div>
 
             {/* Action button */}
