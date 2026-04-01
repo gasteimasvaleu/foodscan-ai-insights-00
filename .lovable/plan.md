@@ -1,23 +1,27 @@
 
 
-## Problema
+## Problema: Widget não recebe valor de hidratação
 
-A chamada `requestAuthorization` na linha 145 do `useHealthKit.ts` inclui tipos não suportados pelo plugin (`'sleep' as any`, `'heart_rate' as any`), o que faz a autorização falhar completamente e impede a conexão.
+### Causa raiz
 
-## Solução
+Duas questões no `useWidgetSync`:
 
-Reverter o `requestAuthorization` para solicitar apenas os tipos que funcionavam antes (`steps`, `calories`, `weight`, `workouts`). Os dados de sono e frequência cardíaca podem ser lidos sem autorização explícita em alguns casos, ou simplesmente falharão silenciosamente nas funções individuais (que já têm try/catch).
+1. **`hydrationMl` não tem `Math.round`** — o valor pode ser um decimal (ex: `1500.5`) e o Swift espera `Int`. O `call.getInt()` no plugin nativo retorna `nil` para valores não-inteiros, resultando em `0`.
 
-### Alteração no `src/hooks/useHealthKit.ts`
+2. **`hydrationMl` pode ser negativo** — bebidas desidratantes (ex: álcool) têm `hydration_impact_ml` negativo. O `useWidgetSyncOnLaunch` aplica `Math.round(Math.max(0, hydrationMl))`, mas o `useWidgetSync` não.
 
-**Linha 144-147** — Remover `'sleep' as any` e `'heart_rate' as any` do array `read`:
+### Correção
 
+**Arquivo: `src/hooks/useWidgetSync.ts`** (linha 44)
+
+Alterar de:
 ```ts
-Health.requestAuthorization({
-  read: ['steps', 'calories', 'weight', 'workouts' as any],
-  write: ['calories'],
-}),
+hydrationMl,
+```
+Para:
+```ts
+hydrationMl: Math.round(Math.max(0, hydrationMl)),
 ```
 
-Isso restaura o comportamento anterior que funcionava. As funções `getHeartRate` e `getSleepAnalysis` continuam existindo e tentarão ler os dados — se o iOS não tiver permissão, elas falham silenciosamente graças aos try/catch existentes.
+Isso garante que o valor enviado ao plugin nativo seja sempre um inteiro não-negativo, consistente com o que o `useWidgetSyncOnLaunch` já faz.
 
