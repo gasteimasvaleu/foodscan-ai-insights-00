@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import {
   Heart, Footprints, Flame, Scale, RefreshCw, Unlink,
-  ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings, Trash2
+  ArrowLeft, Smartphone, Watch, Activity, HelpCircle, CheckCircle2, Settings, Trash2,
+  Moon
 } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger
