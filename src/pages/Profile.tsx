@@ -36,6 +36,7 @@ interface Goals {
 export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { isNative, isIOS } = useNativePlatform();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [goals, setGoals] = useState<Goals | null>(null);
   const [loading, setLoading] = useState(true);
