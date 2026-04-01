@@ -17,6 +17,7 @@ import { Calendar, Plus, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import VideoOverlay from '@/components/VideoOverlay';
+import { useWidgetSync } from '@/hooks/useWidgetSync';
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -61,6 +62,10 @@ const DailyControl = () => {
     consumed: any;
   } | null>(null);
   const [weeklyDataUpdateKey, setWeeklyDataUpdateKey] = useState(0);
+
+  // Sync data to iOS widget via App Groups
+  useWidgetSync({ goals, meals, hydrationTotals });
+
   useEffect(() => {
     if (!authLoading && user) {
       loadUserData();
