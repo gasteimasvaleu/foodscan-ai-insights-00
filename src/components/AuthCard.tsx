@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { DailyCalorieSummaryCard } from './DailyCalorieSummaryCard';
 import { DailyHydrationSummaryCard } from './DailyHydrationSummaryCard';
+import { DailyFastingSummaryCard } from './DailyFastingSummaryCard';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +52,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   // Autoplay 5s — pauses when on summary card
   useEffect(() => {
     if (banners.length <= 0) return;
-    const totalSlides = banners.length + 2; // +1 calorie summary +1 hydration
+    const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
     const timer = setInterval(() => {
       setCurrentBanner(prev => {
         const next = prev + 1;
@@ -133,7 +134,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
-    const totalSlides = bannerImages.length + 2; // +1 calorie +1 hydration
+    const totalSlides = bannerImages.length + 3; // +1 calorie +1 hydration +1 fasting
 
 
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -191,6 +192,15 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
               }`}
             >
               <DailyHydrationSummaryCard />
+            </div>
+
+            {/* Summary card (fasting) */}
+            <div
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                currentBanner === bannerImages.length + 2 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              <DailyFastingSummaryCard />
             </div>
 
             {/* Dots */}
