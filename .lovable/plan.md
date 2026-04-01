@@ -1,40 +1,78 @@
 
 
-## Corrigir PaywallScreen: garantir identifyUser antes da compra e usar customerInfo direto
+## Plano: Infraestrutura para Widget iOS + Instruções de Build
 
-### Problema
+### O que o Lovable vai fazer (código web + plugin nativo)
 
-1. O `purchaseMonthly()` pode executar antes do `identifyUser()` no AuthProvider (que roda em `setTimeout(..., 0)`), fazendo a compra ficar associada a um usuário anônimo no RevenueCat.
-2. Após a compra, `syncSubscriptionAfterLogin` tenta detectar entitlements com retry de 1.5s, mas pode falhar se o RevenueCat ainda não propagou. Isso faz `checkSubscription()` retornar `subscribed: false`, mantendo o paywall visível e causando dupla cobrança.
+#### 1. Plugin Capacitor `SharedDataPlugin`
+- **`ios/App/App/SharedDataPlugin.swift`** — Plugin que salva dados no `UserDefaults(suiteName: "group.app.dietainteligente")` com método `saveWidgetData` e `clearWidgetData`
+- **`ios/App/App/SharedDataPlugin.m`** — Bridge Objective-C
 
-### Alterações
+#### 2. Registrar plugin no `MyViewController.swift`
+- Adicionar `bridge?.registerPluginInstance(SharedDataPlugin())` no `capacitorDidLoad()`
 
-#### 1. `src/components/PaywallScreen.tsx` — `handlePurchase`
+#### 3. Hook `useWidgetSync.ts`
+- Novo hook que detecta plataforma nativa e chama `SharedDataPlugin.saveWidgetData()` com dados de calorias, refeições e hidratação
 
-Antes de chamar `rcPurchaseMonthly()`, chamar `identifyUser(user.id)` explicitamente para garantir que a compra será associada ao UUID correto.
+#### 4. Integrar no `DailyControl.tsx`
+- Chamar `useWidgetSync` passando goals, meals e hydrationTotals para sincronizar automaticamente
 
-Após a compra bem-sucedida, usar o `customerInfo` retornado diretamente pelo `purchaseMonthly()` para gravar no Supabase via upsert direto, sem depender do `syncSubscriptionAfterLogin` e seus retries. Extrair entitlements do `customerInfo` e fazer upsert na tabela `subscribers`.
+#### 5. Atualizar `App.entitlements`
+- Adicionar `com.apple.security.application-groups` → `["group.app.dietainteligente"]`
 
-Novo fluxo do `handlePurchase`:
-```
-1. await identifyUser(user.id)
-2. customerInfo = await rcPurchaseMonthly()
-3. Extrair entitlement do customerInfo
-4. Upsert direto no Supabase (subscribers)
-5. await onSubscribed() (re-valida via check-subscription)
-```
+#### 6. Gerar arquivos de referência do Widget (SwiftUI)
+- Criar arquivos em `ios-widget-reference/` com o código SwiftUI do widget (Timeline Provider, View, Entry) para você copiar no Xcode ao criar o Widget Extension target
 
-#### 2. `src/lib/revenuecat.ts` — Nova função `upsertSubscriptionFromCustomerInfo`
+---
 
-Criar uma função que recebe `userId`, `email` e `customerInfo` e faz o upsert na tabela `subscribers` diretamente, sem precisar buscar entitlements novamente. Reutiliza a lógica de claim de órfãos (steps 4a-4d) já existente em `syncSubscriptionAfterLogin`, mas sem os retries de detecção.
+### O que você precfazer localmente (passo a passo)
 
-#### 3. `src/components/PaywallScreen.tsx` — `handleRestore`
+#### Pré-requisitos
+- Mac com Xcode 15+
+- Projeto clonado via GitHub e atualizado (`git pull`)
 
-Aplicar a mesma lógica: chamar `identifyUser` antes, e usar o `customerInfo` retornado por `restorePurchases` para gravar diretamente.
+#### Passos após o Lovable aplicar as mudanças:
 
-### Resultado esperado
+1. **Git pull** o projeto atualizado
 
-- Compra sempre associada ao UUID correto no RevenueCat
-- Gravação imediata no Supabase sem depender de propagação de entitlements
-- Redirect imediato após primeira compra, eliminando o cenário de dupla cobrança
+2. **Instalar dependências e sincronizar**
+   ```bash
+   npm install
+   npm run build
+   npx cap sync ios
+   ```
+
+3. **Abrir no Xcode**
+   ```bash
+   npx cap open ios
+   ```
+
+4. **Configurar App Groups no target principal**
+   - No Xcode, selecione o target **App** → **Signing & Capabilities**
+   - Clique em **+ Capability** → **App Groups**
+   - Adicione: `group.app.dietainteligente`
+
+5. **Criar o Widget Extension**
+   - No Xcode: **File → New → Target → Widget Extension**
+   - Nome: `WeDietWidget`
+   - Desmarcar "Include Configuration App Intent"
+   - Ativar o mesmo App Group (`group.app.dietainteligente`) no target do widget
+   - Substituir o código gerado pelo conteúdo dos arquivos em `ios-widget-reference/`
+
+6. **Build e teste**
+   - Selecione o scheme do app principal (não o do widget)
+   - Build e rode no simulador ou device
+   - O widget aparecerá na galeria de widgets do iOS
+
+7. **Submeter à App Store**
+   - Archive pelo Xcode (Product → Archive)
+   - Upload via App Store Connect
+   - Isso também inclui o fix do PaywallScreen no bundle nativo
+
+### Detalhes técnicos
+
+- **App Groups** permite que o app principal e o widget compartilhem dados via `UserDefaults(suiteName:)`
+- O plugin salva um JSON com: `caloriesTarget`, `caloriesConsumed`, `mealsCount`, `hydrationMl`, `lastUpdate`
+- O widget usa `TimelineProvider` para ler esses dados e atualizar a cada 15 min
+- Os arquivos de referência SwiftUI terão o layout visual similar ao screenshot (circular progress de calorias, contagem de refeições, indicador de hidratação)
 
