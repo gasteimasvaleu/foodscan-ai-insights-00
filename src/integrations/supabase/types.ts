@@ -168,6 +168,36 @@ export type Database = {
         }
         Relationships: []
       }
+      fasting_records: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          id: string
+          protocol: string
+          started_at: string
+          target_hours: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          protocol?: string
+          started_at?: string
+          target_hours?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          protocol?: string
+          started_at?: string
+          target_hours?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       homepage_banners: {
         Row: {
           created_at: string
