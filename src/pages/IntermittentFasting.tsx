@@ -4,11 +4,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Timer, Play, Square, Flame, TrendingUp, Calendar } from 'lucide-react';
+import { Timer, Play, Square, Flame, TrendingUp, Calendar, ChevronDown } from 'lucide-react';
 import { format, differenceInSeconds, differenceInHours, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
+import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { WheelPicker } from '@/components/ui/wheel-picker';
 
 const PROTOCOLS = [
   { label: '16:8', hours: 16 },
