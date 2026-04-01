@@ -93,20 +93,21 @@ export const useWidgetSyncOnLaunch = (userId: string | undefined) => {
     // Sync immediately on mount
     syncWidget();
 
-    // Sync when app returns from background (dynamic import to avoid Vite resolution error)
-    let listenerPromise: Promise<{ remove: () => Promise<void> }> | null = null;
-    import(/* @vite-ignore */ '@capacitor/app')
-      .then(({ App }) => {
-        listenerPromise = App.addListener('appStateChange', ({ isActive }: { isActive: boolean }) => {
-          if (isActive) syncWidget();
-        });
-      })
-      .catch(() => {
-        // Module not available (web environment) — ignore
+    // Sync when app returns from background
+    let listenerHandle: { remove: () => Promise<void> } | null = null;
+
+    import('@/plugins/CapacitorApp').then(({ default: CapacitorApp }) => {
+      CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) syncWidget();
+      }).then((handle) => {
+        listenerHandle = handle;
       });
+    }).catch(() => {
+      // Not available in web — ignore
+    });
 
     return () => {
-      listenerPromise?.then((l) => l.remove());
+      listenerHandle?.remove();
     };
   }, [userId]);
 };
