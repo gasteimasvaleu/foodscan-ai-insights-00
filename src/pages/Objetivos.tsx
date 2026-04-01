@@ -27,10 +27,11 @@ const Objetivos = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
-      <div className="px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-24 space-y-4">
+      {/* Fixed top section */}
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-4 flex-shrink-0">
         {/* Header card */}
         <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
           <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
@@ -57,8 +58,10 @@ const Objetivos = () => {
           <Plus className="h-4 w-4" />
           Adicionar Objetivo
         </Button>
+      </div>
 
-        {/* Objectives list */}
+      {/* Scrollable objectives list */}
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-24">
         {loading ? (
           <div className="text-center py-8 text-muted-foreground">Carregando...</div>
         ) : progress.length === 0 ? (
