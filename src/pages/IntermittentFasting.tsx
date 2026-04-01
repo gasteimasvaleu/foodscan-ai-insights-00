@@ -24,6 +24,8 @@ const IntermittentFasting = () => {
   const { user } = useAuth();
   const [selectedProtocol, setSelectedProtocol] = useState(PROTOCOLS[0]);
   const [activeFast, setActiveFast] = useState<any>(null);
+  const [isProtocolDrawerOpen, setIsProtocolDrawerOpen] = useState(false);
+  const [pendingProtocol, setPendingProtocol] = useState(PROTOCOLS[0].label);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [weekHistory, setWeekHistory] = useState<any[]>([]);
   const [stats, setStats] = useState({ streak: 0, avgHours: 0, longestHours: 0 });
