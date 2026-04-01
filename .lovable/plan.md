@@ -1,46 +1,51 @@
 
+Objetivo: parar de perder o target do widget de forma definitiva.
 
-## Plano: Proteger project.pbxproj durante cap sync
+Diagnóstico (confirmado no código atual):
+- `ios/App/App.xcodeproj/project.pbxproj` hoje tem só o target `App` (não existe `WeDietWidget`, `.appex` nem “Embed App Extensions”).
+- O widget existe apenas como referência em `ios-widget-reference/WeDietWidget.swift` (não está integrado ao projeto iOS real).
+- `npm run cap:sync` já existe e preserva o `project.pbxproj`, mas ele só preserva o que já está lá (não recria target ausente).
+- `AppDebug.entitlements` e `AppRelease.entitlements` não têm App Group; isso pode quebrar a troca de dados com widget mesmo quando o target existir.
 
-### Problema
+Plano de correção definitiva:
+1) Recriar e versionar o target do widget no projeto iOS
+- Criar no Xcode o target `WeDietWidget` (Widget Extension, sem App Intent).
+- Copiar o conteúdo de `ios-widget-reference/WeDietWidget.swift` para o arquivo do target.
+- Garantir que os arquivos do widget (Swift + plist + entitlements, se houver) fiquem dentro de `ios/App/...` e versionados no Git.
+- Atualizar `project.pbxproj` com:
+  - `PBXNativeTarget` do widget
+  - produto `WeDietWidget.appex`
+  - fase “Embed App Extensions” no target `App`
+  - dependência `App -> WeDietWidget`
 
-O `npx cap sync` pode sobrescrever o `project.pbxproj`, removendo referências customizadas (plugins nativos, entitlements, capabilities, build settings como DEVELOPMENT_TEAM, MARKETING_VERSION, etc.). Além disso, `SharedDataPlugin.m` e `SharedDataPlugin.swift` existem no diretório mas **não estão referenciados** no pbxproj atual.
+2) Corrigir capabilities/entitlements App ↔ Widget
+- Adicionar `com.apple.security.application-groups` com `group.app.dietainteligente` em:
+  - `ios/App/App/AppDebug.entitlements`
+  - `ios/App/App/AppRelease.entitlements`
+- Manter o mesmo App Group também no target do widget.
+- Validar Signing & Capabilities dos dois targets no Xcode.
 
-### Solução
+3) Blindar para não sumir de novo
+- Manter uso obrigatório de `npm run cap:sync` (não usar `npx cap sync ios` direto).
+- Endurecer `scripts/cap-sync.sh` com verificação:
+  - antes/depois do sync, checar se `project.pbxproj` contém `WeDietWidget`;
+  - se não contiver, abortar com erro explícito (evita seguir com projeto quebrado).
+- Documentar no README interno do iOS o fluxo padrão (sync + resolução de conflito no pbxproj).
 
-Criar um shell script wrapper (`scripts/cap-sync.sh`) que:
+4) Teste end-to-end de regressão
+- Confirmar no Xcode que existem os targets `App` e `WeDietWidget`.
+- Build em iPhone físico.
+- Adicionar widget na Home e validar dados (calorias/macros/hidratação).
+- Rodar `npm run cap:sync`, reabrir Xcode e confirmar que o target continua.
+- Fazer novo `git pull` (sem reset hard) e confirmar persistência.
 
-1. Faz backup do `project.pbxproj` antes de rodar `cap sync`
-2. Executa `npx cap sync`
-3. Restaura o backup do `project.pbxproj` (preservando todos os targets, referências e build settings customizados)
-4. Roda `pod install` para garantir que os pods estejam sincronizados
+Detalhes técnicos (resumo):
+- O problema principal não é o Swift do widget, é o estado do `project.pbxproj` (target não versionado/perdido em pull/rebase/reset).
+- O script atual protege o pbxproj, mas não recupera um target que já foi removido.
+- Sem App Group em Debug/Release entitlements, o app pode não escrever no container compartilhado que o widget lê.
 
-### Alterações
-
-**1. Criar `scripts/cap-sync.sh`**
-
-Script bash que:
-- Copia `ios/App/App.xcodeproj/project.pbxproj` para `ios/App/App.xcodeproj/project.pbxproj.bak`
-- Executa `npx cap sync ios`
-- Restaura o backup sobre o pbxproj gerado pelo cap sync
-- Executa `cd ios/App && pod install`
-- Remove o backup
-- Exibe mensagem de sucesso
-
-**2. Adicionar referências do SharedDataPlugin ao `project.pbxproj`**
-
-Os arquivos `SharedDataPlugin.m` e `SharedDataPlugin.swift` existem no diretório mas não estão no pbxproj. Adicionar:
-- PBXFileReference para ambos os arquivos
-- Entradas no grupo App (PBXGroup)
-- PBXBuildFile entries na seção Sources
-
-**3. Adicionar script npm ao `package.json`**
-
-Adicionar um script `"cap:sync": "bash scripts/cap-sync.sh"` para facilitar o uso via `npm run cap:sync`.
-
-### Detalhes técnicos
-
-O script preserva **todo** o pbxproj customizado (entitlements separados Debug/Release, DEVELOPMENT_TEAM, MARKETING_VERSION, CURRENT_PROJECT_VERSION, bridging header, plugins nativos). O `cap sync` atualiza apenas os web assets (`public/`) e o `capacitor.config.json` dentro do diretório iOS -- essas atualizações **não dependem** do pbxproj, então restaurar o backup é seguro.
-
-O `pod install` no final garante que qualquer novo plugin adicionado ao `package.json` tenha seu pod instalado corretamente, mesmo com o pbxproj preservado.
-
+Ação emergencial imediata (para sair do bloqueio agora):
+- Se houver rebase pendente, abortar.
+- Recriar o target no Xcode.
+- Commitar imediatamente os arquivos nativos do widget + `project.pbxproj`.
+- A partir daí, usar apenas `npm run cap:sync`.
