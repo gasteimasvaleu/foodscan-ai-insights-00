@@ -129,6 +129,118 @@ export const logOutRevenueCat = async (): Promise<void> => {
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
+ * Upserts subscription data directly from a customerInfo object to the Supabase
+ * `subscribers` table. Does NOT retry entitlement detection — expects customerInfo
+ * to already contain active entitlements (e.g. right after a purchase).
+ */
+export const upsertSubscriptionFromCustomerInfo = async (
+  userId: string,
+  email: string,
+  customerInfo: any,
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const entitlements = customerInfo.entitlements?.active;
+    if (!entitlements || Object.keys(entitlements).length === 0) {
+      console.log('[RevenueCat] upsert: no active entitlements in customerInfo');
+      return { success: false, error: 'No active entitlements' };
+    }
+
+    const firstKey = Object.keys(entitlements)[0];
+    const firstEntitlement = entitlements[firstKey];
+    const expirationDate = firstEntitlement.expirationDate || null;
+
+    const originalTransactionId = firstEntitlement.originalPurchaseDate
+      ? `apple_${firstEntitlement.productIdentifier}_${firstEntitlement.originalPurchaseDate}`
+      : null;
+
+    const now = new Date().toISOString();
+    const updateFields = {
+      subscribed: true,
+      subscription_tier: 'Premium',
+      subscription_end: expirationDate,
+      payment_provider: 'apple',
+      product_source: 'revenuecat',
+      subscription_status: 'active',
+      transaction_id: originalTransactionId,
+      updated_at: now,
+    };
+
+    console.log('[RevenueCat] upsert direct:', JSON.stringify({
+      userId, email, expirationDate, transactionId: originalTransactionId,
+    }));
+
+    // Try claim orphan by transaction_id
+    if (originalTransactionId) {
+      const { data: orphanByTxn } = await supabase
+        .from('subscribers')
+        .select('id, user_id')
+        .eq('transaction_id', originalTransactionId)
+        .is('user_id', null)
+        .maybeSingle();
+
+      if (orphanByTxn) {
+        console.log('[RevenueCat] upsert: claiming orphan by txn:', orphanByTxn.id);
+        const { error } = await supabase
+          .from('subscribers')
+          .update({ ...updateFields, user_id: userId, email })
+          .eq('id', orphanByTxn.id);
+        if (!error) return { success: true };
+      }
+    }
+
+    // Try claim orphan by email
+    const { data: orphanByEmail } = await supabase
+      .from('subscribers')
+      .select('id, user_id')
+      .eq('email', email)
+      .is('user_id', null)
+      .maybeSingle();
+
+    if (orphanByEmail) {
+      console.log('[RevenueCat] upsert: claiming orphan by email:', orphanByEmail.id);
+      const { error } = await supabase
+        .from('subscribers')
+        .update({ ...updateFields, user_id: userId })
+        .eq('id', orphanByEmail.id);
+      if (!error) return { success: true };
+    }
+
+    // Try update existing by user_id
+    const { data: existingByUserId } = await supabase
+      .from('subscribers')
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (existingByUserId) {
+      console.log('[RevenueCat] upsert: updating existing by user_id');
+      const { error } = await supabase
+        .from('subscribers')
+        .update(updateFields)
+        .eq('user_id', userId);
+      if (!error) return { success: true };
+      return { success: false, error: error.message };
+    }
+
+    // Insert new
+    console.log('[RevenueCat] upsert: inserting new record');
+    const { error: insertError } = await supabase
+      .from('subscribers')
+      .insert({ user_id: userId, email, ...updateFields });
+
+    if (insertError) {
+      console.error('[RevenueCat] upsert insert failed:', insertError.message);
+      return { success: false, error: insertError.message };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('[RevenueCat] upsert error:', err);
+    return { success: false, error: err?.message || 'Unknown error' };
+  }
+};
+
+/**
  * Syncs RevenueCat subscription data to the Supabase `subscribers` table.
  * 
  * Follows the proven flow:
