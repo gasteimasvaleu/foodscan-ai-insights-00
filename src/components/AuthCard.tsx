@@ -133,7 +133,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
-    const totalSlides = bannerImages.length + 1; // +1 for summary card
+    const totalSlides = bannerImages.length + 2; // +1 calorie +1 hydration
 
 
     const handleTouchStart = (e: React.TouchEvent) => {
