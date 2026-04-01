@@ -113,7 +113,13 @@ const DailyControl = () => {
       if (hydrationError) {
         console.error('Erro ao carregar hidratação:', hydrationError);
       } else {
-        setHydrationTotals(calculateHydrationNutritionTotals(hydrationData || []));
+        const records = hydrationData || [];
+        setHydrationTotals(calculateHydrationNutritionTotals(records));
+        setHydrationMl(records.reduce((sum, r) => sum + (Number((r as any).hydration_impact_ml) || 0), 0));
+      }
+
+      if (profileData) {
+        setHydrationTarget(profileData.hydration_goal_ml ?? 3000);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
