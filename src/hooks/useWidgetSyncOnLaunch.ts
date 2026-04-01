@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { App as CapApp } from '@capacitor/app';
 import SharedData from '@/plugins/SharedDataPlugin';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateHydrationNutritionTotals } from '@/data/hydrationCatalog';
@@ -94,13 +93,20 @@ export const useWidgetSyncOnLaunch = (userId: string | undefined) => {
     // Sync immediately on mount
     syncWidget();
 
-    // Sync when app returns from background
-    const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
-      if (isActive) syncWidget();
-    });
+    // Sync when app returns from background (dynamic import to avoid Vite resolution error)
+    let listenerPromise: Promise<{ remove: () => Promise<void> }> | null = null;
+    import('@capacitor/app')
+      .then(({ App }) => {
+        listenerPromise = App.addListener('appStateChange', ({ isActive }: { isActive: boolean }) => {
+          if (isActive) syncWidget();
+        });
+      })
+      .catch(() => {
+        // Module not available (web environment) — ignore
+      });
 
     return () => {
-      listener.then((l) => l.remove());
+      listenerPromise?.then((l) => l.remove());
     };
   }, [userId]);
 };
