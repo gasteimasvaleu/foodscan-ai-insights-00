@@ -72,7 +72,7 @@ serve(async (req: Request) => {
     // Get WhatsApp subscription
     const { data: subscription } = await supabase
       .from("whatsapp_subscriptions")
-      .select("phone_number, preferences")
+      .select("phone_number")
       .eq("user_id", user_id)
       .eq("verified", true)
       .order("updated_at", { ascending: false })
@@ -83,16 +83,6 @@ serve(async (req: Request) => {
       console.log("⚠️ No verified WhatsApp subscription for user", user_id);
       return new Response(
         JSON.stringify({ success: false, reason: "no_whatsapp" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Check preferences
-    const prefs = subscription.preferences as Record<string, boolean> | null;
-    if (prefs && prefs.reminders === false) {
-      console.log("⚠️ Reminders disabled for user", user_id);
-      return new Response(
-        JSON.stringify({ success: false, reason: "reminders_disabled" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

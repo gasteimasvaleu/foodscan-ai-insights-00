@@ -88,14 +88,14 @@ serve(async (req: Request) => {
 
     let sentCount = 0;
     let skippedNoSubscriptionCount = 0;
-    let skippedPrefDisabledCount = 0;
+    
     let sendErrorsCount = 0;
 
     for (const reminder of pendingReminders) {
       // Get user's WhatsApp subscription
       const { data: subscription, error: subError } = await supabase
         .from("whatsapp_subscriptions")
-        .select("phone_number, preferences")
+        .select("phone_number")
         .eq("user_id", reminder.user_id)
         .eq("verified", true)
         .order("updated_at", { ascending: false })
@@ -105,14 +105,6 @@ serve(async (req: Request) => {
       if (subError || !subscription) {
         skippedNoSubscriptionCount++;
         console.log(`⚠️ Skipping reminder ${reminder.id}: no verified WhatsApp subscription for user ${reminder.user_id}`);
-        continue;
-      }
-
-      // Check if reminders preference is enabled
-      const prefs = subscription.preferences as Record<string, boolean> | null;
-      if (prefs && prefs.reminders === false) {
-        skippedPrefDisabledCount++;
-        console.log(`⚠️ Skipping reminder ${reminder.id}: reminders disabled in preferences for user ${reminder.user_id}`);
         continue;
       }
 
@@ -180,7 +172,7 @@ serve(async (req: Request) => {
     }
 
     console.log(
-      `📊 Summary | sent: ${sentCount}, total: ${pendingReminders.length}, skipped_no_subscription: ${skippedNoSubscriptionCount}, skipped_pref_disabled: ${skippedPrefDisabledCount}, send_errors: ${sendErrorsCount}`
+      `📊 Summary | sent: ${sentCount}, total: ${pendingReminders.length}, skipped_no_subscription: ${skippedNoSubscriptionCount}, send_errors: ${sendErrorsCount}`
     );
 
     return new Response(
@@ -189,7 +181,6 @@ serve(async (req: Request) => {
         sent: sentCount,
         total: pendingReminders.length,
         skipped_no_subscription: skippedNoSubscriptionCount,
-        skipped_pref_disabled: skippedPrefDisabledCount,
         send_errors: sendErrorsCount,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

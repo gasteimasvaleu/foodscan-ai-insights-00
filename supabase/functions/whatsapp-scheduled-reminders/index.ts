@@ -54,13 +54,6 @@ serve(async (req) => {
 
     // Send reminders to all active users
     for (const sub of subscriptions) {
-      const preferences = sub.preferences || {};
-      
-      // Check if user wants this type of reminder
-      if (preferences.reminders !== true) {
-        continue;
-      }
-
       try {
         await supabase.functions.invoke('whatsapp-send', {
           body: {
