@@ -163,6 +163,8 @@ export default function AppleHealth() {
     weight,
     weeklyData,
     recentWorkouts,
+    heartRate,
+    sleepData,
     requestPermissions,
     disconnect,
     refreshData,
