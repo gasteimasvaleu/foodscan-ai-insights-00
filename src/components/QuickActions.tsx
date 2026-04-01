@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight } from 'lucide-react';
+import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight, Timer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const QuickActions = () => {
@@ -36,6 +36,13 @@ export const QuickActions = () => {
       title: "Treinos",
       tags: ["Vídeos", "Exercícios"],
       path: "/treinos",
+      color: "#E24989",
+    },
+    {
+      icon: Timer,
+      title: "Jejum Intermitente",
+      tags: ["Timer", "Protocolos"],
+      path: "/jejum",
       color: "#E24989",
     },
     {
