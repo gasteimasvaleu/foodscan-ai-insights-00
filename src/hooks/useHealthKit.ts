@@ -493,7 +493,7 @@ export const useHealthKit = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected, isSupported, getDailySteps, getDailyActiveCalories, getWeight, getWeeklyData, getRecentWorkouts]);
+  }, [isConnected, isSupported, getDailySteps, getDailyActiveCalories, getWeight, getWeeklyData, getRecentWorkouts, getHeartRate, getSleepAnalysis]);
 
   return {
     isSupported,
