@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import { WhatsAppNotice } from '@/components/WhatsAppNotice';
 
 const Objetivos = () => {
   const { user, loading: authLoading } = useAuth();
