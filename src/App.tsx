@@ -60,6 +60,9 @@ const AuthAwareNavbar = () => {
   const isNativeIOS = isNative && isIOS;
   const location = useLocation();
 
+  // Global widget sync on launch (iOS only)
+  useWidgetSyncOnLaunch(user?.id);
+
   // Hide navbar on /auth page
   if (location.pathname === '/auth') return null;
 
