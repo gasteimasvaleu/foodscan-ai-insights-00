@@ -1,6 +1,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
+import { useWidgetSyncOnLaunch } from "@/hooks/useWidgetSyncOnLaunch";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -58,6 +59,9 @@ const AuthAwareNavbar = () => {
   const { isNative, isIOS } = useNativePlatform();
   const isNativeIOS = isNative && isIOS;
   const location = useLocation();
+
+  // Global widget sync on launch (iOS only)
+  useWidgetSyncOnLaunch(user?.id);
 
   // Hide navbar on /auth page
   if (location.pathname === '/auth') return null;

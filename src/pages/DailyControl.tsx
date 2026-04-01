@@ -64,8 +64,12 @@ const DailyControl = () => {
   } | null>(null);
   const [weeklyDataUpdateKey, setWeeklyDataUpdateKey] = useState(0);
 
+  // Hydration real data for widget sync
+  const [hydrationMl, setHydrationMl] = useState(0);
+  const [hydrationTarget, setHydrationTarget] = useState(3000);
+
   // Sync data to iOS widget via App Groups
-  useWidgetSync({ goals, meals, hydrationTotals });
+  useWidgetSync({ goals, meals, hydrationTotals, hydrationMl, hydrationTarget });
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -92,11 +96,12 @@ const DailyControl = () => {
 
       // Carregar refeições e hidratação do dia
       const today = new Date().toISOString().split('T')[0];
-      const [{ data: mealsData, error: mealsError }, { data: hydrationData, error: hydrationError }] = await Promise.all([
+      const [{ data: mealsData, error: mealsError }, { data: hydrationData, error: hydrationError }, { data: profileData }] = await Promise.all([
         supabase.from('meal_records').select('*').eq('user_id', user.id).gte('created_at', `${today}T00:00:00.000Z`).lt('created_at', `${today}T23:59:59.999Z`).order('created_at', {
           ascending: false
         }),
-        supabase.from('hydration_records').select('beverage_key, volume_ml, calories').eq('user_id', user.id).eq('consumption_date', today)
+        supabase.from('hydration_records').select('beverage_key, volume_ml, calories, hydration_impact_ml').eq('user_id', user.id).eq('consumption_date', today),
+        supabase.from('profiles').select('hydration_goal_ml').eq('id', user.id).single()
       ]);
 
       if (mealsError) {
@@ -108,7 +113,13 @@ const DailyControl = () => {
       if (hydrationError) {
         console.error('Erro ao carregar hidratação:', hydrationError);
       } else {
-        setHydrationTotals(calculateHydrationNutritionTotals(hydrationData || []));
+        const records = hydrationData || [];
+        setHydrationTotals(calculateHydrationNutritionTotals(records));
+        setHydrationMl(records.reduce((sum, r) => sum + (Number((r as any).hydration_impact_ml) || 0), 0));
+      }
+
+      if (profileData) {
+        setHydrationTarget(profileData.hydration_goal_ml ?? 3000);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
