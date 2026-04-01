@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Timer, Play, Square, Flame, TrendingUp, Calendar } from 'lucide-react';
 import { format, differenceInSeconds, differenceInHours, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Navbar } from '@/components/Navbar';
+import { AuthCard } from '@/components/AuthCard';
 
 const PROTOCOLS = [
   { label: '16:8', hours: 16 },
@@ -172,9 +174,12 @@ const IntermittentFasting = () => {
     };
   });
 
+  if (!user) return <AuthCard />;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background pt-[calc(env(safe-area-inset-top)+4rem)] pb-40">
+        <Navbar />
         <div className="container mx-auto px-4 py-8 flex justify-center">
           <div className="animate-pulse text-muted-foreground">Carregando...</div>
         </div>
@@ -184,6 +189,7 @@ const IntermittentFasting = () => {
 
   return (
     <div className="min-h-screen bg-background pt-[calc(env(safe-area-inset-top)+4rem)] pb-40">
+      <Navbar />
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 px-4 py-3">
         <div className="container mx-auto flex items-center gap-3">
