@@ -1,16 +1,9 @@
 
 
-## Expandir o card do timer para largura total
+## Ajustar ordem dos dias da semana — começar pelo domingo
 
 ### Alteração
-**Editar**: `src/pages/IntermittentFasting.tsx` (linha ~238-239)
+**Editar**: `src/pages/IntermittentFasting.tsx`
 
-Remover o `flex justify-center` do wrapper e fazer o card cinza ocupar 100% da largura, com o SVG centralizado dentro:
-
-```tsx
-<div className="bg-[#F9FAFB] rounded-2xl p-6 shadow-sm">
-  <div className="relative w-[160px] h-[160px] flex items-center justify-center mx-auto">
-```
-
-O card cinza passa a ter largura total (igual ao botão), e o timer circular fica centralizado dentro dele com `mx-auto`.
+Na construção do array `weekDays` (linhas ~153-170), reordenar para que o domingo seja sempre o primeiro elemento da esquerda. Atualmente os dias são gerados como "últimos 7 dias" em ordem cronológica. A lógica será ajustada para encontrar o domingo mais recente e gerar os 7 dias a partir dele (domingo a sábado), mantendo a mesma lógica de busca de registros.
 
