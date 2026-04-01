@@ -81,7 +81,7 @@ export const DailyFastingSummaryCard = () => {
   return (
     <div
       className="w-full h-full bg-gradient-to-br from-purple-500 via-violet-500 to-indigo-600 flex flex-col items-center justify-center p-4 cursor-pointer relative"
-      onClick={() => navigate('/intermittent-fasting')}
+      onClick={() => navigate('/jejum')}
     >
       <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider mb-2">
         Jejum Intermitente
