@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { RemindersCard } from "@/components/RemindersCard";
+import { WhatsAppNotice } from "@/components/WhatsAppNotice";
 
 
 interface ProfileData {
