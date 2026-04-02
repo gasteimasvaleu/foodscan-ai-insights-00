@@ -51,6 +51,19 @@ const Sleep = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
 
+  // Motivational category state
+  const [motivationalCategory, setMotivationalCategory] = useState<string | null>(null);
+  const [savingCategory, setSavingCategory] = useState(false);
+  const [hasWhatsApp, setHasWhatsApp] = useState<boolean | null>(null);
+
+  const MOTIVATIONAL_CATEGORIES = [
+    { key: 'gratidao', label: 'Gratidão', emoji: '🙏' },
+    { key: 'energia', label: 'Energia', emoji: '⚡' },
+    { key: 'saude', label: 'Saúde', emoji: '💚' },
+    { key: 'foco', label: 'Foco', emoji: '🎯' },
+    { key: 'superacao', label: 'Superação', emoji: '🔥' },
+  ];
+
   const fetchData = useCallback(async () => {
     if (!user?.id) return;
 
