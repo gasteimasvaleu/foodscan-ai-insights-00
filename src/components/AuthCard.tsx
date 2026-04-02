@@ -54,12 +54,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     if (banners.length <= 0) return;
     const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
     const timer = setInterval(() => {
-      setCurrentBanner(prev => {
-        const next = prev + 1;
-        // Stop autoplay at summary card (last slide)
-        if (next >= totalSlides) return prev;
-        return next;
-      });
+      setCurrentBanner(prev => (prev + 1) % totalSlides);
     }, 5000);
     return () => clearInterval(timer);
   }, [banners.length]);
@@ -146,10 +141,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     const handleTouchEnd = () => {
       const diff = touchStartX.current - touchEndX.current;
       if (Math.abs(diff) > 50) {
-        if (diff > 0 && currentBanner < totalSlides - 1) {
-          setCurrentBanner(prev => prev + 1);
-        } else if (diff < 0 && currentBanner > 0) {
-          setCurrentBanner(prev => prev - 1);
+        if (diff > 0) {
+          setCurrentBanner(prev => (prev + 1) % totalSlides);
+        } else {
+          setCurrentBanner(prev => (prev - 1 + totalSlides) % totalSlides);
         }
       }
     };
