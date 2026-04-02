@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Star, TrendingUp, Calendar, Flame, Clock, Plus, Trash2 } from 'lucide-react';
+import { Moon, Star, TrendingUp, Calendar, Flame, Clock, Plus, Trash2, Sun, MessageCircle } from 'lucide-react';
 import { format, subDays, startOfDay, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Navbar } from '@/components/Navbar';
@@ -50,6 +50,19 @@ const Sleep = () => {
   const [quality, setQuality] = useState(3);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
+
+  // Motivational category state
+  const [motivationalCategory, setMotivationalCategory] = useState<string | null>(null);
+  const [savingCategory, setSavingCategory] = useState(false);
+  const [hasWhatsApp, setHasWhatsApp] = useState<boolean | null>(null);
+
+  const MOTIVATIONAL_CATEGORIES = [
+    { key: 'gratidao', label: 'Gratidão', emoji: '🙏' },
+    { key: 'energia', label: 'Energia', emoji: '⚡' },
+    { key: 'saude', label: 'Saúde', emoji: '💚' },
+    { key: 'foco', label: 'Foco', emoji: '🎯' },
+    { key: 'superacao', label: 'Superação', emoji: '🔥' },
+  ];
 
   const fetchData = useCallback(async () => {
     if (!user?.id) return;
@@ -107,6 +120,36 @@ const Sleep = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Load motivational category and WhatsApp status
+  useEffect(() => {
+    if (!user?.id) return;
+    const loadMotivational = async () => {
+      const [{ data: profile }, { data: whatsapp }] = await Promise.all([
+        supabase.from('profiles').select('motivational_category').eq('id', user.id).single(),
+        supabase.from('whatsapp_subscriptions').select('id').eq('user_id', user.id).eq('verified', true).limit(1).maybeSingle(),
+      ]);
+      setMotivationalCategory(profile?.motivational_category || null);
+      setHasWhatsApp(!!whatsapp);
+    };
+    loadMotivational();
+  }, [user?.id]);
+
+  const handleSaveCategory = async (category: string | null) => {
+    if (!user?.id) return;
+    setSavingCategory(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ motivational_category: category } as any)
+      .eq('id', user.id);
+    setSavingCategory(false);
+    if (error) {
+      toast.error('Erro ao salvar preferência');
+      return;
+    }
+    setMotivationalCategory(category);
+    toast.success(category ? 'Mensagem motivacional ativada! 🌅' : 'Mensagem motivacional desativada');
+  };
 
   const handleSave = async () => {
     if (!user?.id) return;
@@ -353,7 +396,51 @@ const Sleep = () => {
                             className={`w-3 h-3 ${i < record.quality_rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted'}`}
                           />
                         ))}
-                      </div>
+        {/* Motivational Message Card */}
+        <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
+              <Sun className="w-4 h-4 text-yellow-500" /> Mensagem Motivacional
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Receba uma mensagem motivacional personalizada por WhatsApp todos os dias às 6:00. 🌅
+            </p>
+
+            {hasWhatsApp === false ? (
+              <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2">
+                <MessageCircle className="w-4 h-4 text-green-500 shrink-0" />
+                <p className="text-xs text-amber-900">Configure o WhatsApp primeiro para usar este recurso.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {MOTIVATIONAL_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.key}
+                      disabled={savingCategory}
+                      onClick={() => handleSaveCategory(motivationalCategory === cat.key ? null : cat.key)}
+                      className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                        motivationalCategory === cat.key
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary/50'
+                      }`}
+                    >
+                      {cat.emoji} {cat.label}
+                    </button>
+                  ))}
+                </div>
+                {motivationalCategory && (
+                  <p className="text-[10px] text-primary text-center">
+                    ✅ Ativo · Categoria: {MOTIVATIONAL_CATEGORIES.find(c => c.key === motivationalCategory)?.label}
+                  </p>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
                     </div>
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(record.bedtime), 'HH:mm')} → {format(new Date(record.wake_time), 'HH:mm')} · {formatDuration(record.duration_minutes)}
