@@ -185,6 +185,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!authReady) return;
 
     if (user) {
+      // Skip re-check if a purchase is in progress
+      if (purchaseInProgressRef.current) {
+        console.log('[AuthProvider] Purchase in progress, skipping checkSubscription');
+        return;
+      }
+
       // Race condition protection for newly created users
       const userCreatedAt = new Date(user.created_at).getTime();
       const secondsSinceCreation = (Date.now() - userCreatedAt) / 1000;
