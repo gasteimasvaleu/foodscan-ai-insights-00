@@ -141,10 +141,10 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     const handleTouchEnd = () => {
       const diff = touchStartX.current - touchEndX.current;
       if (Math.abs(diff) > 50) {
-        if (diff > 0 && currentBanner < totalSlides - 1) {
-          setCurrentBanner(prev => prev + 1);
-        } else if (diff < 0 && currentBanner > 0) {
-          setCurrentBanner(prev => prev - 1);
+        if (diff > 0) {
+          setCurrentBanner(prev => (prev + 1) % totalSlides);
+        } else {
+          setCurrentBanner(prev => (prev - 1 + totalSlides) % totalSlides);
         }
       }
     };
