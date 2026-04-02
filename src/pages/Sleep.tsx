@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Star, TrendingUp, Calendar, Flame, Clock, Plus, Trash2 } from 'lucide-react';
+import { Moon, Star, TrendingUp, Calendar, Flame, Clock, Plus, Trash2, Sun, MessageCircle } from 'lucide-react';
 import { format, subDays, startOfDay, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Navbar } from '@/components/Navbar';
