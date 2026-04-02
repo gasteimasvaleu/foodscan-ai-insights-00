@@ -91,6 +91,55 @@ export default function Profile() {
     }
   };
 
+  const loadWhatsappPrefs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("whatsapp_subscriptions")
+        .select("id, preferences")
+        .eq("user_id", user?.id)
+        .eq("verified", true)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        setWhatsappSubId(data.id);
+        const prefs = (data.preferences as Record<string, boolean>) || {};
+        setWhatsappPrefs({
+          reminders: prefs.reminders !== false,
+          fasting_notification: prefs.fasting_notification !== false,
+          weekly_objectives: prefs.weekly_objectives !== false,
+          motivational: prefs.motivational !== false,
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar preferências WhatsApp:", error);
+    }
+  };
+
+  const handleTogglePref = async (key: string, value: boolean) => {
+    if (!whatsappSubId || !whatsappPrefs) return;
+    setUpdatingPref(key);
+    const newPrefs = { ...whatsappPrefs, [key]: value };
+    setWhatsappPrefs(newPrefs);
+
+    try {
+      const { error } = await supabase
+        .from("whatsapp_subscriptions")
+        .update({ preferences: newPrefs })
+        .eq("id", whatsappSubId);
+
+      if (error) throw error;
+      toast({ title: value ? "Notificação ativada" : "Notificação desativada" });
+    } catch (error) {
+      setWhatsappPrefs({ ...whatsappPrefs, [key]: !value });
+      toast({ title: "Erro ao atualizar preferência", variant: "destructive" });
+    } finally {
+      setUpdatingPref(null);
+    }
+  };
+
   const handleUpdateName = async () => {
     try {
       const { error } = await supabase
