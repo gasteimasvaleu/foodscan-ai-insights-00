@@ -464,6 +464,112 @@ const Sleep = () => {
         </Card>
       </div>
 
+      {/* Guia Educativo sobre Sono */}
+      <div className="px-4 mt-6">
+        <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl backdrop-blur-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+              <Brain className="h-5 w-5 text-primary" />
+              Guia Completo do Sono
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Toque para expandir cada seção</p>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <Accordion type="multiple" className="space-y-3">
+
+              {/* 1 — Dicas para Dormir Melhor */}
+              <AccordionItem value="dicas" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-yellow-500" /> Dicas para Dormir Melhor</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">🌙 Rotina consistente:</strong> Durma e acorde nos mesmos horários, inclusive nos finais de semana. Isso regula seu relógio biológico.</p>
+                  <p><strong className="text-foreground">🌡️ Ambiente ideal:</strong> Quarto escuro, silencioso e fresco (18-22°C). Use cortinas blackout e tampões de ouvido se necessário.</p>
+                  <p><strong className="text-foreground">📱 Luz azul:</strong> Evite telas pelo menos 1h antes de dormir. A luz azul suprime a melatonina e atrasa o sono.</p>
+                  <p><strong className="text-foreground">🧘 Relaxamento:</strong> Técnicas como respiração 4-7-8 (inspire 4s, segure 7s, expire 8s) ajudam a desacelerar o corpo.</p>
+                  <p><strong className="text-foreground">☕ Cafeína:</strong> Evite café, chá preto e energéticos pelo menos 6h antes de dormir. A meia-vida da cafeína é de ~5 horas.</p>
+                  <p><strong className="text-foreground">🛏️ Cama = sono:</strong> Use a cama apenas para dormir. Evite trabalhar, comer ou assistir TV nela.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* 2 — Fases do Sono */}
+              <AccordionItem value="fases" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><Moon className="h-4 w-4 text-indigo-500" /> Fases do Sono</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">💤 N1 — Sono Leve:</strong> Transição entre vigília e sono. Dura 5-10 min. Fácil de acordar.</p>
+                  <p><strong className="text-foreground">😴 N2 — Sono Moderado:</strong> Frequência cardíaca e temperatura caem. Representa ~50% do sono total. Consolida memórias motoras.</p>
+                  <p><strong className="text-foreground">🧠 N3 — Sono Profundo:</strong> Fase mais restauradora. O corpo libera hormônio do crescimento (GH), repara tecidos e fortalece o sistema imunológico. Difícil de acordar.</p>
+                  <p><strong className="text-foreground">🌈 REM — Sono dos Sonhos:</strong> O cérebro está muito ativo (quase como acordado). Consolida memórias emocionais e aprendizado. Ocorre em ciclos cada vez mais longos durante a noite.</p>
+                  <p><strong className="text-foreground">🔄 Ciclos de 90 min:</strong> Uma noite completa tem 4-6 ciclos. Acordar entre ciclos (e não no meio) faz você se sentir mais descansado.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* 3 — Sono e Dieta */}
+              <AccordionItem value="dieta" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><Apple className="h-4 w-4 text-green-500" /> Sono e Dieta</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">🍌 Alimentos que ajudam:</strong> Banana, kiwi, cereja, leite morno, aveia e castanhas contêm triptofano e magnésio, precursores da melatonina.</p>
+                  <p><strong className="text-foreground">🍕 Alimentos que atrapalham:</strong> Comidas gordurosas, picantes ou muito açucaradas antes de dormir podem causar refluxo e dificultar o sono profundo.</p>
+                  <p><strong className="text-foreground">⏰ Última refeição:</strong> Ideal jantar 2-3h antes de deitar. Refeições pesadas próximas ao sono sobrecarregam a digestão.</p>
+                  <p><strong className="text-foreground">🍷 Álcool:</strong> Embora dê sonolência, o álcool fragmenta o sono REM e reduz a qualidade geral. Você pode "dormir" mas não descansa.</p>
+                  <p><strong className="text-foreground">💧 Hidratação:</strong> Evite beber muita água antes de dormir para não acordar para ir ao banheiro. Hidrate-se bem durante o dia.</p>
+                  <p><strong className="text-foreground">⚡ Sono ruim engorda:</strong> Dormir menos de 6h aumenta a grelina (fome) e reduz a leptina (saciedade), levando a excessos alimentares no dia seguinte.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* 4 — Sono e Exercício */}
+              <AccordionItem value="exercicio" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><Dumbbell className="h-4 w-4 text-orange-500" /> Sono e Exercício Físico</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">💪 Exercício melhora o sono:</strong> Atividade física regular aumenta o tempo de sono profundo (N3) e reduz o tempo para pegar no sono.</p>
+                  <p><strong className="text-foreground">🕐 Melhor horário:</strong> Exercícios de manhã ou à tarde são ideais. Treinos intensos até 2-3h antes de dormir podem dificultar o sono por elevar cortisol e adrenalina.</p>
+                  <p><strong className="text-foreground">🧘‍♀️ Exceção:</strong> Yoga, alongamento e caminhada leve à noite podem até ajudar a relaxar.</p>
+                  <p><strong className="text-foreground">⚠️ Overtraining:</strong> Treinar demais sem descanso adequado causa insônia, irritabilidade e queda de desempenho. O sono é quando o músculo cresce!</p>
+                  <p><strong className="text-foreground">🔋 Recuperação:</strong> Durante o sono profundo, o corpo libera GH e testosterona — essenciais para recuperação muscular e queima de gordura.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* 5 — Sinais de Alerta */}
+              <AccordionItem value="alerta" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500" /> Sinais de Alerta</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">😤 Apneia do sono:</strong> Roncos altos, pausas na respiração e sonolência diurna excessiva. Afeta ~30% dos adultos e aumenta risco cardiovascular.</p>
+                  <p><strong className="text-foreground">🌀 Insônia crônica:</strong> Dificuldade para dormir ou manter o sono por mais de 3 noites/semana durante 3+ meses. Procure ajuda médica.</p>
+                  <p><strong className="text-foreground">😵 Sonolência excessiva:</strong> Se você dorme 7-8h e ainda se sente exausto, pode haver um distúrbio subjacente.</p>
+                  <p><strong className="text-foreground">🦵 Pernas inquietas:</strong> Sensação de formigamento ou necessidade de mover as pernas ao deitar. Pode ser deficiência de ferro.</p>
+                  <p><strong className="text-foreground">🏥 Quando procurar um médico:</strong> Se problemas de sono persistem por semanas, afetam seu humor, concentração ou desempenho no trabalho.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* 6 — Quanto Tempo Devo Dormir */}
+              <AccordionItem value="tempo" className="bg-background/60 backdrop-blur-sm rounded-xl border border-primary/10 px-4 py-1">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline gap-2">
+                  <span className="flex items-center gap-2"><Info className="h-4 w-4 text-blue-500" /> Quanto Tempo Devo Dormir?</span>
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground leading-relaxed space-y-2 pt-1 pb-3">
+                  <p><strong className="text-foreground">👶 Bebês (0-1 ano):</strong> 12-17 horas</p>
+                  <p><strong className="text-foreground">🧒 Crianças (1-13 anos):</strong> 9-14 horas</p>
+                  <p><strong className="text-foreground">🧑‍🎓 Adolescentes (14-17):</strong> 8-10 horas</p>
+                  <p><strong className="text-foreground">🧑 Adultos (18-64):</strong> 7-9 horas</p>
+                  <p><strong className="text-foreground">👴 Idosos (65+):</strong> 7-8 horas</p>
+                  <p className="mt-2"><strong className="text-foreground">🚫 Mito:</strong> "Eu consigo funcionar com 5h de sono." Apenas ~1% da população tem o gene DEC2 que permite sono curto sem prejuízos. Para os outros 99%, dormir pouco acumula <strong>débito de sono</strong> que prejudica memória, imunidade e metabolismo.</p>
+                  <p><strong className="text-foreground">🔄 Débito de sono:</strong> Não dá para "compensar" no fim de semana. A melhor estratégia é manter consistência ao longo da semana.</p>
+                </AccordionContent>
+              </AccordionItem>
+
+            </Accordion>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Registration Drawer */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
