@@ -1,56 +1,31 @@
 
 
-## Card de Notificações WhatsApp na Página Perfil (Revisado)
+## Corrigir Preferências no WhatsAppSetup.tsx
 
-### Contexto
-As chaves `daily_summary` e `weekly_summary` no default de `preferences` em `whatsapp_subscriptions` são legado do Twilio e não são usadas por nenhuma edge function. Vamos limpá-las e criar as 4 chaves corretas para as funções Z-API.
+### Problema
+O componente `WhatsAppSetup.tsx` (usado na página `/whatsapp-settings`) mostra 3 toggles antigos do Twilio:
+- "Lembretes de refeições" → `reminders`
+- "Resumo diário" → `daily_summary`
+- "Resumo semanal" → `weekly_summary`
 
-### Alterações
+Esses não correspondem às 4 funções Z-API reais. Enquanto isso, o card correto já existe no Profile.tsx com os 4 toggles certos.
 
-**1. Migration — Atualizar default de `preferences` e registros existentes**
+### Correção
 
-Alterar o default da coluna `preferences` para:
-```json
-{
-  "reminders": true,
-  "fasting_notification": true,
-  "weekly_objectives": true,
-  "motivational": true
-}
-```
-E atualizar registros existentes para adicionar as novas chaves (sem remover as antigas para não quebrar nada).
+**Arquivo: `src/components/WhatsAppSetup.tsx`**
 
-**2. Card na página Profile.tsx**
+1. Atualizar o state `preferences` para usar as 4 chaves corretas:
+   - `reminders` → "Lembretes agendados" (refeições, sono, exercício)
+   - `fasting_notification` → "Alerta de jejum completo"
+   - `weekly_objectives` → "Resumo semanal de objetivos"
+   - `motivational` → "Mensagem motivacional diária"
 
-Novo card "Notificações WhatsApp" com 4 switches:
+2. Substituir os 3 toggles antigos pelos 4 toggles corretos (mesmo padrão do card no Profile.tsx)
 
-| Toggle | Chave em `preferences` | Descrição |
-|--------|----------------------|-----------|
-| Lembretes agendados | `reminders` | Refeições, sono, exercício, etc. |
-| Alerta de jejum completo | `fasting_notification` | Aviso quando a meta de jejum é atingida |
-| Resumo semanal de objetivos | `weekly_objectives` | Enviado aos domingos às 22h |
-| Mensagem motivacional diária | `motivational` | Enviada às 6h com IA |
+3. Remover o botão "Salvar Preferências" e fazer o update individual por toggle (mesmo padrão do Profile.tsx com `handleTogglePref`), ou manter o botão mas salvando as chaves corretas
 
-- Só aparece se o usuário tiver WhatsApp verificado (consulta `whatsapp_subscriptions` com `verified = true`)
-- Cada toggle faz update no JSONB `preferences` via `supabase.update()`
-- Usa o padrão visual existente da página (cards rosa `rounded-3xl`)
-
-**3. Edge Functions — Respeitar preferências**
-
-Adicionar checagem `preferences->>'chave' != 'false'` em cada função antes de enviar:
-
-- `whatsapp-send-reminders` → checar `reminders`
-- `fasting-complete-notification` → checar `fasting_notification`
-- `whatsapp-weekly-objectives` → checar `weekly_objectives`
-- `whatsapp-motivational` → checar `motivational`
-
-A verificação usa `!= 'false'` para compatibilidade com registros que não possuem a chave (tratados como ativados por padrão).
+4. Carregar as preferências existentes do banco ao montar o componente (atualmente não carrega — o estado sempre começa com defaults)
 
 ### Arquivos alterados
-- Migration SQL (default de `preferences` + backfill)
-- `src/pages/Profile.tsx` — novo card com 4 switches
-- `supabase/functions/whatsapp-send-reminders/index.ts`
-- `supabase/functions/fasting-complete-notification/index.ts`
-- `supabase/functions/whatsapp-weekly-objectives/index.ts`
-- `supabase/functions/whatsapp-motivational/index.ts`
+- `src/components/WhatsAppSetup.tsx` — substituir toggles antigos pelos 4 corretos das funções Z-API
 
