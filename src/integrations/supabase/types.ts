@@ -535,6 +535,7 @@ export type Database = {
           created_at: string
           hydration_goal_ml: number
           id: string
+          motivational_category: string | null
           name: string
           updated_at: string
         }
@@ -544,6 +545,7 @@ export type Database = {
           created_at?: string
           hydration_goal_ml?: number
           id: string
+          motivational_category?: string | null
           name: string
           updated_at?: string
         }
@@ -553,6 +555,7 @@ export type Database = {
           created_at?: string
           hydration_goal_ml?: number
           id?: string
+          motivational_category?: string | null
           name?: string
           updated_at?: string
         }

@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN motivational_category text DEFAULT null;
