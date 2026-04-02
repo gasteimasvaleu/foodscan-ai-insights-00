@@ -1,22 +1,11 @@
 
-## Corrigir estilo do campo de hora no modal de lembrete (iOS)
+
+## Corrigir espaçamento entre WhatsAppNotice e Metas Atuais na página Profile
 
 ### Problema
-No iOS nativo, o `<input type="time">` é renderizado como um botão grande centralizado, quebrando o layout visual do modal.
+O card de aviso do WhatsApp está colado no card "Metas Atuais" — falta margem entre eles.
 
-### Solução em `src/components/RemindersCard.tsx`
+### Solução em `src/pages/Profile.tsx`
 
-Aplicar estilos específicos ao Input de hora para forçar aparência consistente no iOS:
-- Adicionar `appearance-none` e `text-base` (previne zoom no iOS)
-- Adicionar `text-left` para alinhar o texto à esquerda
-- Adicionar altura fixa `h-10` para manter consistência com os outros campos
+Adicionar `className="mt-4 mb-6"` ao componente `<WhatsAppNotice>` (linha ~230) para criar espaçamento adequado acima e abaixo dele, separando-o do `RemindersCard` acima e do card "Metas Atuais" abaixo.
 
-Alterar o Input de hora (linha ~207) de:
-```tsx
-<Input type="time" value={reminderTime} onChange={...} />
-```
-Para:
-```tsx
-<Input type="time" value={reminderTime} onChange={...} 
-  className="text-base text-left appearance-none" />
-```
