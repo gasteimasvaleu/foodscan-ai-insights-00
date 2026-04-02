@@ -415,6 +415,51 @@ const Sleep = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Motivational Message Card */}
+        <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
+              <Sun className="w-4 h-4 text-yellow-500" /> Mensagem Motivacional
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Receba uma mensagem motivacional personalizada por WhatsApp todos os dias às 6:00. 🌅
+            </p>
+
+            {hasWhatsApp === false ? (
+              <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2">
+                <MessageCircle className="w-4 h-4 text-green-500 shrink-0" />
+                <p className="text-xs text-amber-900">Configure o WhatsApp primeiro para usar este recurso.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {MOTIVATIONAL_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.key}
+                      disabled={savingCategory}
+                      onClick={() => handleSaveCategory(motivationalCategory === cat.key ? null : cat.key)}
+                      className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                        motivationalCategory === cat.key
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-background text-foreground border-border hover:border-primary/50'
+                      }`}
+                    >
+                      {cat.emoji} {cat.label}
+                    </button>
+                  ))}
+                </div>
+                {motivationalCategory && (
+                  <p className="text-[10px] text-primary text-center">
+                    ✅ Ativo · Categoria: {MOTIVATIONAL_CATEGORIES.find(c => c.key === motivationalCategory)?.label}
+                  </p>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Registration Drawer */}
