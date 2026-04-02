@@ -395,7 +395,27 @@ const Sleep = () => {
                             key={i}
                             className={`w-3 h-3 ${i < record.quality_rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted'}`}
                           />
-                        ))}
+                         ))}
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {format(new Date(record.bedtime), 'HH:mm')} → {format(new Date(record.wake_time), 'HH:mm')} · {formatDuration(record.duration_minutes)}
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(record.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Motivational Message Card */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
@@ -440,25 +460,6 @@ const Sleep = () => {
             )}
           </CardContent>
         </Card>
-      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {format(new Date(record.bedtime), 'HH:mm')} → {format(new Date(record.wake_time), 'HH:mm')} · {formatDuration(record.duration_minutes)}
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(record.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       {/* Registration Drawer */}
