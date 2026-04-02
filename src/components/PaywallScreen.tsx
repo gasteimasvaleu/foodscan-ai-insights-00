@@ -21,6 +21,7 @@ interface PaywallScreenProps {
 
 const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
   const navigate = useNavigate();
+  const { forceSubscriptionActive, setPurchaseInProgress } = useAuthContext();
   const [price, setPrice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
