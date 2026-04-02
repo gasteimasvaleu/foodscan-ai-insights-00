@@ -1,31 +1,27 @@
 
 
-## Corrigir Preferências no WhatsAppSetup.tsx
+## Adicionar Card Accordion com Dicas de Sono na Página /sono
 
-### Problema
-O componente `WhatsAppSetup.tsx` (usado na página `/whatsapp-settings`) mostra 3 toggles antigos do Twilio:
-- "Lembretes de refeições" → `reminders`
-- "Resumo diário" → `daily_summary`
-- "Resumo semanal" → `weekly_summary`
+### O que será feito
+Adicionar um card estilo accordion no final da página de Sono (antes do Drawer) com conteúdo educativo rico sobre sono, organizado em seções expansíveis.
 
-Esses não correspondem às 4 funções Z-API reais. Enquanto isso, o card correto já existe no Profile.tsx com os 4 toggles certos.
+### Accordions planejados
 
-### Correção
+1. **Dicas para Dormir Melhor** — Higiene do sono, rotina, ambiente ideal, temperatura, luz azul, técnicas de relaxamento
+2. **Fases do Sono** — Sono leve (N1/N2), sono profundo (N3), sono REM, ciclos de 90 min, importância de cada fase
+3. **Sono e Dieta** — Como alimentação afeta o sono, alimentos que ajudam/atrapalham, horário da última refeição, cafeína, álcool
+4. **Sono e Exercício Físico** — Relação entre treino e qualidade do sono, melhor horário para treinar, overtraining e insônia
+5. **Sinais de Alerta** — Quando procurar um especialista, apneia, insônia crônica, sonolência excessiva
+6. **Quanto Tempo Devo Dormir?** — Recomendações por faixa etária, débito de sono, mitos sobre "dormir pouco"
 
-**Arquivo: `src/components/WhatsAppSetup.tsx`**
+### Detalhes técnicos
 
-1. Atualizar o state `preferences` para usar as 4 chaves corretas:
-   - `reminders` → "Lembretes agendados" (refeições, sono, exercício)
-   - `fasting_notification` → "Alerta de jejum completo"
-   - `weekly_objectives` → "Resumo semanal de objetivos"
-   - `motivational` → "Mensagem motivacional diária"
+**Arquivo alterado**: `src/pages/Sleep.tsx`
 
-2. Substituir os 3 toggles antigos pelos 4 toggles corretos (mesmo padrão do card no Profile.tsx)
-
-3. Remover o botão "Salvar Preferências" e fazer o update individual por toggle (mesmo padrão do Profile.tsx com `handleTogglePref`), ou manter o botão mas salvando as chaves corretas
-
-4. Carregar as preferências existentes do banco ao montar o componente (atualmente não carrega — o estado sempre começa com defaults)
-
-### Arquivos alterados
-- `src/components/WhatsAppSetup.tsx` — substituir toggles antigos pelos 4 corretos das funções Z-API
+- Importar `Accordion, AccordionContent, AccordionItem, AccordionTrigger` de `@/components/ui/accordion`
+- Importar ícones adicionais como `Brain, Apple, Dumbbell, AlertTriangle, Info` do lucide-react
+- Adicionar o card accordion após o card "Mensagem Motivacional" (antes do Drawer, ~linha 463)
+- Estilo do card: mesmo padrão `rounded-3xl border-primary/20 bg-primary/10 shadow-xl`
+- Cada AccordionItem terá conteúdo com listas, destaques e dicas práticas
+- Usar `type="multiple"` no Accordion para permitir abrir vários ao mesmo tempo
 
