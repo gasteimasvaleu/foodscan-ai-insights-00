@@ -44,11 +44,15 @@ export default function Profile() {
   const [editName, setEditName] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [whatsappPrefs, setWhatsappPrefs] = useState<Record<string, boolean> | null>(null);
+  const [whatsappSubId, setWhatsappSubId] = useState<string | null>(null);
+  const [updatingPref, setUpdatingPref] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       loadProfileData();
       loadGoals();
+      loadWhatsappPrefs();
     }
   }, [user]);
 
