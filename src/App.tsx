@@ -42,6 +42,7 @@ import Hydration from "./pages/Hydration";
 import IntermittentFasting from "./pages/IntermittentFasting";
 import Objetivos from "./pages/Objetivos";
 import WidgetGuide from "./pages/WidgetGuide";
+import Sleep from "./pages/Sleep";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
