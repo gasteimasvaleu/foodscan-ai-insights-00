@@ -47,8 +47,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [subscriptionReady, setSubscriptionReady] = useState(false);
 
   const currentUserIdRef = useRef<string | null>(null);
+  const purchaseInProgressRef = useRef(false);
 
   const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+
+  // Force subscription active locally (skip DB roundtrip)
+  const forceSubscriptionActive = useCallback((expirationDate?: string | null) => {
+    console.log('[AuthProvider] forceSubscriptionActive called, expiration:', expirationDate);
+    setSubscriptionStatus({
+      subscribed: true,
+      subscription_tier: 'Premium',
+      subscription_end: expirationDate || null,
+    });
+    setSubscriptionReady(true);
+    setSubscriptionLoading(false);
+  }, []);
+
+  const setPurchaseInProgress = useCallback((value: boolean) => {
+    console.log('[AuthProvider] setPurchaseInProgress:', value);
+    purchaseInProgressRef.current = value;
+  }, []);
 
   // ─── Check subscription (returns result for sync usage) ───
   const checkSubscription = useCallback(async (): Promise<SubscriptionStatus> => {
