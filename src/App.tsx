@@ -108,6 +108,7 @@ const App = () => (
             <Route path="/jejum" element={<IntermittentFasting />} />
             <Route path="/objetivos" element={<Objetivos />} />
             <Route path="/widget-guide" element={<WidgetGuide />} />
+            <Route path="/sono" element={<Sleep />} />
             <Route path="/treinos" element={<Treinos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />

@@ -71,6 +71,12 @@ const moreSheetItems = [
     url: "/objetivos",
     icon: Target,
   },
+  {
+    name: "Sono",
+    description: "Registre e acompanhe a qualidade do sono",
+    url: "/sono",
+    icon: Moon,
+  },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
