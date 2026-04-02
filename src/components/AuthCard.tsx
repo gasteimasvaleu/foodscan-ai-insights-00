@@ -54,12 +54,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
     if (banners.length <= 0) return;
     const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
     const timer = setInterval(() => {
-      setCurrentBanner(prev => {
-        const next = prev + 1;
-        // Stop autoplay at summary card (last slide)
-        if (next >= totalSlides) return prev;
-        return next;
-      });
+      setCurrentBanner(prev => (prev + 1) % totalSlides);
     }, 5000);
     return () => clearInterval(timer);
   }, [banners.length]);
