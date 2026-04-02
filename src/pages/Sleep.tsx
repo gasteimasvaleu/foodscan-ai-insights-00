@@ -121,6 +121,36 @@ const Sleep = () => {
     fetchData();
   }, [fetchData]);
 
+  // Load motivational category and WhatsApp status
+  useEffect(() => {
+    if (!user?.id) return;
+    const loadMotivational = async () => {
+      const [{ data: profile }, { data: whatsapp }] = await Promise.all([
+        supabase.from('profiles').select('motivational_category').eq('id', user.id).single(),
+        supabase.from('whatsapp_subscriptions').select('id').eq('user_id', user.id).eq('verified', true).limit(1).maybeSingle(),
+      ]);
+      setMotivationalCategory(profile?.motivational_category || null);
+      setHasWhatsApp(!!whatsapp);
+    };
+    loadMotivational();
+  }, [user?.id]);
+
+  const handleSaveCategory = async (category: string | null) => {
+    if (!user?.id) return;
+    setSavingCategory(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ motivational_category: category } as any)
+      .eq('id', user.id);
+    setSavingCategory(false);
+    if (error) {
+      toast.error('Erro ao salvar preferência');
+      return;
+    }
+    setMotivationalCategory(category);
+    toast.success(category ? 'Mensagem motivacional ativada! 🌅' : 'Mensagem motivacional desativada');
+  };
+
   const handleSave = async () => {
     if (!user?.id) return;
 
