@@ -38,6 +38,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
 
   const handlePurchase = async () => {
     setLoading(true);
+    setPurchaseInProgress(true);
     try {
       // 1. Ensure user is identified in RevenueCat BEFORE purchase
       console.log('[PaywallScreen] Identifying user before purchase:', user.id);
@@ -48,21 +49,24 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       if (customerInfo) {
         toast({ title: '✅ Assinatura realizada!', description: 'Bem-vindo ao We Diet Pro!' });
 
-        // 3. Upsert directly from customerInfo (no retry needed)
-        try {
-          await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
-        } catch (err) {
-          console.warn('[PaywallScreen] Upsert after purchase error:', err);
-        }
+        // 3. Extract expiration from entitlements and force local state immediately
+        const premiumEntitlement = customerInfo.entitlements?.active?.['Premium'] || customerInfo.entitlements?.active?.['premium'];
+        const expirationDate = premiumEntitlement?.expirationDate || null;
+        
+        console.log('[PaywallScreen] Purchase success, forcing subscription active. Expiration:', expirationDate);
+        forceSubscriptionActive(expirationDate);
 
-        // 4. Re-validate subscription before entering app
-        await onSubscribed();
+        // 4. Upsert to DB in background (best-effort)
+        upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch(err => {
+          console.warn('[PaywallScreen] Upsert after purchase error:', err);
+        });
       }
     } catch (err: any) {
       console.error('[PaywallScreen] Purchase error:', JSON.stringify(err));
       toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
     } finally {
       setLoading(false);
+      setPurchaseInProgress(false);
     }
   };
 
