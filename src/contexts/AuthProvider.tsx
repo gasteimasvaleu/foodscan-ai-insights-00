@@ -21,6 +21,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   checkSubscription: () => Promise<SubscriptionStatus>;
+  forceSubscriptionActive: (expirationDate?: string | null) => void;
+  setPurchaseInProgress: (value: boolean) => void;
   loading: boolean;
   subscription: {
     subscriptionStatus: SubscriptionStatus;
