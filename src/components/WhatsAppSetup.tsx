@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,51 +6,64 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { MessageCircle, CheckCircle, XCircle } from "lucide-react";
+import { MessageCircle, CheckCircle, XCircle, Bell, Moon, Target, Sparkles } from "lucide-react";
+
+const PREF_ITEMS = [
+  { key: "reminders", label: "Lembretes agendados", desc: "Refeições, sono, exercício, etc.", icon: Bell },
+  { key: "fasting_notification", label: "Alerta de jejum completo", desc: "Aviso quando a meta de jejum é atingida", icon: Moon },
+  { key: "weekly_objectives", label: "Resumo semanal de objetivos", desc: "Enviado aos domingos às 22h", icon: Target },
+  { key: "motivational", label: "Mensagem motivacional diária", desc: "Enviada às 6h com IA", icon: Sparkles },
+] as const;
+
+type PrefKey = typeof PREF_ITEMS[number]["key"];
 
 export const WhatsAppSetup = ({ userId }: { userId: string }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [preferences, setPreferences] = useState({
+  const [preferences, setPreferences] = useState<Record<PrefKey, boolean>>({
     reminders: true,
-    daily_summary: true,
-    weekly_summary: true
+    fasting_notification: true,
+    weekly_objectives: true,
+    motivational: true,
   });
 
-  // Normalize Brazilian phone numbers to international format (14 chars: +55 + 11 digits)
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("whatsapp_subscriptions")
+        .select("phone_number, verified, preferences")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (data) {
+        setPhoneNumber(data.phone_number || "");
+        setIsConnected(!!data.verified);
+        if (data.preferences && typeof data.preferences === "object") {
+          const p = data.preferences as Record<string, unknown>;
+          setPreferences({
+            reminders: p.reminders !== false,
+            fasting_notification: p.fasting_notification !== false,
+            weekly_objectives: p.weekly_objectives !== false,
+            motivational: p.motivational !== false,
+          });
+        }
+      }
+    };
+    load();
+  }, [userId]);
+
   const normalizePhoneNumber = (phone: string): string => {
-    // Remove all non-numeric characters except +
     let cleaned = phone.replace(/[^\d+]/g, '');
-    
-    // Remove whatsapp: prefix if present
     if (phone.includes('whatsapp:')) {
       cleaned = phone.split('whatsapp:')[1].replace(/[^\d+]/g, '');
     }
-    
-    // If already has country code with + and 11 digits after (modern format: 14 chars total)
-    if (cleaned.startsWith('+55') && cleaned.length === 14) {
-      return cleaned;
-    }
-    
-    // If has 55 prefix without + and 11 digits after (13 chars total)
-    if (cleaned.startsWith('55') && cleaned.length === 13) {
-      return '+' + cleaned;
-    }
-    
-    // If has only 11 digits (DDD + 9 + number), add +55
-    if (cleaned.length === 11 && !cleaned.startsWith('+')) {
-      return '+55' + cleaned;
-    }
-    
-    // If has 10 digits (old format without 9), add +55 and 9
+    if (cleaned.startsWith('+55') && cleaned.length === 14) return cleaned;
+    if (cleaned.startsWith('55') && cleaned.length === 13) return '+' + cleaned;
+    if (cleaned.length === 11 && !cleaned.startsWith('+')) return '+55' + cleaned;
     if (cleaned.length === 10 && !cleaned.startsWith('+')) {
-      const ddd = cleaned.substring(0, 2);
-      const number = cleaned.substring(2);
-      return `+55${ddd}9${number}`;
+      return `+55${cleaned.substring(0, 2)}9${cleaned.substring(2)}`;
     }
-    
-    // Return as is if format is unrecognized
     return cleaned.startsWith('+') ? cleaned : '+55' + cleaned;
   };
 
@@ -59,7 +72,6 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
       toast.error("Digite seu número de WhatsApp");
       return;
     }
-
     setIsLoading(true);
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
     try {
@@ -71,41 +83,33 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
           verified: true,
           preferences
         });
-
       if (error) throw error;
-
-      toast.success("WhatsApp conectado! Envie uma mensagem para ativar.", {
+      toast.success("WhatsApp conectado!", {
         description: `Envie "oi" para +1 555 886 8273 no WhatsApp`
       });
       setIsConnected(true);
     } catch (error: any) {
       console.error('Error connecting WhatsApp:', error);
-      toast.error("Erro ao conectar WhatsApp", {
-        description: error.message
-      });
+      toast.error("Erro ao conectar WhatsApp", { description: error.message });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleUpdatePreferences = async () => {
-    setIsLoading(true);
-    const normalizedPhone = normalizePhoneNumber(phoneNumber);
+  const handleTogglePref = async (key: PrefKey, value: boolean) => {
+    const prev = { ...preferences };
+    const updated = { ...preferences, [key]: value };
+    setPreferences(updated);
     try {
       const { error } = await supabase
-        .from('whatsapp_subscriptions')
-        .update({ preferences })
-        .eq('user_id', userId)
-        .eq('phone_number', normalizedPhone);
-
+        .from("whatsapp_subscriptions")
+        .update({ preferences: updated })
+        .eq("user_id", userId);
       if (error) throw error;
-
-      toast.success("Preferências atualizadas!");
-    } catch (error: any) {
-      console.error('Error updating preferences:', error);
-      toast.error("Erro ao atualizar preferências");
-    } finally {
-      setIsLoading(false);
+      toast.success(value ? "Notificação ativada" : "Notificação desativada");
+    } catch {
+      setPreferences(prev);
+      toast.error("Erro ao atualizar preferência");
     }
   };
 
@@ -142,11 +146,7 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
           </div>
 
           {!isConnected && (
-            <Button 
-              onClick={handleConnect} 
-              disabled={isLoading}
-              className="w-full"
-            >
+            <Button onClick={handleConnect} disabled={isLoading} className="w-full">
               {isLoading ? "Conectando..." : "Conectar WhatsApp"}
             </Button>
           )}
@@ -154,54 +154,22 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
           {isConnected && (
             <div className="space-y-4 pt-4 border-t">
               <h4 className="font-medium">Preferências de Notificação</h4>
-              
-              <div className="flex items-center justify-between">
-                <Label htmlFor="reminders" className="cursor-pointer">
-                  Lembretes de refeições
-                </Label>
-                <Switch
-                  id="reminders"
-                  checked={preferences.reminders}
-                  onCheckedChange={(checked) => 
-                    setPreferences({ ...preferences, reminders: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="daily" className="cursor-pointer">
-                  Resumo diário
-                </Label>
-                <Switch
-                  id="daily"
-                  checked={preferences.daily_summary}
-                  onCheckedChange={(checked) => 
-                    setPreferences({ ...preferences, daily_summary: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="weekly" className="cursor-pointer">
-                  Resumo semanal
-                </Label>
-                <Switch
-                  id="weekly"
-                  checked={preferences.weekly_summary}
-                  onCheckedChange={(checked) => 
-                    setPreferences({ ...preferences, weekly_summary: checked })
-                  }
-                />
-              </div>
-
-              <Button 
-                onClick={handleUpdatePreferences} 
-                disabled={isLoading}
-                variant="outline"
-                className="w-full"
-              >
-                {isLoading ? "Salvando..." : "Salvar Preferências"}
-              </Button>
+              {PREF_ITEMS.map(({ key, label, desc, icon: Icon }) => (
+                <div key={key} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="min-w-0">
+                      <Label htmlFor={key} className="cursor-pointer text-sm font-medium">{label}</Label>
+                      <p className="text-xs text-muted-foreground">{desc}</p>
+                    </div>
+                  </div>
+                  <Switch
+                    id={key}
+                    checked={preferences[key]}
+                    onCheckedChange={(v) => handleTogglePref(key, v)}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>
