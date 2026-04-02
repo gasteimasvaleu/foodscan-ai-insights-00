@@ -72,6 +72,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
 
   const handleRestore = async () => {
     setLoading(true);
+    setPurchaseInProgress(true);
     try {
       // 1. Ensure user is identified in RevenueCat BEFORE restore
       console.log('[PaywallScreen] Identifying user before restore:', user.id);
@@ -80,17 +81,22 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       // 2. Restore purchases
       const customerInfo = await rcRestorePurchases();
       if (customerInfo) {
-        toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+        const premiumEntitlement = customerInfo.entitlements?.active?.['Premium'] || customerInfo.entitlements?.active?.['premium'];
+        
+        if (premiumEntitlement) {
+          toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+          
+          const expirationDate = premiumEntitlement.expirationDate || null;
+          console.log('[PaywallScreen] Restore success, forcing subscription active. Expiration:', expirationDate);
+          forceSubscriptionActive(expirationDate);
 
-        // 3. Upsert directly from customerInfo
-        try {
-          await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
-        } catch (err) {
-          console.warn('[PaywallScreen] Upsert after restore error:', err);
+          // Background upsert
+          upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch(err => {
+            console.warn('[PaywallScreen] Upsert after restore error:', err);
+          });
+        } else {
+          toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
         }
-
-        // 4. Re-validate subscription before entering app
-        await onSubscribed();
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
       }
@@ -99,6 +105,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       toast({ title: 'Erro ao restaurar', description: 'Tente novamente.', variant: 'destructive' });
     } finally {
       setLoading(false);
+      setPurchaseInProgress(false);
     }
   };
 

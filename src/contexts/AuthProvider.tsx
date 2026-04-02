@@ -274,6 +274,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     checkSubscription,
+    forceSubscriptionActive,
+    setPurchaseInProgress,
     loading: !authReady,
     // Backward-compatible shape
     subscription: {
