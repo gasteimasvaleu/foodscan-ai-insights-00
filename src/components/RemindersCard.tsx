@@ -244,6 +244,7 @@ export function RemindersCard({ userId }: RemindersCardProps) {
                     type="time"
                     value={reminderTime}
                     onChange={(e) => setReminderTime(e.target.value)}
+                    className="text-base text-left appearance-none"
                   />
                 </div>
 
