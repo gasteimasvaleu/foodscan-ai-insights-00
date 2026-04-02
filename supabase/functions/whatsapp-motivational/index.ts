@@ -54,7 +54,7 @@ serve(async (req) => {
         // Check verified WhatsApp
         const { data: subscription } = await supabase
           .from("whatsapp_subscriptions")
-          .select("phone_number")
+          .select("phone_number, preferences")
           .eq("user_id", profile.id)
           .eq("verified", true)
           .limit(1)
@@ -62,6 +62,13 @@ serve(async (req) => {
 
         if (!subscription) {
           console.log(`⚠️ No WhatsApp for user ${profile.id}, skipping`);
+          continue;
+        }
+
+        // Check if motivational preference is disabled
+        const prefs = (subscription as any).preferences;
+        if (prefs && prefs.motivational === false) {
+          console.log(`⚠️ User ${profile.id} disabled motivational messages`);
           continue;
         }
 

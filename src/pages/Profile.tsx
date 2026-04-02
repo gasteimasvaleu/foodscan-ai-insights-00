@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
-import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2, Smartphone } from "lucide-react";
+import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2, Smartphone, Bell, Timer, BarChart3, Sparkles, MessageSquare } from "lucide-react";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
+import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -43,11 +44,15 @@ export default function Profile() {
   const [editName, setEditName] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [whatsappPrefs, setWhatsappPrefs] = useState<Record<string, boolean> | null>(null);
+  const [whatsappSubId, setWhatsappSubId] = useState<string | null>(null);
+  const [updatingPref, setUpdatingPref] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       loadProfileData();
       loadGoals();
+      loadWhatsappPrefs();
     }
   }, [user]);
 
@@ -83,6 +88,55 @@ export default function Profile() {
       console.error("Erro ao carregar metas:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadWhatsappPrefs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("whatsapp_subscriptions")
+        .select("id, preferences")
+        .eq("user_id", user?.id)
+        .eq("verified", true)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        setWhatsappSubId(data.id);
+        const prefs = (data.preferences as Record<string, boolean>) || {};
+        setWhatsappPrefs({
+          reminders: prefs.reminders !== false,
+          fasting_notification: prefs.fasting_notification !== false,
+          weekly_objectives: prefs.weekly_objectives !== false,
+          motivational: prefs.motivational !== false,
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar preferências WhatsApp:", error);
+    }
+  };
+
+  const handleTogglePref = async (key: string, value: boolean) => {
+    if (!whatsappSubId || !whatsappPrefs) return;
+    setUpdatingPref(key);
+    const newPrefs = { ...whatsappPrefs, [key]: value };
+    setWhatsappPrefs(newPrefs);
+
+    try {
+      const { error } = await supabase
+        .from("whatsapp_subscriptions")
+        .update({ preferences: newPrefs })
+        .eq("id", whatsappSubId);
+
+      if (error) throw error;
+      toast({ title: value ? "Notificação ativada" : "Notificação desativada" });
+    } catch (error) {
+      setWhatsappPrefs({ ...whatsappPrefs, [key]: !value });
+      toast({ title: "Erro ao atualizar preferência", variant: "destructive" });
+    } finally {
+      setUpdatingPref(null);
     }
   };
 
@@ -290,6 +344,40 @@ export default function Profile() {
           {/* Lembretes */}
           <RemindersCard userId={user.id} />
           <WhatsAppNotice userId={user.id} className="mt-4 mb-6" />
+
+          {/* Notificações WhatsApp */}
+          {whatsappPrefs && (
+            <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20">
+              <CardHeader>
+                <CardTitle className="text-center text-2xl font-semibold flex items-center justify-center gap-2">
+                  <MessageSquare className="w-6 h-6" />
+                  Notificações WhatsApp
+                </CardTitle>
+                <CardDescription className="text-center">Escolha quais notificações deseja receber</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { key: "reminders", icon: Bell, title: "Lembretes agendados", desc: "Refeições, sono, exercício, etc." },
+                  { key: "fasting_notification", icon: Timer, title: "Alerta de jejum completo", desc: "Aviso quando a meta de jejum é atingida" },
+                  { key: "weekly_objectives", icon: BarChart3, title: "Resumo semanal de objetivos", desc: "Enviado aos domingos às 22h" },
+                  { key: "motivational", icon: Sparkles, title: "Mensagem motivacional diária", desc: "Enviada às 6h com IA" },
+                ].map(({ key, icon: Icon, title, desc }) => (
+                  <div key={key} className="bg-[#F9FAFB] rounded-2xl flex items-center gap-4 py-4 px-5">
+                    <Icon className="h-7 w-7 text-pink-500 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm">{title}</p>
+                      <p className="text-xs text-muted-foreground">{desc}</p>
+                    </div>
+                    <Switch
+                      checked={whatsappPrefs[key]}
+                      onCheckedChange={(v) => handleTogglePref(key, v)}
+                      disabled={updatingPref === key}
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
            {/* Metas Atuais */}
           {goals && (
