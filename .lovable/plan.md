@@ -1,27 +1,52 @@
 
 
-## Adicionar Card Accordion com Dicas de Sono na Página /sono
+## Corrigir Duplicidade de Compra no Paywall iOS
 
-### O que será feito
-Adicionar um card estilo accordion no final da página de Sono (antes do Drawer) com conteúdo educativo rico sobre sono, organizado em seções expansíveis.
+### Problema
+Após o usuário assinar com sucesso na App Store, o Paywall reaparece e exige uma segunda compra. O fluxo atual:
 
-### Accordions planejados
+1. `purchaseMonthly()` → Apple confirma → retorna `customerInfo`
+2. `upsertSubscriptionFromCustomerInfo()` → tenta gravar no banco via cliente
+3. `checkSubscription()` → edge function consulta o banco → retorna `subscribed: false` (provável race condition ou dado incompleto)
+4. Paywall re-renderiza → usuário clica de novo
 
-1. **Dicas para Dormir Melhor** — Higiene do sono, rotina, ambiente ideal, temperatura, luz azul, técnicas de relaxamento
-2. **Fases do Sono** — Sono leve (N1/N2), sono profundo (N3), sono REM, ciclos de 90 min, importância de cada fase
-3. **Sono e Dieta** — Como alimentação afeta o sono, alimentos que ajudam/atrapalham, horário da última refeição, cafeína, álcool
-4. **Sono e Exercício Físico** — Relação entre treino e qualidade do sono, melhor horário para treinar, overtraining e insônia
-5. **Sinais de Alerta** — Quando procurar um especialista, apneia, insônia crônica, sonolência excessiva
-6. **Quanto Tempo Devo Dormir?** — Recomendações por faixa etária, débito de sono, mitos sobre "dormir pouco"
+**Causa raiz provável**: O `checkSubscription` depende 100% de encontrar um registro válido no banco com `subscription_end` no futuro. Se o upsert falhou silenciosamente, se o `expirationDate` veio `null` do RevenueCat, ou se um `TOKEN_REFRESHED` do Supabase re-disparou a checagem durante o fluxo de compra, o resultado é `subscribed: false` — e o paywall reaparece.
 
-### Detalhes técnicos
+### Solução
 
-**Arquivo alterado**: `src/pages/Sleep.tsx`
+**Abordagem**: Após uma compra confirmada pela Apple (customerInfo com entitlements ativos), **setar o estado de assinatura diretamente no AuthProvider** sem depender do roundtrip ao banco. A gravação no banco continua acontecendo em background.
 
-- Importar `Accordion, AccordionContent, AccordionItem, AccordionTrigger` de `@/components/ui/accordion`
-- Importar ícones adicionais como `Brain, Apple, Dumbbell, AlertTriangle, Info` do lucide-react
-- Adicionar o card accordion após o card "Mensagem Motivacional" (antes do Drawer, ~linha 463)
-- Estilo do card: mesmo padrão `rounded-3xl border-primary/20 bg-primary/10 shadow-xl`
-- Cada AccordionItem terá conteúdo com listas, destaques e dicas práticas
-- Usar `type="multiple"` no Accordion para permitir abrir vários ao mesmo tempo
+#### 1. AuthProvider — Novo método `forceSubscriptionActive()`
+
+Adicionar ao contexto um método que seta diretamente:
+```ts
+subscriptionStatus = { subscribed: true, subscription_tier: 'Premium', subscription_end: expirationDate }
+subscriptionReady = true
+```
+
+Isso faz o Index.tsx sair do Paywall imediatamente após a Apple confirmar.
+
+#### 2. PaywallScreen — Usar `forceSubscriptionActive` após compra
+
+Em vez de depender de `checkSubscription()` (que consulta o banco), o fluxo passa a ser:
+
+```
+purchaseMonthly() → customerInfo com entitlements ativos
+  → forceSubscriptionActive(expirationDate)  ← imediato, sem DB
+  → upsertSubscriptionFromCustomerInfo()     ← background, best-effort
+```
+
+Se o customerInfo não tiver entitlements ativos, aí sim faz fallback para `checkSubscription()`.
+
+#### 3. Proteção contra TOKEN_REFRESHED durante compra
+
+Adicionar um ref `purchaseInProgress` no PaywallScreen ou no AuthProvider. Quando `purchaseInProgress = true`, o useEffect que assiste `[user, authReady]` **não** re-dispara `checkSubscription()`, evitando que um token refresh sobrescreva o estado com `subscribed: false` durante o fluxo de compra.
+
+### Arquivos alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/contexts/AuthProvider.tsx` | Adicionar `forceSubscriptionActive()` ao contexto + ref `purchaseInProgress` para bloquear re-check durante compra |
+| `src/components/PaywallScreen.tsx` | Chamar `forceSubscriptionActive()` após compra bem-sucedida em vez de `checkSubscription()` |
+| `src/hooks/useAuth.tsx` | Expor `forceSubscriptionActive` no hook |
 
