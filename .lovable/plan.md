@@ -1,18 +1,18 @@
 
 
-## Adicionar `import WidgetKit` ao SharedDataPlugin.swift
+## Adicionar loop infinito ao carrossel da página principal
 
-### Problema
-O arquivo `SharedDataPlugin.swift` no repositório GitHub não tem o `import WidgetKit`, causando o erro `cannot find 'WidgetCenter' in scope` no build do Appflow.
+### O que muda
+O carrossel de banners + cards de resumo (calorias, hidratação, jejum) atualmente para no último slide. A alteração fará com que ele volte ao primeiro slide automaticamente após o último, criando um loop contínuo.
 
-### Alteração
-**`ios/App/App/SharedDataPlugin.swift`** — Adicionar `import WidgetKit` na linha 2, após `import Foundation`:
+### Alterações em `src/components/AuthCard.tsx`
 
-```swift
-import Foundation
-import WidgetKit
-import Capacitor
-```
+1. **Autoplay com loop** (linhas 52-65): Ao invés de parar no último slide, o `setInterval` volta para `0` quando atinge `totalSlides`:
+   ```
+   setCurrentBanner(prev => (prev + 1) % totalSlides)
+   ```
 
-Isso é tudo que precisa ser feito — uma linha adicionada.
+2. **Swipe com loop** (linhas 146-155): O gesto de swipe também faz loop — swipe para frente no último slide vai para o primeiro, swipe para trás no primeiro vai para o último.
+
+Nenhum outro arquivo precisa ser alterado.
 
