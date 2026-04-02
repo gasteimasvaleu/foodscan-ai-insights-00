@@ -12,6 +12,7 @@ import {
   identifyUser,
   upsertSubscriptionFromCustomerInfo,
 } from '@/lib/revenuecat';
+import { useAuthContext } from '@/contexts/AuthProvider';
 
 interface PaywallScreenProps {
   user: { id: string; email?: string };
@@ -20,6 +21,7 @@ interface PaywallScreenProps {
 
 const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
   const navigate = useNavigate();
+  const { forceSubscriptionActive, setPurchaseInProgress } = useAuthContext();
   const [price, setPrice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +38,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
 
   const handlePurchase = async () => {
     setLoading(true);
+    setPurchaseInProgress(true);
     try {
       // 1. Ensure user is identified in RevenueCat BEFORE purchase
       console.log('[PaywallScreen] Identifying user before purchase:', user.id);
@@ -46,26 +49,30 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       if (customerInfo) {
         toast({ title: '✅ Assinatura realizada!', description: 'Bem-vindo ao We Diet Pro!' });
 
-        // 3. Upsert directly from customerInfo (no retry needed)
-        try {
-          await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
-        } catch (err) {
-          console.warn('[PaywallScreen] Upsert after purchase error:', err);
-        }
+        // 3. Extract expiration from entitlements and force local state immediately
+        const premiumEntitlement = customerInfo.entitlements?.active?.['Premium'] || customerInfo.entitlements?.active?.['premium'];
+        const expirationDate = premiumEntitlement?.expirationDate || null;
+        
+        console.log('[PaywallScreen] Purchase success, forcing subscription active. Expiration:', expirationDate);
+        forceSubscriptionActive(expirationDate);
 
-        // 4. Re-validate subscription before entering app
-        await onSubscribed();
+        // 4. Upsert to DB in background (best-effort)
+        upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch(err => {
+          console.warn('[PaywallScreen] Upsert after purchase error:', err);
+        });
       }
     } catch (err: any) {
       console.error('[PaywallScreen] Purchase error:', JSON.stringify(err));
       toast({ title: 'Erro na compra', description: `Não foi possível completar. ${err?.message || ''}`, variant: 'destructive' });
     } finally {
       setLoading(false);
+      setPurchaseInProgress(false);
     }
   };
 
   const handleRestore = async () => {
     setLoading(true);
+    setPurchaseInProgress(true);
     try {
       // 1. Ensure user is identified in RevenueCat BEFORE restore
       console.log('[PaywallScreen] Identifying user before restore:', user.id);
@@ -74,17 +81,22 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       // 2. Restore purchases
       const customerInfo = await rcRestorePurchases();
       if (customerInfo) {
-        toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+        const premiumEntitlement = customerInfo.entitlements?.active?.['Premium'] || customerInfo.entitlements?.active?.['premium'];
+        
+        if (premiumEntitlement) {
+          toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+          
+          const expirationDate = premiumEntitlement.expirationDate || null;
+          console.log('[PaywallScreen] Restore success, forcing subscription active. Expiration:', expirationDate);
+          forceSubscriptionActive(expirationDate);
 
-        // 3. Upsert directly from customerInfo
-        try {
-          await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
-        } catch (err) {
-          console.warn('[PaywallScreen] Upsert after restore error:', err);
+          // Background upsert
+          upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch(err => {
+            console.warn('[PaywallScreen] Upsert after restore error:', err);
+          });
+        } else {
+          toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
         }
-
-        // 4. Re-validate subscription before entering app
-        await onSubscribed();
       } else {
         toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
       }
@@ -93,6 +105,7 @@ const PaywallScreen = ({ user, onSubscribed }: PaywallScreenProps) => {
       toast({ title: 'Erro ao restaurar', description: 'Tente novamente.', variant: 'destructive' });
     } finally {
       setLoading(false);
+      setPurchaseInProgress(false);
     }
   };
 
