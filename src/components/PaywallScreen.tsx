@@ -12,6 +12,7 @@ import {
   identifyUser,
   upsertSubscriptionFromCustomerInfo,
 } from '@/lib/revenuecat';
+import { useAuthContext } from '@/contexts/AuthProvider';
 
 interface PaywallScreenProps {
   user: { id: string; email?: string };
