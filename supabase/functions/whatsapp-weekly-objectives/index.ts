@@ -108,7 +108,7 @@ serve(async (req: Request) => {
       // Get WhatsApp subscription
       const { data: subscription } = await supabase
         .from("whatsapp_subscriptions")
-        .select("phone_number")
+        .select("phone_number, preferences")
         .eq("user_id", userId)
         .eq("verified", true)
         .order("updated_at", { ascending: false })
@@ -117,6 +117,14 @@ serve(async (req: Request) => {
 
       if (!subscription) {
         skippedCount++;
+        continue;
+      }
+
+      // Check if weekly_objectives preference is disabled
+      const prefs = (subscription as any).preferences;
+      if (prefs && prefs.weekly_objectives === false) {
+        skippedCount++;
+        console.log(`⚠️ User ${userId} disabled weekly objectives`);
         continue;
       }
 

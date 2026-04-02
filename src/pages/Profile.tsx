@@ -296,6 +296,40 @@ export default function Profile() {
           <RemindersCard userId={user.id} />
           <WhatsAppNotice userId={user.id} className="mt-4 mb-6" />
 
+          {/* Notificações WhatsApp */}
+          {whatsappPrefs && (
+            <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20">
+              <CardHeader>
+                <CardTitle className="text-center text-2xl font-semibold flex items-center justify-center gap-2">
+                  <MessageSquare className="w-6 h-6" />
+                  Notificações WhatsApp
+                </CardTitle>
+                <CardDescription className="text-center">Escolha quais notificações deseja receber</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { key: "reminders", icon: Bell, title: "Lembretes agendados", desc: "Refeições, sono, exercício, etc." },
+                  { key: "fasting_notification", icon: Timer, title: "Alerta de jejum completo", desc: "Aviso quando a meta de jejum é atingida" },
+                  { key: "weekly_objectives", icon: BarChart3, title: "Resumo semanal de objetivos", desc: "Enviado aos domingos às 22h" },
+                  { key: "motivational", icon: Sparkles, title: "Mensagem motivacional diária", desc: "Enviada às 6h com IA" },
+                ].map(({ key, icon: Icon, title, desc }) => (
+                  <div key={key} className="bg-[#F9FAFB] rounded-2xl flex items-center gap-4 py-4 px-5">
+                    <Icon className="h-7 w-7 text-pink-500 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm">{title}</p>
+                      <p className="text-xs text-muted-foreground">{desc}</p>
+                    </div>
+                    <Switch
+                      checked={whatsappPrefs[key]}
+                      onCheckedChange={(v) => handleTogglePref(key, v)}
+                      disabled={updatingPref === key}
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
            {/* Metas Atuais */}
           {goals && (
             <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">

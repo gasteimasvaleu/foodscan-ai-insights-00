@@ -95,7 +95,7 @@ serve(async (req: Request) => {
       // Get user's WhatsApp subscription
       const { data: subscription, error: subError } = await supabase
         .from("whatsapp_subscriptions")
-        .select("phone_number")
+        .select("phone_number, preferences")
         .eq("user_id", reminder.user_id)
         .eq("verified", true)
         .order("updated_at", { ascending: false })
@@ -105,6 +105,13 @@ serve(async (req: Request) => {
       if (subError || !subscription) {
         skippedNoSubscriptionCount++;
         console.log(`⚠️ Skipping reminder ${reminder.id}: no verified WhatsApp subscription for user ${reminder.user_id}`);
+        continue;
+      }
+
+      // Check if reminders preference is disabled
+      const prefs = (subscription as any).preferences;
+      if (prefs && prefs.reminders === false) {
+        console.log(`⚠️ Skipping reminder ${reminder.id}: user ${reminder.user_id} disabled reminders`);
         continue;
       }
 
