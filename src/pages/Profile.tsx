@@ -289,7 +289,7 @@ export default function Profile() {
 
           {/* Lembretes */}
           <RemindersCard userId={user.id} />
-          <WhatsAppNotice userId={user.id} />
+          <WhatsAppNotice userId={user.id} className="mt-4 mb-6" />
 
            {/* Metas Atuais */}
           {goals && (
