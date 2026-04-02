@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -70,6 +70,12 @@ const moreSheetItems = [
     description: "Monitore suas metas semanais",
     url: "/objetivos",
     icon: Target,
+  },
+  {
+    name: "Sono",
+    description: "Registre e acompanhe a qualidade do sono",
+    url: "/sono",
+    icon: Moon,
   },
 ]
 

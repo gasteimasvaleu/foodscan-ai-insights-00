@@ -678,6 +678,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sleep_records: {
+        Row: {
+          bedtime: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          quality_rating: number
+          sleep_date: string
+          tags: string[] | null
+          user_id: string
+          wake_time: string
+        }
+        Insert: {
+          bedtime: string
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          notes?: string | null
+          quality_rating?: number
+          sleep_date?: string
+          tags?: string[] | null
+          user_id: string
+          wake_time: string
+        }
+        Update: {
+          bedtime?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          quality_rating?: number
+          sleep_date?: string
+          tags?: string[] | null
+          user_id?: string
+          wake_time?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
