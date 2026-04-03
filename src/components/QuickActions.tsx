@@ -61,7 +61,7 @@ export const QuickActions = () => {
           <button
             key={index}
             onClick={() => navigate(action.path)}
-            className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]"
+            className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl active:scale-[0.98]"
             style={{
               backgroundColor: action.color,
               zIndex: index,
@@ -71,6 +71,10 @@ export const QuickActions = () => {
               paddingBottom: isLast ? '64px' : '16px',
               paddingLeft: '20px',
               paddingRight: '20px',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+              transitionDelay: `${index * 80}ms`,
             }}
           >
             <div className="flex items-center justify-between w-full">
