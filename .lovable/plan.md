@@ -1,11 +1,19 @@
 
 
-## Corrigir título "Guia Completo do Sono"
+## Atualizar versão para 1.0.2 e build 15
 
-### Alteração
+### Alterações
 
-**`src/pages/Sleep.tsx`** (linha 463-466):
-- Remover o ícone `<Brain>` do título
-- Trocar `className="flex items-center gap-2 text-lg text-foreground"` por `className="text-base"`
-- Limpar import de `Brain` se não usado em outro lugar
+**`ios/App/App.xcodeproj/project.pbxproj`** — 4 edições no target App:
+
+| Configuração | Campo | Antes | Depois |
+|--------------|-------|-------|--------|
+| Debug | CURRENT_PROJECT_VERSION | 14 | 15 |
+| Debug | MARKETING_VERSION | 1.0.1 | 1.0.2 |
+| Release | CURRENT_PROJECT_VERSION | 14 | 15 |
+| Release | MARKETING_VERSION | 1.0.1 | 1.0.2 |
+
+O widget (WeDietWidget) permanece inalterado em 1.0 / build 1.
+
+Após implementar, rode `npm run cap:sync` e gere o archive no Xcode para enviar à App Store.
 
