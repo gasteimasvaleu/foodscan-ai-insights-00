@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Moon, Star, TrendingUp, Calendar, Flame, Clock, Plus, Trash2, Sun, MessageCircle } from 'lucide-react';
+import { Moon, Star, TrendingUp, Flame, Clock, Plus, Trash2, MessageCircle } from 'lucide-react';
 import { format, subDays, startOfDay, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Navbar } from '@/components/Navbar';
@@ -257,9 +257,7 @@ const Sleep = () => {
         {/* Today Summary / Register Button */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" /> Registro de Hoje
-            </CardTitle>
+            <CardTitle className="text-base">Registro de Hoje</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {todayRecord ? (
@@ -308,9 +306,7 @@ const Sleep = () => {
         {/* Week History */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" /> Últimos 7 Dias
-            </CardTitle>
+            <CardTitle className="text-base">Últimos 7 Dias</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-7 gap-1">
@@ -347,9 +343,7 @@ const Sleep = () => {
         {/* Stats */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" /> Estatísticas
-            </CardTitle>
+            <CardTitle className="text-base">Estatísticas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
@@ -421,9 +415,7 @@ const Sleep = () => {
         {/* Motivational Message Card */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Sun className="w-4 h-4 text-yellow-500" /> Mensagem Motivacional
-            </CardTitle>
+            <CardTitle className="text-base">Mensagem Motivacional</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-xs text-muted-foreground">
