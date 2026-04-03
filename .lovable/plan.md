@@ -1,36 +1,20 @@
 
 
-## Correção: Garantir que o RevenueCat registre todas as compras
+## Correção: WhatsApp card espremido em iPhones menores
 
-### O que mudamos (1 arquivo só)
+### O problema
+Em iPhones menores, não há espaço suficiente de scroll na página, então o conteúdo do card WhatsApp (ícone, título, tags) fica preso atrás do menu inferior. Em iPhones maiores sobra espaço natural.
 
-**`src/lib/revenuecat.ts`** — linhas 97-101
+### A solução (simples)
+Aumentar **apenas** o padding inferior da página (`pb-20` → `pb-32`) no `Index.tsx`. Isso dá mais espaço de rolagem para o usuário poder "subir" os cards com o dedo.
 
-Hoje o código tem isto:
-```ts
-if (loggedInUserId === userId) {
-  console.log('[RevenueCat] Already identified as', userId);
-  return null; // ← PULA a identificação real
-}
-```
+O visual do último card **não muda** — ele continua colado na faixa branca, com a parte inferior escondida atrás dela. A única diferença é que agora o usuário consegue rolar o suficiente para ver o conteúdo (ícone, título, tags) acima do menu.
 
-Vamos trocar por:
-```ts
-// Sempre chamar Purchases.logIn() para garantir que o SDK
-// está realmente identificado — o SDK ignora chamadas redundantes internamente
-```
+### Arquivo alterado
 
-Ou seja, removemos as linhas 98-101 que pulam a identificação. O resto do código fica igual.
-
-### O que isso NÃO muda
-
-- A correção da compra dupla (`forceSubscriptionActive` + `purchaseInProgress`) **continua funcionando normalmente** — ela atua DEPOIS da compra
-- Esta mudança atua ANTES da compra — só garante que o RevenueCat sabe quem é o usuário
-- Nenhum outro arquivo é alterado
-
-### Resumo
-
-| Arquivo | O que muda |
+| Arquivo | Alteração |
 |---------|-----------|
-| `src/lib/revenuecat.ts` | Remove o atalho que pula `Purchases.logIn()` quando acha que já identificou o usuário (linhas 98-101) |
+| `src/pages/Index.tsx` | Trocar `pb-20` por `pb-32` no container principal (linha 104) |
+
+Nenhuma mudança no `QuickActions.tsx` — o efeito visual de conexão com a faixa branca permanece idêntico.
 
