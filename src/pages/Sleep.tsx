@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Brain, Apple, Dumbbell, AlertTriangle, Info, Lightbulb } from 'lucide-react';
+import { Apple, Dumbbell, AlertTriangle, Info, Lightbulb } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -460,10 +460,7 @@ const Sleep = () => {
       <div className="px-4 mt-6">
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-              <Brain className="h-5 w-5 text-primary" />
-              Guia Completo do Sono
-            </CardTitle>
+            <CardTitle className="text-base">Guia Completo do Sono</CardTitle>
             <p className="text-xs text-muted-foreground">Toque para expandir cada seção</p>
           </CardHeader>
           <CardContent className="pt-0">
