@@ -95,12 +95,9 @@ export const restorePurchases = async (): Promise<any | null> => {
  * This transfers any anonymous purchases to the real user.
  */
 export const identifyUser = async (userId: string): Promise<any> => {
-  if (loggedInUserId === userId) {
-    console.log('[RevenueCat] Already identified as', userId);
-    return null;
-  }
   await initRevenueCat();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  console.log('[RevenueCat] Calling logIn for', userId);
   const { customerInfo } = await Purchases.logIn({ appUserID: userId });
   loggedInUserId = userId;
   console.log('[RevenueCat] identifyUser success for', userId);
