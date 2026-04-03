@@ -97,6 +97,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription_end: data?.subscription_end || null,
       };
 
+      // Proteção temporal: não sobrescrever estado forçado com false do DB
+      const isRecentlyForced = forcedAtRef.current && (Date.now() - forcedAtRef.current < 60000);
+      if (isRecentlyForced && !result.subscribed) {
+        console.log('[AuthProvider] Ignoring DB result (subscribed=false) — forced state active for', Math.round((Date.now() - forcedAtRef.current!) / 1000), 's');
+        setSubscriptionReady(true);
+        setSubscriptionLoading(false);
+        return subscriptionStatus; // retorna o estado atual forçado
+      }
+
       setSubscriptionStatus(result);
       setSubscriptionReady(true);
       setSubscriptionLoading(false);
