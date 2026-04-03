@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Force subscription active locally (skip DB roundtrip)
   const forceSubscriptionActive = useCallback((expirationDate?: string | null) => {
     console.log('[AuthProvider] forceSubscriptionActive called, expiration:', expirationDate);
+    forcedAtRef.current = Date.now();
     setSubscriptionStatus({
       subscribed: true,
       subscription_tier: 'Premium',
