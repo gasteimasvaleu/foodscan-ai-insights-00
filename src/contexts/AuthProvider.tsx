@@ -48,12 +48,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const currentUserIdRef = useRef<string | null>(null);
   const purchaseInProgressRef = useRef(false);
+  const forcedAtRef = useRef<number | null>(null);
 
   const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
 
   // Force subscription active locally (skip DB roundtrip)
   const forceSubscriptionActive = useCallback((expirationDate?: string | null) => {
     console.log('[AuthProvider] forceSubscriptionActive called, expiration:', expirationDate);
+    forcedAtRef.current = Date.now();
     setSubscriptionStatus({
       subscribed: true,
       subscription_tier: 'Premium',
@@ -94,6 +96,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription_tier: data?.subscription_tier || null,
         subscription_end: data?.subscription_end || null,
       };
+
+      // Proteção temporal: não sobrescrever estado forçado com false do DB
+      const isRecentlyForced = forcedAtRef.current && (Date.now() - forcedAtRef.current < 60000);
+      if (isRecentlyForced && !result.subscribed) {
+        console.log('[AuthProvider] Ignoring DB result (subscribed=false) — forced state active for', Math.round((Date.now() - forcedAtRef.current!) / 1000), 's');
+        setSubscriptionReady(true);
+        setSubscriptionLoading(false);
+        return subscriptionStatus; // retorna o estado atual forçado
+      }
 
       setSubscriptionStatus(result);
       setSubscriptionReady(true);
@@ -188,6 +199,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Skip re-check if a purchase is in progress
       if (purchaseInProgressRef.current) {
         console.log('[AuthProvider] Purchase in progress, skipping checkSubscription');
+        return;
+      }
+
+      // Skip re-check if subscription was recently forced (proteção temporal)
+      const isRecentlyForced = forcedAtRef.current && (Date.now() - forcedAtRef.current < 60000);
+      if (isRecentlyForced) {
+        console.log('[AuthProvider] Subscription recently forced, skipping auto-check for', Math.round((Date.now() - forcedAtRef.current!) / 1000), 's');
         return;
       }
 
