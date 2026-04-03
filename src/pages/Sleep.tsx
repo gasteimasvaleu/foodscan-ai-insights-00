@@ -306,9 +306,7 @@ const Sleep = () => {
         {/* Week History */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" /> Últimos 7 Dias
-            </CardTitle>
+            <CardTitle className="text-base">Últimos 7 Dias</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-7 gap-1">
