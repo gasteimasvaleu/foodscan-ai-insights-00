@@ -460,10 +460,7 @@ const Sleep = () => {
       <div className="px-4 mt-6">
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
-              <Brain className="h-5 w-5 text-primary" />
-              Guia Completo do Sono
-            </CardTitle>
+            <CardTitle className="text-base">Guia Completo do Sono</CardTitle>
             <p className="text-xs text-muted-foreground">Toque para expandir cada seção</p>
           </CardHeader>
           <CardContent className="pt-0">
