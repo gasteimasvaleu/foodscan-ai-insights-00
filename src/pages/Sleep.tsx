@@ -415,9 +415,7 @@ const Sleep = () => {
         {/* Motivational Message Card */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Sun className="w-4 h-4 text-yellow-500" /> Mensagem Motivacional
-            </CardTitle>
+            <CardTitle className="text-base">Mensagem Motivacional</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-xs text-muted-foreground">
