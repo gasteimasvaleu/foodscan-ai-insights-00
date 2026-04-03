@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const currentUserIdRef = useRef<string | null>(null);
   const purchaseInProgressRef = useRef(false);
+  const forcedAtRef = useRef<number | null>(null);
 
   const isNativeIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
 
