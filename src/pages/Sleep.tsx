@@ -257,9 +257,7 @@ const Sleep = () => {
         {/* Today Summary / Register Button */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" /> Registro de Hoje
-            </CardTitle>
+            <CardTitle className="text-base">Registro de Hoje</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {todayRecord ? (
