@@ -343,9 +343,7 @@ const Sleep = () => {
         {/* Stats */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" /> Estatísticas
-            </CardTitle>
+            <CardTitle className="text-base">Estatísticas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
