@@ -202,6 +202,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      // Skip re-check if subscription was recently forced (proteção temporal)
+      const isRecentlyForced = forcedAtRef.current && (Date.now() - forcedAtRef.current < 60000);
+      if (isRecentlyForced) {
+        console.log('[AuthProvider] Subscription recently forced, skipping auto-check for', Math.round((Date.now() - forcedAtRef.current!) / 1000), 's');
+        return;
+      }
+
       // Race condition protection for newly created users
       const userCreatedAt = new Date(user.created_at).getTime();
       const secondsSinceCreation = (Date.now() - userCreatedAt) / 1000;
