@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,12 @@ import { useNavigate } from 'react-router-dom';
 export const QuickActions = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!user) return null;
 
