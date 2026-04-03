@@ -9,8 +9,17 @@ export const QuickActions = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
-    return () => clearTimeout(timer);
+    const hasAnimated = sessionStorage.getItem('quickActionsAnimated');
+    if (hasAnimated) {
+      setIsVisible(true);
+      return;
+    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setIsVisible(true);
+        sessionStorage.setItem('quickActionsAnimated', 'true');
+      });
+    });
   }, []);
 
   if (!user) return null;
