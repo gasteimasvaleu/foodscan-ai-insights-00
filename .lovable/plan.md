@@ -1,19 +1,19 @@
 
 
-## Atualizar versão para 1.0.2 e build 15
+## Corrigir o card de aviso sobre valores por 100g
 
-### Alterações
+### Problema
+O card azul de aviso para múltiplos elementos diz "Os valores nutricionais são calculados com base em 100g de cada elemento", mas a IA agora estima o peso real de cada alimento (campo `estimated_weight`). O texto está desatualizado e confunde o usuário.
 
-**`ios/App/App.xcodeproj/project.pbxproj`** — 4 edições no target App:
+### Solução
+Atualizar o texto do card informativo (linha 189-190 de `FoodNutritionResults.tsx`) para refletir que a IA já estimou os pesos automaticamente:
 
-| Configuração | Campo | Antes | Depois |
-|--------------|-------|-------|--------|
-| Debug | CURRENT_PROJECT_VERSION | 14 | 15 |
-| Debug | MARKETING_VERSION | 1.0.1 | 1.0.2 |
-| Release | CURRENT_PROJECT_VERSION | 14 | 15 |
-| Release | MARKETING_VERSION | 1.0.1 | 1.0.2 |
+**Texto atual:**
+> "Os valores nutricionais são calculados com base em 100g de cada elemento. Você pode ajustar as porções individuais no card abaixo para obter valores mais precisos."
 
-O widget (WeDietWidget) permanece inalterado em 1.0 / build 1.
+**Novo texto:**
+> "A IA identificou e estimou o peso de cada elemento do prato. Os valores nutricionais já estão calculados com base nos pesos estimados. Você pode ajustar as porções no card abaixo se necessário."
 
-Após implementar, rode `npm run cap:sync` e gere o archive no Xcode para enviar à App Store.
+### Arquivo alterado
+- `src/components/FoodNutritionResults.tsx` — linha 190, apenas texto do aviso
 
