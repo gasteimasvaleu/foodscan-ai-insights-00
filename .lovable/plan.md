@@ -1,19 +1,43 @@
 
 
-## Corrigir o card de aviso sobre valores por 100g
+## Assistente IA para Metas Diárias — Questionário Completo (12 Steps)
 
-### Problema
-O card azul de aviso para múltiplos elementos diz "Os valores nutricionais são calculados com base em 100g de cada elemento", mas a IA agora estima o peso real de cada alimento (campo `estimated_weight`). O texto está desatualizado e confunde o usuário.
+### Posicionamento do Botão
+O botão "✨ Assistente IA" ficará **abaixo** do botão "Configurar Metas" (quando sem metas) e **abaixo** do botão "Editar Metas" (quando já tem metas), com a mesma largura horizontal.
 
-### Solução
-Atualizar o texto do card informativo (linha 189-190 de `FoodNutritionResults.tsx`) para refletir que a IA já estimou os pesos automaticamente:
+### Steps do Questionário
 
-**Texto atual:**
-> "Os valores nutricionais são calculados com base em 100g de cada elemento. Você pode ajustar as porções individuais no card abaixo para obter valores mais precisos."
+1. **Boas-vindas** — Tela introdutória com animação
+2. **Sexo** — Masculino / Feminino (cards grandes)
+3. **Idade** — Input numérico
+4. **Peso atual (kg)** — Input numérico
+5. **Altura (cm)** — Input numérico
+6. **Nível de atividade** — Sedentário / Leve / Moderado / Intenso / Muito intenso
+7. **Objetivo principal** — Perder peso / Manter peso / Ganhar massa
+8. **Evento/motivação especial** — Casamento, férias, formatura, competição, nenhum + data opcional (pulável)
+9. **Restrições e saúde** — Multi-select: diabético, hipertenso, intolerância lactose, celíaco, vegano, vegetariano, alergias + campo livre (pulável)
+10. **Rotina e estilo de vida** — Tipo de trabalho, horas de sono, estresse (1-5), refeições por dia (pulável)
+11. **Histórico de dietas** — Já fez dieta? Tipo? Rebote? Peso mais baixo/alto (pulável)
+12. **Resultado da IA** — Metas calculadas + explicação personalizada + botão "Aplicar Metas"
 
-**Novo texto:**
-> "A IA identificou e estimou o peso de cada elemento do prato. Os valores nutricionais já estão calculados com base nos pesos estimados. Você pode ajustar as porções no card abaixo se necessário."
+### Arquivos
 
-### Arquivo alterado
-- `src/components/FoodNutritionResults.tsx` — linha 190, apenas texto do aviso
+**Novo**: `src/components/AIGoalsWizard.tsx`
+- Modal fullscreen (Drawer mobile / Dialog desktop)
+- Glassmorphism (`bg-white/70 backdrop-blur-md border-2 border-primary`)
+- Barra de progresso, transições framer-motion, navegação Voltar/Próximo
+- Steps 8-11 com botão "Pular"
+- Step 12: chama edge function, loading animado, resultado com "Aplicar Metas"
+
+**Novo**: `supabase/functions/ai-goals-calculator/index.ts`
+- Lovable AI Gateway (`google/gemini-3-flash-preview`) com tool calling
+- Calcula TMB + macros considerando evento, restrições, rotina, histórico
+- Retorna `{ calories, carbohydrates, proteins, fats, diet_objective, explanation }`
+
+**Alterado**: `src/pages/DailyControl.tsx`
+- Sem metas: botão "✨ Assistente IA" abaixo de "Configurar Metas", mesma largura
+- Com metas: botão "✨ Assistente IA" abaixo de "Editar Metas" no DailyGoals, mesma largura
+- Callback `onApplyGoals` salva metas no banco
+
+**Alterado**: `supabase/config.toml` — registrar `ai-goals-calculator`
 
