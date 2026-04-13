@@ -19,6 +19,8 @@ import { useNavigate } from 'react-router-dom';
 import VideoOverlay from '@/components/VideoOverlay';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { WidgetPromoModal } from '@/components/WidgetPromoModal';
+import { AIGoalsWizard } from '@/components/AIGoalsWizard';
+import { Sparkles } from 'lucide-react';
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -51,6 +53,7 @@ const DailyControl = () => {
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
+  const [showAIWizard, setShowAIWizard] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -167,13 +170,13 @@ const DailyControl = () => {
   };
   const handleEditGoals = () => {
     setShowGoalsForm(true);
-    // Scroll suave até o formulário após um pequeno delay para garantir que ele seja renderizado
     setTimeout(() => {
-      goalsFormRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+      goalsFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
+  };
+
+  const handleAIApplyGoals = async (aiGoals: { calories: number; carbohydrates: number; proteins: number; fats: number; diet_objective: string }) => {
+    await handleSaveGoals(aiGoals);
   };
   const handleEndDay = async () => {
     if (!goals) {
