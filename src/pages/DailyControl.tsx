@@ -19,6 +19,8 @@ import { useNavigate } from 'react-router-dom';
 import VideoOverlay from '@/components/VideoOverlay';
 import { useWidgetSync } from '@/hooks/useWidgetSync';
 import { WidgetPromoModal } from '@/components/WidgetPromoModal';
+import { AIGoalsWizard } from '@/components/AIGoalsWizard';
+import { Sparkles } from 'lucide-react';
 export interface DailyGoal {
   id?: string;
   calories: number;
@@ -51,6 +53,7 @@ const DailyControl = () => {
   const [goals, setGoals] = useState<DailyGoal | null>(null);
   const [meals, setMeals] = useState<MealRecord[]>([]);
   const [showGoalsForm, setShowGoalsForm] = useState(false);
+  const [showAIWizard, setShowAIWizard] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -167,13 +170,13 @@ const DailyControl = () => {
   };
   const handleEditGoals = () => {
     setShowGoalsForm(true);
-    // Scroll suave até o formulário após um pequeno delay para garantir que ele seja renderizado
     setTimeout(() => {
-      goalsFormRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+      goalsFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
+  };
+
+  const handleAIApplyGoals = async (aiGoals: { calories: number; carbohydrates: number; proteins: number; fats: number; diet_objective: string }) => {
+    await handleSaveGoals(aiGoals);
   };
   const handleEndDay = async () => {
     if (!goals) {
@@ -374,9 +377,18 @@ const DailyControl = () => {
             </div>
 
             {goals ? (
-              <DailyGoals goals={goals} meals={meals} hydrationTotals={hydrationTotals} onEditGoals={handleEditGoals} />
+              <>
+                <DailyGoals goals={goals} meals={meals} hydrationTotals={hydrationTotals} onEditGoals={handleEditGoals} />
+                <Button
+                  onClick={() => setShowAIWizard(true)}
+                  className="bg-gradient-to-r from-purple-500 to-primary text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 w-full"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Assistente IA de Metas
+                </Button>
+              </>
             ) : (
-              <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 text-center">
+              <div className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl p-4 shadow-xl border border-white/20 text-center space-y-3">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Configure suas Metas Diárias
                 </h3>
@@ -385,10 +397,17 @@ const DailyControl = () => {
                 </p>
                 <button 
                   onClick={() => setShowGoalsForm(true)} 
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 w-full"
                 >
                   Configurar Metas
                 </button>
+                <Button
+                  onClick={() => setShowAIWizard(true)}
+                  className="bg-gradient-to-r from-purple-500 to-primary text-white rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300 w-full"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Assistente IA de Metas
+                </Button>
               </div>
             )}
 
@@ -460,6 +479,7 @@ const DailyControl = () => {
       </div>
       
       <WidgetPromoModal shouldTrigger={meals.length === 1} />
+      <AIGoalsWizard open={showAIWizard} onClose={() => setShowAIWizard(false)} onApplyGoals={handleAIApplyGoals} />
     </>
   );
 };

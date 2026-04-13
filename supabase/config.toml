@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.whatsapp-weekly-objectives]
 verify_jwt = false
+
+[functions.ai-goals-calculator]
+verify_jwt = false
