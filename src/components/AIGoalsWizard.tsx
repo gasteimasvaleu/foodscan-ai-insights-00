@@ -180,7 +180,7 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             <p className="text-gray-600 text-sm leading-relaxed px-4">
               Vou te fazer algumas perguntas para calcular suas metas nutricionais personalizadas com inteligência artificial.
             </p>
-            <Button onClick={goNext} className="bg-gradient-to-r from-primary to-accent text-white rounded-xl px-8 py-3 text-lg font-semibold shadow-lg w-full">
+            <Button onClick={goNext} className="bg-[#FD46A1] hover:bg-[#e03d8f] text-white rounded-xl px-8 py-3 text-lg font-semibold shadow-lg w-full">
               Começar ✨
             </Button>
           </div>
@@ -563,7 +563,7 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
                   <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{result.explanation}</p>
                 </div>
 
-                <Button onClick={handleApply} className="bg-gradient-to-r from-primary to-accent text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg w-full">
+                <Button onClick={handleApply} className="bg-[#FD46A1] hover:bg-[#e03d8f] text-white rounded-xl px-8 py-4 text-lg font-semibold shadow-lg w-full">
                   <Check className="w-5 h-5 mr-2" />
                   Aplicar Metas
                 </Button>
@@ -619,7 +619,7 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
                 <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
               </Button>
               {step === 10 ? (
-                <Button onClick={handleCalculate} className="bg-gradient-to-r from-primary to-accent text-white rounded-xl flex-1">
+                <Button onClick={handleCalculate} className="bg-[#FD46A1] hover:bg-[#e03d8f] text-white rounded-xl flex-1">
                   <Sparkles className="w-4 h-4 mr-1" /> Calcular
                 </Button>
               ) : (
