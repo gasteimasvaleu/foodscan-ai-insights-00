@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowLeft, ArrowRight, Check, User, Ruler, Weight, Activity, Target, CalendarHeart, ShieldAlert, Briefcase, History, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { Progress } from '@/components/ui/progress';
@@ -219,20 +220,13 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             <div className="flex flex-col items-center space-y-4">
               <div className="text-6xl font-bold text-primary">{data.age}</div>
               <span className="text-gray-500">anos</span>
-              <Input
-                type="range"
+              <Slider
                 min={10}
                 max={100}
-                value={data.age}
-                onChange={e => setData(d => ({ ...d, age: Number(e.target.value) }))}
-                className="w-full accent-primary h-3"
-              />
-              <Input
-                type="number"
-                inputMode="numeric"
-                value={data.age}
-                onChange={e => setData(d => ({ ...d, age: Number(e.target.value) || 0 }))}
-                className="w-24 text-center rounded-xl"
+                step={1}
+                value={[data.age]}
+                onValueChange={([v]) => setData(d => ({ ...d, age: v }))}
+                className="w-full"
               />
             </div>
           </div>
@@ -248,12 +242,13 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             <div className="flex flex-col items-center space-y-4">
               <div className="text-6xl font-bold text-primary">{data.weight}</div>
               <span className="text-gray-500">kg</span>
-              <Input
-                type="number"
-                inputMode="decimal"
-                value={data.weight}
-                onChange={e => setData(d => ({ ...d, weight: Number(e.target.value) || 0 }))}
-                className="w-32 text-center rounded-xl text-2xl py-4"
+              <Slider
+                min={30}
+                max={250}
+                step={1}
+                value={[data.weight]}
+                onValueChange={([v]) => setData(d => ({ ...d, weight: v }))}
+                className="w-full"
               />
             </div>
           </div>
@@ -269,12 +264,13 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             <div className="flex flex-col items-center space-y-4">
               <div className="text-6xl font-bold text-primary">{data.height}</div>
               <span className="text-gray-500">cm</span>
-              <Input
-                type="number"
-                inputMode="numeric"
-                value={data.height}
-                onChange={e => setData(d => ({ ...d, height: Number(e.target.value) || 0 }))}
-                className="w-32 text-center rounded-xl text-2xl py-4"
+              <Slider
+                min={100}
+                max={230}
+                step={1}
+                value={[data.height]}
+                onValueChange={([v]) => setData(d => ({ ...d, height: v }))}
+                className="w-full"
               />
             </div>
           </div>
@@ -407,15 +403,6 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
                   </div>
                 </SelectCard>
               ))}
-            </div>
-            <div className="space-y-2">
-              <Label>Outra restrição</Label>
-              <Input
-                value={data.otherRestriction}
-                onChange={e => setData(d => ({ ...d, otherRestriction: e.target.value }))}
-                placeholder="Ex: alergia a ovo..."
-                className="rounded-xl"
-              />
             </div>
           </div>
         );
