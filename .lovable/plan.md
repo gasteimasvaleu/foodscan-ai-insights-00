@@ -1,16 +1,20 @@
 
 
-## Remover degradês dos botões do AIGoalsWizard
+## Substituir inputs numéricos por sliders no AIGoalsWizard
 
-Trocar todos os `bg-gradient-to-r from-primary to-accent` e `bg-gradient-to-br from-primary to-accent` dos **botões** por `bg-[#FD46A1] hover:bg-[#e03d8f]` no arquivo `src/components/AIGoalsWizard.tsx`.
+### Problema
+No iOS, ao focar em inputs numéricos, o teclado nativo empurra o Drawer para cima, quebrando o layout.
 
-### Botões afetados (4 botões):
-1. **Linha 183** — "Começar ✨"
-2. **Linha 566** — "Aplicar Metas"
-3. **Linha 622** — "Calcular"
-4. Os ícones decorativos (linhas 176, 526, 537) são divs, não botões — manter como estão
+### Mudanças em `src/components/AIGoalsWizard.tsx`
 
-### Alteração
-Em cada botão, substituir:
-- `bg-gradient-to-r from-primary to-accent` → `bg-[#FD46A1] hover:bg-[#e03d8f]`
+**Step 2 (Idade)** — Remover o `<Input type="number">` (linhas 230-236), manter apenas o range slider que já existe (linhas 222-229). Trocar `<Input type="range">` pelo componente `<Slider>` de `@/components/ui/slider` para melhor visual.
+
+**Step 3 (Peso)** — Substituir o `<Input type="number">` (linhas 251-257) por um `<Slider>` com min=30, max=250, step=1.
+
+**Step 4 (Altura)** — Substituir o `<Input type="number">` (linhas 272-278) por um `<Slider>` com min=100, max=230, step=1.
+
+**Step 8 (Restrições)** — Remover o bloco "Outra restrição" com Label + Input (linhas 411-419). Remover `otherRestriction` do payload enviado à edge function (ou manter no state mas sem UI).
+
+### Resultado
+Todos os steps usarão apenas interações de toque (sliders e cards), eliminando qualquer abertura do teclado nativo no iOS.
 
