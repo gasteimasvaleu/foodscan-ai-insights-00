@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DailyGoal, MealRecord } from '@/pages/DailyControl';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ interface DailyGoalsProps {
     carbohydrates: number;
   };
   onEditGoals: () => void;
+  onOpenAIWizard?: () => void;
 }
 
 const AnimatedCounter: React.FC<{ value: number; className?: string; delay?: number }> = ({ 
@@ -35,7 +36,7 @@ const AnimatedCounter: React.FC<{ value: number; className?: string; delay?: num
   );
 };
 
-export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, hydrationTotals, onEditGoals }) => {
+export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, hydrationTotals, onEditGoals, onOpenAIWizard }) => {
   // Calcular totais consumidos
   const consumed = meals.reduce(
     (acc, meal) => ({
@@ -105,6 +106,16 @@ export const DailyGoals: React.FC<DailyGoalsProps> = ({ goals, meals, hydrationT
           <Edit3 className="w-4 h-4 mr-2" />
           Editar
         </Button>
+        {onOpenAIWizard && (
+          <Button
+            onClick={onOpenAIWizard}
+            className="bg-[#FD46A1] hover:bg-[#e03d8f] text-white rounded-xl w-full mt-2"
+            size="sm"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Assistente de Metas
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
