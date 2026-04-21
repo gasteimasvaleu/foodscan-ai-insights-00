@@ -43,6 +43,7 @@ import IntermittentFasting from "./pages/IntermittentFasting";
 import Objetivos from "./pages/Objetivos";
 import WidgetGuide from "./pages/WidgetGuide";
 import Sleep from "./pages/Sleep";
+import FacaEmCasa from "./pages/FacaEmCasa";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
@@ -109,6 +110,7 @@ const App = () => (
             <Route path="/objetivos" element={<Objetivos />} />
             <Route path="/widget-guide" element={<WidgetGuide />} />
             <Route path="/sono" element={<Sleep />} />
+            <Route path="/faca-em-casa" element={<FacaEmCasa />} />
             <Route path="/treinos" element={<Treinos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />

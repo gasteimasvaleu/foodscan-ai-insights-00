@@ -195,23 +195,12 @@ const FacaEmCasa = () => {
                   key={h.id}
                   className="flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10"
                 >
-                  <button
-                    className="flex-1 text-left min-w-0"
-                    onClick={() => {
-                      // carrega receita salva no estado atual (visual)
-                      setHistoryOpen(false);
-                      reset();
-                      setTimeout(() => {
-                        // injeta via hook não é trivial; abrimos como recipe na tela
-                        // workaround: usamos um evento custom curto via state local
-                      }, 0);
-                    }}
-                  >
+                  <div className="flex-1 min-w-0">
                     <p className="font-bold text-foreground truncate">{h.nome}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(h.created_at).toLocaleDateString("pt-BR")}
                     </p>
-                  </button>
+                  </div>
                   <button
                     onClick={() => handleDelete(h.id)}
                     className="p-2 rounded-lg hover:bg-destructive/10"

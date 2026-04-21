@@ -41,3 +41,9 @@ verify_jwt = false
 
 [functions.ai-goals-calculator]
 verify_jwt = false
+
+[functions.identify-dish]
+verify_jwt = false
+
+[functions.generate-home-recipe]
+verify_jwt = false
