@@ -1,5 +1,13 @@
+import { useState } from "react";
 import type { Recipe } from "@/types/recipe";
-import { Clock, Users, ChefHat, Flame, Sparkles, Lightbulb, Shuffle } from "lucide-react";
+import { Clock, Users, ChefHat, Flame, Sparkles, Lightbulb, Shuffle, Plus, Loader2 } from "lucide-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { MealTypeSelector } from "@/components/MealTypeSelector";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Props {
   recipe: Recipe;
@@ -15,10 +23,64 @@ const Section = ({ title, children, icon }: { title: string; children: React.Rea
   </div>
 );
 
+const parseNum = (s?: string): number => {
+  if (!s) return 0;
+  const m = String(s).replace(",", ".").match(/-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : 0;
+};
+
 export const HomeRecipeCard = ({ recipe }: Props) => {
   const nutri = recipe.informacoesNutricionais;
   const comp = recipe.comparativoNutricional;
   const versao = recipe.versaoCaseira;
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
+  const [mealType, setMealType] = useState("almoco");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const porcoes = Math.max(1, parseNum(recipe.porcoes) || 1);
+  const perPortion = {
+    calories: Math.round(parseNum(nutri.calorias) / porcoes),
+    proteins: +(parseNum(nutri.proteinas) / porcoes).toFixed(1),
+    carbohydrates: +(parseNum(nutri.carboidratos) / porcoes).toFixed(1),
+    fats: +(parseNum(nutri.gorduras) / porcoes).toFixed(1),
+  };
+
+  const handleAdd = async () => {
+    if (!user) {
+      toast.error("Faça login para adicionar ao Controle Diário");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from("meal_records").insert({
+        user_id: user.id,
+        food_name: `${recipe.nome} (caseiro)`,
+        calories: perPortion.calories,
+        proteins: perPortion.proteins,
+        carbohydrates: perPortion.carbohydrates,
+        fats: perPortion.fats,
+        portion: "1 porção",
+        meal_time: new Date().toISOString(),
+        meal_type: mealType,
+      });
+      if (error) throw error;
+      setShowAddDrawer(false);
+      toast.success("Adicionado ao Controle Diário!", {
+        action: {
+          label: "Ver",
+          onClick: () => navigate("/controle-diario"),
+        },
+      });
+    } catch (e: any) {
+      console.error(e);
+      toast.error("Erro ao adicionar", { description: e?.message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-3 animate-fade-in">
@@ -160,6 +222,64 @@ export const HomeRecipeCard = ({ recipe }: Props) => {
           </ul>
         </Section>
       )}
+
+      {/* CTA: Adicionar ao Controle Diário */}
+      <Button
+        onClick={() => setShowAddDrawer(true)}
+        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground rounded-2xl py-6 text-base font-semibold shadow-lg"
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Adicionar ao Controle Diário
+      </Button>
+
+      <Drawer open={showAddDrawer} onOpenChange={setShowAddDrawer}>
+        <DrawerContent className="bg-white/95 backdrop-blur-xl border-t border-primary/20">
+          <DrawerHeader>
+            <DrawerTitle className="text-foreground">Adicionar ao Controle Diário</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6 space-y-4">
+            <div className="bg-[#FFD1E7]/40 rounded-2xl p-3 border border-primary/15">
+              <p className="text-sm font-semibold text-foreground">{recipe.nome}</p>
+              <p className="text-xs text-muted-foreground mb-2">Valores por 1 porção</p>
+              <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                <div className="bg-white/70 rounded-lg py-1">
+                  <p className="text-muted-foreground">Kcal</p>
+                  <p className="font-bold">{perPortion.calories}</p>
+                </div>
+                <div className="bg-white/70 rounded-lg py-1">
+                  <p className="text-muted-foreground">Prot</p>
+                  <p className="font-bold">{perPortion.proteins}g</p>
+                </div>
+                <div className="bg-white/70 rounded-lg py-1">
+                  <p className="text-muted-foreground">Carb</p>
+                  <p className="font-bold">{perPortion.carbohydrates}g</p>
+                </div>
+                <div className="bg-white/70 rounded-lg py-1">
+                  <p className="text-muted-foreground">Gord</p>
+                  <p className="font-bold">{perPortion.fats}g</p>
+                </div>
+              </div>
+            </div>
+
+            <MealTypeSelector value={mealType} onChange={setMealType} />
+
+            <Button
+              onClick={handleAdd}
+              disabled={isSaving}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl py-6 text-base font-semibold"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Adicionando...
+                </>
+              ) : (
+                "Confirmar"
+              )}
+            </Button>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
