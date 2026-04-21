@@ -1,20 +1,23 @@
 
 
-## Restaurar imagem do welcome do Assistente de Metas (1:1)
+## Trocar emoji do card Masculino por imagem 9:16
 
-Voltar a imagem do passo 0 (welcome) do `AIGoalsWizard` para `boneco.png` em formato quadrado 1:1.
+### Mudança em `src/components/AIGoalsWizard.tsx` (linhas 200-205)
 
-### Mudança em `src/components/AIGoalsWizard.tsx` (linhas 177-181)
-
-Substituir o `<img>` atual (`Imagem_IA_v11.jpeg` em 9:16) por:
+Substituir o emoji 👨 por uma imagem em formato 9:16 dentro do `SelectCard` Masculino, mantendo o label "Masculino" abaixo.
 
 ```tsx
-<img
-  src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/boneco.png"
-  alt="Assistente de Metas"
-  className="w-40 h-40 object-contain"
-/>
+<SelectCard selected={data.sex === 'male'} onClick={() => setData(d => ({ ...d, sex: 'male' }))}>
+  <div className="flex flex-col items-center">
+    <img
+      src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1776770748116_c4d71cac.jpg"
+      alt="Masculino"
+      className="w-full aspect-[9/16] object-cover rounded-xl mb-2"
+    />
+    <span className="font-semibold text-gray-800">Masculino</span>
+  </div>
+</SelectCard>
 ```
 
-Mantém proporção 1:1 (w-40 h-40 = 160x160px) e centralização já existente.
+O card Feminino (linhas 206-211) permanece inalterado por enquanto — pode pedir depois se quiser substituir também.
 
