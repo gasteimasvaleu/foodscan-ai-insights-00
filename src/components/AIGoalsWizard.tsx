@@ -198,8 +198,12 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             </div>
             <div className="grid grid-cols-2 gap-4">
               <SelectCard selected={data.sex === 'male'} onClick={() => setData(d => ({ ...d, sex: 'male' }))}>
-                <div className="text-center py-4">
-                  <div className="text-4xl mb-2">👨</div>
+                <div className="flex flex-col items-center">
+                  <img
+                    src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1776770748116_c4d71cac.jpg"
+                    alt="Masculino"
+                    className="w-full aspect-[9/16] object-cover rounded-xl mb-2"
+                  />
                   <span className="font-semibold text-gray-800">Masculino</span>
                 </div>
               </SelectCard>
