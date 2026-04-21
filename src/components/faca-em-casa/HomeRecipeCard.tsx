@@ -233,7 +233,7 @@ export const HomeRecipeCard = ({ recipe }: Props) => {
       </Button>
 
       <Drawer open={showAddDrawer} onOpenChange={setShowAddDrawer}>
-        <DrawerContent className="max-w-md mx-auto rounded-t-3xl bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl">
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
           <DrawerHeader>
             <DrawerTitle className="text-foreground">Adicionar ao Controle Diário</DrawerTitle>
           </DrawerHeader>
