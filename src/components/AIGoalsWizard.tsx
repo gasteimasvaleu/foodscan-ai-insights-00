@@ -174,9 +174,11 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
       case 0: // Welcome
         return (
           <div className="flex flex-col items-center justify-center text-center space-y-6 py-8">
-            <div className="bg-gradient-to-br from-primary to-accent p-5 rounded-3xl shadow-lg">
-              <Sparkles className="w-12 h-12 text-white" />
-            </div>
+            <img
+              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/boneco.png"
+              alt="Assistente de Metas"
+              className="w-32 h-32 object-contain"
+            />
             <h2 className="text-2xl font-bold text-gray-800">Assistente IA de Metas</h2>
             <p className="text-gray-600 text-sm leading-relaxed px-4">
               Vou te fazer algumas perguntas para calcular suas metas nutricionais personalizadas com inteligência artificial.
