@@ -496,7 +496,7 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
                       { label: 'Vegana', icon: '🌱' },
                       { label: 'Paleo', icon: '🍖' },
                       { label: 'Contagem de Calorias', icon: '🔢' },
-                      { label: 'Shakes/Substitutos', icon: '🥤' },
+                      { label: 'Shakes', icon: '🥤' },
                       { label: 'Outra', icon: '✨' },
                     ].map(opt => {
                       const selectedSet = new Set(
