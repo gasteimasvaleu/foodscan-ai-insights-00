@@ -597,6 +597,33 @@ export type Database = {
         }
         Relationships: []
       }
+      recipes: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          nome: string
+          recipe_data: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          nome: string
+          recipe_data: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          nome?: string
+          recipe_data?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       registration_tokens: {
         Row: {
           created_at: string
