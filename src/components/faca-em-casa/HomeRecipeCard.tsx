@@ -233,11 +233,11 @@ export const HomeRecipeCard = ({ recipe }: Props) => {
       </Button>
 
       <Drawer open={showAddDrawer} onOpenChange={setShowAddDrawer}>
-        <DrawerContent className="bg-white/95 backdrop-blur-xl border-t border-primary/20">
+        <DrawerContent className="max-w-md mx-auto rounded-t-3xl bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl">
           <DrawerHeader>
             <DrawerTitle className="text-foreground">Adicionar ao Controle Diário</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-6 space-y-4">
+          <div className="px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] space-y-4">
             <div className="bg-[#FFD1E7]/40 rounded-2xl p-3 border border-primary/15">
               <p className="text-sm font-semibold text-foreground">{recipe.nome}</p>
               <p className="text-xs text-muted-foreground mb-2">Valores por 1 porção</p>
