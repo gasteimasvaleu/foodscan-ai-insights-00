@@ -175,9 +175,9 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
         return (
           <div className="flex flex-col items-center justify-center text-center space-y-6 py-8">
             <img
-              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/Imagem_IA_v11.jpeg"
+              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/boneco.png"
               alt="Assistente de Metas"
-              className="w-48 aspect-[9/16] object-contain rounded-2xl"
+              className="w-40 h-40 object-contain"
             />
             <h2 className="text-2xl font-bold text-gray-800">Assistente IA de Metas</h2>
             <p className="text-gray-600 text-sm leading-relaxed px-4">
