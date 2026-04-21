@@ -130,7 +130,6 @@ const FacaEmCasa = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold text-primary leading-tight">Faça em Casa</h1>
-              <p className="text-[11px] text-foreground/70">Tire uma foto, receba a receita caseira</p>
             </div>
             <button
               onClick={() => setHistoryOpen(true)}
