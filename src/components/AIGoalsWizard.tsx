@@ -485,8 +485,43 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
             {data.hasDietHistory && (
               <>
                 <div className="space-y-2">
-                  <Label>Quais tipos de dieta?</Label>
-                  <Input value={data.dietTypes} onChange={e => setData(d => ({ ...d, dietTypes: e.target.value }))} placeholder="Ex: low carb, jejum, cetogênica..." className="rounded-xl" />
+                  <Label>Quais tipos de dieta? (selecione todas que já fez)</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Low Carb', icon: '🥑' },
+                      { label: 'Cetogênica', icon: '🥓' },
+                      { label: 'Jejum Intermitente', icon: '⏱️' },
+                      { label: 'Mediterrânea', icon: '🫒' },
+                      { label: 'Vegetariana', icon: '🥦' },
+                      { label: 'Vegana', icon: '🌱' },
+                      { label: 'Paleo', icon: '🍖' },
+                      { label: 'Contagem de Calorias', icon: '🔢' },
+                      { label: 'Shakes/Substitutos', icon: '🥤' },
+                      { label: 'Outra', icon: '✨' },
+                    ].map(opt => {
+                      const selectedSet = new Set(
+                        data.dietTypes ? data.dietTypes.split(',').map(s => s.trim()).filter(Boolean) : []
+                      );
+                      const isSelected = selectedSet.has(opt.label);
+                      return (
+                        <SelectCard
+                          key={opt.label}
+                          selected={isSelected}
+                          onClick={() => {
+                            const next = new Set(selectedSet);
+                            if (isSelected) next.delete(opt.label);
+                            else next.add(opt.label);
+                            setData(d => ({ ...d, dietTypes: Array.from(next).join(', ') }));
+                          }}
+                        >
+                          <div className="text-center py-2">
+                            <div className="text-2xl mb-1">{opt.icon}</div>
+                            <span className="text-sm font-semibold text-gray-800">{opt.label}</span>
+                          </div>
+                        </SelectCard>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Teve efeito rebote?</Label>
