@@ -1,48 +1,26 @@
 
+## Padronizar Drawer "Adicionar ao Controle Diário" com glassmorphism do app
 
-## Botão "Adicionar ao Controle Diário" no card de receita
+### Problema
+O `DrawerContent` em `HomeRecipeCard.tsx` usa `bg-white/95` e ocupa toda a largura, fugindo do padrão glassmorphism do app (registrado em `mem://style/ui-modals`) e do estilo dos demais drawers (largura limitada em mobile, fundo translúcido com blur).
 
 ### O que muda
-No final do `HomeRecipeCard` (em `/faca-em-casa`), adicionar um botão rosa primário **"Adicionar ao Controle Diário"**. Ao tocar, abre um pequeno seletor de tipo de refeição (Café da Manhã / Lanche / Almoço / Jantar / Ceia) e insere a receita como uma entrada na tabela `meal_records`, exatamente no mesmo formato que o FoodScan já usa.
+Apenas em `src/components/faca-em-casa/HomeRecipeCard.tsx`, no `<DrawerContent>` do CTA:
 
-### Fluxo do usuário
-1. Usuário gera a receita em `/faca-em-casa`.
-2. Rola até o final do card e toca em **"Adicionar ao Controle Diário"**.
-3. Aparece um Drawer (glassmorphism, padrão do app) com:
-   - Tipo de refeição (`MealTypeSelector` reutilizado).
-   - Resumo: nome, kcal, P/C/G por porção.
-   - Botão "Confirmar".
-4. Ao confirmar → `INSERT` em `meal_records` → toast de sucesso → opção "Ver Controle Diário" que navega para `/controle-diario`.
+1. **Largura limitada e centralizada** (alinhada ao viewport mobile do app):
+   - Adicionar `max-w-md mx-auto` ao `DrawerContent` para que em telas largas/desktop ele não estoure horizontalmente, mantendo a aparência mobile-first do restante do app.
+   - Manter `inset-x-0 bottom-0` herdado, mas com cantos `rounded-t-3xl` (em vez do `rounded-t-[10px]` default) para casar com o restante (cards `rounded-3xl`).
 
-### Mapeamento de dados
-A receita expõe valores como strings (`"750 kcal"`, `"45g"`). Vou extrair o número via regex (`parseFloat(match)`) e gravar **por porção** (dividindo pelo `recipe.porcoes`, que normalmente é número ou string como `"4 porções"`).
+2. **Glassmorphism padrão**:
+   - Trocar `bg-white/95 backdrop-blur-xl border-t border-primary/20` por `bg-white/70 backdrop-blur-2xl border border-white/40 shadow-2xl` (mesmo padrão dos demais drawers/modais do app).
 
-| Campo `meal_records` | Origem |
-|---|---|
-| `food_name` | `recipe.nome` + " (caseiro)" |
-| `calories` | `nutri.calorias` (parseado) ÷ porções |
-| `proteins` | `nutri.proteinas` (parseado) ÷ porções |
-| `carbohydrates` | `nutri.carboidratos` (parseado) ÷ porções |
-| `fats` | `nutri.gorduras` (parseado, fallback 0) ÷ porções |
-| `portion` | "1 porção" |
-| `meal_time` | `new Date().toISOString()` |
-| `meal_type` | escolhido pelo usuário (default `almoco`) |
-| `user_id` | `auth.uid()` |
+3. **Padding interno consistente**:
+   - Manter `DrawerHeader` e bloco interno, mas garantir `pb-[max(1.5rem,env(safe-area-inset-bottom))]` para safe area no iOS.
 
-### Arquivos afetados
-- **`src/components/faca-em-casa/HomeRecipeCard.tsx`** — adicionar:
-  - Estado local `showAddDrawer`, `mealType`, `isSaving`.
-  - Função utilitária `parseNutriValue(str)` para extrair número de strings tipo `"750 kcal"`.
-  - Botão rosa primário abaixo das seções existentes.
-  - Drawer (`@/components/ui/drawer`) com `MealTypeSelector` + resumo + confirmar.
-  - Insert em `supabase.from('meal_records')`.
-  - Toast (`sonner`) de sucesso/erro com ação "Ver Controle Diário" via `useNavigate`.
+4. **Sem mudanças** no conteúdo (resumo nutricional + `MealTypeSelector` + botão Confirmar) nem no fluxo de salvar.
 
-### Sem mudanças de banco
-A tabela `meal_records` já existe com RLS adequada. Nenhuma migration necessária.
+### Arquivo afetado
+- `src/components/faca-em-casa/HomeRecipeCard.tsx` — apenas as classes do `<DrawerContent>` e o wrapper interno.
 
-### Observações
-- Sem inputs de texto livres dentro do Drawer (alinhado às correções recentes do iOS).
-- Se a receita não tiver `gorduras`, salva `0`.
-- Se `porcoes` não puder ser parseado como número, assume `1` (grava valores totais).
-
+### Fora do escopo
+- Alterar o componente base `src/components/ui/drawer.tsx` (mantemos os defaults; só sobrescrevemos via `className` neste uso para não impactar outros drawers do app).
