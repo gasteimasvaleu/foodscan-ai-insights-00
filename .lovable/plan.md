@@ -1,64 +1,90 @@
 
 
-## Trocar input de texto "Quais tipos de dieta?" por seletor multi-opção
+## Página "Faça em Casa" — Identificação de pratos por foto + Receita caseira com IA
 
-### Problema
-No iOS nativo, o `<Input>` de texto livre na linha 489 do `AIGoalsWizard.tsx` (step 10 — histórico de dietas) abre o teclado nativo e empurra o conteúdo do Drawer para cima, quebrando o layout.
+Nova página `/faca-em-casa` que recebe uma foto de prato (inclusive fast-food), identifica via IA e gera uma receita caseira completa, com fluxo de desambiguação quando há múltiplos candidatos. Adequado ao stack atual: Lovable AI Gateway (já tem `LOVABLE_API_KEY`), padrão visual rosa/glassmorphism do app, navegação interna existente, autenticação `useAuth` já pronta.
 
-### Solução
-Substituir o input de texto por um grid de `SelectCard` clicáveis (mesmo padrão já usado em outros steps do wizard, como sexo, restrições, etc.) com seleção múltipla. O valor final em `data.dietTypes` continua sendo uma `string` (itens separados por vírgula) para manter compatibilidade com a edge function `ai-goals-calculator` — nenhum ajuste no backend necessário.
+### 1. Rota e navegação
+- Adicionar rota `<Route path="/faca-em-casa" element={<FacaEmCasa />} />` em `src/App.tsx`.
+- Adicionar atalho dentro do bottom-sheet "+" do `TubelightNavbar` (menu "Mais") com ícone `ChefHat` ou `Camera`, conforme padrão de `mem://features/navigation/bottom-plus-menu`. Sem novo item fixo na barra para não saturar.
+- Página protegida: se `!user` → `<AuthCard />`, igual `/receitas`.
 
-### Mudanças em `src/components/AIGoalsWizard.tsx`
-
-**Adicionar constante de opções** (próximo aos outros arrays de opções no topo do componente):
-```ts
-const DIET_TYPE_OPTIONS = [
-  { value: 'low_carb', label: 'Low Carb', icon: '🥑' },
-  { value: 'cetogenica', label: 'Cetogênica', icon: '🥓' },
-  { value: 'jejum_intermitente', label: 'Jejum Intermitente', icon: '⏱️' },
-  { value: 'mediterranea', label: 'Mediterrânea', icon: '🫒' },
-  { value: 'vegetariana', label: 'Vegetariana', icon: '🥦' },
-  { value: 'vegana', label: 'Vegana', icon: '🌱' },
-  { value: 'paleo', label: 'Paleo', icon: '🍖' },
-  { value: 'contagem_calorias', label: 'Contagem de Calorias', icon: '🔢' },
-  { value: 'shakes', label: 'Shakes/Substitutos', icon: '🥤' },
-  { value: 'outra', label: 'Outra', icon: '✨' },
-];
+### 2. Tabela `recipes` (histórico)
+Migration:
+```sql
+create table public.recipes (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  nome text not null,
+  recipe_data jsonb not null,
+  image_url text,
+  created_at timestamptz not null default now()
+);
+alter table public.recipes enable row level security;
+create policy "Users view own recipes" on public.recipes for select using (auth.uid() = user_id);
+create policy "Users insert own recipes" on public.recipes for insert with check (auth.uid() = user_id);
+create policy "Users delete own recipes" on public.recipes for delete using (auth.uid() = user_id);
+create index recipes_user_created_idx on public.recipes (user_id, created_at desc);
 ```
+Sem FK para `auth.users` (padrão do projeto).
 
-**Substituir o bloco do input (linhas 487-490)** por um grid de cards com toggle de seleção múltipla:
-```tsx
-<div className="space-y-2">
-  <Label>Quais tipos de dieta? (selecione todas que já fez)</Label>
-  <div className="grid grid-cols-2 gap-3">
-    {DIET_TYPE_OPTIONS.map(opt => {
-      const selectedSet = new Set(
-        data.dietTypes ? data.dietTypes.split(',').map(s => s.trim()).filter(Boolean) : []
-      );
-      const isSelected = selectedSet.has(opt.label);
-      return (
-        <SelectCard
-          key={opt.value}
-          selected={isSelected}
-          onClick={() => {
-            const next = new Set(selectedSet);
-            if (isSelected) next.delete(opt.label);
-            else next.add(opt.label);
-            setData(d => ({ ...d, dietTypes: Array.from(next).join(', ') }));
-          }}
-        >
-          <div className="text-center py-2">
-            <div className="text-2xl mb-1">{opt.icon}</div>
-            <span className="text-sm font-semibold text-gray-800">{opt.label}</span>
-          </div>
-        </SelectCard>
-      );
-    })}
-  </div>
-</div>
-```
+### 3. Edge Functions (Lovable AI Gateway, modelo `google/gemini-2.5-flash`)
 
-### Resultado
-- Sem nenhum input de texto neste step → teclado nativo do iOS não abre mais → Drawer não é deslocado.
-- `data.dietTypes` continua sendo string (ex.: `"Low Carb, Jejum Intermitente"`), mantendo o payload enviado à edge function exatamente igual.
+**`supabase/functions/identify-dish/index.ts`** (`verify_jwt = false`)
+- Input: `{ imageBase64 }`.
+- Chama `https://ai.gateway.lovable.dev/v1/chat/completions` com a imagem como `image_url` data URL.
+- System prompt em PT-BR força JSON estrito, retornando um destes 3 formatos:
+  - `{ error: "not_food", message }` se não for comida.
+  - Receita única (`Recipe` completo) quando confiança ≥ 85%.
+  - `{ type: "multiple_options", message, options: FastFoodOption[] }` (3–5 candidatos) para pratos ambíguos / fast-food genérico.
+- Trata 429 → "Muitas requisições, tente em instantes"; 402 → toast pedindo créditos no workspace; demais erros mapeados.
+
+**`supabase/functions/generate-home-recipe/index.ts`** (`verify_jwt = false`)
+- Input: `{ imageBase64, selectedOption: FastFoodOption }`.
+- Gera `Recipe` completo da opção escolhida, sempre com `comparativoNutricional` e `versaoCaseira` preenchidos quando for fast-food.
+
+Ambas adicionadas ao `supabase/config.toml`.
+
+### 4. Tipos `src/types/recipe.ts`
+Conforme o prompt original (Recipe, Ingredient, NutritionalInfo, ComparativoNutricional, VersaoCaseira, FastFoodOption, MultipleOptionsResponse, RecipeError, RecipeResponse). Mantém union para o hook tratar.
+
+### 5. Componentes novos (`src/components/faca-em-casa/`)
+- `DishImageUpload.tsx` — dropzone + input com `capture="environment"` no mobile. Reaproveita estilo do `ImageUpload.tsx` existente (card pontilhado, ícone, botão).
+- `AnalysisProgress.tsx` — 3 etapas animadas: "Enviando imagem" → "Identificando prato" → "Gerando receita". Usa `VideoOverlay` global como fallback se preferir, mas dedicado dá feedback de progresso.
+- `FastFoodSelector.tsx` — grid de cards (rosa primário, padrão `mem://style/ui-cards`) com nome, rede, badge de confiança (%), descrição. Click chama `selectOption`.
+- `HomeRecipeCard.tsx` — receita completa: nome, descrição, ingredientes, modo de preparo, tempo, dificuldade, porções, dicas, variações, nutrição, e bloco "Versão Caseira vs Original" (comparativo + benefícios + economia).
+- `ShareRecipe.tsx` — Web Share API com fallback para copiar texto formatado (sonner toast).
+
+### 6. Hook `src/hooks/useDishRecipe.ts`
+Estado `{ recipe, options, isLoading, step, error }` + métodos:
+- `analyzeImage(file)` — comprime via `lib/imageCompression.ts` (max 1200px, JPEG 0.85), converte para base64 e chama `supabase.functions.invoke('identify-dish', ...)`.
+- `selectOption(option)` — chama `generate-home-recipe`.
+- `saveRecipe()` — insere em `public.recipes` (requer login).
+- `reset()`.
+
+`src/lib/imageCompression.ts` — utilitário canvas, retorna base64 sem prefixo `data:`.
+
+### 7. Página `src/pages/FacaEmCasa.tsx`
+Layout no padrão das outras páginas internas:
+- `Navbar` + container `max-w-lg` com `pt-[calc(env(safe-area-inset-top)+4rem)]` e `pb-32`.
+- Header glassmorphism rosa idêntico ao de `/receitas` com ícone `ChefHat` e título "Faça em Casa".
+- Subtítulo curto: "Tire uma foto do prato e receba a receita caseira."
+- Estados renderizados condicionalmente: upload → progress → (selector ou receita) → ações (Salvar / Compartilhar / Nova foto).
+- Botão "Histórico de receitas" abre `Drawer` listando `recipes` do usuário (consulta direta no client) com excluir (RLS já cobre).
+
+### 8. Tema
+Manter paleta atual do app (rosa primário + glassmorphism). **Não** sobrescrever `--primary` para vermelho/amarelo conforme o prompt original — isso quebraria a identidade visual existente (`mem://style/color-palette`, `mem://style/branding`). Cards de fast-food usam acentos quentes pontuais (badges/ícones) sem alterar tokens globais.
+
+### 9. Detalhes técnicos
+- Toda comunicação IA via edge function (nunca direto do client).
+- Prompt PT-BR, resposta JSON estrita (extrair `choices[0].message.content`, `JSON.parse` com try/catch e fallback de erro amigável).
+- Compressão client-side antes do upload para reduzir payload.
+- iOS: `<input capture="environment">` para câmera; toda estética respeita safe-area, sem inputs de texto livres dentro de Drawers (alinhado às correções recentes do iOS).
+- Sem armazenar imagem em Storage nesta v1 (`image_url` fica `null`); pode-se adicionar bucket depois se desejado.
+
+### 10. Itens explicitamente fora desta v1
+- Página `/auth` separada (já existe).
+- Página `/history` separada (substituída por Drawer dentro de `/faca-em-casa`).
+- Mudança de tema/cores globais.
+- Upload da foto original para Storage (deixado para iteração futura).
 
