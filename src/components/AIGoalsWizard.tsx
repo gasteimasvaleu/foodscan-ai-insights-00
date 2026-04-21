@@ -208,8 +208,12 @@ export const AIGoalsWizard: React.FC<AIGoalsWizardProps> = ({ open, onClose, onA
                 </div>
               </SelectCard>
               <SelectCard selected={data.sex === 'female'} onClick={() => setData(d => ({ ...d, sex: 'female' }))}>
-                <div className="text-center py-4">
-                  <div className="text-4xl mb-2">👩</div>
+                <div className="flex flex-col items-center">
+                  <img
+                    src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/Imagem_IA_v11.jpeg"
+                    alt="Feminino"
+                    className="w-full aspect-[9/16] object-cover rounded-xl mb-2"
+                  />
                   <span className="font-semibold text-gray-800">Feminino</span>
                 </div>
               </SelectCard>
