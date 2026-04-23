@@ -54,12 +54,13 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   // Autoplay 5s — pauses when on summary card
   useEffect(() => {
     if (banners.length <= 0) return;
-    const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
+    const extras = 3 + (hasAssessment ? 1 : 0);
+    const totalSlides = banners.length + extras;
     const timer = setInterval(() => {
       setCurrentBanner(prev => (prev + 1) % totalSlides);
     }, 5000);
     return () => clearInterval(timer);
-  }, [banners.length]);
+  }, [banners.length, hasAssessment]);
 
   // Fetch profile name when logged in + realtime updates
   useEffect(() => {
@@ -68,7 +69,15 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single();
       if (data?.name) setProfileName(data.name);
     };
+    const fetchAssessment = async () => {
+      const { count } = await supabase
+        .from('physical_assessments')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      setHasAssessment((count ?? 0) > 0);
+    };
     fetchProfile();
+    fetchAssessment();
 
     const channel = supabase
       .channel('authcard-profile')
