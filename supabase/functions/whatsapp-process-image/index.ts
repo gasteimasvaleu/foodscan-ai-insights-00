@@ -126,7 +126,10 @@ serve(async (req) => {
       (fiber > 0 ? `🥬 Fibras: ~${fiber}g\n` : '') +
       `\n`;
     const footer = `✅ Quer registrar esta refeição?\n` +
-      `Responda "SIM" para registrar ou "NÃO" para cancelar.`;
+      `(sugestão: *${inferredLabel}*)\n\n` +
+      `1️⃣ SIM — registrar agora\n` +
+      `2️⃣ TROCAR — escolher outro tipo de refeição\n` +
+      `3️⃣ NÃO — cancelar`;
 
     // Truncate description if needed
     const maxTotalLength = 1500;
