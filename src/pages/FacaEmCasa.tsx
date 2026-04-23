@@ -110,7 +110,8 @@ const FacaEmCasa = () => {
 
   const handleSave = async () => {
     if (!user) return;
-    await saveRecipe(user.id);
+    const ok = await saveRecipe(user.id);
+    if (ok) fetchRecent();
   };
 
   const handleDelete = async (id: string) => {
