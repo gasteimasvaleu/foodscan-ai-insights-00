@@ -21,112 +21,186 @@ serve(async (req) => {
     const command = text.toLowerCase().trim();
     let responseMessage = '';
 
+    const MEAL_TYPE_LABELS: Record<string, string> = {
+      cafe_da_manha: 'Café da manhã',
+      lanche: 'Lanche',
+      almoco: 'Almoço',
+      jantar: 'Jantar',
+      ceia: 'Ceia',
+    };
+
+    const MEAL_TYPE_MENU = `🍽️ *Qual o tipo desta refeição?*\n\n` +
+      `1️⃣ Café da manhã\n` +
+      `2️⃣ Lanche\n` +
+      `3️⃣ Almoço\n` +
+      `4️⃣ Jantar\n` +
+      `5️⃣ Ceia\n\n` +
+      `Responda com o número (1 a 5) ou o nome.`;
+
+    const getPendingMealMessage = async () => {
+      if (!userId) return null;
+      const { data } = await supabase
+        .from('whatsapp_messages')
+        .select('id, metadata')
+        .eq('user_id', userId)
+        .eq('direction', 'outbound')
+        .not('metadata->pending_meal', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    };
+
+    const insertMeal = async (meal: any, mealType: string) => {
+      return await supabase.from('meal_records').insert({
+        user_id: userId,
+        food_name: meal.food_name,
+        calories: meal.calories,
+        proteins: meal.proteins,
+        carbohydrates: meal.carbohydrates,
+        fats: meal.fats,
+        portion: meal.portion,
+        meal_time: meal.meal_time,
+        meal_type: mealType,
+      });
+    };
+
+    const parseMealType = (raw: string): string | null => {
+      const c = raw.toLowerCase().trim();
+      if (['1', 'cafe', 'café', 'café da manhã', 'cafe da manha', 'cafe da manhã'].includes(c)) return 'cafe_da_manha';
+      if (['2', 'lanche'].includes(c)) return 'lanche';
+      if (['3', 'almoco', 'almoço'].includes(c)) return 'almoco';
+      if (['4', 'jantar', 'janta'].includes(c)) return 'jantar';
+      if (['5', 'ceia'].includes(c)) return 'ceia';
+      return null;
+    };
+
+    const pendingMsg = userId ? await getPendingMealMessage() : null;
+    const awaiting = pendingMsg?.metadata?.awaiting as ('confirm' | 'meal_type' | undefined);
+
+    // ============= STATE: awaiting meal_type selection =============
+    if (awaiting === 'meal_type' && pendingMsg?.metadata?.pending_meal) {
+      const chosen = parseMealType(command);
+      if (!chosen) {
+        responseMessage = `❓ Não reconheci a opção.\n\n${MEAL_TYPE_MENU}`;
+      } else {
+        const meal = pendingMsg.metadata.pending_meal;
+        const { error: insertError } = await insertMeal(meal, chosen);
+        if (insertError) {
+          console.error('Error inserting meal:', insertError);
+          responseMessage = '❌ Erro ao registrar refeição. Tente novamente.';
+        } else {
+          await supabase
+            .from('whatsapp_messages')
+            .update({
+              metadata: {
+                ...pendingMsg.metadata,
+                pending_meal: null,
+                awaiting: null,
+                confirmed: true,
+                confirmed_at: new Date().toISOString(),
+                meal_type_chosen: chosen,
+              },
+            })
+            .eq('id', pendingMsg.id);
+
+          responseMessage = `✅ Registrada como *${MEAL_TYPE_LABELS[chosen]}*!\n\n` +
+            `🔥 ${meal.calories} kcal • 💪 ${meal.proteins}g • 🍞 ${meal.carbohydrates}g • 🥑 ${meal.fats}g\n\n` +
+            `📊 Digite "resumo" para ver seu progresso.`;
+        }
+      }
+    }
     // Menu de comandos
-    if (['oi', 'olá', 'ola', 'menu', 'start'].includes(command)) {
+    else if (['oi', 'olá', 'ola', 'menu', 'start'].includes(command)) {
       responseMessage = `👋 Olá! Bem-vindo ao FoodScan!\n\n` +
         `📋 *Comandos disponíveis:*\n` +
         `• "resumo" - Ver resumo do dia\n` +
         `• "meta" - Ver progresso das metas\n` +
         `• "semanal" - Resumo da semana\n` +
         `• "ajuda" - Ver esta mensagem\n\n` +
-        `📸 *Envie uma foto da sua comida* para análise nutricional automática!`;
+        `📸 *Envie uma foto da sua comida* para análise nutricional automática!\n\n` +
+        `Após a análise, responda:\n` +
+        `1️⃣ SIM • 2️⃣ TROCAR tipo • 3️⃣ NÃO`;
     }
-    // Confirmação de refeição
-    else if (['sim', 's', 'yes', 'confirmar'].includes(command)) {
+    // Confirmação de refeição (SIM)
+    else if (['sim', 's', 'yes', 'confirmar', '1'].includes(command)) {
       if (!userId) {
         responseMessage = '❌ Você precisa estar cadastrado no app.';
+      } else if (!pendingMsg?.metadata?.pending_meal) {
+        responseMessage = '❌ Não encontrei nenhuma refeição pendente para confirmar.\n\n' +
+          'Envie uma foto da sua comida primeiro!';
       } else {
-        // Buscar última mensagem com pending_meal
-        const { data: lastMessage } = await supabase
-          .from('whatsapp_messages')
-          .select('id, metadata')
-          .eq('user_id', userId)
-          .eq('direction', 'outbound')
-          .not('metadata->pending_meal', 'is', null)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+        const meal = pendingMsg.metadata.pending_meal;
+        const mealType = meal.meal_type_inferred || 'outro';
+        const { error: insertError } = await insertMeal(meal, mealType);
 
-        if (!lastMessage?.metadata?.pending_meal) {
-          responseMessage = '❌ Não encontrei nenhuma refeição pendente para confirmar.\n\n' +
-            'Envie uma foto da sua comida primeiro!';
+        if (insertError) {
+          console.error('Error inserting meal:', insertError);
+          responseMessage = '❌ Erro ao registrar refeição. Tente novamente.';
         } else {
-          const meal = lastMessage.metadata.pending_meal;
+          await supabase
+            .from('whatsapp_messages')
+            .update({
+              metadata: {
+                ...pendingMsg.metadata,
+                pending_meal: null,
+                awaiting: null,
+                confirmed: true,
+                confirmed_at: new Date().toISOString(),
+              },
+            })
+            .eq('id', pendingMsg.id);
 
-          // Inserir na tabela meal_records
-          const { error: insertError } = await supabase
-            .from('meal_records')
-            .insert({
-              user_id: userId,
-              food_name: meal.food_name,
-              calories: meal.calories,
-              proteins: meal.proteins,
-              carbohydrates: meal.carbohydrates,
-              fats: meal.fats,
-              portion: meal.portion,
-              meal_time: meal.meal_time
-            });
-
-          if (insertError) {
-            console.error('Error inserting meal:', insertError);
-            responseMessage = '❌ Erro ao registrar refeição. Tente novamente.';
-          } else {
-            // Limpar pending_meal da mensagem
-            await supabase
-              .from('whatsapp_messages')
-              .update({ 
-                metadata: { 
-                  ...lastMessage.metadata, 
-                  pending_meal: null,
-                  confirmed: true,
-                  confirmed_at: new Date().toISOString()
-                } 
-              })
-              .eq('id', lastMessage.id);
-
-            responseMessage = `✅ *Refeição registrada com sucesso!*\n\n` +
-              `🔥 ${meal.calories} kcal adicionadas ao seu dia!\n\n` +
-              `📊 Digite "resumo" para ver seu progresso.`;
-          }
+          const label = MEAL_TYPE_LABELS[mealType] || 'Refeição';
+          responseMessage = `✅ Registrada como *${label}*!\n\n` +
+            `🔥 ${meal.calories} kcal • 💪 ${meal.proteins}g • 🍞 ${meal.carbohydrates}g • 🥑 ${meal.fats}g\n\n` +
+            `📊 Digite "resumo" para ver seu progresso.`;
         }
       }
     }
-    // Cancelamento de refeição
-    else if (['nao', 'não', 'n', 'no', 'cancelar'].includes(command)) {
+    // Trocar tipo de refeição
+    else if (['trocar', 't', 'mudar', 'trocar tipo', '2'].includes(command)) {
       if (!userId) {
         responseMessage = '❌ Você precisa estar cadastrado no app.';
+      } else if (!pendingMsg?.metadata?.pending_meal) {
+        responseMessage = '❌ Não encontrei nenhuma refeição pendente.\n\n' +
+          'Envie uma foto da sua comida primeiro!';
       } else {
-        // Buscar última mensagem com pending_meal
-        const { data: lastMessage } = await supabase
+        await supabase
           .from('whatsapp_messages')
-          .select('id, metadata')
-          .eq('user_id', userId)
-          .eq('direction', 'outbound')
-          .not('metadata->pending_meal', 'is', null)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+          .update({
+            metadata: {
+              ...pendingMsg.metadata,
+              awaiting: 'meal_type',
+            },
+          })
+          .eq('id', pendingMsg.id);
+        responseMessage = MEAL_TYPE_MENU;
+      }
+    }
+    // Cancelamento de refeição (NÃO)
+    else if (['nao', 'não', 'n', 'no', 'cancelar', '3'].includes(command)) {
+      if (!userId) {
+        responseMessage = '❌ Você precisa estar cadastrado no app.';
+      } else if (!pendingMsg?.metadata?.pending_meal) {
+        responseMessage = '❌ Não encontrei nenhuma refeição pendente para cancelar.\n\n' +
+          'Envie uma foto da sua comida quando quiser!';
+      } else {
+        await supabase
+          .from('whatsapp_messages')
+          .update({
+            metadata: {
+              ...pendingMsg.metadata,
+              pending_meal: null,
+              awaiting: null,
+              cancelled: true,
+              cancelled_at: new Date().toISOString(),
+            },
+          })
+          .eq('id', pendingMsg.id);
 
-        if (!lastMessage?.metadata?.pending_meal) {
-          responseMessage = '❌ Não encontrei nenhuma refeição pendente para cancelar.\n\n' +
-            'Envie uma foto da sua comida quando quiser!';
-        } else {
-          // Limpar pending_meal sem registrar
-          await supabase
-            .from('whatsapp_messages')
-            .update({ 
-              metadata: { 
-                ...lastMessage.metadata, 
-                pending_meal: null,
-                cancelled: true,
-                cancelled_at: new Date().toISOString()
-              } 
-            })
-            .eq('id', lastMessage.id);
-
-          responseMessage = `❌ *Refeição cancelada.*\n\n` +
-            `📸 Envie outra foto quando quiser fazer uma nova análise!`;
-        }
+        responseMessage = `❌ *Refeição cancelada.*\n\n` +
+          `📸 Envie outra foto quando quiser fazer uma nova análise!`;
       }
     }
     // Resumo do dia
