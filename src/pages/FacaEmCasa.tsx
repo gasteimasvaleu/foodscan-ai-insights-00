@@ -121,6 +121,7 @@ const FacaEmCasa = () => {
       return;
     }
     setHistory((h) => h.filter((r) => r.id !== id));
+    setRecentRecipes((h) => h.filter((r) => r.id !== id));
     toast.success("Receita removida.");
   };
 
