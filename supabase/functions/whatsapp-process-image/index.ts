@@ -163,6 +163,7 @@ serve(async (req) => {
       content: responseMessage,
       status: 'sent',
       metadata: {
+        awaiting: 'confirm',
         pending_meal: {
           food_name: foodName,
           calories,
@@ -170,7 +171,8 @@ serve(async (req) => {
           carbohydrates: carbs,
           fats,
           portion,
-          meal_time: new Date().toISOString()
+          meal_time: new Date().toISOString(),
+          meal_type_inferred: mealTypeInferred
         }
       }
     });
