@@ -161,7 +161,38 @@ const FacaEmCasa = () => {
           </div>
         </div>
 
-        {showUpload && <DishImageUpload onSelect={analyzeImage} disabled={isLoading} />}
+        {showUpload && (
+          <>
+            <DishImageUpload onSelect={analyzeImage} disabled={isLoading} />
+
+            {recentRecipes.length > 0 && (
+              <div className="mt-5">
+                <h2 className="text-sm font-semibold text-foreground/80 mb-2 px-1">
+                  Últimas análises
+                </h2>
+                <div className="space-y-2">
+                  {recentRecipes.map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setHistoryOpen(true)}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10 hover:bg-[#FFD1E7]/60 transition text-left"
+                    >
+                      <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-full shadow-sm shrink-0">
+                        <ChefHat className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-foreground truncate">{r.nome}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {showProgress && <AnalysisProgress step={step} />}
 
