@@ -314,13 +314,18 @@ serve(async (req) => {
         `• "oi" ou "menu" - Menu principal\n\n` +
         `📸 *Análise de Fotos:*\n` +
         `Envie uma foto da sua comida e receba análise nutricional automática!\n\n` +
+        `Após a análise, responda:\n` +
+        `1️⃣ SIM — registrar com o tipo sugerido\n` +
+        `2️⃣ TROCAR — escolher outro tipo (café, lanche, almoço, jantar, ceia)\n` +
+        `3️⃣ NÃO — cancelar\n\n` +
         `❓ Precisa de mais ajuda? Acesse o app!`;
     }
     // Comando não reconhecido
     else {
       responseMessage = `❓ Não entendi o comando "${text}".\n\n` +
         `Digite "ajuda" para ver os comandos disponíveis ou "menu" para o menu principal.\n\n` +
-        `📸 Você também pode enviar uma foto da sua comida!`;
+        `📸 Você também pode enviar uma foto da sua comida!\n` +
+        `Após a análise: 1️⃣ SIM • 2️⃣ TROCAR • 3️⃣ NÃO`;
     }
 
     // Send response via Twilio directly
