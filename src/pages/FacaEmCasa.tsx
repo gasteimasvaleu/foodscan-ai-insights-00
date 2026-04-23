@@ -37,6 +37,7 @@ const FacaEmCasa = () => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [history, setHistory] = useState<SavedRecipe[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [recentRecipes, setRecentRecipes] = useState<SavedRecipe[]>([]);
 
   const fetchHistory = async () => {
     if (!user) return;
@@ -55,9 +56,27 @@ const FacaEmCasa = () => {
     setHistoryLoading(false);
   };
 
+  const fetchRecent = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("recipes")
+      .select("id, nome, recipe_data, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5);
+    if (!error) {
+      setRecentRecipes((data ?? []) as unknown as SavedRecipe[]);
+    }
+  };
+
   useEffect(() => {
     if (historyOpen) fetchHistory();
   }, [historyOpen]);
+
+  useEffect(() => {
+    if (user) fetchRecent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleShare = async () => {
     if (!recipe) return;
