@@ -1,86 +1,44 @@
 
 
-## Confirmação de refeição no WhatsApp com escolha do tipo
+## Mostrar últimas 5 análises abaixo do card de upload em "Faça em Casa"
 
-Hoje a foto vira sempre `meal_type = 'outro'`. Vou adicionar fluxo de 2 etapas (confirmar → escolher tipo) **mantendo o registro completo de macros já existente** (calorias, proteínas, carboidratos, gorduras). A única coisa que muda no `INSERT` em `meal_records` é o `meal_type`.
+Adicionar uma seção logo abaixo do `DishImageUpload` listando as **últimas 5 receitas salvas** pelo usuário, como atalho visual ao histórico.
 
-### Novo rodapé da mensagem após análise da foto
-Em `whatsapp-process-image/index.ts`:
-```
-✅ Quer registrar esta refeição?
-1️⃣ SIM — registrar agora
-2️⃣ TROCAR — escolher outro tipo de refeição
-3️⃣ NÃO — cancelar
-```
+### Comportamento
+- Aparece **apenas no estado inicial** (mesma condição `showUpload`: sem análise em andamento, sem opções de fast-food, sem receita exibida).
+- Se o usuário não tiver nenhuma receita salva, a seção **não é renderizada** (sem placeholder).
+- Clicar em um item abre o **mesmo Drawer de histórico** já existente, na receita selecionada (ou simplesmente abre o drawer de histórico). Para manter o escopo enxuto: clicar em um item **abre o drawer de histórico já existente**.
 
-O `pending_meal` salvo em `whatsapp_messages.metadata` continua com **todos os macros** já gravados hoje (`food_name`, `calories`, `proteins`, `carbohydrates`, `fats`, `portion`, `meal_time`) e ganha dois novos campos:
-- `meal_type_inferred` — calculado pelo horário BRT atual.
-- `awaiting: 'confirm'` — estado da conversa.
+### Onde renderizar
+Em `src/pages/FacaEmCasa.tsx`, dentro do bloco `{showUpload && (...)}`, logo após `<DishImageUpload />`.
 
-Mapeamento de horário → tipo:
-- 04:00–10:30 → `cafe_da_manha`
-- 10:30–14:30 → `almoco`
-- 14:30–17:30 → `lanche`
-- 17:30–21:30 → `jantar`
-- 21:30–04:00 → `ceia`
-
-### Tratamento dos comandos em `whatsapp-process-text/index.ts`
-
-1. **SIM / S / 1** (estado `awaiting: 'confirm'`)
-   - Insert em `meal_records` com **todos os campos atuais preservados** (`food_name`, `calories`, `proteins`, `carbohydrates`, `fats`, `portion`, `meal_time`, `user_id`) + `meal_type = pending_meal.meal_type_inferred`.
-   - Resposta: `✅ Registrada como {tipo legível}! 🔥 {kcal} kcal • 💪 {prot}g • 🍞 {carbs}g • 🥑 {fats}g`.
-   - Limpa `pending_meal`.
-
-2. **TROCAR / T / 2** (estado `awaiting: 'confirm'`)
-   - Atualiza metadata da última mensagem para `awaiting: 'meal_type'` (preservando `pending_meal` completo com todos os macros).
-   - Envia menu:
-     ```
-     🍽️ Qual o tipo desta refeição?
-     1️⃣ Café da manhã
-     2️⃣ Lanche
-     3️⃣ Almoço
-     4️⃣ Jantar
-     5️⃣ Ceia
-     ```
-
-3. **1–5 ou nome do tipo** (estado `awaiting: 'meal_type'`)
-   - Mapeia para `cafe_da_manha | lanche | almoco | jantar | ceia` (aceita também "café", "cafe", "lanche", "almoço", "almoco", "jantar", "ceia").
-   - Insert em `meal_records` com **todos os macros do `pending_meal`** + `meal_type` escolhido.
-   - Se não bater, devolve o menu novamente.
-
-4. **NÃO / N / 3** — comportamento atual mantido (cancela).
-
-### Garantia explícita sobre macros
-O insert continuará exatamente assim (sem remover nenhum campo nutricional):
+### Fonte de dados
+Tabela `recipes` (já usada no histórico):
 ```ts
-await supabase.from('meal_records').insert({
-  user_id,
-  food_name: meal.food_name,
-  calories: meal.calories,
-  proteins: meal.proteins,
-  carbohydrates: meal.carbohydrates,
-  fats: meal.fats,
-  portion: meal.portion,
-  meal_time: meal.meal_time,
-  meal_type: chosenOrInferredType, // <-- ÚNICA mudança
-});
+supabase
+  .from('recipes')
+  .select('id, nome, recipe_data, created_at')
+  .eq('user_id', user.id)
+  .order('created_at', { ascending: false })
+  .limit(5)
 ```
+Carregar via `useEffect` no mount da página (e re-fetch após salvar uma nova receita).
 
-### Detecção de estado
-A busca em `whatsapp_messages` passa a checar também `metadata.awaiting` (`confirm` ou `meal_type`), mantendo `.order('created_at', desc).limit(1).maybeSingle()`.
+### UI da seção
+- Título pequeno: **"Últimas análises"** (text-sm, font-semibold, text-foreground/80, mt-5 mb-2, px-1).
+- Lista vertical de até 5 itens (mesmo padrão visual do drawer de histórico para consistência):
+  - Container do item: `flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10`.
+  - Thumbnail circular 40x40 com ícone `ChefHat` (em gradiente primary→accent), já que `recipe_data` não tem imagem persistida.
+  - Texto: `nome` em `font-bold truncate` + data formatada `pt-BR` em `text-xs text-muted-foreground`.
+  - Toda a linha é clicável (`button`) e abre `setHistoryOpen(true)`.
 
-### Textos de menu/ajuda
-Atualizados para citar **TROCAR** e o fluxo numérico 1/2/3.
+### Atualização após salvar
+Após `handleSave()` bem-sucedido, chamar a função de fetch novamente para refletir a nova receita no topo da lista.
 
-### Arquivos afetados (apenas edge functions)
-- `supabase/functions/whatsapp-process-image/index.ts` — calcular `meal_type_inferred`, salvar `awaiting: 'confirm'`, novo rodapé.
-- `supabase/functions/whatsapp-process-text/index.ts` — branch `awaiting: 'meal_type'`, comando TROCAR, uso do `meal_type` correto no insert (mantendo todos os macros), atualização dos textos de menu/ajuda.
-
-### Sem mudanças de banco
-`meal_records.meal_type` (text) já aceita os valores usados no app. Nenhuma migration necessária.
+### Arquivo afetado
+- `src/pages/FacaEmCasa.tsx` — adicionar estado `recentRecipes`, função `fetchRecent`, `useEffect` no mount, re-fetch no save, e bloco JSX da seção dentro de `showUpload`.
 
 ### Fora do escopo
-- Botões interativos do Twilio (Content Templates).
-- Trocar provedor para Z-API.
-- Qualquer alteração nos campos de macros gravados.
+- Mudanças no `DishImageUpload`, no hook `useDishRecipe`, no drawer de histórico ou no banco.
+- Thumbnails reais de prato (hoje `recipes.image_url` é sempre `null` no fluxo atual).
 
