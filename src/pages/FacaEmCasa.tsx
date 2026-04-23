@@ -37,6 +37,7 @@ const FacaEmCasa = () => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [history, setHistory] = useState<SavedRecipe[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [recentRecipes, setRecentRecipes] = useState<SavedRecipe[]>([]);
 
   const fetchHistory = async () => {
     if (!user) return;
@@ -55,9 +56,27 @@ const FacaEmCasa = () => {
     setHistoryLoading(false);
   };
 
+  const fetchRecent = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("recipes")
+      .select("id, nome, recipe_data, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5);
+    if (!error) {
+      setRecentRecipes((data ?? []) as unknown as SavedRecipe[]);
+    }
+  };
+
   useEffect(() => {
     if (historyOpen) fetchHistory();
   }, [historyOpen]);
+
+  useEffect(() => {
+    if (user) fetchRecent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleShare = async () => {
     if (!recipe) return;
@@ -91,7 +110,8 @@ const FacaEmCasa = () => {
 
   const handleSave = async () => {
     if (!user) return;
-    await saveRecipe(user.id);
+    const ok = await saveRecipe(user.id);
+    if (ok) fetchRecent();
   };
 
   const handleDelete = async (id: string) => {
@@ -101,6 +121,7 @@ const FacaEmCasa = () => {
       return;
     }
     setHistory((h) => h.filter((r) => r.id !== id));
+    setRecentRecipes((h) => h.filter((r) => r.id !== id));
     toast.success("Receita removida.");
   };
 
@@ -141,7 +162,38 @@ const FacaEmCasa = () => {
           </div>
         </div>
 
-        {showUpload && <DishImageUpload onSelect={analyzeImage} disabled={isLoading} />}
+        {showUpload && (
+          <>
+            <DishImageUpload onSelect={analyzeImage} disabled={isLoading} />
+
+            {recentRecipes.length > 0 && (
+              <div className="mt-5">
+                <h2 className="text-sm font-semibold text-foreground/80 mb-2 px-1">
+                  Últimas análises
+                </h2>
+                <div className="space-y-2">
+                  {recentRecipes.map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setHistoryOpen(true)}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10 hover:bg-[#FFD1E7]/60 transition text-left"
+                    >
+                      <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-full shadow-sm shrink-0">
+                        <ChefHat className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-foreground truncate">{r.nome}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {showProgress && <AnalysisProgress step={step} />}
 
