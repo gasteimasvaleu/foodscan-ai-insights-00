@@ -38,8 +38,8 @@ export const DailyAssessmentSummaryCard = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 flex items-center justify-center">
-        <div className="animate-pulse text-white/80 text-sm">Carregando...</div>
+      <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-white border border-gray-200 flex items-center justify-center">
+        <div className="animate-pulse text-gray-600 text-sm">Carregando...</div>
       </div>
     );
   }
@@ -61,26 +61,26 @@ export const DailyAssessmentSummaryCard = () => {
 
   return (
     <div
-      className="w-full h-full bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 flex flex-col items-center justify-center p-4 cursor-pointer relative"
+      className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-white border border-gray-200 flex flex-col items-center justify-center p-4 cursor-pointer relative"
       onClick={() => navigate('/profile/assessment')}
     >
-      <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider mb-2">Avaliação Física</p>
+      <p className="text-gray-700 text-[10px] font-semibold uppercase tracking-wider mb-2">Avaliação Física</p>
 
       <div className="flex items-center justify-center gap-4 w-full">
         {/* Weight */}
         <div className="flex flex-col items-center min-w-[60px]">
-          <span className="text-white text-lg font-bold">{weight ? `${weight}` : '—'}</span>
-          <span className="text-white/70 text-[9px]">{weight ? 'kg atual' : 'sem peso'}</span>
+          <span className="text-red-500 text-lg font-bold">{weight ? `${weight}` : '—'}</span>
+          <span className="text-gray-600 text-[9px]">{weight ? 'kg atual' : 'sem peso'}</span>
         </div>
 
         {/* Ring (Body Fat) */}
         <div className="relative w-[90px] h-[90px] flex items-center justify-center">
           <svg width="90" height="90" className="rotate-[-90deg]">
-            <circle cx="45" cy="45" r={radius} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="6" />
+            <circle cx="45" cy="45" r={radius} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="6" />
             {bodyFat !== null && (
               <circle
                 cx="45" cy="45" r={radius} fill="none"
-                stroke="white" strokeWidth="6" strokeLinecap="round"
+                stroke="#ef4444" strokeWidth="6" strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 className="transition-all duration-700"
@@ -88,8 +88,8 @@ export const DailyAssessmentSummaryCard = () => {
             )}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <Scale className="w-5 h-5 text-white" />
-            <span className="text-white text-xs font-bold">
+            <Scale className="w-5 h-5 text-black" />
+            <span className="text-red-500 text-xs font-bold">
               {bodyFat !== null ? `${bodyFat.toFixed(1)}%` : '—'}
             </span>
           </div>
@@ -97,36 +97,36 @@ export const DailyAssessmentSummaryCard = () => {
 
         {/* BMI */}
         <div className="flex flex-col items-center min-w-[60px]">
-          <span className="text-white text-lg font-bold">{bmi ? bmi.toFixed(1) : '—'}</span>
-          <span className="text-white/70 text-[9px]">IMC</span>
+          <span className="text-red-500 text-lg font-bold">{bmi ? bmi.toFixed(1) : '—'}</span>
+          <span className="text-gray-600 text-[9px]">IMC</span>
         </div>
       </div>
 
       {/* Variation */}
       {delta !== null && (
-        <div className="mt-2 flex items-center gap-1 text-[10px] font-medium bg-white/20 rounded-full px-2.5 py-0.5 text-white">
+        <div className="mt-2 flex items-center gap-1 text-[10px] font-medium bg-gray-100 rounded-full px-2.5 py-0.5 text-black">
           {delta < 0 ? (
             <>
-              <ArrowDown className="w-3 h-3 text-green-200" />
-              <span className="text-green-100">{Math.abs(delta)} kg</span>
+              <ArrowDown className="w-3 h-3 text-green-600" />
+              <span className="text-green-600">{Math.abs(delta)} kg</span>
             </>
           ) : delta > 0 ? (
             <>
-              <ArrowUp className="w-3 h-3 text-red-200" />
-              <span className="text-red-100">{delta} kg</span>
+              <ArrowUp className="w-3 h-3 text-red-600" />
+              <span className="text-red-600">{delta} kg</span>
             </>
           ) : (
             <>
-              <Minus className="w-3 h-3" />
-              <span>estável</span>
+              <Minus className="w-3 h-3 text-black" />
+              <span className="text-black">estável</span>
             </>
           )}
-          <span className="text-white/60">vs. anterior</span>
+          <span className="text-gray-500">vs. anterior</span>
         </div>
       )}
 
       {/* CTA */}
-      <button className="mt-2 flex items-center gap-1 text-white text-[10px] font-medium bg-white/20 rounded-full px-3 py-1 hover:bg-white/30 transition-colors">
+      <button className="mt-2 flex items-center gap-1 text-black text-[10px] font-medium bg-gray-100 rounded-full px-3 py-1 hover:bg-gray-200 transition-colors">
         Ver Avaliações <ChevronRight className="w-3 h-3" />
       </button>
     </div>
