@@ -38,6 +38,7 @@ const FacaEmCasa = () => {
   const [history, setHistory] = useState<SavedRecipe[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [recentRecipes, setRecentRecipes] = useState<SavedRecipe[]>([]);
+  const [viewingRecipe, setViewingRecipe] = useState<{ id: string; data: Recipe } | null>(null);
 
   const fetchHistory = async () => {
     if (!user) return;
@@ -78,27 +79,35 @@ const FacaEmCasa = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  const openSavedRecipe = (saved: SavedRecipe) => {
+    setViewingRecipe({ id: saved.id, data: saved.recipe_data });
+    setHistoryOpen(false);
+  };
+
+  const activeRecipe: Recipe | null = recipe ?? viewingRecipe?.data ?? null;
+
   const handleShare = async () => {
-    if (!recipe) return;
+    if (!activeRecipe) return;
+    const r = activeRecipe;
     const text = [
-      `🍽️ ${recipe.nome}`,
+      `🍽️ ${r.nome}`,
       "",
-      recipe.descricao,
+      r.descricao,
       "",
       "*Ingredientes:*",
-      ...recipe.ingredientes.map((i) => `• ${i.nome} — ${i.quantidade}`),
+      ...r.ingredientes.map((i) => `• ${i.nome} — ${i.quantidade}`),
       "",
       "*Modo de preparo:*",
-      ...recipe.modoPreparo.map((p, i) => `${i + 1}. ${p}`),
+      ...r.modoPreparo.map((p, i) => `${i + 1}. ${p}`),
       "",
-      `⏱ ${recipe.tempoPreparo} • 👥 ${recipe.porcoes} • 👨‍🍳 ${recipe.dificuldade}`,
+      `⏱ ${r.tempoPreparo} • 👥 ${r.porcoes} • 👨‍🍳 ${r.dificuldade}`,
       "",
       "Receita gerada no We Diet 💖",
     ].join("\n");
 
     try {
       if (navigator.share) {
-        await navigator.share({ title: recipe.nome, text });
+        await navigator.share({ title: r.nome, text });
       } else {
         await navigator.clipboard.writeText(text);
         toast.success("Receita copiada para a área de transferência!");
@@ -114,6 +123,11 @@ const FacaEmCasa = () => {
     if (ok) fetchRecent();
   };
 
+  const handleNew = () => {
+    setViewingRecipe(null);
+    reset();
+  };
+
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("recipes").delete().eq("id", id);
     if (error) {
@@ -122,6 +136,7 @@ const FacaEmCasa = () => {
     }
     setHistory((h) => h.filter((r) => r.id !== id));
     setRecentRecipes((h) => h.filter((r) => r.id !== id));
+    if (viewingRecipe?.id === id) setViewingRecipe(null);
     toast.success("Receita removida.");
   };
 
@@ -134,10 +149,11 @@ const FacaEmCasa = () => {
   }
   if (!user) return <AuthCard />;
 
-  const showUpload = !isLoading && !recipe && !options;
+  const showUpload = !isLoading && !recipe && !options && !viewingRecipe;
   const showProgress = isLoading;
   const showOptions = !isLoading && !recipe && !!options;
-  const showRecipe = !isLoading && !!recipe;
+  const showRecipe = !isLoading && !!activeRecipe;
+  const isViewingSaved = !recipe && !!viewingRecipe;
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -175,7 +191,7 @@ const FacaEmCasa = () => {
                   {recentRecipes.map((r) => (
                     <button
                       key={r.id}
-                      onClick={() => setHistoryOpen(true)}
+                      onClick={() => openSavedRecipe(r)}
                       className="w-full flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10 hover:bg-[#FFD1E7]/60 transition text-left"
                     >
                       <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-full shadow-sm shrink-0">
@@ -205,11 +221,11 @@ const FacaEmCasa = () => {
           />
         )}
 
-        {showRecipe && recipe && (
+        {showRecipe && activeRecipe && (
           <>
-            <HomeRecipeCard recipe={recipe} />
+            <HomeRecipeCard recipe={activeRecipe} />
             <div className="grid grid-cols-3 gap-2 mt-4">
-              <Button variant="outline" className="rounded-xl gap-1" onClick={reset}>
+              <Button variant="outline" className="rounded-xl gap-1" onClick={handleNew}>
                 <RotateCcw className="w-4 h-4" />
                 Nova
               </Button>
@@ -217,10 +233,21 @@ const FacaEmCasa = () => {
                 <Share2 className="w-4 h-4" />
                 Compartilhar
               </Button>
-              <Button className="rounded-xl gap-1 bg-primary hover:bg-primary/90 text-white" onClick={handleSave}>
-                <Save className="w-4 h-4" />
-                Salvar
-              </Button>
+              {isViewingSaved ? (
+                <Button
+                  variant="destructive"
+                  className="rounded-xl gap-1"
+                  onClick={() => viewingRecipe && handleDelete(viewingRecipe.id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Excluir
+                </Button>
+              ) : (
+                <Button className="rounded-xl gap-1 bg-primary hover:bg-primary/90 text-white" onClick={handleSave}>
+                  <Save className="w-4 h-4" />
+                  Salvar
+                </Button>
+              )}
             </div>
           </>
         )}
@@ -246,12 +273,15 @@ const FacaEmCasa = () => {
                   key={h.id}
                   className="flex items-center gap-3 p-3 rounded-2xl bg-[#FFD1E7]/40 border border-primary/10"
                 >
-                  <div className="flex-1 min-w-0">
+                  <button
+                    onClick={() => openSavedRecipe(h)}
+                    className="flex-1 min-w-0 text-left"
+                  >
                     <p className="font-bold text-foreground truncate">{h.nome}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(h.created_at).toLocaleDateString("pt-BR")}
                     </p>
-                  </div>
+                  </button>
                   <button
                     onClick={() => handleDelete(h.id)}
                     className="p-2 rounded-lg hover:bg-destructive/10"
