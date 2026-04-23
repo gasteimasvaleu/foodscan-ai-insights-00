@@ -38,7 +38,7 @@ export const DailyAssessmentSummaryCard = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center">
+      <div className="w-full h-full bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 flex items-center justify-center">
         <div className="animate-pulse text-white/80 text-sm">Carregando...</div>
       </div>
     );
@@ -61,7 +61,7 @@ export const DailyAssessmentSummaryCard = () => {
 
   return (
     <div
-      className="w-full h-full bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex flex-col items-center justify-center p-4 cursor-pointer relative"
+      className="w-full h-full bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 flex flex-col items-center justify-center p-4 cursor-pointer relative"
       onClick={() => navigate('/profile/assessment')}
     >
       <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider mb-2">Avaliação Física</p>
