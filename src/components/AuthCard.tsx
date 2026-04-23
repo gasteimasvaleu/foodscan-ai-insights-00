@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { DailyCalorieSummaryCard } from './DailyCalorieSummaryCard';
 import { DailyHydrationSummaryCard } from './DailyHydrationSummaryCard';
 import { DailyFastingSummaryCard } from './DailyFastingSummaryCard';
+import { DailyAssessmentSummaryCard } from './DailyAssessmentSummaryCard';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,6 +33,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [hasAssessment, setHasAssessment] = useState<boolean | null>(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -52,12 +54,13 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   // Autoplay 5s — pauses when on summary card
   useEffect(() => {
     if (banners.length <= 0) return;
-    const totalSlides = banners.length + 3; // +1 calorie +1 hydration +1 fasting
+    const extras = 3 + (hasAssessment ? 1 : 0);
+    const totalSlides = banners.length + extras;
     const timer = setInterval(() => {
       setCurrentBanner(prev => (prev + 1) % totalSlides);
     }, 5000);
     return () => clearInterval(timer);
-  }, [banners.length]);
+  }, [banners.length, hasAssessment]);
 
   // Fetch profile name when logged in + realtime updates
   useEffect(() => {
@@ -66,7 +69,15 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       const { data } = await supabase.from('profiles').select('name').eq('id', user.id).single();
       if (data?.name) setProfileName(data.name);
     };
+    const fetchAssessment = async () => {
+      const { count } = await supabase
+        .from('physical_assessments')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      setHasAssessment((count ?? 0) > 0);
+    };
     fetchProfile();
+    fetchAssessment();
 
     const channel = supabase
       .channel('authcard-profile')
@@ -129,7 +140,8 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
-    const totalSlides = bannerImages.length + 3; // +1 calorie +1 hydration +1 fasting
+    const extraSummaries = 3 + (hasAssessment ? 1 : 0);
+    const totalSlides = bannerImages.length + extraSummaries;
 
 
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -197,6 +209,17 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             >
               <DailyFastingSummaryCard />
             </div>
+
+            {/* Summary card (assessment) — only when user has data */}
+            {hasAssessment && (
+              <div
+                className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                  currentBanner === bannerImages.length + 3 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                }`}
+              >
+                <DailyAssessmentSummaryCard />
+              </div>
+            )}
 
             {/* Dots */}
             {totalSlides > 1 && (
