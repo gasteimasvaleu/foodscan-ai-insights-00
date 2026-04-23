@@ -140,7 +140,8 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   if (user) {
     const userName = profileName || user.email;
     const bannerImages = banners.length > 0 ? banners : [{ id: 'fallback', image_url: fallbackBannerUrl }];
-    const totalSlides = bannerImages.length + 3; // +1 calorie +1 hydration +1 fasting
+    const extraSummaries = 3 + (hasAssessment ? 1 : 0);
+    const totalSlides = bannerImages.length + extraSummaries;
 
 
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -208,6 +209,17 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
             >
               <DailyFastingSummaryCard />
             </div>
+
+            {/* Summary card (assessment) — only when user has data */}
+            {hasAssessment && (
+              <div
+                className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                  currentBanner === bannerImages.length + 3 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                }`}
+              >
+                <DailyAssessmentSummaryCard />
+              </div>
+            )}
 
             {/* Dots */}
             {totalSlides > 1 && (
