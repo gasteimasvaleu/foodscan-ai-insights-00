@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { DailyCalorieSummaryCard } from './DailyCalorieSummaryCard';
 import { DailyHydrationSummaryCard } from './DailyHydrationSummaryCard';
 import { DailyFastingSummaryCard } from './DailyFastingSummaryCard';
+import { DailyAssessmentSummaryCard } from './DailyAssessmentSummaryCard';
 import { useNavigate } from 'react-router-dom';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,6 +33,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const [banners, setBanners] = useState<{ id: string; image_url: string }[]>([]);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [hasAssessment, setHasAssessment] = useState<boolean | null>(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
