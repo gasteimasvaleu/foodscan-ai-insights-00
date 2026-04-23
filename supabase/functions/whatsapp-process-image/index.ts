@@ -84,6 +84,27 @@ serve(async (req) => {
     const description = analysisData.description || '';
     const portion = analysisData.quantity || '1 porção';
 
+    // Calculate inferred meal_type based on current BRT time (UTC-3)
+    const nowUtc = new Date();
+    const brtHour = (nowUtc.getUTCHours() - 3 + 24) % 24;
+    const brtMinutes = nowUtc.getUTCMinutes();
+    const brtTime = brtHour + brtMinutes / 60;
+    let mealTypeInferred: string;
+    if (brtTime >= 4 && brtTime < 10.5) mealTypeInferred = 'cafe_da_manha';
+    else if (brtTime >= 10.5 && brtTime < 14.5) mealTypeInferred = 'almoco';
+    else if (brtTime >= 14.5 && brtTime < 17.5) mealTypeInferred = 'lanche';
+    else if (brtTime >= 17.5 && brtTime < 21.5) mealTypeInferred = 'jantar';
+    else mealTypeInferred = 'ceia';
+
+    const mealTypeLabels: Record<string, string> = {
+      cafe_da_manha: 'Café da manhã',
+      lanche: 'Lanche',
+      almoco: 'Almoço',
+      jantar: 'Jantar',
+      ceia: 'Ceia',
+    };
+    const inferredLabel = mealTypeLabels[mealTypeInferred];
+
     console.log(`✅ Structured nutrition from analyze-nutrition: ${calories} kcal, ${proteins}g prot, ${carbs}g carbs, ${fats}g fats`);
 
     // Build elements list if multiple items detected
