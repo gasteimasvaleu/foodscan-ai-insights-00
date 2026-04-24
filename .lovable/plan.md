@@ -1,40 +1,62 @@
 
+## Provador: histórico de looks + limite de 3 imagens/dia
 
-## Trocar modelo do Provador para Nano Banana 2
+Custo confirmado do `google/gemini-3.1-flash-image-preview`: ~US$ 0,04 por imagem. Com limite de **3/dia por usuário**, teto de ~US$ 0,12/usuário/dia.
 
-O `google/gemini-2.5-flash-image` continuou ignorando a IMAGE B mesmo após o ajuste de payload e prompt. Vamos subir para o `google/gemini-3.1-flash-image-preview` (Nano Banana 2), que segue instruções multi-imagem com bem mais fidelidade — exatamente o que precisamos para o provador virtual.
+> Observação técnica: o backend não tem primitivas próprias de rate limiting, então a checagem será ad-hoc — contagem direta na tabela do histórico dentro da edge function. Funciona bem para esse volume.
 
-### Mudança
+### 1. Banco (migration)
 
-Em `supabase/functions/virtual-tryon/index.ts`, trocar:
+Nova tabela `provador_generations`:
+- `id uuid pk`
+- `user_id uuid not null`
+- `result_url text not null`
+- `user_image_url text` (referência da pessoa)
+- `outfit_image_url text` (referência da roupa)
+- `created_at timestamptz default now()`
+- Índice em `(user_id, created_at desc)`
 
-```ts
-model: "google/gemini-2.5-flash-image",
-```
+RLS: SELECT/INSERT/DELETE somente quando `auth.uid() = user_id`. Sem UPDATE.
 
-por:
+### 2. Edge function `virtual-tryon` (limite 3/dia)
 
-```ts
-model: "google/gemini-3.1-flash-image-preview",
-```
+Antes de chamar a IA:
+1. Contar `provador_generations` do `userId` onde `created_at >= início do dia (UTC)`.
+2. Se ≥ 3 → HTTP `429` com `{ error, limitReached: true, used: 3, limit: 3 }`.
+3. Admin (`9051a4db-edf7-45db-97f0-72f2021ee4b6`) é isento.
 
-Nada mais muda: payload intercalado (texto + imagem A + texto + imagem B + prompt), `modalities: ["image", "text"]`, bucket `provador`, fluxo de upload e UI 1:1 permanecem idênticos.
+Após upload bem-sucedido no bucket:
+4. Inserir registro em `provador_generations`.
+5. Resposta inclui `usedToday` e `dailyLimit: 3`.
 
-### Memória a atualizar
-- `mem://features/provador/core` — registrar que o modelo agora é `google/gemini-3.1-flash-image-preview` (Nano Banana 2), motivo: fidelidade superior em prompts multi-imagem.
+### 3. Frontend
 
-### Validação
-Após deploy, você testa em `/provador` com as mesmas duas fotos. Esperado: pessoa da IMAGE A vestindo a roupa da IMAGE B, fundo branco de estúdio, 1:1.
+**`src/hooks/useProvadorHistory.ts`** (novo): `history`, `usedToday`, `dailyLimit: 3`, `remaining`, `loading`, `refresh()`, `deleteItem(id)` (deleta linha + arquivo do bucket).
 
-### Observações
-- Custo por imagem é maior que a 2.5-flash-image, mas ainda rápido. Se virar gargalo, dá pra adicionar paywall/limite por usuário em uma próxima iteração (fora do escopo agora).
-- Se mesmo assim a fidelidade da roupa não for boa o suficiente, próxima opção seria `google/gemini-3-pro-image-preview` (Nano Banana Pro) — mais lento e caro, mas com qualidade máxima.
+**`src/pages/Provador.tsx`**:
+- Contador discreto acima do botão: "Hoje: X de 3 gerações".
+- Em `429` com `limitReached`, toast amigável + botão desabilitado.
+- Após gerar, `refresh()` para atualizar contador e galeria.
+- Nova seção "Meus looks" abaixo, com `LookHistoryGrid`.
 
-### Arquivos editados
-- `supabase/functions/virtual-tryon/index.ts` — apenas a string do modelo.
+**`src/components/provador/LookHistoryGrid.tsx`** (novo):
+- Grid 3 colunas, thumbnails 1:1 `rounded-xl`.
+- Empty state: "Seus looks gerados aparecerão aqui."
+- Clique abre Dialog (glassmorphism padrão) com imagem grande + **Baixar** e **Excluir**.
+
+### 4. Memória
+
+Atualizar `mem://features/provador/core`: histórico em `provador_generations`, limite **3 gerações/dia** por usuário (admin isento), checagem ad-hoc.
+
+### Detalhe importante
+Excluir um item **não** libera nova geração no mesmo dia — o limite é por contagem histórica do dia, não por itens vivos (evita abuso "gerar/deletar/repetir").
 
 ### Fora do escopo
-- Mudar prompt, payload, UI ou bucket.
-- Adicionar histórico/galeria.
-- Paywall ou limite de uso.
+- Limite mensal.
+- Paywall ou plano premium com mais gerações.
+- Compartilhamento na comunidade.
+- Regerar look com variação.
 
+### Arquivos
+- **Novos**: migration SQL, `src/hooks/useProvadorHistory.ts`, `src/components/provador/LookHistoryGrid.tsx`.
+- **Editados**: `supabase/functions/virtual-tryon/index.ts`, `src/pages/Provador.tsx`, `mem://features/provador/core`.
