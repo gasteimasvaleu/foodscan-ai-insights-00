@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -46,6 +46,12 @@ const moreSheetItems = [
     description: "Identifique pratos por foto e gere receitas caseiras",
     url: "/faca-em-casa",
     icon: ChefHat,
+  },
+  {
+    name: "Provador Virtual",
+    description: "Experimente looks com IA em fundo de estúdio",
+    url: "/provador",
+    icon: Shirt,
   },
   {
     name: "ServiNUTRI",
