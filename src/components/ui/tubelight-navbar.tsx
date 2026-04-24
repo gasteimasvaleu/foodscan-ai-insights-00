@@ -48,6 +48,12 @@ const moreSheetItems = [
     icon: ChefHat,
   },
   {
+    name: "Provador Virtual",
+    description: "Experimente looks com IA em fundo de estúdio",
+    url: "/provador",
+    icon: Shirt,
+  },
+  {
     name: "ServiNUTRI",
     description: "Rede de nutricionistas",
     url: "/servinutri",
