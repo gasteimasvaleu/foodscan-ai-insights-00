@@ -87,7 +87,7 @@ export default function LookHistoryGrid({ history, loading, onDelete }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="bg-white/70 backdrop-blur-md border-primary/20 max-w-sm rounded-3xl">
+        <DialogContent className="bg-white/70 backdrop-blur-md border-primary/20 w-[calc(100%-2rem)] max-w-xs sm:max-w-sm rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-base font-normal">Seu look</DialogTitle>
           </DialogHeader>
