@@ -561,6 +561,33 @@ export type Database = {
         }
         Relationships: []
       }
+      provador_generations: {
+        Row: {
+          created_at: string
+          id: string
+          outfit_image_url: string | null
+          result_url: string
+          user_id: string
+          user_image_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          outfit_image_url?: string | null
+          result_url: string
+          user_id: string
+          user_image_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          outfit_image_url?: string | null
+          result_url?: string
+          user_id?: string
+          user_image_url?: string | null
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth_key: string

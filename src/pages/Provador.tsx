@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { compressImage } from "@/lib/imageCompression";
 import VideoOverlay from "@/components/VideoOverlay";
 import TryOnUpload from "@/components/provador/TryOnUpload";
+import LookHistoryGrid from "@/components/provador/LookHistoryGrid";
+import { useProvadorHistory } from "@/hooks/useProvadorHistory";
 
 type SlotKey = "user" | "outfit";
 
@@ -32,6 +34,16 @@ export default function Provador() {
   const [outfitSlot, setOutfitSlot] = useState<SlotState>(emptySlot);
   const [generating, setGenerating] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const {
+    history,
+    usedToday,
+    dailyLimit,
+    remaining,
+    isAdmin,
+    loading: historyLoading,
+    refresh: refreshHistory,
+    deleteItem,
+  } = useProvadorHistory();
 
   const setSlot = (key: SlotKey, value: SlotState | ((prev: SlotState) => SlotState)) => {
     if (key === "user") setUserSlot(value as any);
@@ -69,8 +81,13 @@ export default function Provador() {
     else setOutfitSlot(emptySlot);
   };
 
+  const limitReached = !isAdmin && remaining <= 0;
   const canGenerate =
-    !!userSlot.publicUrl && !!outfitSlot.publicUrl && !userSlot.uploading && !outfitSlot.uploading;
+    !!userSlot.publicUrl &&
+    !!outfitSlot.publicUrl &&
+    !userSlot.uploading &&
+    !outfitSlot.uploading &&
+    !limitReached;
 
   const handleGenerate = async () => {
     if (!canGenerate || !user) return;
@@ -87,7 +104,12 @@ export default function Provador() {
 
       if (error) {
         const status = (error as any).context?.status;
-        if (status === 429) {
+        const ctxBody = (error as any).context?.body;
+        const limit = ctxBody?.limitReached || data?.limitReached;
+        if (status === 429 && limit) {
+          toast.error(`Limite diário atingido (${dailyLimit} gerações por dia).`);
+          await refreshHistory();
+        } else if (status === 429) {
           toast.error("Muitas solicitações. Aguarde um instante e tente novamente.");
         } else if (status === 402) {
           toast.error("Créditos de IA esgotados. Adicione créditos para continuar.");
@@ -104,6 +126,7 @@ export default function Provador() {
 
       setResultUrl(data.imageUrl);
       toast.success("Look gerado com sucesso!");
+      await refreshHistory();
     } catch (e) {
       console.error("generate error", e);
       toast.error("Erro inesperado. Tente novamente.");
@@ -216,13 +239,23 @@ export default function Provador() {
               />
             </div>
 
+            {!isAdmin && (
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                Hoje: {Math.min(usedToday, dailyLimit)} de {dailyLimit} gerações
+              </p>
+            )}
+
             <Button
               onClick={handleGenerate}
               disabled={!canGenerate || generating}
-              className="w-full mt-5 h-12 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white text-base font-semibold shadow-lg disabled:opacity-50"
+              className="w-full mt-2 h-12 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white text-base font-semibold shadow-lg disabled:opacity-50"
             >
               <Sparkles className="w-5 h-5 mr-2" />
-              {userSlot.uploading || outfitSlot.uploading ? "Enviando fotos…" : "Provar look"}
+              {limitReached
+                ? "Limite diário atingido"
+                : userSlot.uploading || outfitSlot.uploading
+                ? "Enviando fotos…"
+                : "Provar look"}
             </Button>
 
             <p className="text-[11px] text-muted-foreground mt-3 px-2 text-center leading-snug">
@@ -282,6 +315,16 @@ export default function Provador() {
             </p>
           </div>
         )}
+
+        {/* Histórico de looks */}
+        <div className="mt-8">
+          <h2 className="text-base text-foreground mb-3 px-1">Meus looks</h2>
+          <LookHistoryGrid
+            history={history}
+            loading={historyLoading}
+            onDelete={deleteItem}
+          />
+        </div>
       </div>
     </div>
   );

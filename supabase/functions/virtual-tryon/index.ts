@@ -119,6 +119,38 @@ Deno.serve(async (req) => {
     }
     const { userImageUrl, outfitImageUrl } = parsed.data;
 
+    // Daily limit check (3/day per user, admin exempt)
+    const ADMIN_ID = "9051a4db-edf7-45db-97f0-72f2021ee4b6";
+    const DAILY_LIMIT = 3;
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    let usedToday = 0;
+    if (userId !== ADMIN_ID) {
+      const { count, error: countErr } = await supabase
+        .from("provador_generations")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .gte("created_at", startOfDay.toISOString());
+
+      if (countErr) {
+        console.error("count error:", countErr);
+      }
+      usedToday = count ?? 0;
+
+      if (usedToday >= DAILY_LIMIT) {
+        return new Response(
+          JSON.stringify({
+            error: `Limite diário atingido (${DAILY_LIMIT} gerações por dia).`,
+            limitReached: true,
+            used: usedToday,
+            limit: DAILY_LIMIT,
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     // Call Lovable AI Gateway with both images
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -200,10 +232,27 @@ Deno.serve(async (req) => {
     }
 
     const { data: pub } = supabase.storage.from("provador").getPublicUrl(filePath);
-    return new Response(JSON.stringify({ imageUrl: pub.publicUrl }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const finalUrl = pub.publicUrl;
+
+    // Record generation in history
+    const { error: insErr } = await supabase.from("provador_generations").insert({
+      user_id: userId,
+      result_url: finalUrl,
+      user_image_url: userImageUrl,
+      outfit_image_url: outfitImageUrl,
     });
+    if (insErr) {
+      console.error("history insert error:", insErr);
+    }
+
+    return new Response(
+      JSON.stringify({
+        imageUrl: finalUrl,
+        usedToday: usedToday + 1,
+        dailyLimit: DAILY_LIMIT,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (e) {
     console.error("virtual-tryon error:", e);
     return new Response(
