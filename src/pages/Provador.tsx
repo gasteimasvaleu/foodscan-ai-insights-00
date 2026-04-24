@@ -81,8 +81,13 @@ export default function Provador() {
     else setOutfitSlot(emptySlot);
   };
 
+  const limitReached = !isAdmin && remaining <= 0;
   const canGenerate =
-    !!userSlot.publicUrl && !!outfitSlot.publicUrl && !userSlot.uploading && !outfitSlot.uploading;
+    !!userSlot.publicUrl &&
+    !!outfitSlot.publicUrl &&
+    !userSlot.uploading &&
+    !outfitSlot.uploading &&
+    !limitReached;
 
   const handleGenerate = async () => {
     if (!canGenerate || !user) return;
@@ -99,7 +104,12 @@ export default function Provador() {
 
       if (error) {
         const status = (error as any).context?.status;
-        if (status === 429) {
+        const ctxBody = (error as any).context?.body;
+        const limit = ctxBody?.limitReached || data?.limitReached;
+        if (status === 429 && limit) {
+          toast.error(`Limite diário atingido (${dailyLimit} gerações por dia).`);
+          await refreshHistory();
+        } else if (status === 429) {
           toast.error("Muitas solicitações. Aguarde um instante e tente novamente.");
         } else if (status === 402) {
           toast.error("Créditos de IA esgotados. Adicione créditos para continuar.");
@@ -116,6 +126,7 @@ export default function Provador() {
 
       setResultUrl(data.imageUrl);
       toast.success("Look gerado com sucesso!");
+      await refreshHistory();
     } catch (e) {
       console.error("generate error", e);
       toast.error("Erro inesperado. Tente novamente.");
