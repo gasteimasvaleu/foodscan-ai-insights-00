@@ -44,6 +44,7 @@ import Objetivos from "./pages/Objetivos";
 import WidgetGuide from "./pages/WidgetGuide";
 import Sleep from "./pages/Sleep";
 import FacaEmCasa from "./pages/FacaEmCasa";
+import Provador from "./pages/Provador";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
