@@ -232,10 +232,27 @@ Deno.serve(async (req) => {
     }
 
     const { data: pub } = supabase.storage.from("provador").getPublicUrl(filePath);
-    return new Response(JSON.stringify({ imageUrl: pub.publicUrl }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const finalUrl = pub.publicUrl;
+
+    // Record generation in history
+    const { error: insErr } = await supabase.from("provador_generations").insert({
+      user_id: userId,
+      result_url: finalUrl,
+      user_image_url: userImageUrl,
+      outfit_image_url: outfitImageUrl,
     });
+    if (insErr) {
+      console.error("history insert error:", insErr);
+    }
+
+    return new Response(
+      JSON.stringify({
+        imageUrl: finalUrl,
+        usedToday: usedToday + 1,
+        dailyLimit: DAILY_LIMIT,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (e) {
     console.error("virtual-tryon error:", e);
     return new Response(
