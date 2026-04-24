@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { compressImage } from "@/lib/imageCompression";
 import VideoOverlay from "@/components/VideoOverlay";
 import TryOnUpload from "@/components/provador/TryOnUpload";
+import LookHistoryGrid from "@/components/provador/LookHistoryGrid";
+import { useProvadorHistory } from "@/hooks/useProvadorHistory";
 
 type SlotKey = "user" | "outfit";
 
