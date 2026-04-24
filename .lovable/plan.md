@@ -1,47 +1,49 @@
 
 
-## Refinar Provador Virtual: roupa fiel + card 1:1
+## Corrigir Provador: IA está ignorando a IMAGE B (roupa)
 
-Dois ajustes pequenos com base no feedback do primeiro teste:
+### Diagnóstico
 
-### 1. Prompt mais rígido para fidelidade da roupa
-Em `supabase/functions/virtual-tryon/index.ts`, reescrever a constante `TRY_ON_PROMPT` para reforçar que a roupa da IMAGE B deve aparecer **exatamente igual** (modelo, cor, estampa, recortes, comprimento, tecido, acessórios), sem nenhuma reinterpretação. Mudanças principais:
+O resultado retornou apenas a pessoa da IMAGE A porque o modelo `google/gemini-2.5-flash-image` (Nano Banana) tem dificuldade em distinguir qual imagem é "A" e qual é "B" quando ambas chegam apenas como URLs em sequência, sem rótulo explícito por imagem. Hoje a edge function envia:
 
-- Trocar "TASK" para deixar claro: a IMAGE B é a **única fonte da roupa** — qualquer roupa visível na IMAGE A deve ser ignorada/descartada.
-- Adicionar seção **"REGRA #1 — ROUPA INTOCÁVEL"** no topo, antes de tudo, listando:
-  - Replicar pixel a pixel cor, estampa, textura, costuras, zíperes, bolsos, fivelas, decote, mangas, comprimento, caimento original.
-  - Manter exatamente acessórios/calçados visíveis na IMAGE B (se houver), a menos que claramente não façam parte do look principal.
-  - Proibido inventar variações, mudar tom, "modernizar", recolorir, adicionar logos novos ou remover detalhes.
-  - Se a IMAGE B mostrar a peça em manequim/cabide/foto de produto, transferir o look para o corpo da pessoa **mantendo proporção e detalhes idênticos**.
-- Trocar TASK para mencionar **proporção 1:1 (quadrada)** em vez de 9:16, já que o modelo `gemini-2.5-flash-image` está retornando 1:1 e vamos abraçar esse formato.
-- Ajustar CENÁRIO: "Enquadramento quadrado 1:1, corpo inteiro centralizado, headroom equilibrado".
-- Reforçar NEGATIVE com itens específicos:
-  - "não trocar a cor da roupa por nenhuma hipótese"
-  - "não mudar o modelo da peça"
-  - "não adicionar/remover estampas, listras ou detalhes"
-  - "não usar a roupa visível na IMAGE A"
+```
+[
+  { type: "text", text: PROMPT longo mencionando "IMAGE A" / "IMAGE B" },
+  { type: "image_url", image_url: { url: userImageUrl } },
+  { type: "image_url", image_url: { url: outfitImageUrl } },
+]
+```
 
-### 2. Card de resultado em 1:1
-Em `src/pages/Provador.tsx`, no bloco que renderiza a imagem gerada:
+Não há nada que amarre cada URL ao rótulo correspondente, então o modelo trata as duas imagens como referências genéricas — e como a primeira (pessoa) é mais "rica" semanticamente, ele tende a só replicá-la.
 
-- Trocar o container que hoje força aspect ratio 9:16 (provavelmente `aspect-[9/16]`) por `aspect-square` (1:1).
-- Manter `object-cover` e `rounded-3xl` existentes.
-- Ajustar `max-w` se necessário para o card ficar visualmente equilibrado no mobile (ex.: `max-w-sm mx-auto`), sem alterar layout dos botões abaixo.
+### Correção (uma única edge function — `supabase/functions/virtual-tryon/index.ts`)
 
-### Sem outras mudanças
-- Edge function continua usando `google/gemini-2.5-flash-image`.
-- Bucket `provador`, fluxo de upload, botões (Baixar / WhatsApp / Refazer / Trocar roupa) e VideoOverlay permanecem idênticos.
-- Sem migration, sem novos arquivos, sem mudança de rota.
+Reordenar o `content` da mensagem para **intercalar texto curto + imagem**, marcando explicitamente cada imagem antes dela aparecer. Estrutura nova:
 
-### Arquivos editados
-- `supabase/functions/virtual-tryon/index.ts` — apenas a constante do prompt.
-- `src/pages/Provador.tsx` — apenas o aspect ratio do card de resultado.
+```
+[
+  { type: "text", text: "Esta é a IMAGE A (pessoa de referência — use o rosto e identidade desta imagem):" },
+  { type: "image_url", image_url: { url: userImageUrl } },
+  { type: "text", text: "Esta é a IMAGE B (roupa/look — use EXATAMENTE esta roupa, ignore qualquer roupa visível na IMAGE A):" },
+  { type: "image_url", image_url: { url: outfitImageUrl } },
+  { type: "text", text: TRY_ON_PROMPT }, // instruções completas vêm por último
+]
+```
 
-### Memória a atualizar
-- `mem://features/provador/core` — trocar "formato 9:16" por "formato 1:1" para refletir a realidade do modelo.
+Mudanças adicionais no prompt para reforçar:
+- Abrir o `TRY_ON_PROMPT` com: "Você acabou de receber DUAS imagens, nesta ordem: IMAGE A (pessoa) e IMAGE B (roupa). Sua tarefa é gerar UMA nova imagem combinando-as." — em vez de só "Você recebe DUAS IMAGENS".
+- Mover a "REGRA #1 — ROUPA INTOCÁVEL" para logo após essa abertura, antes de qualquer outra seção.
+- Adicionar uma instrução final explícita: "OUTPUT: gere uma imagem nova, NÃO retorne nenhuma das imagens de entrada inalterada."
+- Reforçar negative: "não retornar a IMAGE A sem alterações", "não retornar a IMAGE B sem alterações".
 
 ### Fora do escopo
-- Trocar de modelo de IA.
-- Forçar 9:16 via pós-processamento (cropping/padding) — fica para depois, se você quiser voltar a esse formato.
-- Mudar layout dos uploads ou dos botões de ação.
+- Trocar de modelo (continuamos com `google/gemini-2.5-flash-image`).
+- Mudar o frontend (`Provador.tsx`, `TryOnUpload.tsx`) — o problema é 100% no payload da edge function.
+- Tabela de histórico ou logs persistentes.
+
+### Como vamos validar
+Após o deploy, você testa na rota `/provador` com as mesmas duas fotos. Se ainda voltar só a IMAGE A, o próximo passo (fora deste plano) seria considerar trocar para `google/gemini-3.1-flash-image-preview` (Nano Banana 2), que segue instruções multi-imagem com mais fidelidade.
+
+### Arquivos editados
+- `supabase/functions/virtual-tryon/index.ts` — apenas o array `content` da chamada ao gateway e o texto de `TRY_ON_PROMPT`.
 
