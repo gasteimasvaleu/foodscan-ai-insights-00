@@ -1,44 +1,143 @@
 
 
-## Card de Avaliação Física em tons claros (cinza → branco)
+## Página /provador — "Provador Virtual" com IA
 
-Trocar o gradiente atual (teal/emerald/cyan) por um fundo claro **cinza claro → branco**, ajustando todos os textos/ícones internos que hoje são brancos para **preto** (texto principal) e **vermelho** (destaques numéricos), mantendo legibilidade no novo fundo.
+Página de entretenimento onde o usuário envia **2 fotos** (1 dele + 1 de uma peça de roupa/look) e a IA gera uma imagem fotorrealista do usuário vestindo aquela roupa, em fundo branco de estúdio, formato 9:16.
 
-### Mudanças em `src/components/DailyAssessmentSummaryCard.tsx`
+---
 
-**Fundo (loading + card principal):**
-- `from-teal-500 via-emerald-500 to-cyan-500` → `from-gray-100 via-gray-50 to-white`
-- Adicionar `border border-gray-200` para dar contorno suave (já que perde contraste com fundo do app).
+### Comportamento da página
 
-**Título "Avaliação Física":**
-- `text-white/90` → `text-gray-700`
+1. **Header padrão** (compacto horizontal, gradiente, título rosa #FD46A1) — "Provador Virtual".
+2. **Texto curto explicativo**: "Envie sua foto e a foto de uma roupa. A IA cria você usando o look em fundo de estúdio."
+3. **Dois slots de upload lado a lado** (em mobile: empilhados):
+   - **Slot A — "Sua foto"**: foto do usuário (rosto + corpo de preferência).
+   - **Slot B — "A roupa"**: foto de referência da peça/look.
+   - Ambos aceitam JPG/PNG/WEBP até 8 MB, com preview e botão "trocar".
+   - Compressão client-side via `lib/imageCompression.ts` (já existe).
+4. **Botão "Provar look"** (rosa #FD46A1, full width, disabled enquanto faltar foto).
+5. **Loading**: usa o `VideoOverlay` global existente (z-60) com texto "Gerando seu look…".
+6. **Resultado**:
+   - Card grande exibindo a imagem 9:16 gerada.
+   - Botões: **Baixar**, **Compartilhar no WhatsApp**, **Refazer** (limpa tudo), **Trocar roupa** (mantém foto do usuário).
+7. **Aviso legal**: "Imagem gerada por IA, apenas para entretenimento. Não envie fotos de terceiros sem consentimento."
 
-**Números de destaque (peso, IMC, % gordura no centro do anel):**
-- `text-white` → `text-red-500` (vermelho para os números principais)
+---
 
-**Labels secundários ("kg atual", "IMC", "sem peso"):**
-- `text-white/70` → `text-gray-600`
+### Geração de imagem (edge function nova)
 
-**Anel SVG (% gordura):**
-- Trilha de fundo: `stroke="rgba(255,255,255,0.2)"` → `stroke="rgba(0,0,0,0.1)"`
-- Trilha ativa: `stroke="white"` → `stroke="#ef4444"` (vermelho-500)
-- Ícone `Scale` central: `text-white` → `text-black`
+**`supabase/functions/virtual-tryon/index.ts`**
 
-**Badge de variação de peso (▼/▲ kg):**
-- Container: `bg-white/20 text-white` → `bg-gray-100 text-black`
-- Setas e valores delta:
-  - Diminuiu: `text-green-200/100` → `text-green-600`
-  - Aumentou: `text-red-200/100` → `text-red-600`
-  - "estável" (Minus): preto
-- Sufixo "vs. anterior": `text-white/60` → `text-gray-500`
+- Recebe `{ userImageUrl: string, outfitImageUrl: string }`.
+- Chama Lovable AI Gateway com modelo **`google/gemini-2.5-flash-image`** (Nano Banana — rápido e econômico).
+- Payload: mensagem multimodal com **as duas imagens** + prompt em português (fixado no servidor).
+- `modalities: ["image", "text"]`.
+- Retorna `{ imageBase64: string }` (data URL `image/png`) e também salva o resultado no bucket para URL pública estável.
+- CORS padrão, validação com Zod, tratamento explícito de **429** (rate limit) e **402** (créditos esgotados) com mensagens claras para o cliente.
 
-**CTA "Ver Avaliações":**
-- `bg-white/20 text-white hover:bg-white/30` → `bg-gray-100 text-black hover:bg-gray-200`
+**Prompt usado pela edge function** (fixado no servidor, nunca exposto ao cliente):
 
-### Arquivo afetado
-- `src/components/DailyAssessmentSummaryCard.tsx`
+```
+INPUT: Você recebe DUAS IMAGENS:
+- IMAGE A: a pessoa de referência (rosto e identidade)
+- IMAGE B: a roupa/look a ser vestido
 
-### Fora do escopo
-- Mudar cores dos outros 3 cards do carrossel (calorias/hidratação/jejum permanecem com seus gradientes coloridos).
-- Alterar layout, ícones ou estrutura do card.
+TASK: Gere UMA imagem ultra realista, proporção vertical 9:16,
+estilo fotografia publicitária de estúdio premium, mostrando a pessoa
+da IMAGE A vestindo exatamente o look da IMAGE B.
+
+FACE/IDENTIDADE (LOCK TOTAL DA IMAGE A):
+- Manter exatamente o rosto, estrutura facial, olhos, nariz, boca
+- Manter cor e textura de pele
+- Manter cor, comprimento e estilo do cabelo
+- Manter expressão natural e idade aparente
+
+CORPO:
+- Manter proporções coerentes com a pessoa da IMAGE A
+- Pose neutra de catálogo, corpo inteiro centralizado
+- Postura ereta, leve contrapposto, mãos relaxadas ao lado do corpo
+
+ROUPA (LOCK TOTAL DA IMAGE B):
+- Replicar fielmente a peça/look da IMAGE B (modelo, cor, textura,
+  estampas, detalhes, recortes, comprimento)
+- NÃO alterar cor, modelo nem amarrações
+- Adaptar apenas o caimento ao corpo da pessoa da IMAGE A
+
+CENÁRIO:
+- Fundo branco infinito de estúdio (cyclorama branco puro)
+- Iluminação de estúdio uniforme, suave, sem sombras duras
+- Sombra discreta no chão sob os pés
+- Enquadramento vertical 9:16, corpo inteiro, headroom equilibrado
+
+ESTILO:
+- Ultra realista, fotografia de moda profissional
+- Pele com textura natural
+- Foco nítido em rosto e roupa
+
+INTEGRAÇÃO:
+- Transição perfeita entre rosto e corpo
+- Ajustar pescoço, iluminação e tom de pele para parecer uma única pessoa
+- Sem colagem artificial, sem costuras visíveis
+
+NEGATIVE:
+- não misturar rostos de outras pessoas
+- não alterar a roupa da IMAGE B
+- não usar roupas da IMAGE A
+- evitar distorções anatômicas, mãos/dedos extras
+- evitar artefatos, baixa qualidade, aparência de montagem
+- evitar texto, marca d'água, logos não presentes nas imagens originais
+```
+
+---
+
+### Storage
+
+- Novo bucket público **`provador`** dedicado (facilita políticas e limpeza futura).
+- **Migration**: cria bucket + policies em `storage.objects` (INSERT/SELECT) por `auth.uid()` filtradas por `bucket_id = 'provador'`.
+- Path: `provador/{user_id}/{timestamp}-{slot}.jpg` com `slot ∈ {user, outfit, result}`.
+- Resultado também salvo no bucket (a partir do base64) para download/compartilhamento via URL pública estável.
+
+### Sem tabela de histórico nesta v1
+- Não criamos `tryon_generations` agora — escopo curto. Pode entrar em v2 se virar feature pedida.
+
+---
+
+### Acesso e gating
+
+- Rota privada (mesma proteção das outras internas).
+- **Sem paywall na v1** — feature de entretenimento, ajuda em ativação.
+- Adicionar entrada no menu inferior "+" (`bottom-plus-menu`) como ação "Provador" com ícone `Shirt` (lucide).
+
+### iOS / monetização
+- Rota web pura, sem SKU RevenueCat, sem Stripe — não toca em pagamentos.
+
+---
+
+### Arquivos novos
+- `src/pages/Provador.tsx`
+- `src/components/provador/TryOnUpload.tsx` (slot de upload reutilizável)
+- `supabase/functions/virtual-tryon/index.ts`
+- `supabase/migrations/{timestamp}_provador_bucket.sql`
+
+### Arquivos editados
+- `src/App.tsx` — registrar rota `/provador` (lazy import, dentro do gate de auth).
+- Componente do menu "+" (a confirmar nome em leitura) — adicionar item "Provador".
+
+### Memória a salvar (após build)
+- `mem://features/provador/core` — fluxo, modelo `google/gemini-2.5-flash-image`, prompt no servidor, bucket `provador`, formato 9:16.
+
+---
+
+### Fora do escopo (v1)
+- Histórico/galeria de looks gerados.
+- Edição/refino interativo ("mudar cor", "trocar fundo").
+- Geração em lote.
+- Watermark "We Diet" na imagem.
+- Paywall específico.
+
+---
+
+### Observações
+- **Modelo**: `google/gemini-2.5-flash-image` (Nano Banana) — rápido e barato. Qualidade facial pode variar; o aviso legal cobre expectativa.
+- **Conteúdo sensível**: gateway tem filtros próprios; aviso de consentimento de terceiros importante por LGPD.
 
