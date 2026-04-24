@@ -7,9 +7,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TRY_ON_PROMPT = `INPUT: Você recebe DUAS IMAGENS:
-- IMAGE A: a pessoa de referência (rosto, cabelo, identidade, tom de pele)
-- IMAGE B: a roupa/look a ser vestido (única fonte da roupa)
+const TRY_ON_PROMPT = `Você acabou de receber DUAS imagens, nesta ordem exata:
+- IMAGE A (1ª imagem): a pessoa de referência (rosto, cabelo, identidade, tom de pele)
+- IMAGE B (2ª imagem): a roupa/look a ser vestido (ÚNICA fonte da roupa)
+
+Sua tarefa é gerar UMA nova imagem combinando-as: a pessoa da IMAGE A vestindo EXATAMENTE a roupa da IMAGE B.
 
 REGRA #1 — ROUPA INTOCÁVEL (PRIORIDADE MÁXIMA):
 - A IMAGE B é a ÚNICA fonte da roupa. Qualquer roupa visível na IMAGE A deve ser totalmente IGNORADA e DESCARTADA.
@@ -49,7 +51,15 @@ INTEGRAÇÃO:
 - Ajustar pescoço, iluminação e tom de pele para parecer uma única pessoa
 - Sem colagem artificial, sem costuras visíveis
 
+OUTPUT OBRIGATÓRIO:
+- Gere uma IMAGEM NOVA combinando as duas entradas.
+- NÃO retorne a IMAGE A sem alterações.
+- NÃO retorne a IMAGE B sem alterações.
+- NÃO retorne nenhuma das imagens de entrada como resposta.
+
 NEGATIVE:
+- não retornar a IMAGE A inalterada (proibido)
+- não retornar a IMAGE B inalterada (proibido)
 - não trocar a cor da roupa por nenhuma hipótese
 - não mudar o modelo da peça da IMAGE B
 - não adicionar nem remover estampas, listras, bolsos ou detalhes
@@ -122,9 +132,11 @@ Deno.serve(async (req) => {
           {
             role: "user",
             content: [
-              { type: "text", text: TRY_ON_PROMPT },
+              { type: "text", text: "Esta é a IMAGE A (pessoa de referência — use o rosto, cabelo e identidade desta imagem; IGNORE qualquer roupa visível aqui):" },
               { type: "image_url", image_url: { url: userImageUrl } },
+              { type: "text", text: "Esta é a IMAGE B (roupa/look — use EXATAMENTE esta roupa, replicando cor, estampa, modelo e detalhes pixel a pixel):" },
               { type: "image_url", image_url: { url: outfitImageUrl } },
+              { type: "text", text: TRY_ON_PROMPT },
             ],
           },
         ],
