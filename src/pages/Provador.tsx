@@ -315,6 +315,16 @@ export default function Provador() {
             </p>
           </div>
         )}
+
+        {/* Histórico de looks */}
+        <div className="mt-8">
+          <h2 className="text-base text-foreground mb-3 px-1">Meus looks</h2>
+          <LookHistoryGrid
+            history={history}
+            loading={historyLoading}
+            onDelete={deleteItem}
+          />
+        </div>
       </div>
     </div>
   );
