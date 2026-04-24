@@ -34,6 +34,16 @@ export default function Provador() {
   const [outfitSlot, setOutfitSlot] = useState<SlotState>(emptySlot);
   const [generating, setGenerating] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const {
+    history,
+    usedToday,
+    dailyLimit,
+    remaining,
+    isAdmin,
+    loading: historyLoading,
+    refresh: refreshHistory,
+    deleteItem,
+  } = useProvadorHistory();
 
   const setSlot = (key: SlotKey, value: SlotState | ((prev: SlotState) => SlotState)) => {
     if (key === "user") setUserSlot(value as any);
