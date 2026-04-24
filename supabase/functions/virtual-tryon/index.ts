@@ -8,12 +8,19 @@ const corsHeaders = {
 };
 
 const TRY_ON_PROMPT = `INPUT: Você recebe DUAS IMAGENS:
-- IMAGE A: a pessoa de referência (rosto e identidade)
-- IMAGE B: a roupa/look a ser vestido
+- IMAGE A: a pessoa de referência (rosto, cabelo, identidade, tom de pele)
+- IMAGE B: a roupa/look a ser vestido (única fonte da roupa)
 
-TASK: Gere UMA imagem ultra realista, proporção vertical 9:16,
+REGRA #1 — ROUPA INTOCÁVEL (PRIORIDADE MÁXIMA):
+- A IMAGE B é a ÚNICA fonte da roupa. Qualquer roupa visível na IMAGE A deve ser totalmente IGNORADA e DESCARTADA.
+- Replicar pixel a pixel: cor exata, estampas, texturas, tecidos, costuras, zíperes, botões, bolsos, fivelas, alças, decote, mangas, comprimento e caimento original da peça.
+- Manter EXATAMENTE acessórios e calçados visíveis na IMAGE B (se fizerem parte do look principal).
+- PROIBIDO: inventar variações, mudar tom de cor, "modernizar", recolorir, adicionar ou remover estampas/listras/detalhes, inserir logos novos, alterar o modelo da peça.
+- Se a IMAGE B mostrar a peça em manequim, cabide ou foto de produto (sem pessoa), transferir o look para o corpo da pessoa da IMAGE A mantendo proporções e detalhes idênticos.
+
+TASK: Gere UMA imagem ultra realista, proporção 1:1 (quadrada),
 estilo fotografia publicitária de estúdio premium, mostrando a pessoa
-da IMAGE A vestindo exatamente o look da IMAGE B.
+da IMAGE A vestindo EXATAMENTE o look da IMAGE B (ver REGRA #1).
 
 FACE/IDENTIDADE (LOCK TOTAL DA IMAGE A):
 - Manter exatamente o rosto, estrutura facial, olhos, nariz, boca
@@ -26,17 +33,11 @@ CORPO:
 - Pose neutra de catálogo, corpo inteiro centralizado
 - Postura ereta, leve contrapposto, mãos relaxadas ao lado do corpo
 
-ROUPA (LOCK TOTAL DA IMAGE B):
-- Replicar fielmente a peça/look da IMAGE B (modelo, cor, textura,
-  estampas, detalhes, recortes, comprimento)
-- NÃO alterar cor, modelo nem amarrações
-- Adaptar apenas o caimento ao corpo da pessoa da IMAGE A
-
 CENÁRIO:
 - Fundo branco infinito de estúdio (cyclorama branco puro)
 - Iluminação de estúdio uniforme, suave, sem sombras duras
 - Sombra discreta no chão sob os pés
-- Enquadramento vertical 9:16, corpo inteiro, headroom equilibrado
+- Enquadramento quadrado 1:1, corpo inteiro centralizado, headroom equilibrado
 
 ESTILO:
 - Ultra realista, fotografia de moda profissional
@@ -49,9 +50,11 @@ INTEGRAÇÃO:
 - Sem colagem artificial, sem costuras visíveis
 
 NEGATIVE:
+- não trocar a cor da roupa por nenhuma hipótese
+- não mudar o modelo da peça da IMAGE B
+- não adicionar nem remover estampas, listras, bolsos ou detalhes
+- não usar a roupa visível na IMAGE A
 - não misturar rostos de outras pessoas
-- não alterar a roupa da IMAGE B
-- não usar roupas da IMAGE A
 - evitar distorções anatômicas, mãos/dedos extras
 - evitar artefatos, baixa qualidade, aparência de montagem
 - evitar texto, marca d'água, logos não presentes nas imagens originais`;
