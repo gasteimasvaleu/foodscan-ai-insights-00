@@ -112,6 +112,7 @@ const App = () => (
             <Route path="/widget-guide" element={<WidgetGuide />} />
             <Route path="/sono" element={<Sleep />} />
             <Route path="/faca-em-casa" element={<FacaEmCasa />} />
+            <Route path="/provador" element={<Provador />} />
             <Route path="/treinos" element={<Treinos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
