@@ -239,13 +239,23 @@ export default function Provador() {
               />
             </div>
 
+            {!isAdmin && (
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                Hoje: {Math.min(usedToday, dailyLimit)} de {dailyLimit} gerações
+              </p>
+            )}
+
             <Button
               onClick={handleGenerate}
               disabled={!canGenerate || generating}
-              className="w-full mt-5 h-12 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white text-base font-semibold shadow-lg disabled:opacity-50"
+              className="w-full mt-2 h-12 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white text-base font-semibold shadow-lg disabled:opacity-50"
             >
               <Sparkles className="w-5 h-5 mr-2" />
-              {userSlot.uploading || outfitSlot.uploading ? "Enviando fotos…" : "Provar look"}
+              {limitReached
+                ? "Limite diário atingido"
+                : userSlot.uploading || outfitSlot.uploading
+                ? "Enviando fotos…"
+                : "Provar look"}
             </Button>
 
             <p className="text-[11px] text-muted-foreground mt-3 px-2 text-center leading-snug">
