@@ -234,8 +234,8 @@ export default function Provador() {
 
         {resultUrl && (
           <div className="space-y-4 animate-fade-in">
-            <div className="rounded-3xl overflow-hidden bg-[#FFD1E7]/40 border border-primary/10 shadow-xl">
-              <div className="aspect-[9/16] w-full bg-white">
+            <div className="rounded-3xl overflow-hidden bg-[#FFD1E7]/40 border border-primary/10 shadow-xl max-w-sm mx-auto">
+              <div className="aspect-square w-full bg-white">
                 <img
                   src={resultUrl}
                   alt="Resultado do provador"
