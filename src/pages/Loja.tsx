@@ -1,13 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, X, ShoppingBag } from "lucide-react";
+import { Search, X, ShoppingBag, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
 import { ProductCard, AffiliateProduct } from "@/components/loja/ProductCard";
 import { ProductCarousel } from "@/components/loja/ProductCarousel";
 import { STORE_CATEGORIES, getCategory } from "@/data/storeCategories";
-import { cn } from "@/lib/utils";
+
+const ALL_VALUE = "__all__";
 
 const Loja = () => {
   const [products, setProducts] = useState<AffiliateProduct[]>([]);
@@ -15,6 +24,11 @@ const Loja = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [isSubcategoryDrawerOpen, setIsSubcategoryDrawerOpen] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
+  const [pendingSubcategory, setPendingSubcategory] = useState<string>(ALL_VALUE);
 
   useEffect(() => {
     fetchProducts();
@@ -116,43 +130,46 @@ const Loja = () => {
             )}
           </div>
 
-          {/* Chips de categoria */}
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-            <CategoryChip
-              label="Todas"
-              active={activeCategory === null}
-              onClick={() => handleSelectCategory(null)}
-            />
-            {STORE_CATEGORIES.map((cat) => (
-              <CategoryChip
-                key={cat.key}
-                label={cat.shortLabel}
-                active={activeCategory === cat.key}
-                onClick={() => handleSelectCategory(cat.key)}
-              />
-            ))}
-          </div>
+          {/* Seletores Categoria / Subcategoria */}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 h-10 justify-between text-sm font-normal bg-white"
+              onClick={() => {
+                setPendingCategory(activeCategory ?? ALL_VALUE);
+                setIsCategoryDrawerOpen(true);
+              }}
+            >
+              <span className="truncate">
+                {activeCategory
+                  ? getCategory(activeCategory)?.label ?? "Categoria"
+                  : "Categoria"}
+              </span>
+              <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            </Button>
 
-          {/* Chips de subcategoria */}
-          {showSubcategories && (
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-              <CategoryChip
-                label="Todas"
-                active={activeSubcategory === null}
-                onClick={() => setActiveSubcategory(null)}
-                variant="sub"
-              />
-              {currentCategory!.subcategories.map((sub) => (
-                <CategoryChip
-                  key={sub.key}
-                  label={sub.label}
-                  active={activeSubcategory === sub.key}
-                  onClick={() => setActiveSubcategory(sub.key)}
-                  variant="sub"
-                />
-              ))}
-            </div>
-          )}
+            {showSubcategories && (
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 h-10 justify-between text-sm font-normal bg-white"
+                onClick={() => {
+                  setPendingSubcategory(activeSubcategory ?? ALL_VALUE);
+                  setIsSubcategoryDrawerOpen(true);
+                }}
+              >
+                <span className="truncate">
+                  {activeSubcategory
+                    ? currentCategory!.subcategories.find(
+                        (s) => s.key === activeSubcategory
+                      )?.label ?? "Subcategoria"
+                    : "Subcategoria"}
+                </span>
+                <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Conteúdo */}
@@ -215,35 +232,107 @@ const Loja = () => {
           </div>
         )}
       </div>
+
+      {/* Drawer Categoria */}
+      <Drawer open={isCategoryDrawerOpen} onOpenChange={setIsCategoryDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">
+              Selecionar Categoria
+            </DrawerTitle>
+          </DrawerHeader>
+
+          <WheelPicker
+            value={pendingCategory}
+            onChange={setPendingCategory}
+            options={[
+              { value: ALL_VALUE, label: "Todas" },
+              ...STORE_CATEGORIES.map((c) => ({ value: c.key, label: c.label })),
+            ]}
+            visibleItems={5}
+            itemHeight={44}
+          />
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsCategoryDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                const newCat =
+                  pendingCategory === ALL_VALUE ? null : pendingCategory;
+                setActiveCategory(newCat);
+                setActiveSubcategory(null);
+                setIsCategoryDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Drawer Subcategoria */}
+      <Drawer
+        open={isSubcategoryDrawerOpen}
+        onOpenChange={setIsSubcategoryDrawerOpen}
+      >
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">
+              Selecionar Subcategoria
+            </DrawerTitle>
+          </DrawerHeader>
+
+          {currentCategory && (
+            <WheelPicker
+              value={pendingSubcategory}
+              onChange={setPendingSubcategory}
+              options={[
+                { value: ALL_VALUE, label: "Todas" },
+                ...currentCategory.subcategories.map((s) => ({
+                  value: s.key,
+                  label: s.label,
+                })),
+              ]}
+              visibleItems={5}
+              itemHeight={44}
+            />
+          )}
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsSubcategoryDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                const newSub =
+                  pendingSubcategory === ALL_VALUE ? null : pendingSubcategory;
+                setActiveSubcategory(newSub);
+                setIsSubcategoryDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
-
-interface CategoryChipProps {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  variant?: "main" | "sub";
-}
-
-const CategoryChip = ({
-  label,
-  active,
-  onClick,
-  variant = "main",
-}: CategoryChipProps) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors flex-shrink-0",
-      variant === "sub" ? "py-1.5 text-xs" : "",
-      active
-        ? "bg-primary text-primary-foreground shadow-sm"
-        : "bg-white text-foreground/80 hover:bg-white/80"
-    )}
-  >
-    {label}
-  </button>
-);
 
 export default Loja;
