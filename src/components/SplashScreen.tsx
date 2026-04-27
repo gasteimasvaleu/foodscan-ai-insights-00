@@ -20,56 +20,21 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
+  // Reforço silencioso: tenta dar play quando o vídeo estiver carregado.
+  // IMPORTANTE: não chamar video.load() — isso invalida o "autoplay gesture"
+  // implícito do <video autoPlay muted playsInline> no WKWebView do iOS e
+  // faz o controle de play nativo aparecer sobre o primeiro frame.
+  const handleLoadedData = () => {
     const video = videoRef.current;
     if (!video) return;
-
-    // Garante que o iOS WebView entenda como mute (necessário p/ autoplay)
-    video.muted = true;
-    video.defaultMuted = true;
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-    video.removeAttribute('controls');
-
-    let cancelled = false;
-
-    const tryPlay = async () => {
-      if (cancelled) return;
-      try {
-        const p = video.play();
-        if (p !== undefined) await p;
-      } catch (err) {
-        // Não pula a splash em caso de falha — apenas registra e tenta de novo
-        // nos próximos eventos do <video>.
-        console.warn('[SplashScreen] play() falhou, aguardando próximo evento:', err);
-      }
-    };
-
-    // Tentativa inicial
-    tryPlay();
-
-    // Reforços baseados em eventos de carregamento do vídeo
-    const onLoaded = () => tryPlay();
-    const onCanPlay = () => tryPlay();
-    const onCanPlayThrough = () => tryPlay();
-
-    video.addEventListener('loadedmetadata', onLoaded);
-    video.addEventListener('canplay', onCanPlay);
-    video.addEventListener('canplaythrough', onCanPlayThrough);
-
-    // Garante que o vídeo seja (re)carregado
-    try {
-      video.load();
-    } catch {}
-
-    return () => {
-      cancelled = true;
-      video.removeEventListener('loadedmetadata', onLoaded);
-      video.removeEventListener('canplay', onCanPlay);
-      video.removeEventListener('canplaythrough', onCanPlayThrough);
-    };
-  }, []);
+    const p = video.play();
+    if (p !== undefined) {
+      p.catch(() => {
+        // Silencioso: o autoplay nativo já tenta tocar; se falhar aqui,
+        // o fallback de 8s assume.
+      });
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -91,6 +56,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             disablePictureInPicture
             controls={false}
             onEnded={handleEnd}
+            onLoadedData={handleLoadedData}
             className="w-full h-full object-cover pointer-events-none"
             {...({ 'webkit-playsinline': '' } as any)}
             src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/splashrosa.mp4"

@@ -1,28 +1,37 @@
-Vou ajustar a correção anterior porque ela resolveu o botão de play, mas introduziu um efeito colateral: quando o `video.play()` é bloqueado ou dispara cedo demais no iOS WebView, a splash chama `onComplete()` imediatamente e some antes da animação rodar.
+## Causa do problema
 
-Plano de correção:
+Nas últimas iterações do `SplashScreen.tsx` foram adicionadas, no `useEffect`:
 
-1. Alterar `src/components/SplashScreen.tsx`
-   - Remover o comportamento atual que pula a splash automaticamente quando o autoplay falha.
-   - Manter o vídeo sem controles, mudo e inline para evitar o botão de play nativo.
-   - Adicionar uma rotina de reprodução mais resiliente:
-     - configurar `muted/defaultMuted/playsinline/webkit-playsinline` antes de tentar tocar;
-     - chamar `load()` quando necessário;
-     - tentar `play()` no mount;
-     - tentar novamente em eventos como `loadedmetadata`, `canplay` e `canplaythrough`.
-   - Manter o fallback de 8 segundos apenas como segurança para não travar o app, mas sem encerrar imediatamente por falha de autoplay.
+- chamada manual de `video.load()`
+- listeners em `loadedmetadata` / `canplay` / `canplaythrough` que disparam `play()` repetidamente
+- manipulação de atributos (`muted`, `playsinline`, `controls`) via JavaScript depois que o React já montou o elemento
 
-2. Ajustar a interação visual da splash
-   - Continuar bloqueando controles e interação no vídeo para não aparecer botão de play.
-   - Se o iOS atrasar o autoplay por alguns milissegundos, a tela permanece na splash até o vídeo conseguir iniciar ou até o fallback de tempo.
+No WKWebView do iOS, o `video.load()` chamado por script **invalida o "autoplay gesture" implícito** que o `<video autoPlay muted playsInline>` ganha quando é montado pelo React. A partir daí, qualquer `play()` é tratado como "iniciado por script sem gesto do usuário" e é bloqueado, o que faz o iOS exibir o controle nativo de play sobre o primeiro frame do vídeo (exatamente o que você está vendo agora).
 
-3. Ajustar Live Update em `src/main.tsx`
-   - Antes de executar `window.location.reload()` após um novo bundle OTA, limpar `sessionStorage.removeItem('splashShown')`.
-   - Isso garante que, depois de Live Update, a splash seja exibida novamente corretamente no próximo carregamento.
+A versão anterior funcionava porque deixava o autoplay nativo do `<video>` agir sozinho, sem `load()` e sem reatribuir atributos via JS.
 
-Resultado esperado:
-- A splash aparece.
-- O botão de play não aparece.
-- A animação tenta iniciar automaticamente de forma mais confiável no iOS.
-- Se o autoplay falhar momentaneamente, ela não é pulada imediatamente.
-- Depois de Live Update, o app volta a mostrar a splash no novo bundle.
+## O que vou fazer
+
+1. **Reverter o `SplashScreen.tsx` para a abordagem simples que funcionava antes**
+   - Manter o `<video>` com `autoPlay`, `muted`, `playsInline`, `preload="auto"`, `controls={false}`, `disablePictureInPicture`.
+   - **Remover** a chamada `video.load()`.
+   - **Remover** os listeners `loadedmetadata` / `canplay` / `canplaythrough` que chamavam `play()`.
+   - **Remover** a re-aplicação de atributos via JS (`setAttribute('muted'…)`, etc.) — deixar só os atributos do JSX.
+   - Manter um `play()` opcional silencioso em `onLoadedData` apenas como reforço (sem `load()` antes), pois isso não invalida o gesto.
+
+2. **Manter o poster com o primeiro frame do vídeo**
+   - Continuar usando o `poster` (primeiro frame) que já era usado, para que, mesmo enquanto o vídeo carrega, o usuário veja a imagem da splash em vez de tela preta.
+
+3. **Manter os fallbacks de segurança que não interferem no autoplay**
+   - Timer de 8s para garantir que o app não trave se o vídeo nunca tocar.
+   - `onEnded` continua chamando `handleEnd` para a transição suave.
+
+4. **Manter a correção do Live Update**
+   - Continuar removendo `splashShown` do `sessionStorage` antes do `window.location.reload()` em `src/main.tsx`, para que a splash apareça depois de uma atualização OTA.
+
+## Arquivos afetados
+
+- `src/components/SplashScreen.tsx` — limpar o `useEffect` e voltar à configuração simples de autoplay.
+- `src/main.tsx` — sem mudanças (manter como está).
+
+Com isso o vídeo volta a iniciar sozinho, sem o botão de play do iOS, e a splash funciona como antes.
