@@ -23,7 +23,7 @@ export const ProductCarousel = ({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-lg font-bold text-foreground">{title}</h2>
+        <h2 className="text-base font-semibold text-primary">{title}</h2>
         {onSeeAll && products.length > 0 && (
           <Button
             variant="ghost"
