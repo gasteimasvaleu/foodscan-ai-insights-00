@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -78,6 +78,24 @@ const Loja = () => {
     <div className="min-h-screen bg-background pb-24">
       <Navbar />
       <div className="max-w-2xl mx-auto pt-[calc(env(safe-area-inset-top)+5rem)] px-4 pb-4 space-y-5">
+        {/* Card título da seção */}
+        <div
+          className="rounded-3xl shadow-xl p-5 flex items-center gap-4"
+          style={{ backgroundColor: "#FFD1E7" }}
+        >
+          <div className="w-14 h-14 rounded-2xl bg-white/70 flex items-center justify-center flex-shrink-0">
+            <ShoppingBag className="w-7 h-7 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground leading-tight">
+              Nossa Loja
+            </h2>
+            <p className="text-sm text-foreground/70 leading-snug">
+              Roupas, beleza, vitaminas e suplementos escolhidos a dedo.
+            </p>
+          </div>
+        </div>
+
         {/* Buscador + categorias */}
         <div className="space-y-3">
           <div className="relative">
