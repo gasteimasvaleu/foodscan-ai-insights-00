@@ -50,7 +50,7 @@ export const ProductCarousel = ({
             {products.map((product) => (
               <CarouselItem
                 key={product.id}
-                className="pl-3 basis-[45%] sm:basis-[35%]"
+                className="pl-3 basis-[38%] sm:basis-[28%]"
               >
                 <ProductCard product={product} />
               </CarouselItem>

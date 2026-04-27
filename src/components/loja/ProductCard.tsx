@@ -40,21 +40,21 @@ export const ProductCard = ({ product, className = "" }: ProductCardProps) => {
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-3 flex flex-col flex-1 gap-2">
-        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight min-h-[2.5rem]">
+      <div className="p-2 flex flex-col flex-1 gap-1.5">
+        <h3 className="text-xs font-semibold text-foreground line-clamp-2 leading-tight min-h-[2rem]">
           {product.name}
         </h3>
         {product.price != null && (
-          <p className="text-base font-bold text-primary">
+          <p className="text-sm font-bold text-primary">
             {formatPrice(Number(product.price))}
           </p>
         )}
         <Button
           onClick={handleBuy}
           size="sm"
-          className="mt-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5"
+          className="mt-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground gap-1 h-7 text-xs px-2"
         >
-          <ShoppingBag className="w-3.5 h-3.5" />
+          <ShoppingBag className="w-3 h-3" />
           Comprar
         </Button>
       </div>
