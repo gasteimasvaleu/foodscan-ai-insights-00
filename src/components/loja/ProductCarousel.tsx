@@ -46,7 +46,7 @@ export const ProductCarousel = ({
           opts={{ align: "start", dragFree: true }}
           className="w-full"
         >
-          <CarouselContent className="-ml-3">
+          <CarouselContent className="-ml-3 py-2">
             {products.map((product) => (
               <CarouselItem
                 key={product.id}
