@@ -1,13 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, X, ShoppingBag } from "lucide-react";
+import { Search, X, ShoppingBag, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
 import { ProductCard, AffiliateProduct } from "@/components/loja/ProductCard";
 import { ProductCarousel } from "@/components/loja/ProductCarousel";
 import { STORE_CATEGORIES, getCategory } from "@/data/storeCategories";
-import { cn } from "@/lib/utils";
+
+const ALL_VALUE = "__all__";
 
 const Loja = () => {
   const [products, setProducts] = useState<AffiliateProduct[]>([]);
@@ -15,6 +24,11 @@ const Loja = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [isSubcategoryDrawerOpen, setIsSubcategoryDrawerOpen] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
+  const [pendingSubcategory, setPendingSubcategory] = useState<string>(ALL_VALUE);
 
   useEffect(() => {
     fetchProducts();
