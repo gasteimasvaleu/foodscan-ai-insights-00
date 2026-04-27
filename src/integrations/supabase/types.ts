@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_products: {
+        Row: {
+          affiliate_url: string
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          image_url: string
+          is_active: boolean
+          name: string
+          price: number | null
+          storage_path: string
+          subcategory: string | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url: string
+          category: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          is_active?: boolean
+          name: string
+          price?: number | null
+          storage_path: string
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          name?: string
+          price?: number | null
+          storage_path?: string
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       calorie_adjustments: {
         Row: {
           adjustment_amount: number
