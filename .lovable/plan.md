@@ -1,37 +1,36 @@
-## Causa do problema
+## Ajustes na página /loja
 
-Nas últimas iterações do `SplashScreen.tsx` foram adicionadas, no `useEffect`:
+### 1. Corrigir padding superior excessivo
+A página `/loja` usa `pt-[calc(env(safe-area-inset-top)+5rem)]`, enquanto o padrão das demais páginas internas (Provador, About, FacaEmCasa, NutriCoach, Objetivos, etc.) é `+4rem`. Reduzir para alinhar com o restante do app.
 
-- chamada manual de `video.load()`
-- listeners em `loadedmetadata` / `canplay` / `canplaythrough` que disparam `play()` repetidamente
-- manipulação de atributos (`muted`, `playsinline`, `controls`) via JavaScript depois que o React já montou o elemento
+- **`src/pages/Loja.tsx`** (linha 94): trocar `+5rem` por `+4rem`.
 
-No WKWebView do iOS, o `video.load()` chamado por script **invalida o "autoplay gesture" implícito** que o `<video autoPlay muted playsInline>` ganha quando é montado pelo React. A partir daí, qualquer `play()` é tratado como "iniciado por script sem gesto do usuário" e é bloqueado, o que faz o iOS exibir o controle nativo de play sobre o primeiro frame do vídeo (exatamente o que você está vendo agora).
+### 2. Modal de detalhes do produto
 
-A versão anterior funcionava porque deixava o autoplay nativo do `<video>` agir sozinho, sem `load()` e sem reatribuir atributos via JS.
+Hoje o `ProductCard` só tem o botão "Comprar". Vamos adicionar a possibilidade de **clicar na imagem** do produto para abrir um modal com as informações completas.
 
-## O que vou fazer
+**Novo componente** `src/components/loja/ProductDetailsModal.tsx`:
+- Usa o `Dialog` do shadcn já existente, seguindo o padrão visual de modais do app (glassmorphism `bg-white/70 backdrop-blur-md`, borda rosa `border-2 border-primary`, cantos `rounded-3xl`, botão X destacado em rosa — conforme `mem://style/ui-modals` e `mem://style/ui-buttons-refined`).
+- Conteúdo:
+  - Imagem grande do produto (aspect-square, `rounded-2xl`)
+  - Nome do produto (título)
+  - Preço formatado em BRL com cor primária
+  - Categoria + subcategoria (badges discretos)
+  - Descrição completa (`product.description`) com scroll se longa
+  - Botão "Comprar" full-width na cor primária, reaproveita `openExternalUrl(product.affiliate_url)`
 
-1. **Reverter o `SplashScreen.tsx` para a abordagem simples que funcionava antes**
-   - Manter o `<video>` com `autoPlay`, `muted`, `playsInline`, `preload="auto"`, `controls={false}`, `disablePictureInPicture`.
-   - **Remover** a chamada `video.load()`.
-   - **Remover** os listeners `loadedmetadata` / `canplay` / `canplaythrough` que chamavam `play()`.
-   - **Remover** a re-aplicação de atributos via JS (`setAttribute('muted'…)`, etc.) — deixar só os atributos do JSX.
-   - Manter um `play()` opcional silencioso em `onLoadedData` apenas como reforço (sem `load()` antes), pois isso não invalida o gesto.
+**Alterações em `src/components/loja/ProductCard.tsx`:**
+- Adicionar `useState` local para controlar abertura do modal.
+- Tornar a `<img>` clicável (envolver em `<button>` com `cursor-pointer` e `aria-label`) → abre o modal.
+- Renderizar o `<ProductDetailsModal>` controlado por esse estado.
+- Manter o botão "Comprar" do card funcionando como hoje (atalho direto).
 
-2. **Manter o poster com o primeiro frame do vídeo**
-   - Continuar usando o `poster` (primeiro frame) que já era usado, para que, mesmo enquanto o vídeo carrega, o usuário veja a imagem da splash em vez de tela preta.
+### Comportamento final
+- Clicar na **imagem** → abre modal com detalhes completos.
+- Clicar no botão **Comprar** (no card OU no modal) → abre o link de afiliado externamente (mesmo fluxo atual via `openExternalUrl`).
+- Espaçamento superior do `/loja` igual ao das outras páginas internas.
 
-3. **Manter os fallbacks de segurança que não interferem no autoplay**
-   - Timer de 8s para garantir que o app não trave se o vídeo nunca tocar.
-   - `onEnded` continua chamando `handleEnd` para a transição suave.
-
-4. **Manter a correção do Live Update**
-   - Continuar removendo `splashShown` do `sessionStorage` antes do `window.location.reload()` em `src/main.tsx`, para que a splash apareça depois de uma atualização OTA.
-
-## Arquivos afetados
-
-- `src/components/SplashScreen.tsx` — limpar o `useEffect` e voltar à configuração simples de autoplay.
-- `src/main.tsx` — sem mudanças (manter como está).
-
-Com isso o vídeo volta a iniciar sozinho, sem o botão de play do iOS, e a splash funciona como antes.
+### Arquivos afetados
+- `src/pages/Loja.tsx` — ajuste de padding (1 linha)
+- `src/components/loja/ProductCard.tsx` — adicionar trigger e estado do modal
+- `src/components/loja/ProductDetailsModal.tsx` — novo arquivo
