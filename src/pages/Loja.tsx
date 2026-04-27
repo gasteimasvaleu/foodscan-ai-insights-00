@@ -130,43 +130,46 @@ const Loja = () => {
             )}
           </div>
 
-          {/* Chips de categoria */}
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-            <CategoryChip
-              label="Todas"
-              active={activeCategory === null}
-              onClick={() => handleSelectCategory(null)}
-            />
-            {STORE_CATEGORIES.map((cat) => (
-              <CategoryChip
-                key={cat.key}
-                label={cat.shortLabel}
-                active={activeCategory === cat.key}
-                onClick={() => handleSelectCategory(cat.key)}
-              />
-            ))}
-          </div>
+          {/* Seletores Categoria / Subcategoria */}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 h-10 justify-between text-sm font-normal bg-white"
+              onClick={() => {
+                setPendingCategory(activeCategory ?? ALL_VALUE);
+                setIsCategoryDrawerOpen(true);
+              }}
+            >
+              <span className="truncate">
+                {activeCategory
+                  ? getCategory(activeCategory)?.label ?? "Categoria"
+                  : "Categoria"}
+              </span>
+              <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            </Button>
 
-          {/* Chips de subcategoria */}
-          {showSubcategories && (
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-              <CategoryChip
-                label="Todas"
-                active={activeSubcategory === null}
-                onClick={() => setActiveSubcategory(null)}
-                variant="sub"
-              />
-              {currentCategory!.subcategories.map((sub) => (
-                <CategoryChip
-                  key={sub.key}
-                  label={sub.label}
-                  active={activeSubcategory === sub.key}
-                  onClick={() => setActiveSubcategory(sub.key)}
-                  variant="sub"
-                />
-              ))}
-            </div>
-          )}
+            {showSubcategories && (
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 h-10 justify-between text-sm font-normal bg-white"
+                onClick={() => {
+                  setPendingSubcategory(activeSubcategory ?? ALL_VALUE);
+                  setIsSubcategoryDrawerOpen(true);
+                }}
+              >
+                <span className="truncate">
+                  {activeSubcategory
+                    ? currentCategory!.subcategories.find(
+                        (s) => s.key === activeSubcategory
+                      )?.label ?? "Subcategoria"
+                    : "Subcategoria"}
+                </span>
+                <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Conteúdo */}
