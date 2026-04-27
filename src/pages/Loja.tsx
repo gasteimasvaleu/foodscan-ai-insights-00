@@ -93,20 +93,12 @@ const Loja = () => {
       <Navbar />
       <div className="max-w-2xl mx-auto pt-[calc(env(safe-area-inset-top)+5rem)] px-4 pb-4 space-y-5">
         {/* Card título da seção */}
-        <div
-          className="rounded-3xl shadow-xl p-5 flex items-center gap-4"
-          style={{ backgroundColor: "#FFD1E7" }}
-        >
-          <div className="w-14 h-14 rounded-2xl bg-white/70 flex items-center justify-center flex-shrink-0">
-            <ShoppingBag className="w-7 h-7 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground leading-tight">
-              Nossa Loja
-            </h2>
-            <p className="text-sm text-foreground/70 leading-snug">
-              Roupas, beleza, vitaminas e suplementos escolhidos a dedo.
-            </p>
+        <div className="animate-fade-in">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <ShoppingBag className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-primary">Nossa Loja</h1>
           </div>
         </div>
 
