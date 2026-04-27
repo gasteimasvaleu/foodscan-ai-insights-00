@@ -16,6 +16,7 @@ if (isNative && !isLocalDev) {
     console.log('[LiveUpdates] Sync result:', JSON.stringify(result));
     if (result.activeApplicationPathChanged) {
       console.log('[LiveUpdates] New bundle ready – reloading WebView');
+      try { sessionStorage.removeItem('splashShown'); } catch {}
       window.location.reload();
     }
   }).catch(err => console.warn('[LiveUpdates] Sync failed:', err));
@@ -26,6 +27,7 @@ if (isNative && !isLocalDev) {
       liveUpdateSync().then(result => {
         console.log('[LiveUpdates] Foreground sync result:', JSON.stringify(result));
         if (result.activeApplicationPathChanged) {
+          try { sessionStorage.removeItem('splashShown'); } catch {}
           window.location.reload();
         }
       }).catch(err => console.warn('[LiveUpdates] Foreground sync failed:', err));
