@@ -56,6 +56,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             disablePictureInPicture
             controls={false}
             onEnded={handleEnd}
+            onLoadedData={handleLoadedData}
             className="w-full h-full object-cover pointer-events-none"
             {...({ 'webkit-playsinline': '' } as any)}
             src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/splashrosa.mp4"
