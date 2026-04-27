@@ -68,8 +68,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             controls={false}
             onEnded={handleEnd}
             className="w-full h-full object-cover pointer-events-none"
-            // @ts-expect-error - atributo legado do WKWebView
-            "webkit-playsinline"=""
+            {...({ 'webkit-playsinline': '' } as any)}
             src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/splashrosa.mp4"
           />
         </motion.div>
