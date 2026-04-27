@@ -45,6 +45,8 @@ import WidgetGuide from "./pages/WidgetGuide";
 import Sleep from "./pages/Sleep";
 import FacaEmCasa from "./pages/FacaEmCasa";
 import Provador from "./pages/Provador";
+import Loja from "./pages/Loja";
+import AdminLoja from "./pages/AdminLoja";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
@@ -114,9 +116,11 @@ const App = () => (
             <Route path="/faca-em-casa" element={<FacaEmCasa />} />
             <Route path="/provador" element={<Provador />} />
             <Route path="/treinos" element={<Treinos />} />
+            <Route path="/loja" element={<Loja />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
             <Route path="/admin/treinos" element={<AdminTreinos />} />
+            <Route path="/admin/loja" element={<AdminLoja />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
             
             <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
