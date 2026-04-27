@@ -1,9 +1,5 @@
-import { ShoppingBag, X } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { ShoppingBag } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { openExternalUrl } from "@/lib/openExternal";
 import { getCategory } from "@/data/storeCategories";
@@ -39,16 +35,8 @@ export const ProductDetailsModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-[calc(100%-2rem)] max-w-md mx-auto p-0 gap-0 rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-hidden [&>button]:hidden"
+        className="w-[calc(100%-2rem)] max-w-md mx-auto p-0 gap-0 rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-hidden"
       >
-        {/* Custom close button (rosa) */}
-        <DialogClose
-          className="absolute right-3 top-3 z-10 rounded-full bg-primary text-primary-foreground p-1.5 shadow-md hover:bg-primary/90 transition-colors"
-          aria-label="Fechar"
-        >
-          <X className="w-4 h-4" />
-        </DialogClose>
-
         <div className="overflow-y-auto max-h-[85vh] flex flex-col">
           {/* Imagem */}
           <div className="aspect-square bg-muted overflow-hidden">
