@@ -14,10 +14,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setTimeout(onComplete, 500);
   };
 
+  // Fallback de segurança: não trava o app se o vídeo falhar
   useEffect(() => {
     const timer = setTimeout(handleEnd, 8000);
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -31,20 +32,43 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     video.setAttribute('webkit-playsinline', '');
     video.removeAttribute('controls');
 
+    let cancelled = false;
+
     const tryPlay = async () => {
+      if (cancelled) return;
       try {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-        }
+        const p = video.play();
+        if (p !== undefined) await p;
       } catch (err) {
-        console.warn('[SplashScreen] Autoplay bloqueado, pulando splash:', err);
-        // Se o autoplay foi bloqueado, evita travar com botão de play visível
-        handleEnd();
+        // Não pula a splash em caso de falha — apenas registra e tenta de novo
+        // nos próximos eventos do <video>.
+        console.warn('[SplashScreen] play() falhou, aguardando próximo evento:', err);
       }
     };
 
+    // Tentativa inicial
     tryPlay();
+
+    // Reforços baseados em eventos de carregamento do vídeo
+    const onLoaded = () => tryPlay();
+    const onCanPlay = () => tryPlay();
+    const onCanPlayThrough = () => tryPlay();
+
+    video.addEventListener('loadedmetadata', onLoaded);
+    video.addEventListener('canplay', onCanPlay);
+    video.addEventListener('canplaythrough', onCanPlayThrough);
+
+    // Garante que o vídeo seja (re)carregado
+    try {
+      video.load();
+    } catch {}
+
+    return () => {
+      cancelled = true;
+      video.removeEventListener('loadedmetadata', onLoaded);
+      video.removeEventListener('canplay', onCanPlay);
+      video.removeEventListener('canplaythrough', onCanPlayThrough);
+    };
   }, []);
 
   return (

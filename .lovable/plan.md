@@ -1,33 +1,28 @@
-## Diagnóstico
+Vou ajustar a correção anterior porque ela resolveu o botão de play, mas introduziu um efeito colateral: quando o `video.play()` é bloqueado ou dispara cedo demais no iOS WebView, a splash chama `onComplete()` imediatamente e some antes da animação rodar.
 
-A splash screen usa um `<video>` HTML com `autoPlay muted playsInline`. Em algumas situações no iOS WebView (Capacitor), o autoplay falha silenciosamente — quando isso acontece, o iOS exibe os **controles nativos** com um botão de play, mesmo sem o atributo `controls` declarado.
+Plano de correção:
 
-Causas mais prováveis no caso atual:
-1. Após o Live Update, o reload do WebView pode iniciar o React antes do "user activation gesture" estar disponível, o que em alguns casos no iOS bloqueia autoplay de mídia mesmo com `muted`.
-2. O elemento `<video>` está sem `preload`, sem chamada explícita de `.play()` e sem fallback caso a Promise de `play()` rejeite.
-3. Em iOS WebView, quando o autoplay falha, o sistema injeta os controles padrão como fallback — daí o "botão de play" que você está vendo.
+1. Alterar `src/components/SplashScreen.tsx`
+   - Remover o comportamento atual que pula a splash automaticamente quando o autoplay falha.
+   - Manter o vídeo sem controles, mudo e inline para evitar o botão de play nativo.
+   - Adicionar uma rotina de reprodução mais resiliente:
+     - configurar `muted/defaultMuted/playsinline/webkit-playsinline` antes de tentar tocar;
+     - chamar `load()` quando necessário;
+     - tentar `play()` no mount;
+     - tentar novamente em eventos como `loadedmetadata`, `canplay` e `canplaythrough`.
+   - Manter o fallback de 8 segundos apenas como segurança para não travar o app, mas sem encerrar imediatamente por falha de autoplay.
 
-## Correção proposta
+2. Ajustar a interação visual da splash
+   - Continuar bloqueando controles e interação no vídeo para não aparecer botão de play.
+   - Se o iOS atrasar o autoplay por alguns milissegundos, a tela permanece na splash até o vídeo conseguir iniciar ou até o fallback de tempo.
 
-Ajustar `src/components/SplashScreen.tsx` para forçar e garantir o autoplay no iOS:
+3. Ajustar Live Update em `src/main.tsx`
+   - Antes de executar `window.location.reload()` após um novo bundle OTA, limpar `sessionStorage.removeItem('splashShown')`.
+   - Isso garante que, depois de Live Update, a splash seja exibida novamente corretamente no próximo carregamento.
 
-1. **Adicionar atributos explícitos** no `<video>`:
-   - `muted` real via prop + via `useEffect` setando `videoRef.current.muted = true` (alguns WebViews ignoram só o atributo JSX).
-   - `autoPlay`, `playsInline`, `preload="auto"`, `disablePictureInPicture`, `controls={false}`.
-   - `webkit-playsinline` (atributo legado ainda exigido por alguns WKWebView).
-
-2. **Disparar `.play()` manualmente** num `useEffect` após o mount, com `try/catch`. Se a Promise rejeitar (autoplay bloqueado), avançar direto para o `onComplete()` em vez de deixar o usuário travado vendo um botão de play. Assim, na pior hipótese, a splash some sozinha e o app entra normalmente — sem o botão indesejado.
-
-3. **CSS `pointer-events: none`** no `<video>` para que, mesmo se os controles aparecerem por algum motivo, o usuário não consiga interagir e o componente continue avançando pelo timer de 8s.
-
-### Arquivo afetado
-
-- `src/components/SplashScreen.tsx` — apenas este arquivo.
-
-### Resultado esperado
-
-- Splash inicia automaticamente assim que aparece (comportamento de antes). ✅
-- Sem botão de play visível, mesmo se o iOS tentar exibir os controles. ✅
-- Se o autoplay for bloqueado pelo sistema, a splash é pulada automaticamente em vez de travar. ✅
-
-Sem alterações em layout, duração ou qualquer outro fluxo.
+Resultado esperado:
+- A splash aparece.
+- O botão de play não aparece.
+- A animação tenta iniciar automaticamente de forma mais confiável no iOS.
+- Se o autoplay falhar momentaneamente, ela não é pulada imediatamente.
+- Depois de Live Update, o app volta a mostrar a splash no novo bundle.
