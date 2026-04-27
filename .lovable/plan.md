@@ -1,12 +1,22 @@
-## Objetivo
-Os cards de produto no carrossel da `/loja` estão com a sombra/parte inferior levemente cortada pelo overflow do Embla Carousel. Adicionar respiro vertical no contêiner do carrossel.
+## Atenção sobre o build number
 
-## Mudança
+O `CURRENT_PROJECT_VERSION` atual no projeto iOS é **15**, não 5. A App Store Connect **rejeita** qualquer build com número menor ou igual ao último já enviado para aquela versão de marketing. Portanto, não é possível enviar build `6`.
 
-### `src/components/loja/ProductCarousel.tsx`
-- Linha 49: adicionar `py-2` ao `CarouselContent` para criar espaço vertical e evitar o corte da sombra inferior dos cards.
-  - De: `<CarouselContent className="-ml-3">`
-  - Para: `<CarouselContent className="-ml-3 py-2">`
+Vou subir para **build 16** (o próximo válido). Se você preferir um número diferente, é só pedir — desde que seja maior que 15.
 
-## Resultado
-Os cards passam a ser exibidos por inteiro, com a sombra inferior visível, sem alterar largura nem layout dos itens.
+## Mudanças
+
+### `ios/App/App.xcodeproj/project.pbxproj`
+Atualizar os dois targets (Debug e Release) do app principal:
+
+- Linha 479: `CURRENT_PROJECT_VERSION = 15;` → `CURRENT_PROJECT_VERSION = 16;`
+- Linha 484: `MARKETING_VERSION = 1.0.2;` → `MARKETING_VERSION = 1.0.3;`
+- Linha 504: `CURRENT_PROJECT_VERSION = 15;` → `CURRENT_PROJECT_VERSION = 16;`
+- Linha 509: `MARKETING_VERSION = 1.0.2;` → `MARKETING_VERSION = 1.0.3;`
+
+As linhas 526/532 e 550/556 pertencem ao target do **WeDietWidget** (extensão) e seguem versionamento próprio — não serão alteradas para evitar quebrar a relação atual com o app host.
+
+## Próximos passos (após aprovação)
+1. Commit/push para o GitHub
+2. Disparar o build iOS Package (Release) no Appflow
+3. Submeter para revisão na App Store Connect
