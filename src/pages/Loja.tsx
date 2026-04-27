@@ -232,35 +232,107 @@ const Loja = () => {
           </div>
         )}
       </div>
+
+      {/* Drawer Categoria */}
+      <Drawer open={isCategoryDrawerOpen} onOpenChange={setIsCategoryDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">
+              Selecionar Categoria
+            </DrawerTitle>
+          </DrawerHeader>
+
+          <WheelPicker
+            value={pendingCategory}
+            onChange={setPendingCategory}
+            options={[
+              { value: ALL_VALUE, label: "Todas" },
+              ...STORE_CATEGORIES.map((c) => ({ value: c.key, label: c.label })),
+            ]}
+            visibleItems={5}
+            itemHeight={44}
+          />
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsCategoryDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                const newCat =
+                  pendingCategory === ALL_VALUE ? null : pendingCategory;
+                setActiveCategory(newCat);
+                setActiveSubcategory(null);
+                setIsCategoryDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Drawer Subcategoria */}
+      <Drawer
+        open={isSubcategoryDrawerOpen}
+        onOpenChange={setIsSubcategoryDrawerOpen}
+      >
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">
+              Selecionar Subcategoria
+            </DrawerTitle>
+          </DrawerHeader>
+
+          {currentCategory && (
+            <WheelPicker
+              value={pendingSubcategory}
+              onChange={setPendingSubcategory}
+              options={[
+                { value: ALL_VALUE, label: "Todas" },
+                ...currentCategory.subcategories.map((s) => ({
+                  value: s.key,
+                  label: s.label,
+                })),
+              ]}
+              visibleItems={5}
+              itemHeight={44}
+            />
+          )}
+
+          <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-xl"
+              onClick={() => setIsSubcategoryDrawerOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+              onClick={() => {
+                const newSub =
+                  pendingSubcategory === ALL_VALUE ? null : pendingSubcategory;
+                setActiveSubcategory(newSub);
+                setIsSubcategoryDrawerOpen(false);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
-
-interface CategoryChipProps {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  variant?: "main" | "sub";
-}
-
-const CategoryChip = ({
-  label,
-  active,
-  onClick,
-  variant = "main",
-}: CategoryChipProps) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors flex-shrink-0",
-      variant === "sub" ? "py-1.5 text-xs" : "",
-      active
-        ? "bg-primary text-primary-foreground shadow-sm"
-        : "bg-white text-foreground/80 hover:bg-white/80"
-    )}
-  >
-    {label}
-  </button>
-);
 
 export default Loja;
