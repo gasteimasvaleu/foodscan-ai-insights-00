@@ -1,37 +1,24 @@
-## Substituir chips por seletor Drawer + WheelPicker
+## Padronizar card-título da página Loja
 
-Trocar a linha de chips horizontais "Todas / Roupas e Acessórios / Beleza / Vitaminas e Suplementos" (e a linha de subcategorias) por **dois botões seletores** que abrem **Drawers com WheelPicker**, exatamente no padrão usado em `Receitas.tsx`.
+O card "Nossa Loja" atualmente usa um fundo rosa claro (#FFD1E7) com ícone na cor primária e título em `text-foreground`, fora do padrão dos cabeçalhos internos do app (Receitas, Apple Health, Widget Guide, etc.).
 
-### Mudanças em `src/pages/Loja.tsx`
+### Mudança em `src/pages/Loja.tsx`
 
-1. **Imports adicionais**:
-   - `Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter` de `@/components/ui/drawer`.
-   - `WheelPicker` de `@/components/ui/wheel-picker`.
-   - `ChevronDown` de `lucide-react`.
+Substituir o card-título atual pelo padrão global de page-header usado em `Receitas.tsx`:
 
-2. **Remover** o componente local `CategoryChip` e os dois blocos de chips horizontais.
+```tsx
+<div className="animate-fade-in">
+  <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+      <ShoppingBag className="w-6 h-6 text-white" />
+    </div>
+    <h1 className="text-lg font-bold text-primary">Nossa Loja</h1>
+  </div>
+</div>
+```
 
-3. **Novo estado**:
-   - `isCategoryDrawerOpen`, `isSubcategoryDrawerOpen`.
-   - `pendingCategory`, `pendingSubcategory` (valor temporário enquanto o drawer está aberto, confirmado no botão "Confirmar").
-
-4. **Layout abaixo do input de busca**: linha com 1 ou 2 botões `variant="outline"`:
-   - **Botão Categoria** (sempre visível): mostra "Categoria" ou o label da categoria selecionada + `ChevronDown`. Clica → abre drawer com WheelPicker das opções `[Todas, Roupas e Acessórios, Beleza, Vitaminas e Suplementos]`.
-   - **Botão Subcategoria** (visível apenas quando a categoria selecionada tem subcategorias, ou seja, `roupas` ou `beleza`): mostra "Subcategoria" ou o label selecionado. Clica → abre drawer com `[Todas, ...subcategorias da categoria atual]`.
-
-5. **Drawers** seguem exatamente o estilo de Receitas:
-   - `DrawerContent` com `w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]`.
-   - `DrawerHeader` com `DrawerTitle` ("Selecionar Categoria" / "Selecionar Subcategoria").
-   - `WheelPicker` com `visibleItems={5}` e `itemHeight={44}`, recebendo `pendingCategory`/`pendingSubcategory` e as opções no formato `{ value, label }` (usando `""` para representar "Todas" → null).
-   - `DrawerFooter` com botões "Cancelar" (fecha sem aplicar) e "Confirmar" (aplica o valor pendente em `activeCategory`/`activeSubcategory`).
-
-6. **Comportamento de seleção**:
-   - Ao confirmar uma nova categoria, **reseta** `activeSubcategory` para null (igual ao comportamento atual de `handleSelectCategory`).
-   - Função "Limpar" (já existente nos resultados filtrados) continua zerando categoria, subcategoria e busca.
-
-A lógica de filtragem (`filteredResults`, `isFiltering`, etc.) e os carrosséis permanecem iguais.
-
-### Fora do escopo
-- Card-título "Nossa Loja" (mantido).
-- Carrosséis e grid de resultados (mantidos).
-- Página `/admin/loja` (sem alterações).
+Detalhes:
+- Fundo: gradiente translúcido em tons de primary com `backdrop-blur-xl` (em vez de `#FFD1E7`).
+- Ícone `ShoppingBag` em **branco** dentro de uma caixa com gradiente `from-primary to-accent`.
+- Título em **`text-primary`** (rosa magenta da marca) com `text-lg font-bold`.
+- Layout horizontal compacto, sem subtítulo (igual aos demais cabeçalhos internos).
