@@ -168,6 +168,18 @@ const ShoppingListDetailPage = () => {
         )}
       </div>
 
+      {/* Parser de texto livre via IA */}
+      <div className="px-4 mb-4">
+        <ParseItemsCard onItemsParsed={(items) => addItemsBulk(items)} />
+      </div>
+
+      {/* Estimativa de custo (lazy) */}
+      {items.length > 0 && id && (
+        <div className="px-4 mb-4">
+          <CostEstimateCard listId={id} items={items} />
+        </div>
+      )}
+
       {/* Itens agrupados */}
       <div className="px-4 flex flex-col gap-4">
         {grouped.length === 0 ? (
