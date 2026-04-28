@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ArrowLeft } from "lucide-react";
+import { Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useShoppingLists } from "@/hooks/useShoppingLists";
@@ -18,21 +18,16 @@ const ShoppingListPage = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]"
-    >
+    <div className="min-h-screen bg-background flex flex-col pb-28">
       <Navbar />
+
       {/* Header */}
-      <div className="px-4 mb-4">
-        <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFD1E7] to-[#FFE5F1] rounded-3xl px-4 py-3">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-base font-bold text-[#FD46A1] truncate">
-              Lista de Compras
-            </h1>
-            <p className="text-xs text-foreground/60">
-              Organize suas compras por categoria
-            </p>
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+4rem)] mb-4">
+        <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+          <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+            <ShoppingCart className="w-6 h-6 text-white" />
           </div>
+          <h1 className="text-lg font-bold text-primary">Lista de Compras</h1>
         </div>
       </div>
 
