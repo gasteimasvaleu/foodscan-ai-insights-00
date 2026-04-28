@@ -22,6 +22,11 @@ const getNutrient = (nutrients: any[], name: string) => {
 export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsProps) => {
   const [recipe, setRecipe] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [selectListOpen, setSelectListOpen] = useState(false);
+  const [addingIngredients, setAddingIngredients] = useState(false);
+  const navigate = useNavigate();
+  // hook used only for its addItemsBulk fn (no listId)
+  const { addItemsBulk } = useShoppingListDetail(undefined);
 
   useEffect(() => {
     if (recipeId && open) {
