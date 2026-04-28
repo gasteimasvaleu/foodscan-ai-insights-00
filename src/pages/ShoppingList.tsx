@@ -25,14 +25,6 @@ const ShoppingListPage = () => {
       {/* Header */}
       <div className="px-4 mb-4">
         <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFD1E7] to-[#FFE5F1] rounded-3xl px-4 py-3">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Voltar"
-            className="w-9 h-9 rounded-full bg-white/70 flex items-center justify-center text-[#FD46A1]"
-          >
-            <ArrowLeft size={18} />
-          </button>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold text-[#FD46A1] truncate">
               Lista de Compras
