@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 import { useShoppingLists } from "@/hooks/useShoppingLists";
 import { ShoppingListCard } from "@/components/shopping/ShoppingListCard";
 import { CreateListModal } from "@/components/shopping/CreateListModal";
@@ -20,6 +21,7 @@ const ShoppingListPage = () => {
     <div
       className="min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]"
     >
+      <Navbar />
       {/* Header */}
       <div className="px-4 mb-4">
         <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFD1E7] to-[#FFE5F1] rounded-3xl px-4 py-3">

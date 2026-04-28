@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Share2, Eraser, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 import { useShoppingListDetail } from "@/hooks/useShoppingLists";
 import {
   SHOPPING_CATEGORIES,
