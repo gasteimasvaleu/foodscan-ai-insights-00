@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, Users, Flame, Drumstick, Wheat, Droplets, ChefHat } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, Users, Flame, Drumstick, Wheat, Droplets, ChefHat, ShoppingCart, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SelectShoppingListModal } from "@/components/shopping/SelectShoppingListModal";
+import { useShoppingListDetail } from "@/hooks/useShoppingLists";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RecipeDetailsProps {
   recipeId: number | null;
@@ -17,6 +22,11 @@ const getNutrient = (nutrients: any[], name: string) => {
 export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsProps) => {
   const [recipe, setRecipe] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [selectListOpen, setSelectListOpen] = useState(false);
+  const [addingIngredients, setAddingIngredients] = useState(false);
+  const navigate = useNavigate();
+  // hook used only for its addItemsBulk fn (no listId)
+  const { addItemsBulk } = useShoppingListDetail(undefined);
 
   useEffect(() => {
     if (recipeId && open) {
@@ -37,6 +47,46 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
       console.error('Error fetching recipe details:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddIngredientsToList = async (listId: string, listName: string) => {
+    if (!recipe?.extendedIngredients?.length) return;
+    setAddingIngredients(true);
+    try {
+      const ingredients = recipe.extendedIngredients.map((ing: any) => ({
+        original: ing.original,
+        name: ing.name,
+        amount: ing.amount,
+        unit: ing.unit,
+      }));
+      const { data, error } = await supabase.functions.invoke("shopping-from-recipe", {
+        body: { ingredients },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const items = data?.items ?? [];
+      if (items.length === 0) {
+        toast.info("Nenhum ingrediente pôde ser adicionado");
+        return;
+      }
+      const count = await addItemsBulk(items, listId);
+      if (count > 0) {
+        toast.success(`${count} ${count === 1 ? "ingrediente adicionado" : "ingredientes adicionados"} a ${listName}`, {
+          action: {
+            label: "Ver lista",
+            onClick: () => {
+              onOpenChange(false);
+              navigate(`/lista-de-compras/${listId}`);
+            },
+          },
+        });
+      }
+    } catch (err: any) {
+      console.error("[RecipeDetails] addIngredients error:", err);
+      toast.error(err?.message || "Erro ao adicionar ingredientes");
+    } finally {
+      setAddingIngredients(false);
     }
   };
 
@@ -130,6 +180,25 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
                       </li>
                     ))}
                   </ul>
+                  <Button
+                    type="button"
+                    onClick={() => setSelectListOpen(true)}
+                    disabled={addingIngredients}
+                    variant="outline"
+                    className="w-full mt-3 rounded-full border-primary text-primary bg-white h-10 text-sm font-semibold gap-2"
+                  >
+                    {addingIngredients ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Adicionando...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} />
+                        Adicionar à lista de compras
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
 
@@ -153,6 +222,13 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
           </>
         ) : null}
       </DialogContent>
+
+      <SelectShoppingListModal
+        open={selectListOpen}
+        onOpenChange={setSelectListOpen}
+        onSelect={handleAddIngredientsToList}
+        title="Adicionar ingredientes a"
+      />
     </Dialog>
   );
 };

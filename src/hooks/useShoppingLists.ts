@@ -160,6 +160,35 @@ export const useShoppingListDetail = (listId: string | undefined) => {
     setItems((prev) => [...prev, data]);
   };
 
+  const addItemsBulk = async (
+    inputs: Array<{ name: string; quantity: number; unit: string; category: string }>,
+    targetListId?: string,
+  ): Promise<number> => {
+    const lid = targetListId ?? listId;
+    if (!user || !lid || inputs.length === 0) return 0;
+    const rows = inputs.map((i) => ({
+      list_id: lid,
+      user_id: user.id,
+      name: i.name,
+      quantity: i.quantity,
+      unit: i.unit,
+      category: i.category,
+    }));
+    const { data, error } = await supabase
+      .from("shopping_list_items")
+      .insert(rows)
+      .select();
+    if (error) {
+      console.error("[addItemsBulk] error:", error);
+      toast.error("Erro ao adicionar itens");
+      return 0;
+    }
+    if (lid === listId) {
+      setItems((prev) => [...prev, ...(data ?? [])]);
+    }
+    return data?.length ?? 0;
+  };
+
   const updateItem = async (id: string, patch: Partial<ShoppingListItem>) => {
     const { error } = await supabase
       .from("shopping_list_items")
@@ -206,6 +235,7 @@ export const useShoppingListDetail = (listId: string | undefined) => {
     items,
     loading,
     addItem,
+    addItemsBulk,
     updateItem,
     togglePurchased,
     deleteItem,

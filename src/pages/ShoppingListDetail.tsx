@@ -11,6 +11,8 @@ import {
 import { ShoppingItemRow } from "@/components/shopping/ShoppingItemRow";
 import { AddItemModal } from "@/components/shopping/AddItemModal";
 import { CreateListModal } from "@/components/shopping/CreateListModal";
+import { ParseItemsCard } from "@/components/shopping/ParseItemsCard";
+import { CostEstimateCard } from "@/components/shopping/CostEstimateCard";
 import { useShoppingLists } from "@/hooks/useShoppingLists";
 import { buildShoppingListMessage } from "@/lib/shoppingShare";
 import { openExternalUrl } from "@/lib/openExternal";
@@ -24,6 +26,7 @@ const ShoppingListDetailPage = () => {
     items,
     loading,
     addItem,
+    addItemsBulk,
     togglePurchased,
     deleteItem,
     clearPurchased,
@@ -164,6 +167,18 @@ const ShoppingListDetailPage = () => {
           </Button>
         )}
       </div>
+
+      {/* Parser de texto livre via IA */}
+      <div className="px-4 mb-4">
+        <ParseItemsCard onItemsParsed={(items) => addItemsBulk(items)} />
+      </div>
+
+      {/* Estimativa de custo (lazy) */}
+      {items.length > 0 && id && (
+        <div className="px-4 mb-4">
+          <CostEstimateCard listId={id} items={items} />
+        </div>
+      )}
 
       {/* Itens agrupados */}
       <div className="px-4 flex flex-col gap-4">
