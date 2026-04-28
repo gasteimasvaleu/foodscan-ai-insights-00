@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -58,6 +58,12 @@ const moreSheetItems = [
     description: "Produtos selecionados de parceiros",
     url: "/loja",
     icon: ShoppingBag,
+  },
+  {
+    name: "Lista de Compras",
+    description: "Organize suas compras de mercado por categoria",
+    url: "/lista-de-compras",
+    icon: ShoppingCart,
   },
   {
     name: "ServiNUTRI",
