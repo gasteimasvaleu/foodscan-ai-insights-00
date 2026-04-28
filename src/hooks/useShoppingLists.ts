@@ -235,6 +235,7 @@ export const useShoppingListDetail = (listId: string | undefined) => {
     items,
     loading,
     addItem,
+    addItemsBulk,
     updateItem,
     togglePurchased,
     deleteItem,
