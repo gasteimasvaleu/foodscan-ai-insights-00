@@ -76,6 +76,7 @@ const ShoppingListDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)] flex items-center justify-center">
+        <Navbar />
         <p className="text-sm text-foreground/60">Carregando...</p>
       </div>
     );
@@ -84,6 +85,7 @@ const ShoppingListDetailPage = () => {
   if (!list) {
     return (
       <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)] px-4">
+        <Navbar />
         <div className="bg-[#FFD1E7] rounded-3xl p-6 text-center">
           <p className="text-base text-foreground">Lista não encontrada</p>
           <Button
@@ -99,6 +101,7 @@ const ShoppingListDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]">
+      <Navbar />
       {/* Header */}
       <div className="px-4 mb-4">
         <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFD1E7] to-[#FFE5F1] rounded-3xl px-4 py-3">
