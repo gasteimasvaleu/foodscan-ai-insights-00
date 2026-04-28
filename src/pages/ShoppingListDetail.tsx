@@ -11,6 +11,8 @@ import {
 import { ShoppingItemRow } from "@/components/shopping/ShoppingItemRow";
 import { AddItemModal } from "@/components/shopping/AddItemModal";
 import { CreateListModal } from "@/components/shopping/CreateListModal";
+import { ParseItemsCard } from "@/components/shopping/ParseItemsCard";
+import { CostEstimateCard } from "@/components/shopping/CostEstimateCard";
 import { useShoppingLists } from "@/hooks/useShoppingLists";
 import { buildShoppingListMessage } from "@/lib/shoppingShare";
 import { openExternalUrl } from "@/lib/openExternal";
@@ -24,6 +26,7 @@ const ShoppingListDetailPage = () => {
     items,
     loading,
     addItem,
+    addItemsBulk,
     togglePurchased,
     deleteItem,
     clearPurchased,
