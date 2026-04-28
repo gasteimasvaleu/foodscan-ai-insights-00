@@ -140,6 +140,25 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
                       </li>
                     ))}
                   </ul>
+                  <Button
+                    type="button"
+                    onClick={() => setSelectListOpen(true)}
+                    disabled={addingIngredients}
+                    variant="outline"
+                    className="w-full mt-3 rounded-full border-primary text-primary bg-white h-10 text-sm font-semibold gap-2"
+                  >
+                    {addingIngredients ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Adicionando...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} />
+                        Adicionar à lista de compras
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
 
