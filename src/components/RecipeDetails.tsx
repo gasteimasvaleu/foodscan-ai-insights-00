@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, Users, Flame, Drumstick, Wheat, Droplets, ChefHat } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, Users, Flame, Drumstick, Wheat, Droplets, ChefHat, ShoppingCart, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SelectShoppingListModal } from "@/components/shopping/SelectShoppingListModal";
+import { useShoppingListDetail } from "@/hooks/useShoppingLists";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RecipeDetailsProps {
   recipeId: number | null;
