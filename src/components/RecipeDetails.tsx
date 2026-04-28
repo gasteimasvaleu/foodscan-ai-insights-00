@@ -50,6 +50,46 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
     }
   };
 
+  const handleAddIngredientsToList = async (listId: string, listName: string) => {
+    if (!recipe?.extendedIngredients?.length) return;
+    setAddingIngredients(true);
+    try {
+      const ingredients = recipe.extendedIngredients.map((ing: any) => ({
+        original: ing.original,
+        name: ing.name,
+        amount: ing.amount,
+        unit: ing.unit,
+      }));
+      const { data, error } = await supabase.functions.invoke("shopping-from-recipe", {
+        body: { ingredients },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const items = data?.items ?? [];
+      if (items.length === 0) {
+        toast.info("Nenhum ingrediente pôde ser adicionado");
+        return;
+      }
+      const count = await addItemsBulk(items, listId);
+      if (count > 0) {
+        toast.success(`${count} ${count === 1 ? "ingrediente adicionado" : "ingredientes adicionados"} a ${listName}`, {
+          action: {
+            label: "Ver lista",
+            onClick: () => {
+              onOpenChange(false);
+              navigate(`/lista-de-compras/${listId}`);
+            },
+          },
+        });
+      }
+    } catch (err: any) {
+      console.error("[RecipeDetails] addIngredients error:", err);
+      toast.error(err?.message || "Erro ao adicionar ingredientes");
+    } finally {
+      setAddingIngredients(false);
+    }
+  };
+
   const nutrients = recipe?.nutrition?.nutrients || [];
   const calories = getNutrient(nutrients, 'Calories');
   const protein = getNutrient(nutrients, 'Protein');
