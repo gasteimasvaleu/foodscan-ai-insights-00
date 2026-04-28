@@ -222,6 +222,13 @@ export const RecipeDetails = ({ recipeId, open, onOpenChange }: RecipeDetailsPro
           </>
         ) : null}
       </DialogContent>
+
+      <SelectShoppingListModal
+        open={selectListOpen}
+        onOpenChange={setSelectListOpen}
+        onSelect={handleAddIngredientsToList}
+        title="Adicionar ingredientes a"
+      />
     </Dialog>
   );
 };
