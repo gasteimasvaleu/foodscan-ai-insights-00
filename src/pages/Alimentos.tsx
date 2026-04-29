@@ -102,21 +102,16 @@ const Alimentos = () => {
             />
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {FOOD_CATEGORIES.map(c => (
-              <button
-                key={c.value}
-                onClick={() => setCategory(c.value)}
-                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors ${
-                  category === c.value
-                    ? "bg-[#FD46A1] text-white"
-                    : "bg-[#FFD1E7]/60 text-foreground"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsCategoryDrawerOpen(true)}
+            className="w-full bg-[#FFD1E7] rounded-full px-4 py-2.5 flex items-center justify-between text-sm text-foreground"
+          >
+            <span className="truncate">
+              Categoria: {FOOD_CATEGORIES.find(c => c.value === category)?.label ?? "Todas"}
+            </span>
+            <ChevronDown className="w-4 h-4 text-[#FD46A1] flex-shrink-0 ml-2" />
+          </button>
         </div>
 
         {/* Lista */}
