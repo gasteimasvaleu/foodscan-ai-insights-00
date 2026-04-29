@@ -22,6 +22,7 @@ const Alimentos = () => {
   const [category, setCategory] = useState("");
   const [selected, setSelected] = useState<CatalogFood | null>(null);
   const [grams, setGrams] = useState<number>(100);
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [logging, setLogging] = useState(false);
 
   const { data: foods, isLoading } = useFoodCatalogSearch(query, category || undefined);
