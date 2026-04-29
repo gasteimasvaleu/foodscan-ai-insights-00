@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { WheelPicker } from "@/components/ui/wheel-picker";
-import { UtensilsCrossed, Search, X, ChevronDown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UtensilsCrossed, Search, X, ChevronDown, BookMarked } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { MyRecipesTab } from "@/components/MyRecipesTab";
 
 const DIETS = [
   { value: "", label: "Todas" },
