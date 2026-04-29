@@ -246,6 +246,102 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_meals: {
+        Row: {
+          calories: number
+          carbohydrates: number
+          created_at: string
+          fats: number
+          food_name: string
+          id: string
+          image_url: string | null
+          last_used_at: string | null
+          meal_type: string | null
+          portion: string
+          proteins: number
+          updated_at: string
+          use_count: number
+          user_id: string
+        }
+        Insert: {
+          calories: number
+          carbohydrates?: number
+          created_at?: string
+          fats?: number
+          food_name: string
+          id?: string
+          image_url?: string | null
+          last_used_at?: string | null
+          meal_type?: string | null
+          portion: string
+          proteins?: number
+          updated_at?: string
+          use_count?: number
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbohydrates?: number
+          created_at?: string
+          fats?: number
+          food_name?: string
+          id?: string
+          image_url?: string | null
+          last_used_at?: string | null
+          meal_type?: string | null
+          portion?: string
+          proteins?: number
+          updated_at?: string
+          use_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      food_catalog: {
+        Row: {
+          calories_per_100g: number
+          carbs_per_100g: number
+          category: string
+          common_portion_g: number
+          common_portion_label: string
+          created_at: string
+          fats_per_100g: number
+          id: string
+          is_active: boolean
+          name: string
+          proteins_per_100g: number
+          updated_at: string
+        }
+        Insert: {
+          calories_per_100g: number
+          carbs_per_100g?: number
+          category: string
+          common_portion_g?: number
+          common_portion_label?: string
+          created_at?: string
+          fats_per_100g?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          proteins_per_100g?: number
+          updated_at?: string
+        }
+        Update: {
+          calories_per_100g?: number
+          carbs_per_100g?: number
+          category?: string
+          common_portion_g?: number
+          common_portion_label?: string
+          created_at?: string
+          fats_per_100g?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          proteins_per_100g?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       homepage_banners: {
         Row: {
           created_at: string
@@ -1085,6 +1181,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_recipes: {
+        Row: {
+          calories_per_serving: number
+          carbs_per_serving: number
+          created_at: string
+          description: string | null
+          fats_per_serving: number
+          id: string
+          image_url: string | null
+          ingredients: Json
+          last_used_at: string | null
+          name: string
+          proteins_per_serving: number
+          servings: number
+          updated_at: string
+          use_count: number
+          user_id: string
+        }
+        Insert: {
+          calories_per_serving?: number
+          carbs_per_serving?: number
+          created_at?: string
+          description?: string | null
+          fats_per_serving?: number
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          last_used_at?: string | null
+          name: string
+          proteins_per_serving?: number
+          servings?: number
+          updated_at?: string
+          use_count?: number
+          user_id: string
+        }
+        Update: {
+          calories_per_serving?: number
+          carbs_per_serving?: number
+          created_at?: string
+          description?: string | null
+          fats_per_serving?: number
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          last_used_at?: string | null
+          name?: string
+          proteins_per_serving?: number
+          servings?: number
+          updated_at?: string
+          use_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1305,6 +1455,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
