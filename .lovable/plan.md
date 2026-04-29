@@ -1,147 +1,27 @@
-## Visão geral
+## Objetivo
 
-Adicionar 3 funcionalidades inteligentes à Lista de Compras, mantendo o fluxo manual atual intacto:
+Na página `/alimentos`, substituir a faixa horizontal de "chips" de categorias por um **botão seletor** que abre um **Drawer** (padrão usado em `/loja`, `/receitas`, etc.), trazendo consistência visual com o resto do app.
 
-1. **Parser de texto livre via IA** ("2kg arroz, leite, 6 bananas...")
-2. **Estimativa de custo total** (preço médio BR, via IA)
-3. **Adicionar ingredientes da Receita** direto pra uma lista
+## Mudanças em `src/pages/Alimentos.tsx`
 
-Tudo usa **Lovable AI Gateway** (`google/gemini-3-flash-preview`) via edge functions — sem chamadas diretas do client.
+1. **Remover** a `<div>` com `flex gap-2 overflow-x-auto` que renderiza os chips de `FOOD_CATEGORIES`.
+2. **Adicionar** abaixo do campo de busca um botão único:
+   - Estilo: `bg-[#FFD1E7] rounded-full px-4 py-2` com label "Categoria: {nome atual}" e ícone chevron à direita.
+   - Mostra "Todas" quando nenhuma categoria está selecionada.
+3. **Adicionar estado** `isCategoryDrawerOpen` e importar `Drawer`, `DrawerContent`, `DrawerHeader`, `DrawerTitle`, `DrawerFooter` de `@/components/ui/drawer`.
+4. **Renderizar Drawer** seguindo o padrão de `Loja.tsx`:
+   - `DrawerContent` com classes: `w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]`.
+   - `DrawerHeader` com `DrawerTitle` "Escolha a categoria".
+   - Lista vertical scrollável (`overflow-y-auto`) das `FOOD_CATEGORIES`, cada item como botão de largura cheia, `rounded-2xl`, com bg `#FD46A1` (texto branco) quando ativo e `#FFD1E7` quando inativo.
+   - Ao clicar em uma categoria: `setCategory(value)` e `setIsCategoryDrawerOpen(false)`.
+   - `DrawerFooter` com botão "Fechar" (`bg-[#FD46A1] text-white rounded-full`).
 
----
+## Constraint respeitada
 
-## 1. Parser de texto livre — "Organizar Lista"
+A página `/alimentos` não usa `Dialog` por trás (o `Dialog` de detalhes só abre depois que o usuário clica num alimento), então usar `Drawer` aqui não viola a regra de "não usar Drawers dentro de Dialogs".
 
-### UI (em `ShoppingListDetail.tsx`)
-Novo card abaixo da linha de ações (Item / WhatsApp / Limpar):
+## Resultado
 
-```text
-┌──────────────────────────────────────────┐
-│ ✨ Adicionar vários itens                │
-│ Digite tudo de uma vez. A IA organiza   │
-│ por categoria e unidade.                 │
-│ ┌────────────────────────────────────┐   │
-│ │ Ex: 2kg arroz, leite, 6 bananas... │   │ ← Textarea
-│ └────────────────────────────────────┘   │
-│         [ ✨ Organizar lista ]           │ ← Botão
-└──────────────────────────────────────────┘
-```
-
-- Card no padrão pink (`bg-[#FFD1E7] rounded-3xl p-4`)
-- Textarea (3 linhas, `text-base` para evitar zoom no iOS)
-- Botão `bg-[#FD46A1]` com loader enquanto processa
-- Após sucesso: toast "X itens adicionados", limpa o textarea
-
-### Edge function: `supabase/functions/shopping-parse-items/index.ts`
-- Recebe `{ text: string }`, valida com Zod (max 1000 chars)
-- Valida JWT do usuário
-- Chama Lovable AI com **tool calling** para estrutura garantida:
-  ```json
-  {
-    "items": [
-      { "name": "Arroz", "quantity": 2, "unit": "kg", "category": "mercearia" },
-      { "name": "Leite", "quantity": 1, "unit": "L", "category": "laticinios" },
-      { "name": "Banana", "quantity": 6, "unit": "un", "category": "hortifruti" }
-    ]
-  }
-  ```
-- System prompt em PT-BR com lista das `SHOPPING_CATEGORIES` e `SHOPPING_UNITS` válidas, regras (singularizar nome, default qty=1 unit=un, mapear sinônimos pra categoria correta)
-- Retorna JSON; cliente itera e usa `addItem` do hook existente (mantém RLS por user_id)
-- Trata erros 429/402 com mensagens claras
-
----
-
-## 2. Estimativa de custo total
-
-### UI (em `ShoppingListDetail.tsx`)
-Pequeno card discreto entre o header e as ações, **só aparece quando há itens** (≥1):
-
-```text
-┌─────────────────────────────────────┐
-│ 💰 Estimativa: ~R$ 87,50            │
-│ Preços médios BR · [Recalcular]     │
-└─────────────────────────────────────┘
-```
-
-- `bg-white/70 backdrop-blur` arredondado, fonte pequena
-- Botão "Estimar custo" inicial (lazy — só calcula quando o usuário clica, pra não gastar IA toda vez que abre a lista)
-- Após calcular: mostra valor + data; botão vira "Recalcular"
-- Estado guardado em `localStorage` por listId (`shopping-cost-${listId}` com `{ total, calculatedAt, itemsHash }`); se hash dos itens mudou, mostra aviso "Lista mudou — recalcular"
-
-### Edge function: `supabase/functions/shopping-estimate-cost/index.ts`
-- Recebe `{ items: [{ name, quantity, unit }] }`, valida com Zod
-- Chama Lovable AI com tool calling:
-  ```json
-  {
-    "total_brl": 87.5,
-    "currency": "BRL",
-    "breakdown": [
-      { "name": "Arroz", "estimated_price": 18.0 },
-      ...
-    ],
-    "notes": "Preços médios de mercado em SP/2026"
-  }
-  ```
-- System prompt instrui: estimar preço médio brasileiro (varejo grande rede), considerar quantidade × unidade
-- Cliente exibe só o `total_brl`; `breakdown` fica disponível pra futura expansão
-
----
-
-## 3. Adicionar ingredientes da Receita
-
-### UI (em `RecipeDetails.tsx`)
-Novo botão no fim da seção de Ingredientes:
-
-```text
-[ 🛒 Adicionar à lista de compras ]
-```
-
-Ao clicar, abre um **modal de seleção de lista** (`SelectShoppingListModal` novo):
-- Lista as `shopping_lists` existentes (do hook `useShoppingLists`)
-- Opção "+ Criar nova lista" no topo (abre `CreateListModal` em sequência)
-- Após escolher: chama edge function pra normalizar os ingredientes da Spoonacular (que vêm em inglês via `extendedIngredients`)
-
-### Edge function: `supabase/functions/shopping-from-recipe/index.ts`
-- Recebe `{ ingredients: [{ original, name, amount, unit }], list_id }`
-- Valida JWT + ownership da lista (RLS já protege INSERT)
-- Chama Lovable AI: traduz pra PT-BR, normaliza unidade pro nosso enum, atribui categoria
-- Insere itens via Supabase service role (ou retorna pro client inserir com `addItem`) — **preferência**: retornar a lista normalizada e o client insere usando o hook existente, mantendo RLS do usuário e atualizando UI imediata
-- Toast: "X ingredientes adicionados a [Nome da Lista]" + botão "Ver lista" que navega
-
----
-
-## Detalhes técnicos
-
-### Arquivos a criar
-- `supabase/functions/shopping-parse-items/index.ts`
-- `supabase/functions/shopping-estimate-cost/index.ts`
-- `supabase/functions/shopping-from-recipe/index.ts`
-- `src/components/shopping/ParseItemsCard.tsx` (card de texto livre)
-- `src/components/shopping/CostEstimateCard.tsx` (card de estimativa)
-- `src/components/shopping/SelectShoppingListModal.tsx` (modal seleção de lista)
-
-### Arquivos a editar
-- `src/pages/ShoppingListDetail.tsx` — incluir os 2 cards novos
-- `src/components/RecipeDetails.tsx` — botão "Adicionar à lista"
-- `src/hooks/useShoppingLists.ts` — adicionar `addItemsBulk(items[])` para inserção em batch (usado pelos 3 features)
-
-### Padrões a respeitar (memória)
-- Cards: `bg-[#FFD1E7] rounded-3xl`, título sem ícone decorativo, `text-base`
-- Modal: glassmorphism `bg-white/70 backdrop-blur-md border-2 border-[#FD46A1]`
-- Botão close: `bg-[#FD46A1]` com X branco
-- Inputs/Textarea: `text-base` mínimo (evita zoom iOS)
-- AI: sempre via Lovable AI Gateway, edge function, tool calling para JSON estruturado
-- Tratar 429 (rate limit) e 402 (créditos) com toast amigável
-
-### Fora de escopo (pra não inflar a feature)
-- Histórico de listas geradas
-- Ajuste manual de unidades dentro do modal de parser (usuário pode editar item-a-item depois)
-- Breakdown detalhado de custo por item (só total)
-
----
-
-## Resumo do que muda na UX
-
-1. Na tela de uma lista: agora há um **card de texto livre** + um **card de estimativa de custo** (lazy)
-2. Na tela de uma receita: novo **botão "Adicionar à lista de compras"**
-3. Modal manual de adicionar item permanece exatamente como está
+- Menos poluição visual no topo da página.
+- Consistência com `/loja`, `/receitas`, `/sleep`.
+- Mais espaço para a lista de alimentos no viewport mobile (390x610).

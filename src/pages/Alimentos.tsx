@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { Apple, Search, Plus, X } from "lucide-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer";
+import { Apple, Search, Plus, X, ChevronDown } from "lucide-react";
 import { useFoodCatalogSearch, FOOD_CATEGORIES, CatalogFood } from "@/hooks/useFoodCatalog";
 import { logMeal } from "@/lib/logMeal";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ const Alimentos = () => {
   const [category, setCategory] = useState("");
   const [selected, setSelected] = useState<CatalogFood | null>(null);
   const [grams, setGrams] = useState<number>(100);
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [logging, setLogging] = useState(false);
 
   const { data: foods, isLoading } = useFoodCatalogSearch(query, category || undefined);
@@ -100,21 +102,16 @@ const Alimentos = () => {
             />
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {FOOD_CATEGORIES.map(c => (
-              <button
-                key={c.value}
-                onClick={() => setCategory(c.value)}
-                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors ${
-                  category === c.value
-                    ? "bg-[#FD46A1] text-white"
-                    : "bg-[#FFD1E7]/60 text-foreground"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsCategoryDrawerOpen(true)}
+            className="w-full bg-[#FFD1E7] rounded-full px-4 py-2.5 flex items-center justify-between text-sm text-foreground"
+          >
+            <span className="truncate">
+              Categoria: {FOOD_CATEGORIES.find(c => c.value === category)?.label ?? "Todas"}
+            </span>
+            <ChevronDown className="w-4 h-4 text-[#FD46A1] flex-shrink-0 ml-2" />
+          </button>
         </div>
 
         {/* Lista */}
@@ -201,6 +198,43 @@ const Alimentos = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Drawer Categoria */}
+      <Drawer open={isCategoryDrawerOpen} onOpenChange={setIsCategoryDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">Escolha a categoria</DrawerTitle>
+          </DrawerHeader>
+          <div className="overflow-y-auto space-y-2 px-1">
+            {FOOD_CATEGORIES.map((c) => (
+              <button
+                key={c.value || "todas"}
+                type="button"
+                onClick={() => {
+                  setCategory(c.value);
+                  setIsCategoryDrawerOpen(false);
+                }}
+                className={`w-full rounded-2xl px-4 py-3 text-sm text-left transition-colors ${
+                  category === c.value
+                    ? "bg-[#FD46A1] text-white"
+                    : "bg-[#FFD1E7] text-foreground"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <DrawerFooter className="px-0 pt-4">
+            <Button
+              type="button"
+              onClick={() => setIsCategoryDrawerOpen(false)}
+              className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full"
+            >
+              Fechar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
