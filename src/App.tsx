@@ -49,6 +49,8 @@ import Loja from "./pages/Loja";
 import AdminLoja from "./pages/AdminLoja";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
+import AdicionarRefeicao from "./pages/AdicionarRefeicao";
+import Alimentos from "./pages/Alimentos";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
@@ -121,6 +123,8 @@ const App = () => (
             <Route path="/loja" element={<Loja />} />
             <Route path="/lista-de-compras" element={<ShoppingList />} />
             <Route path="/lista-de-compras/:id" element={<ShoppingListDetail />} />
+            <Route path="/adicionar-refeicao" element={<AdicionarRefeicao />} />
+            <Route path="/alimentos" element={<Alimentos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
             <Route path="/admin/treinos" element={<AdminTreinos />} />
