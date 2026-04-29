@@ -1,27 +1,19 @@
-# Corrigir largura do modal de detalhes em /alimentos
-
 ## Problema
-O `DialogContent` do modal individual de alimento (aberto ao clicar em "+") usa apenas `max-w-sm`, mas o `DialogContent` base aplica `w-full`. Em telas mobile (390px), isso faz o modal grudar nas bordas, sem o respiro lateral do padrão do app.
 
-## Padrão do app (referência)
-`WidgetPromoModal.tsx` e outros usam:
-```
-w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl
-```
-Isso garante 1rem de margem em cada lado e cantos arredondados consistentes.
+Na página `/receitas`, aba "Minhas receitas", o modal aberto pelo botão "Criar nova receita" ocupa toda a largura horizontal da tela no mobile, fora do padrão do app (que mantém margens laterais de 1rem com glassmorphism centralizado).
 
-## Mudança
-**Arquivo:** `src/pages/Alimentos.tsx`
+## Causa
 
-No `<DialogContent>` do modal de detalhes do alimento (linha ~143), substituir:
-```
-className="bg-white/70 backdrop-blur-md border-2 border-primary rounded-3xl max-w-sm"
-```
-por:
-```
-className="w-[calc(100%-2rem)] max-w-sm mx-auto rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl"
+Em `src/components/MyRecipesTab.tsx` linha 191, o `DialogContent` usa apenas `max-w-md`, sem `w-[calc(100%-2rem)] mx-auto`, então no mobile ele estica até as bordas.
+
+## Correção
+
+**Arquivo:** `src/components/MyRecipesTab.tsx` (linha 191)
+
+Substituir as classes do `DialogContent` para:
+
+```tsx
+<DialogContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[90vh] overflow-y-auto">
 ```
 
-Mantém `max-w-sm` (compatível com o conteúdo compacto: input de gramas + grid 4 macros + botão), mas adiciona o respiro lateral e a sombra do padrão.
-
-Nenhuma outra alteração necessária — header, close button (#FD46A1), grid de macros e botão já estão no padrão.
+Isso aplica o mesmo padrão usado no modal de `/alimentos` corrigido anteriormente: 1rem de margem lateral, centralizado, glassmorphism e shadow consistentes.
