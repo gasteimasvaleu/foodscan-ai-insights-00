@@ -198,6 +198,43 @@ const Alimentos = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Drawer Categoria */}
+      <Drawer open={isCategoryDrawerOpen} onOpenChange={setIsCategoryDrawerOpen}>
+        <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+          <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+            <DrawerTitle className="text-base font-semibold">Escolha a categoria</DrawerTitle>
+          </DrawerHeader>
+          <div className="overflow-y-auto space-y-2 px-1">
+            {FOOD_CATEGORIES.map((c) => (
+              <button
+                key={c.value || "todas"}
+                type="button"
+                onClick={() => {
+                  setCategory(c.value);
+                  setIsCategoryDrawerOpen(false);
+                }}
+                className={`w-full rounded-2xl px-4 py-3 text-sm text-left transition-colors ${
+                  category === c.value
+                    ? "bg-[#FD46A1] text-white"
+                    : "bg-[#FFD1E7] text-foreground"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <DrawerFooter className="px-0 pt-4">
+            <Button
+              type="button"
+              onClick={() => setIsCategoryDrawerOpen(false)}
+              className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full"
+            >
+              Fechar
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
