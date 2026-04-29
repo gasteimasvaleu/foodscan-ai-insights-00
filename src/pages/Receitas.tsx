@@ -144,116 +144,133 @@ const Receitas = () => {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="space-y-3 mb-6">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar receitas..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="pl-9 pr-8"
-              />
-              {query && (
-                <button onClick={clearSearch} className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <X className="w-4 h-4 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-            <Button onClick={() => searchRecipes(true)} disabled={loading || !query.trim()} size="default">
-              Buscar
-            </Button>
-          </div>
+        <Tabs defaultValue="buscar" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="buscar">
+              <Search className="w-4 h-4 mr-2" /> Buscar
+            </TabsTrigger>
+            <TabsTrigger value="minhas">
+              <BookMarked className="w-4 h-4 mr-2" /> Minhas receitas
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 h-9 justify-between text-xs font-normal"
-              onClick={openDietDrawer}
-            >
-              <span>{getSelectedLabel(DIETS, diet, "Dieta")}</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 h-9 justify-between text-xs font-normal"
-              onClick={openCuisineDrawer}
-            >
-              <span>{getSelectedLabel(CUISINES, cuisine, "Culinária")}</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Results */}
-        {loading && recipes.length === 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="aspect-video rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
+          <TabsContent value="buscar">
+            {/* Search */}
+            <div className="space-y-3 mb-6">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar receitas..."
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="pl-9 pr-8"
+                  />
+                  {query && (
+                    <button onClick={clearSearch} className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <X className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+                <Button onClick={() => searchRecipes(true)} disabled={loading || !query.trim()} size="default">
+                  Buscar
+                </Button>
               </div>
-            ))}
-          </div>
-        ) : recipes.length > 0 ? (
-          <>
-            <p className="text-xs text-muted-foreground mb-3">
-              {totalResults} receitas encontradas
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {recipes.map(recipe => (
-                <RecipeCard
-                  key={recipe.id}
-                  recipe={recipe}
-                  onClick={(id) => {
-                    setSelectedRecipeId(id);
-                    setDetailsOpen(true);
-                  }}
-                />
-              ))}
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 h-9 justify-between text-xs font-normal"
+                  onClick={openDietDrawer}
+                >
+                  <span>{getSelectedLabel(DIETS, diet, "Dieta")}</span>
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 h-9 justify-between text-xs font-normal"
+                  onClick={openCuisineDrawer}
+                >
+                  <span>{getSelectedLabel(CUISINES, cuisine, "Culinária")}</span>
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </div>
             </div>
-            {recipes.length < totalResults && (
-              <Button
-                variant="outline"
-                className="w-full mt-4"
-                onClick={() => searchRecipes(false)}
-                disabled={loading}
-              >
-                {loading ? "Carregando..." : "Carregar mais"}
-              </Button>
+
+            {/* Results */}
+            {loading && recipes.length === 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="aspect-video rounded-lg" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : recipes.length > 0 ? (
+              <>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {totalResults} receitas encontradas
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {recipes.map(recipe => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      onClick={(id) => {
+                        setSelectedRecipeId(id);
+                        setDetailsOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+                {recipes.length < totalResults && (
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4"
+                    onClick={() => searchRecipes(false)}
+                    disabled={loading}
+                  >
+                    {loading ? "Carregando..." : "Carregar mais"}
+                  </Button>
+                )}
+              </>
+            ) : hasSearched ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-20 h-20 rounded-full bg-muted/40 flex items-center justify-center mb-4">
+                  <UtensilsCrossed size={36} className="text-muted-foreground" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground mb-2">
+                  Nenhuma receita encontrada
+                </h2>
+                <p className="text-muted-foreground text-sm max-w-xs">
+                  Tente buscar por outro termo ou ajuste os filtros.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Search size={36} className="text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground mb-2">
+                  Busque receitas saudáveis
+                </h2>
+                <p className="text-muted-foreground text-sm max-w-xs">
+                  Pesquise por nome, ingrediente ou tipo de prato e veja os dados nutricionais completos.
+                </p>
+              </div>
             )}
-          </>
-        ) : hasSearched ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-20 h-20 rounded-full bg-muted/40 flex items-center justify-center mb-4">
-              <UtensilsCrossed size={36} className="text-muted-foreground" />
-            </div>
-            <h2 className="text-lg font-semibold text-foreground mb-2">
-              Nenhuma receita encontrada
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-xs">
-              Tente buscar por outro termo ou ajuste os filtros.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <Search size={36} className="text-primary" />
-            </div>
-            <h2 className="text-lg font-semibold text-foreground mb-2">
-              Busque receitas saudáveis
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-xs">
-              Pesquise por nome, ingrediente ou tipo de prato e veja os dados nutricionais completos.
-            </p>
-          </div>
-        )}
+          </TabsContent>
+
+          <TabsContent value="minhas">
+            <MyRecipesTab />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <RecipeDetails
