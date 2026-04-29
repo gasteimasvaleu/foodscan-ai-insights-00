@@ -146,7 +146,7 @@ const Alimentos = () => {
 
       {/* Dialog de detalhes */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="bg-white/70 backdrop-blur-md border-2 border-primary rounded-3xl max-w-sm">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold pr-8">{selected?.name}</DialogTitle>
             <DialogClose className="absolute right-3 top-3 rounded-full bg-[#FD46A1] text-white p-1.5 hover:bg-[#FD46A1]/90">
