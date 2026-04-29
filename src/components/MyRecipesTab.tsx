@@ -188,7 +188,7 @@ export const MyRecipesTab = () => {
 
       {/* Modal de criação */}
       <Dialog open={createOpen} onOpenChange={(o) => { setCreateOpen(o); if (!o) resetForm(); }}>
-        <DialogContent className="bg-white/70 backdrop-blur-md border-2 border-primary rounded-3xl max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold pr-8">Nova receita</DialogTitle>
             <DialogClose className="absolute right-3 top-3 rounded-full bg-[#FD46A1] text-white p-1.5 hover:bg-[#FD46A1]/90">
