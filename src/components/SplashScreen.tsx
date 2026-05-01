@@ -1,13 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+  const { isNative, isIOS } = useNativePlatform();
+  const isNativeIOS = isNative && isIOS;
   const [isVisible, setIsVisible] = useState(true);
-  const [videoFailed, setVideoFailed] = useState(false);
+  // No iOS nativo, pulamos o <video> direto pra imagem estática (idêntica
+  // à LaunchScreen nativa). Isso garante que o controle de play do WKWebView
+  // nunca apareça, independente de Low Power Mode ou config do WebView.
+  const [videoFailed, setVideoFailed] = useState(isNativeIOS);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleEnd = () => {
