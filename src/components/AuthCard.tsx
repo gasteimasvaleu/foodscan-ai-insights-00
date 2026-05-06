@@ -14,6 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 import {
   restorePurchases as rcRestorePurchases,
+  identifyUser,
+  upsertSubscriptionFromCustomerInfo,
+  forceSubscriptionActive,
 } from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
@@ -111,11 +114,33 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
   const handleRestore = async () => {
     setRcLoading(true);
     try {
+      if (user?.id) {
+        console.log('[AuthCard] Identifying user before restore:', user.id);
+        await identifyUser(user.id);
+      }
+
       const customerInfo = await rcRestorePurchases();
-      if (customerInfo) {
+      const premiumEntitlement =
+        customerInfo?.entitlements?.active?.['Premium'] ||
+        customerInfo?.entitlements?.active?.['premium'];
+
+      if (customerInfo && premiumEntitlement) {
         toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
+
+        const expirationDate = premiumEntitlement.expirationDate || null;
+        forceSubscriptionActive(expirationDate);
+
+        if (user?.id) {
+          upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch((err) => {
+            console.warn('[AuthCard] Upsert after restore error:', err);
+          });
+        }
       } else {
-        toast({ title: 'Nenhuma assinatura encontrada', description: 'Não encontramos assinaturas ativas para restaurar.', variant: 'destructive' });
+        toast({
+          title: 'Nenhuma assinatura encontrada',
+          description: 'Não encontramos assinaturas ativas para restaurar.',
+          variant: 'destructive',
+        });
       }
     } catch (err) {
       console.error('[AuthCard] Restore error:', err);
