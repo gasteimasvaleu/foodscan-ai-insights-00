@@ -119,6 +119,7 @@ const FoodScan = () => {
       }
 
       setImageDescription(data.description);
+      await increment();
       toast({
         title: "Descrição gerada!",
         description: "Agora você pode enviar para análise nutricional."
@@ -385,6 +386,7 @@ const FoodScan = () => {
   };
 
   const handleBarcodeAnalysis = async (barcode: string) => {
+    if (!enforceQuota()) return;
     setIsBarcodeAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE POR CÓDIGO DE BARRAS ===");
     console.log("Código de barras:", barcode);
@@ -425,6 +427,7 @@ const FoodScan = () => {
       };
 
       setNutritionData(nutritionResult);
+      await increment();
       toast({
         title: "Produto encontrado!",
         description: `Análise completa de ${data.name}`,
@@ -503,6 +506,7 @@ const FoodScan = () => {
   };
 
   const handleManualInput = async (description: string) => {
+    if (!enforceQuota()) return;
     setImageDescription(description);
     setSelectedImage(null);
     setIsAnalyzing(true);
@@ -519,6 +523,7 @@ const FoodScan = () => {
       console.log("Dados da análise manual:", data);
       const processedData = processOpenAIResponse(JSON.stringify(data));
       setNutritionData(processedData);
+      await increment();
       
       toast({
         title: "Análise concluída!",
