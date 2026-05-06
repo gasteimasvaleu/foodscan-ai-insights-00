@@ -7,6 +7,7 @@ import { useNativePlatform } from '@/hooks/useNativePlatform';
 
 import SplashScreen from '@/components/SplashScreen';
 import PaywallScreen from '@/components/PaywallScreen';
+import { FREEMIUM_ENABLED } from '@/config/freemium';
 
 const Index = () => {
   const { user, authReady, subscriptionReady, subscriptionStatus, checkSubscription } = useAuth();
@@ -84,13 +85,12 @@ const Index = () => {
     );
   }
 
-  // Logged in on native iOS, subscription checked, not subscribed → paywall
-  if (isNativeIOS && !subscriptionStatus.subscribed) {
+  // Modo legado (sem freemium): paywall full-screen para iOS não-assinante
+  if (!FREEMIUM_ENABLED && isNativeIOS && !subscriptionStatus.subscribed) {
     return (
       <PaywallScreen
         user={{ id: user.id, email: user.email }}
         onSubscribed={async () => {
-          // Re-validate subscription from backend before entering app
           await checkSubscription();
         }}
       />

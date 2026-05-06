@@ -18,9 +18,14 @@ import { Button } from '@/components/ui/button';
 import { NutritionData, FoodElement } from '@/types/nutrition';
 import { supabase } from '@/integrations/supabase/client';
 import VideoOverlay from '@/components/VideoOverlay';
+import { useDailyLimit } from '@/hooks/useDailyLimit';
+import { FOODSCAN_DAILY_LIMIT } from '@/config/freemium';
+import { useNavigate } from 'react-router-dom';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { count: usageCount, remaining, canUse, isGated, increment } = useDailyLimit('foodscan', FOODSCAN_DAILY_LIMIT);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isBarcodeAnalyzing, setIsBarcodeAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
@@ -29,6 +34,13 @@ const FoodScan = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [analysisMode, setAnalysisMode] = useState<'fresh' | 'packaged'>('fresh');
   const [incompleteProductData, setIncompleteProductData] = useState<NutritionData | null>(null);
+
+  const enforceQuota = (): boolean => {
+    if (canUse) return true;
+    navigate('/assinar?reason=quota_exceeded&feature=foodscan');
+    return false;
+  };
+
   
   // Removed exposed API key - now using secure Edge Functions
 
@@ -85,6 +97,7 @@ const FoodScan = () => {
   };
 
   const handleImageAnalysis = async (imageFile: File) => {
+    if (!enforceQuota()) return;
     setSelectedImage(URL.createObjectURL(imageFile));
     setIsDescribing(true);
     console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
@@ -106,6 +119,7 @@ const FoodScan = () => {
       }
 
       setImageDescription(data.description);
+      await increment();
       toast({
         title: "Descrição gerada!",
         description: "Agora você pode enviar para análise nutricional."
@@ -372,6 +386,7 @@ const FoodScan = () => {
   };
 
   const handleBarcodeAnalysis = async (barcode: string) => {
+    if (!enforceQuota()) return;
     setIsBarcodeAnalyzing(true);
     console.log("=== INICIANDO ANÁLISE POR CÓDIGO DE BARRAS ===");
     console.log("Código de barras:", barcode);
@@ -412,6 +427,7 @@ const FoodScan = () => {
       };
 
       setNutritionData(nutritionResult);
+      await increment();
       toast({
         title: "Produto encontrado!",
         description: `Análise completa de ${data.name}`,
@@ -490,6 +506,7 @@ const FoodScan = () => {
   };
 
   const handleManualInput = async (description: string) => {
+    if (!enforceQuota()) return;
     setImageDescription(description);
     setSelectedImage(null);
     setIsAnalyzing(true);
@@ -506,6 +523,7 @@ const FoodScan = () => {
       console.log("Dados da análise manual:", data);
       const processedData = processOpenAIResponse(JSON.stringify(data));
       setNutritionData(processedData);
+      await increment();
       
       toast({
         title: "Análise concluída!",
@@ -602,11 +620,18 @@ const FoodScan = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="mb-6 animate-fade-in">
-            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
-              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
-                <Scan className="w-6 h-6 text-white" />
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                  <Scan className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-xl font-bold text-[#FD46A1]">FoodScan</h1>
               </div>
-              <h1 className="text-xl font-bold text-[#FD46A1]">FoodScan</h1>
+              {isGated && (
+                <span className="text-xs font-medium bg-white/70 text-[#FD46A1] rounded-full px-3 py-1">
+                  {remaining}/{FOODSCAN_DAILY_LIMIT} grátis hoje
+                </span>
+              )}
             </div>
           </div>
           

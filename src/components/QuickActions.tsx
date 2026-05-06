@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight } from 'lucide-react';
+import { useNativePlatform } from '@/hooks/useNativePlatform';
+import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { FREEMIUM_ENABLED } from '@/config/freemium';
 
 export const QuickActions = () => {
-  const { user } = useAuth();
+  const { user, subscriptionStatus } = useAuth();
+  const { isNative, isIOS } = useNativePlatform();
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -24,52 +27,74 @@ export const QuickActions = () => {
 
   if (!user) return null;
 
+  const isGatedUser =
+    FREEMIUM_ENABLED && isNative && isIOS && !subscriptionStatus.subscribed;
+
   const actions = [
     {
       icon: Camera,
-      title: "Escanear Comida",
-      tags: ["IA", "Foto", "Nutrição"],
-      path: "/foodscan",
-      color: "#FA1690",
+      title: 'Escanear Comida',
+      tags: ['IA', 'Foto', 'Nutrição'],
+      path: '/foodscan',
+      color: '#FA1690',
+      isPro: false,
+      featureSlug: 'foodscan',
     },
     {
       icon: Activity,
-      title: "Registrar Exercício",
-      tags: ["Calorias", "Atividade"],
-      path: "/fit-tracker",
-      color: "#E24989",
+      title: 'Registrar Exercício',
+      tags: ['Calorias', 'Atividade'],
+      path: '/fit-tracker',
+      color: '#E24989',
+      isPro: true,
+      featureSlug: 'fit-tracker',
     },
     {
       icon: ChefHat,
-      title: "Gerar Cardápio",
-      tags: ["Receitas", "Personalizado"],
-      path: "/masterchef",
-      color: "#FA1690",
+      title: 'Gerar Cardápio',
+      tags: ['Receitas', 'Personalizado'],
+      path: '/masterchef',
+      color: '#FA1690',
+      isPro: true,
+      featureSlug: 'masterchef',
     },
     {
       icon: Dumbbell,
-      title: "Treinos",
-      tags: ["Vídeos", "Exercícios"],
-      path: "/treinos",
-      color: "#E24989",
+      title: 'Treinos',
+      tags: ['Vídeos', 'Exercícios'],
+      path: '/treinos',
+      color: '#E24989',
+      isPro: true,
+      featureSlug: 'treinos',
     },
     {
       icon: MessageCircle,
-      title: "WhatsApp",
-      tags: ["Automático", "Análises"],
-      path: "/whatsapp-settings",
-      color: "#FA1690",
+      title: 'WhatsApp',
+      tags: ['Automático', 'Análises'],
+      path: '/whatsapp-settings',
+      color: '#FA1690',
+      isPro: true,
+      featureSlug: 'whatsapp-settings',
     },
   ];
+
+  const handleClick = (action: typeof actions[number]) => {
+    if (isGatedUser && action.isPro) {
+      navigate(`/assinar?reason=feature_locked&feature=${action.featureSlug}`);
+      return;
+    }
+    navigate(action.path);
+  };
 
   return (
     <div className="flex flex-col" style={{ marginBottom: '-64px' }}>
       {actions.map((action, index) => {
         const isLast = index === actions.length - 1;
+        const showLock = isGatedUser && action.isPro;
         return (
           <button
             key={index}
-            onClick={() => navigate(action.path)}
+            onClick={() => handleClick(action)}
             className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl active:scale-[0.98]"
             style={{
               backgroundColor: action.color,
@@ -86,6 +111,11 @@ export const QuickActions = () => {
               transitionDelay: `${index * 80}ms`,
             }}
           >
+            {showLock && (
+              <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
+                <Lock className="w-3.5 h-3.5" />
+              </div>
+            )}
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
@@ -102,6 +132,11 @@ export const QuickActions = () => {
                         {tag}
                       </span>
                     ))}
+                    {showLock && (
+                      <span className="text-[10px] font-semibold bg-white text-[#FD46A1] rounded-full px-2 py-0.5">
+                        Pro
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
