@@ -97,6 +97,7 @@ const FoodScan = () => {
   };
 
   const handleImageAnalysis = async (imageFile: File) => {
+    if (!enforceQuota()) return;
     setSelectedImage(URL.createObjectURL(imageFile));
     setIsDescribing(true);
     console.log("=== INICIANDO DESCRIÇÃO DA IMAGEM ===");
