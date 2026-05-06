@@ -16,7 +16,6 @@ import {
   restorePurchases as rcRestorePurchases,
   identifyUser,
   upsertSubscriptionFromCustomerInfo,
-  forceSubscriptionActive,
 } from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
