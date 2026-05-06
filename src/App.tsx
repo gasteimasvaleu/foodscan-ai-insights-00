@@ -81,8 +81,8 @@ const AuthAwareNavbar = () => {
   // Don't render navbar until auth is ready
   if (!authReady || !user) return null;
 
-  // On native iOS, wait for subscription check and hide if not subscribed
-  if (isNativeIOS && (!subscriptionReady || !subscriptionStatus.subscribed)) return null;
+  // On native iOS no modo legado (sem freemium): esconde navbar enquanto não assinante
+  if (!FREEMIUM_ENABLED && isNativeIOS && (!subscriptionReady || !subscriptionStatus.subscribed)) return null;
 
   return <TubelightNavbar items={navItems} />;
 };
