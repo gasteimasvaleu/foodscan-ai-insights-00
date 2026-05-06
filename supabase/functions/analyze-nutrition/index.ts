@@ -1,7 +1,7 @@
 // v2.1 - 2026-03-27 - Valores por 100g para múltiplos elementos
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
