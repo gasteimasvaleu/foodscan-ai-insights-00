@@ -35,7 +35,7 @@ interface Goals {
 }
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, subscriptionStatus } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
   const [profile, setProfile] = useState<ProfileData | null>(null);
