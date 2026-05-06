@@ -1,92 +1,60 @@
-# Fase 3 — Defesa server-side da quota Freemium
+# Melhorias no Paywall (/assinar)
 
-Objetivo: impedir que um usuário no plano Free contorne o limite diário de 3 análises do FoodScan no iOS chamando as edge functions diretamente (bypass do front).
+## Diagnóstico
 
-## Edge functions afetadas
+`Paywall.tsx` envelopa `PaywallScreen.tsx`. Ambos têm `min-h-screen` + padding próprio, gerando conflito:
+- Paywall.tsx: `pt-[calc(env(safe-area-inset-top)+4rem)] pb-8`
+- PaywallScreen.tsx: `min-h-screen flex items-center justify-center p-4`
 
-1. `analyze-nutrition` (já tem `verify_jwt = false` por padrão)
-2. `analyze-image`
-3. `open-food-facts`
-4. `identify-dish` (`verify_jwt = false` no config.toml)
+Resultado: padding superior duplicado, sem padding inferior real, e o `flex items-center` do filho não centraliza dentro do espaço útil porque o pai já consumiu o topo.
 
-## Regra de negócio (idêntica ao front)
+## Mudanças
 
-Para cada chamada:
+### 1. `src/pages/Paywall.tsx` — wrapper minimalista
+- Remover `pt-[…+4rem]` e `pb-8` do container interno.
+- Manter o header fixo com botão X (já tem safe-area).
+- Trocar wrapper por `min-h-screen flex flex-col` que apenas hospeda o badge contextual + `<PaywallScreen>`.
+- Mover o badge contextual (reason/feature) para dentro do espaço scrollável próximo ao card, não mais como bloco isolado no topo.
 
-1. Validar JWT do usuário via `getClaims()` no header `Authorization`. Se ausente/inválido → **401**.
-2. Identificar a plataforma do chamador via header `x-app-platform` (a ser enviado pelo front: `ios-native` | `web` | `android-native`).
-3. Se NÃO for `ios-native` → processa normalmente (web/Hotmart e Android continuam livres).
-4. Se for `ios-native`:
-   - Buscar `subscribers` por `user_id` (service role). Se `subscribed === true` → processa normalmente.
-   - Caso contrário, ler `daily_usage_limits` para `(user_id, feature='foodscan', usage_date=hoje)`.
-     - Se `count >= 3` → **429** com `{ error: 'quota_exceeded', feature: 'foodscan' }`.
-     - Senão, processa o pedido. **Se a resposta upstream for sucesso**, faz upsert/incremento atômico em `daily_usage_limits` (mesma lógica do hook), antes de devolver a resposta.
-5. Em caso de erro upstream (OpenAI/OFF), NÃO incrementa.
+### 2. `src/components/PaywallScreen.tsx` — centralização e visual
 
-`feature` será sempre `'foodscan'` nas 4 functions (a quota é compartilhada entre métodos de entrada — imagem, manual e código de barras — coerente com o limite de 3/dia visto pelo usuário).
+**Layout:**
+- Container: `min-h-screen flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]` (pb cobre Navbar visível para free users + safe area).
+- Centraliza vertical e horizontalmente com espaço respirável.
 
-## Implementação técnica
+**Visual do card:**
+- Trocar fundo sólido `#FFD1E7` por gradiente sutil: `bg-gradient-to-br from-white via-[#FFE9F3] to-[#FFD1E7]`.
+- Adicionar glow rosa atrás: wrapper com `before:` pseudo blur `bg-[#FD46A1]/30 blur-3xl`.
+- Header mais compacto: logo menor (h-12), badge "PRO" pill com gradiente acima do título.
+- Preço em destaque maior (`text-3xl`), com tag "MENSAL" pequena ao lado.
+- Adicionar selo "Cancele quando quiser" abaixo do preço.
 
-### 1. Helper compartilhado
+**Lista de benefícios — ampliada (de 4 para 9 itens, em 2 colunas no card):**
+1. FoodScan ilimitado (Salad)
+2. NutriCoach com IA (Brain)
+3. Cardápio semanal automático (Sparkles)
+4. Treinos em vídeo (Dumbbell)
+5. Faça em Casa — receitas por foto (ChefHat)
+6. Provador Inteligente (Shirt)
+7. Apple Health & FitTracker (Activity)
+8. Jejum + Sono + Hidratação (Moon)
+9. Gráficos de progresso & objetivos (TrendingUp)
+10. Lembretes via WhatsApp (MessageCircle)
 
-Como edge functions Lovable mantêm tudo em `index.ts` (sem subpastas), vou inline um helper `checkAndIncrementQuota(req, supabaseAdmin)` em cada uma das 4 functions. Cópia controlada (~60 linhas) para preservar o padrão do projeto.
+Layout: grid `grid-cols-2 gap-2` com cards mini (icon + texto curto), destacando "FoodScan ilimitado" full-width como primeiro item (badge "MAIS USADO").
 
-Assinatura interna:
+**CTA:**
+- Botão maior com gradiente `from-[#FD46A1] to-[#FF6FB5]`, sombra rosa, texto "Começar agora".
+- Texto secundário "7 dias para testar com calma" (apenas texto motivacional — sem mexer em trial real).
+- Restaurar Compras como botão secundário discreto.
 
-```ts
-async function enforceFoodscanQuota(req: Request): Promise<
-  | { ok: true; userId: string | null; commit: () => Promise<void> }
-  | { ok: false; response: Response }
->
-```
+**Termos:** manter, mas reduzir/colapsar visualmente (text-[9px], opacity-70).
 
-- `ok: true` + `commit()` no-op → quando bypass (web/android, sem JWT opcional, ou subscriber).
-- `ok: true` + `commit()` real → quando free iOS dentro da quota; chamamos depois do sucesso.
-- `ok: false` → já contém a Response 401/429 a retornar.
+## Fora de escopo
+- Sem mudanças de preço, plano anual ou trial real (continua mensal RevenueCat).
+- Sem mudanças no fluxo de purchase/restore.
+- Sem mexer no Paywall iOS-block (`iOS Compliance Flow` permanece intacto).
 
-Decisão importante: se o header `x-app-platform` não for `ios-native`, **bypass total** (sem exigir JWT) — preserva chamadas existentes de web e do app Android, e mantém o comportamento de funcionar para usuários não logados em fluxos antigos.
-
-Se `x-app-platform === 'ios-native'` mas o JWT estiver ausente/inválido → 401.
-
-### 2. Mudanças nas functions
-
-Cada uma das 4 functions:
-- Adicionar `'x-app-platform'` à lista de `Access-Control-Allow-Headers`.
-- Criar `supabaseAdmin` com `SUPABASE_SERVICE_ROLE_KEY` (já secret).
-- No início do handler (após CORS preflight, antes do trabalho pesado): chamar `enforceFoodscanQuota(req)`.
-- Após sucesso (resposta 2xx), `await result.commit()` antes de responder.
-
-### 3. Frontend
-
-- `src/integrations/supabase/client.ts` (ou onde o cliente é criado): adicionar header global `x-app-platform` derivado do `Capacitor.getPlatform()` (`'ios' | 'android' | 'web'`) — mapeado para `ios-native` / `android-native` / `web`.
-  - Alternativa mais segura: passar `headers` em cada `supabase.functions.invoke('...', { headers: { 'x-app-platform': platform } })`. Mas adicionar global em `createClient({ global: { headers } })` cobre tudo de uma vez.
-- `src/pages/FoodScan.tsx`: nos 5 pontos que chamam `supabase.functions.invoke(...)`, tratar `error.context?.status === 429` (ou checar `data?.error === 'quota_exceeded'`) → `navigate('/assinar?reason=quota_exceeded&feature=foodscan')` e retornar sem mostrar erro genérico. Manter `await increment()` local (mantém UI sincronizada; a função é idempotente em caso de race com server-side, e o hook lê do mesmo backend no próximo refresh).
-
-### 4. Versão iOS
-
-- Bumpar `CURRENT_PROJECT_VERSION` de `19` para `20` em `ios/App/App.xcodeproj/project.pbxproj` (mantendo `MARKETING_VERSION 1.0.6`). Live Update cobre as edge functions e mudanças JS — o bump aqui é só para manter rastreabilidade.
-
-## Salvaguardas
-
-- `FREEMIUM_ENABLED = false` no front desativa a UI gated, **mas as edge functions continuam ativas**. Decisão: como a quota só dispara para `ios-native` + `!subscribed`, e nesse cenário queremos exatamente esse comportamento, isso é OK. Se for necessário desligar tudo, basta alterar a constante no front E re-deploy das functions com `ENABLE_FREEMIUM_QUOTA` lendo de env (deixo TODO de adicionar `ENABLE_FREEMIUM_QUOTA` como secret se quiser kill switch server-side — não vou criar agora para não esperar input).
-- 7 assinantes atuais: protegidos pela checagem de `subscribers.subscribed`.
-- Web e Android: protegidos pelo header `x-app-platform`.
-
-## Plano de teste pós-deploy
-
-1. Logado no preview web → fazer scan → não deve haver bloqueio (web bypass).
-2. iOS free user (testflight) → 3 scans OK, 4º recebe 429 e é redirecionado para `/assinar?reason=quota_exceeded`.
-3. iOS subscriber → ilimitado.
-4. Sem JWT + header `ios-native` → 401.
-
-## Arquivos alterados
-
-- `supabase/functions/analyze-nutrition/index.ts`
-- `supabase/functions/analyze-image/index.ts`
-- `supabase/functions/open-food-facts/index.ts`
-- `supabase/functions/identify-dish/index.ts`
-- `src/integrations/supabase/client.ts` (adicionar header global)
-- `src/pages/FoodScan.tsx` (tratamento de 429)
-- `ios/App/App.xcodeproj/project.pbxproj` (build 20)
-
-Sem novas migrations (tabela `daily_usage_limits` já existe da Fase 1).
+## Arquivos
+- `src/pages/Paywall.tsx`
+- `src/components/PaywallScreen.tsx`
