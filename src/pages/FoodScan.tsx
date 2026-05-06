@@ -41,6 +41,23 @@ const FoodScan = () => {
     return false;
   };
 
+  /**
+   * Detecta resposta 429 (quota_exceeded) das edge functions e redireciona
+   * para o paywall. Retorna true se foi tratado.
+   */
+  const handleServerQuota = async (error: any, data: any): Promise<boolean> => {
+    const status = error?.context?.status ?? error?.status;
+    const isQuota =
+      status === 429 ||
+      data?.error === 'quota_exceeded' ||
+      (typeof error?.message === 'string' && error.message.includes('quota_exceeded'));
+    if (isQuota) {
+      navigate('/assinar?reason=quota_exceeded&feature=foodscan');
+      return true;
+    }
+    return false;
+  };
+
   
   // Removed exposed API key - now using secure Edge Functions
 
