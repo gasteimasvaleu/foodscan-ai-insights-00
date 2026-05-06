@@ -100,29 +100,29 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/workout" element={<WorkoutPlan />} />
             <Route path="/profile/assessment" element={<PhysicalAssessment />} />
-            <Route path="/profile/diets" element={<MyDiets />} />
-            <Route path="/graficos-progresso" element={<ChartsProgress />} />
+            <Route path="/profile/diets" element={<ProRoute feature="profile-diets"><MyDiets /></ProRoute>} />
+            <Route path="/graficos-progresso" element={<ProRoute feature="graficos-progresso"><ChartsProgress /></ProRoute>} />
             <Route path="/foodscan" element={<FoodScan />} />
             <Route path="/controle-diario" element={<DailyControl />} />
-            <Route path="/fit-tracker" element={<FitTracker />} />
-            <Route path="/masterchef" element={<MasterCheFIT />} />
-            
+            <Route path="/fit-tracker" element={<ProRoute feature="fit-tracker"><FitTracker /></ProRoute>} />
+            <Route path="/masterchef" element={<ProRoute feature="masterchef"><MasterCheFIT /></ProRoute>} />
+
             <Route path="/sobre" element={<About />} />
             <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
             <Route path="/termos-de-uso" element={<TermsOfUse />} />
             <Route path="/servinutri" element={<ServiNUTRI />} />
-            <Route path="/receitas" element={<Receitas />} />
+            <Route path="/receitas" element={<ProRoute feature="receitas"><Receitas /></ProRoute>} />
             <Route path="/comunidade" element={<Comunidade />} />
-            <Route path="/nutri-coach" element={<NutriCoach />} />
-            <Route path="/apple-health" element={<AppleHealth />} />
-            <Route path="/hidratacao" element={<Hydration />} />
-            <Route path="/jejum" element={<IntermittentFasting />} />
-            <Route path="/objetivos" element={<Objetivos />} />
+            <Route path="/nutri-coach" element={<ProRoute feature="nutri-coach"><NutriCoach /></ProRoute>} />
+            <Route path="/apple-health" element={<ProRoute feature="apple-health"><AppleHealth /></ProRoute>} />
+            <Route path="/hidratacao" element={<ProRoute feature="hidratacao"><Hydration /></ProRoute>} />
+            <Route path="/jejum" element={<ProRoute feature="jejum"><IntermittentFasting /></ProRoute>} />
+            <Route path="/objetivos" element={<ProRoute feature="objetivos"><Objetivos /></ProRoute>} />
             <Route path="/widget-guide" element={<WidgetGuide />} />
-            <Route path="/sono" element={<Sleep />} />
-            <Route path="/faca-em-casa" element={<FacaEmCasa />} />
-            <Route path="/provador" element={<Provador />} />
-            <Route path="/treinos" element={<Treinos />} />
+            <Route path="/sono" element={<ProRoute feature="sono"><Sleep /></ProRoute>} />
+            <Route path="/faca-em-casa" element={<ProRoute feature="faca-em-casa"><FacaEmCasa /></ProRoute>} />
+            <Route path="/provador" element={<ProRoute feature="provador"><Provador /></ProRoute>} />
+            <Route path="/treinos" element={<ProRoute feature="treinos"><Treinos /></ProRoute>} />
             <Route path="/loja" element={<Loja />} />
             <Route path="/lista-de-compras" element={<ShoppingList />} />
             <Route path="/lista-de-compras/:id" element={<ShoppingListDetail />} />
@@ -133,8 +133,9 @@ const App = () => (
             <Route path="/admin/treinos" element={<AdminTreinos />} />
             <Route path="/admin/loja" element={<AdminLoja />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
-            
-            <Route path="/whatsapp-settings" element={<WhatsAppSettings />} />
+
+            <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
+            <Route path="/assinar" element={<Paywall />} />
             <Route path="/auth" element={<Auth />} />
 
 
