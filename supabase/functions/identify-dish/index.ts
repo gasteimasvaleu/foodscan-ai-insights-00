@@ -135,6 +135,8 @@ serve(async (req) => {
   }
 
   try {
+    const quota = await enforceFoodscanQuota(req);
+    if (!quota.ok) return quota.response;
     const { imageBase64 } = await req.json();
     if (!imageBase64 || typeof imageBase64 !== "string") {
       return new Response(
