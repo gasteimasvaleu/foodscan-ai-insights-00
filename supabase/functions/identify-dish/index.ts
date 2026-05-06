@@ -214,6 +214,7 @@ serve(async (req) => {
       );
     }
 
+    await quota.commit();
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
