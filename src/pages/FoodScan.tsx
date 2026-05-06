@@ -18,6 +18,9 @@ import { Button } from '@/components/ui/button';
 import { NutritionData, FoodElement } from '@/types/nutrition';
 import { supabase } from '@/integrations/supabase/client';
 import VideoOverlay from '@/components/VideoOverlay';
+import { useDailyLimit } from '@/hooks/useDailyLimit';
+import { FOODSCAN_DAILY_LIMIT } from '@/config/freemium';
+import { useNavigate } from 'react-router-dom';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
