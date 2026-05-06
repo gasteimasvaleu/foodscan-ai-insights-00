@@ -100,7 +100,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/workout" element={<WorkoutPlan />} />
             <Route path="/profile/assessment" element={<PhysicalAssessment />} />
-            <Route path="/profile/diets" element={<ProRoute feature="profile-diets"><MyDiets /></ProRoute>} />
+            <Route path="/profile/diets" element={<MyDiets />} />
             <Route path="/graficos-progresso" element={<ProRoute feature="graficos-progresso"><ChartsProgress /></ProRoute>} />
             <Route path="/foodscan" element={<FoodScan />} />
             <Route path="/controle-diario" element={<DailyControl />} />
