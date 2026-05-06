@@ -173,6 +173,7 @@ const FoodScan = () => {
         body: { description: imageDescription }
       });
 
+      if (await handleServerQuota(error, data)) return;
       if (error) {
         throw new Error(error.message);
       }
