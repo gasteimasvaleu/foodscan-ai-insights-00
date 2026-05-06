@@ -279,6 +279,8 @@ IMPORTANTE:
       };
     }
 
+    await quota.commit();
+
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
