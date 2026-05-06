@@ -7,6 +7,7 @@ import { useNativePlatform } from '@/hooks/useNativePlatform';
 
 import SplashScreen from '@/components/SplashScreen';
 import PaywallScreen from '@/components/PaywallScreen';
+import { FREEMIUM_ENABLED } from '@/config/freemium';
 
 const Index = () => {
   const { user, authReady, subscriptionReady, subscriptionStatus, checkSubscription } = useAuth();
