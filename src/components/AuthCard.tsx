@@ -27,7 +27,7 @@ interface AuthCardProps {
 }
 
 export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
-  const { user, signUp, signIn, signOut, loading } = useAuth();
+  const { user, signUp, signIn, signOut, loading, forceSubscriptionActive } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
   const [rcLoading, setRcLoading] = useState(false);
