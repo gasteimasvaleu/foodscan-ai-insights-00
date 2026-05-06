@@ -51,6 +51,9 @@ import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
 import AdicionarRefeicao from "./pages/AdicionarRefeicao";
 import Alimentos from "./pages/Alimentos";
+import Paywall from "./pages/Paywall";
+import { ProRoute } from "@/components/ProRoute";
+import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
 const queryClient = new QueryClient();
 const navItems = [
