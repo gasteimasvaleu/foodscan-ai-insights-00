@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
-import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2, Smartphone, Bell, Timer, BarChart3, Sparkles, MessageSquare } from "lucide-react";
+import { User, Upload, Dumbbell, Calendar, Edit2, ClipboardList, Salad, Trash2, Smartphone, Bell, Timer, BarChart3, Sparkles, MessageSquare, Crown, ChevronRight } from "lucide-react";
 import { useNativePlatform } from "@/hooks/useNativePlatform";
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -35,7 +35,7 @@ interface Goals {
 }
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, subscriptionStatus } = useAuth();
   const navigate = useNavigate();
   const { isNative, isIOS } = useNativePlatform();
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -286,6 +286,41 @@ export default function Profile() {
             </div>
           </CardHeader>
           </Card>
+
+          {/* Card de Assinatura Pro */}
+          {subscriptionStatus.subscribed ? (
+            <Card className="mb-8 bg-white/70 backdrop-blur-md rounded-3xl shadow-xl border border-white/40">
+              <CardContent className="flex items-center gap-4 py-5 px-5">
+                <div className="w-12 h-12 rounded-2xl bg-[#FFD1E7] flex items-center justify-center flex-shrink-0">
+                  <Crown className="w-6 h-6 text-[#FD46A1]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base text-foreground">We Diet Pro ativo</p>
+                  <p className="text-sm text-muted-foreground">
+                    {subscriptionStatus.subscription_end
+                      ? `Renova em ${new Date(subscriptionStatus.subscription_end).toLocaleDateString('pt-BR')}`
+                      : 'Aproveite todos os recursos'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card
+              onClick={() => navigate('/assinar?reason=profile_upsell')}
+              className="mb-8 rounded-3xl shadow-xl border border-white/20 cursor-pointer hover:shadow-2xl active:scale-[0.99] transition-all overflow-hidden bg-gradient-to-br from-[#FD46A1] to-[#FF6FB5]"
+            >
+              <CardContent className="flex items-center gap-4 py-5 px-5">
+                <div className="w-12 h-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center flex-shrink-0">
+                  <Crown className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0 text-white">
+                  <p className="text-base">Desbloqueie o We Diet Pro</p>
+                  <p className="text-sm text-white/85">FoodScan ilimitado, NutriCoach IA, cardápios e mais</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Ações Rápidas */}
           <Card className="mb-8 bg-[#FFD1E7] rounded-3xl shadow-xl border border-white/20">
