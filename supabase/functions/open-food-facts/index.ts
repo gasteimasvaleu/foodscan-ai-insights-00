@@ -1,10 +1,95 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-app-platform',
 };
+
+const FOODSCAN_DAILY_LIMIT = 3;
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+type QuotaResult =
+  | { ok: true; commit: () => Promise<void> }
+  | { ok: false; response: Response };
+
+async function enforceFoodscanQuota(req: Request): Promise<QuotaResult> {
+  const platform = req.headers.get('x-app-platform') ?? 'web';
+  if (platform !== 'ios-native') return { ok: true, commit: async () => {} };
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+  const token = authHeader.replace('Bearer ', '');
+  const supabaseAdmin = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+  );
+  const userClient = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: authHeader } } },
+  );
+  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+  if (claimsError || !claimsData?.claims?.sub) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+  const userId = claimsData.claims.sub as string;
+  const { data: sub } = await supabaseAdmin
+    .from('subscribers')
+    .select('subscribed')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (sub?.subscribed) return { ok: true, commit: async () => {} };
+  const today = todayISO();
+  const { data: existing } = await supabaseAdmin
+    .from('daily_usage_limits')
+    .select('id, count')
+    .eq('user_id', userId)
+    .eq('feature', 'foodscan')
+    .eq('usage_date', today)
+    .maybeSingle();
+  const currentCount = existing?.count ?? 0;
+  if (currentCount >= FOODSCAN_DAILY_LIMIT) {
+    return {
+      ok: false,
+      response: new Response(
+        JSON.stringify({ error: 'quota_exceeded', feature: 'foodscan' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      ),
+    };
+  }
+  const commit = async () => {
+    const newCount = currentCount + 1;
+    if (existing) {
+      await supabaseAdmin
+        .from('daily_usage_limits')
+        .update({ count: newCount })
+        .eq('id', existing.id);
+    } else {
+      await supabaseAdmin.from('daily_usage_limits').insert({
+        user_id: userId,
+        feature: 'foodscan',
+        usage_date: today,
+        count: newCount,
+      });
+    }
+  };
+  return { ok: true, commit };
+}
 
 interface OpenFoodFactsProduct {
   product?: {
