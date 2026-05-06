@@ -1,34 +1,39 @@
-## Problema
+## Causa real do erro atual
 
-A edge function `analyze-nutrition` (usada pela Análise de Imagem do FoodScan) está quebrando com o erro:
+Após corrigir o `getClaims`, a `analyze-nutrition` voltou a rodar mas agora falha no parse do JSON da OpenAI. Logs mostram:
 
 ```
-TypeError: userClient.auth.getClaims is not a function
-    at enforceFoodscanQuota (analyze-nutrition/index.ts:44)
+Error parsing JSON: SyntaxError: Unexpected non-whitespace character after JSON at position 1545
+Failed to parse nutrition analysis result
 ```
 
-## Causa raiz
+A OpenAI (`gpt-4.1-2025-04-14`) está devolvendo o objeto JSON correto, **seguido de texto explicativo**:
+```
+{ ... "nutrition": {...} }
 
-A função importa o SDK na versão antiga:
-```ts
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+Explicação dos cálculos:
+- Os valores totais...
 ```
 
-O método `auth.getClaims(token)` só existe a partir do `@supabase/supabase-js` **v2.57+**. Na 2.45.0 esse método simplesmente não existe — daí o `TypeError`. Toda chamada à função falha imediatamente quando vem do iOS nativo (que ativa o quota check), e mesmo na web a função morre antes de processar a imagem caso o header `x-app-platform` chegue como `ios-native`.
+O parser atual só remove fences ```` ```json ```` e chama `JSON.parse` direto — quebra com o texto extra.
 
-Outras funções do projeto (ex.: `whatsapp-process-image`) já usam `2.57.4` e não apresentam esse erro.
+Esse bug é independente da feature de quota free; só ficou visível agora que o erro anterior (`getClaims`) foi resolvido.
 
-## Correção
+## Correção em `supabase/functions/analyze-nutrition/index.ts`
 
-Atualizar o import do supabase-js em `supabase/functions/analyze-nutrition/index.ts`:
+No `fetch` da segunda chamada OpenAI (análise nutricional, ~linha 235):
 
-```ts
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-```
+1. **Forçar JSON puro**: adicionar no body
+   ```ts
+   response_format: { type: "json_object" }
+   ```
+   E reforçar no prompt/system: "responda APENAS o JSON, sem texto extra".
 
-Nenhuma outra alteração de lógica é necessária — o resto da função (`enforceFoodscanQuota`, chamada à OpenAI, commit de uso diário) está correto e o `getClaims` passará a existir.
+2. **Parser tolerante (fallback)** no bloco ~255–269: se o `JSON.parse` direto falhar, extrair o trecho entre o primeiro `{` e o `}` correspondente (varredura com contador de chaves, respeitando strings) antes de tentar parsear de novo.
 
-## Verificação após o fix
+Nada mais muda — quota, descrição de imagem e resposta seguem iguais.
 
-1. Conferir nos Edge Function logs que não aparece mais `getClaims is not a function`.
-2. Testar o FoodScan no preview enviando uma foto — a análise deve retornar `foodName` + `nutrition` normalmente.
+## Verificação
+
+1. Reenviar uma foto pelo FoodScan no preview.
+2. Conferir nos Edge Function logs que não aparece mais `Failed to parse nutrition analysis result` e que a UI exibe `foodName` + nutrição normalmente.

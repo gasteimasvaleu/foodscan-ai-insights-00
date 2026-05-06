@@ -239,12 +239,13 @@ IMPORTANTE:
         messages: [
           { 
             role: 'system', 
-            content: 'Você é um especialista em nutrição que analisa alimentos e fornece informações nutricionais precisas em JSON.' 
+            content: 'Você é um especialista em nutrição que analisa alimentos e fornece informações nutricionais precisas. RESPONDA APENAS COM UM OBJETO JSON VÁLIDO, sem texto antes ou depois, sem explicações, sem markdown.' 
           },
           { role: 'user', content: prompt }
         ],
         temperature: 0.3,
         max_tokens: 2050,
+        response_format: { type: 'json_object' },
       }),
     });
 
@@ -257,12 +258,35 @@ IMPORTANTE:
     
     console.log('Nutrition analysis result:', nutritionAnalysis);
 
-    // Try to parse the JSON response
+    // Try to parse the JSON response (tolerant to extra text after JSON)
     let parsedResult;
     try {
-      // Remove markdown formatting if present
       const cleanedResponse = nutritionAnalysis.replace(/```json\n?|\n?```/g, '').trim();
-      parsedResult = JSON.parse(cleanedResponse);
+      try {
+        parsedResult = JSON.parse(cleanedResponse);
+      } catch {
+        // Fallback: extract first balanced JSON object (respecting strings/escapes)
+        const start = cleanedResponse.indexOf('{');
+        if (start === -1) throw new Error('No JSON object found');
+        let depth = 0;
+        let inStr = false;
+        let escape = false;
+        let end = -1;
+        for (let i = start; i < cleanedResponse.length; i++) {
+          const ch = cleanedResponse[i];
+          if (escape) { escape = false; continue; }
+          if (ch === '\\') { escape = true; continue; }
+          if (ch === '"') { inStr = !inStr; continue; }
+          if (inStr) continue;
+          if (ch === '{') depth++;
+          else if (ch === '}') {
+            depth--;
+            if (depth === 0) { end = i; break; }
+          }
+        }
+        if (end === -1) throw new Error('Unbalanced JSON object');
+        parsedResult = JSON.parse(cleanedResponse.slice(start, end + 1));
+      }
     } catch (parseError) {
       console.error('Error parsing JSON:', parseError);
       throw new Error('Failed to parse nutrition analysis result');
