@@ -620,11 +620,18 @@ const FoodScan = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Header Card */}
           <div className="mb-6 animate-fade-in">
-            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
-              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
-                <Scan className="w-6 h-6 text-white" />
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                  <Scan className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-xl font-bold text-[#FD46A1]">FoodScan</h1>
               </div>
-              <h1 className="text-xl font-bold text-[#FD46A1]">FoodScan</h1>
+              {isGated && (
+                <span className="text-xs font-medium bg-white/70 text-[#FD46A1] rounded-full px-3 py-1">
+                  {remaining}/{FOODSCAN_DAILY_LIMIT} grátis hoje
+                </span>
+              )}
             </div>
           </div>
           
