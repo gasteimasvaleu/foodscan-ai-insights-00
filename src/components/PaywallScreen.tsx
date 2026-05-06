@@ -146,7 +146,7 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
       <div className="w-full max-w-md space-y-3 relative">
         {/* Glow rosa de fundo */}
         <div
