@@ -283,6 +283,7 @@ serve(async (req) => {
 
     console.log('Dados nutricionais processados:', nutritionData);
 
+    await quota.commit();
     return new Response(JSON.stringify(nutritionData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
