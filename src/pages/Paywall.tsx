@@ -57,28 +57,25 @@ const Paywall = () => {
         </button>
       </div>
 
-      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-8">
-        {(reasonMessage || featureLabel) && (
-          <div className="max-w-md mx-auto px-4 mb-3">
-            <div className="bg-white/70 backdrop-blur-md rounded-2xl px-4 py-3 text-center shadow-md border border-white/40">
+      <PaywallScreen
+        contextBadge={
+          reasonMessage || featureLabel ? (
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl px-4 py-2.5 text-center shadow-sm border border-white/40">
               {featureLabel && (
-                <p className="text-xs text-muted-foreground mb-0.5">{featureLabel}</p>
+                <p className="text-[11px] text-muted-foreground mb-0.5">{featureLabel}</p>
               )}
-              <p className="text-sm font-medium text-gray-800">
+              <p className="text-xs font-medium text-gray-800 leading-snug">
                 {reasonMessage || 'Desbloqueie todos os recursos com o Pro.'}
               </p>
             </div>
-          </div>
-        )}
-
-        <PaywallScreen
-          user={{ id: user?.id || '', email: user?.email }}
-          onSubscribed={async () => {
-            await checkSubscription();
-            navigate('/');
-          }}
-        />
-      </div>
+          ) : null
+        }
+        user={{ id: user?.id || '', email: user?.email }}
+        onSubscribed={async () => {
+          await checkSubscription();
+          navigate('/');
+        }}
+      />
     </div>
   );
 };
