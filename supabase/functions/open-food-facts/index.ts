@@ -175,6 +175,8 @@ serve(async (req) => {
   }
 
   try {
+    const quota = await enforceFoodscanQuota(req);
+    if (!quota.ok) return quota.response;
     const { barcode } = await req.json();
 
     if (!barcode) {
