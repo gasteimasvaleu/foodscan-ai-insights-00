@@ -24,6 +24,8 @@ import { useNavigate } from 'react-router-dom';
 
 const FoodScan = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { count: usageCount, remaining, canUse, isGated, increment } = useDailyLimit('foodscan', FOODSCAN_DAILY_LIMIT);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isBarcodeAnalyzing, setIsBarcodeAnalyzing] = useState(false);
   const [isDescribing, setIsDescribing] = useState(false);
@@ -32,6 +34,13 @@ const FoodScan = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [analysisMode, setAnalysisMode] = useState<'fresh' | 'packaged'>('fresh');
   const [incompleteProductData, setIncompleteProductData] = useState<NutritionData | null>(null);
+
+  const enforceQuota = (): boolean => {
+    if (canUse) return true;
+    navigate('/assinar?reason=quota_exceeded&feature=foodscan');
+    return false;
+  };
+
   
   // Removed exposed API key - now using secure Edge Functions
 
