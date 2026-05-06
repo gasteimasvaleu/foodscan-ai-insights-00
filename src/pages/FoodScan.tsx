@@ -592,6 +592,7 @@ const FoodScan = () => {
         }
       });
 
+      if (await handleServerQuota(functionError, data)) return;
       if (functionError) {
         throw new Error(functionError.message);
       }
