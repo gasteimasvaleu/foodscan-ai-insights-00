@@ -1,24 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3 } from 'lucide-react';
-import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useHealthKit } from '@/hooks/useHealthKit';
 
 interface BalanceDay {
   day: string;
+  consumed: number;
+  burned: number;
   balance: number;
 }
 
 const LOJA_BG =
   'https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/gpt-image-2-edit-1%20(1).png';
 
+const emptyWeek = (): BalanceDay[] => {
+  const today = new Date();
+  const out: BalanceDay[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const dayName = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+    out.push({
+      day: dayName.charAt(0).toUpperCase() + dayName.slice(1, 3),
+      consumed: 0,
+      burned: 0,
+      balance: 0,
+    });
+  }
+  return out;
+};
+
 export const SecondaryDeckRow: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isConnected: hkConnected, getWeeklyData: getHKWeeklyData } = useHealthKit();
-  const [data, setData] = useState<BalanceDay[]>([]);
+  const [data, setData] = useState<BalanceDay[]>(emptyWeek);
 
   useEffect(() => {
     if (!user) return;
@@ -89,6 +108,8 @@ export const SecondaryDeckRow: React.FC = () => {
             const dayName = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
             return {
               day: dayName.charAt(0).toUpperCase() + dayName.slice(1, 3),
+              consumed: Math.round(v.consumed),
+              burned: Math.round(v.burned),
               balance: Math.round(v.consumed - v.burned),
             };
           });
@@ -102,7 +123,9 @@ export const SecondaryDeckRow: React.FC = () => {
     };
   }, [user, hkConnected, getHKWeeklyData]);
 
-  const hasData = data.some((d) => d.balance !== 0);
+  const hasAnyActivity = data.some((d) => d.consumed > 0 || d.burned > 0);
+  const totalBalance = data.reduce((sum, d) => sum + d.balance, 0);
+  const isDeficit = totalBalance < 0;
 
   return (
     <div className="grid grid-cols-[1fr_1.6fr] gap-3 items-stretch">
@@ -133,29 +156,36 @@ export const SecondaryDeckRow: React.FC = () => {
           </p>
           <p className="text-base text-foreground leading-tight mt-0.5">Balanço Calórico</p>
         </div>
-        <div className="flex-1 min-h-0 mt-2">
-          {hasData ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
-                <XAxis
-                  dataKey="day"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground) / 0.6)' }}
-                  interval={0}
-                />
-                <Bar dataKey="balance" radius={[4, 4, 4, 4]}>
-                  {data.map((d, i) => (
-                    <Cell key={i} fill={d.balance > 0 ? '#FD46A1' : '#EF4444'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+
+        <div className="flex-1 min-h-0 mt-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 4, right: 2, left: 2, bottom: 0 }} barCategoryGap="18%" barGap={2}>
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 9, fill: 'hsl(var(--foreground) / 0.6)' }}
+                interval={0}
+              />
+              <Bar dataKey="consumed" fill="#FD46A1" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="burned" fill="#FFB3D4" radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="flex-shrink-0 flex items-center justify-between text-[11px] leading-none mt-1">
+          {hasAnyActivity ? (
+            <>
+              <span className="text-foreground/60">Saldo</span>
+              <span className={isDeficit ? 'text-[#EF4444] font-semibold' : 'text-[#FD46A1] font-semibold'}>
+                {totalBalance > 0 ? '+' : ''}
+                {totalBalance.toLocaleString('pt-BR')} kcal
+              </span>
+            </>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-foreground/50">
-              <BarChart3 className="w-8 h-8" />
-              <p className="text-[11px] mt-1">Toque para ver</p>
-            </div>
+            <span className="text-foreground/50 flex items-center gap-1">
+              <BarChart3 className="w-3 h-3" /> Toque para começar
+            </span>
           )}
         </div>
       </button>
