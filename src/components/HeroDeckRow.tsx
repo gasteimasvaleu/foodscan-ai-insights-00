@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dumbbell, Footprints, ChevronRight, Heart } from 'lucide-react';
+import { Dumbbell, Footprints, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useHealthKit } from '@/hooks/useHealthKit';
 
