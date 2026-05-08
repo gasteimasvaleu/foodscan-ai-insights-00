@@ -51,7 +51,7 @@ export const HeroDeckRow: React.FC = () => {
           </div>
         )}
         {/* placeholder para dar altura caso a thumb absoluta não preencha */}
-        <div className="invisible aspect-[16/9]" />
+        <div className="invisible aspect-[5/4]" />
         <div className="absolute bottom-0 inset-x-0 bg-black/55 backdrop-blur-sm px-3 py-2.5 flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wide text-white/70">
