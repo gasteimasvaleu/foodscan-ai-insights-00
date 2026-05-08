@@ -113,6 +113,18 @@ const moreSheetItems = [
     url: "/sono",
     icon: Moon,
   },
+  {
+    name: "Treinos",
+    description: "Vídeos de treino e dicas em casa",
+    url: "/treinos",
+    icon: Dumbbell,
+  },
+  {
+    name: "Gerar Cardápio",
+    description: "Cardápios personalizados com IA (MasterCheFIT)",
+    url: "/masterchef",
+    icon: UtensilsCrossed,
+  },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
