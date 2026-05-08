@@ -3,6 +3,7 @@ import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
 import { HeroDeckRow } from '@/components/HeroDeckRow';
+import { SecondaryDeckRow } from '@/components/SecondaryDeckRow';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 
@@ -107,6 +108,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto space-y-6">
             <AuthCard />
             <HeroDeckRow />
+            <SecondaryDeckRow />
             <QuickActions />
           </div>
         </div>
