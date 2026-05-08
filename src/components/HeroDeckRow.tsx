@@ -67,8 +67,8 @@ export const HeroDeckRow: React.FC = () => {
 
       {/* Card direito: passos */}
       <button
-        onClick={() => navigate('/fit-tracker')}
-        className="bg-[#FFD1E7] rounded-3xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-3 text-center"
+        onClick={() => navigate(isSupported && isConnected ? '/fit-tracker' : '/apple-health')}
+        className="relative bg-[#FFD1E7] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-3 text-center"
       >
         {isSupported && isConnected ? (() => {
           const STEP_GOAL = 10000;
@@ -114,14 +114,13 @@ export const HeroDeckRow: React.FC = () => {
           );
         })() : (
           <>
-            <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center mb-2">
-              <Heart className="w-6 h-6 text-[#FD46A1]" fill="currentColor" />
-            </div>
-            <p className="text-base text-foreground leading-tight">Apple Health</p>
-            <p className="text-[11px] text-foreground/60 mt-0.5 mb-2">
-              Acompanhe seus passos
-            </p>
-            <span className="bg-[#FD46A1] text-white text-xs font-medium px-3 py-1.5 rounded-full">
+            <img
+              src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/gpt-image-2-1.png"
+              alt="Apple Health"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+            <span className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#FD46A1] text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-md">
               Conectar
             </span>
           </>
