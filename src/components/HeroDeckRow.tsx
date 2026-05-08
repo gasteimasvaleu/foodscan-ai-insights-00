@@ -68,27 +68,62 @@ export const HeroDeckRow: React.FC = () => {
       {/* Card direito: passos */}
       <button
         onClick={() => navigate('/fit-tracker')}
-        className="bg-[#FFD1E7] rounded-3xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-4 text-center"
+        className="bg-[#FFD1E7] rounded-3xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-3 text-center"
       >
-        {isSupported && isConnected ? (
+        {isSupported && isConnected ? (() => {
+          const STEP_GOAL = 10000;
+          const radius = 42;
+          const circ = 2 * Math.PI * radius;
+          const pct = Math.min(dailySteps / STEP_GOAL, 1);
+          const offset = circ * (1 - pct);
+          return (
+            <>
+              <div className="relative w-[58%] aspect-square">
+                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.55)"
+                    strokeWidth="10"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    stroke="#FD46A1"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={circ}
+                    strokeDashoffset={offset}
+                    style={{ transition: 'stroke-dashoffset 600ms ease-out' }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Footprints className="w-4 h-4 text-[#FD46A1]" />
+                  <div className="text-xl font-bold text-[#FD46A1] leading-none mt-0.5">
+                    {isLoading ? '...' : dailySteps.toLocaleString('pt-BR')}
+                  </div>
+                </div>
+              </div>
+              <p className="text-base text-foreground mt-2 leading-none">Passos hoje</p>
+              <p className="text-[11px] text-foreground/60 mt-0.5">Meta {STEP_GOAL.toLocaleString('pt-BR')}</p>
+            </>
+          );
+        })() : (
           <>
-            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center mb-2">
-              <Footprints className="w-6 h-6 text-[#FD46A1]" />
-            </div>
-            <div className="text-3xl font-bold text-[#FD46A1] leading-none">
-              {isLoading ? '...' : dailySteps.toLocaleString('pt-BR')}
-            </div>
-            <p className="text-base text-foreground mt-1.5">Passos hoje</p>
-          </>
-        ) : (
-          <>
-            <div className="w-12 h-12 rounded-2xl bg-white/60 flex items-center justify-center mb-2">
+            <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center mb-2">
               <Heart className="w-6 h-6 text-[#FD46A1]" fill="currentColor" />
             </div>
-            <p className="text-base text-foreground leading-tight">
-              Conectar Apple Health
+            <p className="text-base text-foreground leading-tight">Apple Health</p>
+            <p className="text-[11px] text-foreground/60 mt-0.5 mb-2">
+              Acompanhe seus passos
             </p>
-            <ChevronRight className="w-4 h-4 text-[#FD46A1] mt-1.5" />
+            <span className="bg-[#FD46A1] text-white text-xs font-medium px-3 py-1.5 rounded-full">
+              Conectar
+            </span>
           </>
         )}
       </button>
