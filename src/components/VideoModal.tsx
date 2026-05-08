@@ -83,7 +83,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
                   <p className="text-sm text-muted-foreground">Não foi possível carregar o vídeo.</p>
                 </div>
               </div>
-            ) : isYouTube ? (
+            ) : isIframeEmbed ? (
               <iframe
                 src={embedUrl}
                 title={workout.title}
