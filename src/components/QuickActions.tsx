@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
-import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight, Lock } from 'lucide-react';
+import { Camera, Activity, MessageCircle, ArrowRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FREEMIUM_ENABLED } from '@/config/freemium';
 
