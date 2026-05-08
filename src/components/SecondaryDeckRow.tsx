@@ -148,7 +148,7 @@ export const SecondaryDeckRow: React.FC = () => {
       {/* Card direito: mini balanço calórico */}
       <button
         onClick={() => navigate('/graficos-progresso')}
-        className="relative bg-gradient-to-b from-[#FFD1E7] to-white border border-[#FD46A1]/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all h-full flex flex-col p-3 text-left"
+        className="relative bg-gradient-to-b from-[#FFD1E7] to-white border border-[#FD46A1]/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[16/9] flex flex-col p-3 text-left"
       >
         <div className="flex-shrink-0">
           <p className="text-[10px] uppercase tracking-wide text-foreground/60 leading-none">
