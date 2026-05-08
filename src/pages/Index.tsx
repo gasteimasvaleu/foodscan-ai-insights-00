@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
+import { HeroDeckRow } from '@/components/HeroDeckRow';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 
