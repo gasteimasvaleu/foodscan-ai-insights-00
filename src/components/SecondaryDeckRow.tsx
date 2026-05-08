@@ -194,51 +194,6 @@ export const SecondaryDeckRow: React.FC = () => {
           </div>
         </div>
       </button>
-
-      {/* Card direito: mini balanço calórico */}
-      <button
-        onClick={() => navigate('/graficos-progresso')}
-        className="relative bg-gradient-to-b from-[#FFD1E7] to-white border border-[#FD46A1]/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[16/9] flex flex-col p-3 text-left"
-      >
-        <div className="flex-shrink-0">
-          <p className="text-[10px] uppercase tracking-wide text-foreground/60 leading-none">
-            Últimos 7 dias
-          </p>
-          <p className="text-base text-foreground leading-tight mt-0.5">Balanço Calórico</p>
-        </div>
-
-        <div className="flex-1 min-h-0 mt-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 4, right: 2, left: 2, bottom: 0 }} barCategoryGap="18%" barGap={2}>
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 9, fill: 'hsl(var(--foreground) / 0.6)' }}
-                interval={0}
-              />
-              <Bar dataKey="consumed" fill="#FD46A1" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="burned" fill="#FFB3D4" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="flex-shrink-0 flex items-center justify-between text-[11px] leading-none mt-1">
-          {hasAnyActivity ? (
-            <>
-              <span className="text-foreground/60">Saldo</span>
-              <span className={isDeficit ? 'text-[#EF4444] font-semibold' : 'text-[#FD46A1] font-semibold'}>
-                {totalBalance > 0 ? '+' : ''}
-                {totalBalance.toLocaleString('pt-BR')} kcal
-              </span>
-            </>
-          ) : (
-            <span className="text-foreground/50 flex items-center gap-1">
-              <BarChart3 className="w-3 h-3" /> Toque para começar
-            </span>
-          )}
-        </div>
-      </button>
     </div>
   );
 };
