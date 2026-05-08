@@ -132,7 +132,7 @@ export const SecondaryDeckRow: React.FC = () => {
       {/* Card esquerdo: Loja */}
       <button
         onClick={() => navigate('/loja')}
-        className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5]"
+        className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all h-full"
       >
         <img
           src={LOJA_BG}
