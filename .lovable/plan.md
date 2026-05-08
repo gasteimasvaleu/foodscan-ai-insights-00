@@ -1,29 +1,37 @@
-## Problema visto no print
+## Espelhar exatamente o `HeroDeckRow`
 
-No iOS nativo, a linha "Loja + Balanço Calórico" ficou desbalanceada:
+A linha de cima (`HeroDeckRow`) usa este padrão:
 
-- O card **Loja** ficou minúsculo (parece um ícone solto à esquerda), porque o `grid-cols-[1fr_1.6fr]` dá pouca largura à coluna esquerda e o `aspect-[4/5]` colapsa essa coluna numa caixinha pequena.
-- O card **Balanço Calórico** ficou só com cabeçalho + saldo, **sem o mini gráfico aparecendo**, porque ele não tem altura própria (`h-full`) — e como o card da esquerda virou um quadradinho pequeno, o card direito herdou essa altura mínima e o `ResponsiveContainer` do Recharts colapsou para 0.
+- Grid: `grid-cols-[1.6fr_1fr]` (card grande à esquerda, pequeno à direita).
+- Card **grande** (treino): imagem absoluta + um placeholder `invisible aspect-[5/4]` que dá altura à coluna.
+- Card **pequeno** (passos): `aspect-[4/5]`.
 
-Ou seja: a linha inteira ficou sem altura porque nenhum dos dois cards define uma altura real, só o esquerdo tinha `aspect-[4/5]` numa coluna estreita demais.
+Para a linha de baixo (`SecondaryDeckRow`) ficar com **a mesma altura e o mesmo comprimento**, basta espelhar — só inverter os lados, já que aqui o grande é o do gráfico (direita) e o pequeno é o da Loja (esquerda).
 
-## Correção em `src/components/SecondaryDeckRow.tsx`
+### Mudanças em `src/components/SecondaryDeckRow.tsx`
 
-1. **Inverter a proporção do grid** para espelhar o `HeroDeckRow` (lá o card grande é à esquerda com `1.6fr` e o pequeno à direita com `1fr`). Aqui o card grande é o da direita (gráfico), então mantemos `grid-cols-[1fr_1.6fr]` — mas garantimos altura via o card grande.
+1. **Grid**: trocar para `grid-cols-[1fr_1.6fr]` (1fr esquerda = pequeno, 1.6fr direita = grande). Já está assim — manter.
 
-2. **Dar altura real à linha pelo card direito** (o do gráfico), usando `aspect-[16/9]` nele em vez de `h-full`. Assim o card direito define a altura da linha e o esquerdo (`h-full` + `aspect` removido) acompanha.
+2. **Card esquerdo (Loja, pequeno)** — espelho do card de passos do Hero:
+   - `aspect-[4/5]` (mesmo do card de passos).
+   - Remover o `h-full` que entrou na última edição.
+   - Manter imagem absoluta cobrindo + pílula "Comprar" centralizada embaixo.
 
-   - Card direito: trocar `h-full` por `aspect-[16/9]` (espelha o "16:9 com gráfico" pedido originalmente).
-   - Card esquerdo (Loja): remover `aspect-[4/5]` e usar `h-full` para acompanhar a altura do card direito, mantendo a imagem com `object-cover` preenchendo todo o espaço.
+3. **Card direito (Balanço, grande)** — espelho do card de treino do Hero:
+   - Remover `aspect-[16/9]` e remover `h-full`.
+   - Adicionar um placeholder `invisible aspect-[5/4]` dentro do card para dar a mesma altura do card de treino.
+   - Reorganizar o conteúdo (cabeçalho + gráfico + saldo) como **overlay absoluto** sobre esse placeholder, igual ao Hero faz com a thumb + faixa preta. Estrutura:
+     - Wrapper `relative` com fundo gradiente + borda (já existe).
+     - `<div className="invisible aspect-[5/4]" />` para fixar altura.
+     - `<div className="absolute inset-0 flex flex-col p-3">` com:
+       - Cabeçalho ("Últimos 7 dias" / "Balanço Calórico").
+       - `<div className="flex-1 min-h-0">` com `ResponsiveContainer` + `BarChart`.
+       - Rodapé com "Saldo" + valor.
 
-3. **Garantir que o mini gráfico apareça**: com a linha agora tendo altura real (vinda do `aspect-[16/9]` do card direito), o `flex-1 min-h-0` + `ResponsiveContainer` do Recharts passa a renderizar normalmente as barras.
+   Assim o card direito fica com **exatamente a mesma altura** do card de treino acima (que usa `aspect-[5/4]` na coluna 1.6fr), e o card da Loja (`aspect-[4/5]` na coluna 1fr) fica **exatamente do mesmo tamanho** do card de passos.
 
-4. **Padding interno do card direito**: manter `p-3`, mas como `aspect-[16/9]` é baixo, conferir que o cabeçalho (2 linhas pequenas) + gráfico + rodapé do saldo cabem. Se ficar apertado, reduzir o cabeçalho para uma linha só ("Balanço 7 dias") e diminuir margens verticais (`mt-1` → `mt-0.5`).
+### Resultado
 
-Nada de mudar lógica de dados, só layout.
+As duas linhas (Hero e Secondary) ficam visualmente idênticas em altura e largura de cada coluna — só o conteúdo muda. A linha inferior vira um espelho horizontal da superior.
 
-## Resultado esperado
-
-- Card **Loja** com altura cheia da linha, imagem de fundo cobrindo tudo e o pílula "Comprar" centralizada embaixo (igual ao card "Conectar" do Apple Health).
-- Card **Balanço Calórico** em formato 16:9 ao lado, com o mini gráfico de barras (consumido vs queimado) visível e o saldo no rodapé.
-- Linha visualmente equivalente em peso à linha Hero (treino + passos) logo acima.
+Sem mexer em lógica de dados nem em nenhum outro arquivo.
