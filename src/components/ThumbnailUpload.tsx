@@ -29,7 +29,7 @@ export const ThumbnailUpload = ({
       
       <FileUpload
         accept=".jpg,.jpeg,.png,.webp"
-        maxSize={5} // 5MB for thumbnails
+        maxSize={50} // 50MB for thumbnails
         folder="workout-content/thumbnails"
         onFileSelect={handleFileSelect}
         onRemove={onRemove}
