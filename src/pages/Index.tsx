@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { AuthCard } from '@/components/AuthCard';
 import { QuickActions } from '@/components/QuickActions';
+import { HeroDeckRow } from '@/components/HeroDeckRow';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 
@@ -105,6 +106,7 @@ const Index = () => {
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-6">
             <AuthCard />
+            <HeroDeckRow />
             <QuickActions />
           </div>
         </div>

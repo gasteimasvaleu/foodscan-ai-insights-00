@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
-import { Camera, Activity, ChefHat, Dumbbell, MessageCircle, ArrowRight, Lock } from 'lucide-react';
+import { Camera, Activity, MessageCircle, ArrowRight, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FREEMIUM_ENABLED } from '@/config/freemium';
 
@@ -48,24 +48,6 @@ export const QuickActions = () => {
       color: '#E24989',
       isPro: true,
       featureSlug: 'fit-tracker',
-    },
-    {
-      icon: ChefHat,
-      title: 'Gerar Cardápio',
-      tags: ['Receitas', 'Personalizado'],
-      path: '/masterchef',
-      color: '#FA1690',
-      isPro: true,
-      featureSlug: 'masterchef',
-    },
-    {
-      icon: Dumbbell,
-      title: 'Treinos',
-      tags: ['Vídeos', 'Exercícios'],
-      path: '/treinos',
-      color: '#E24989',
-      isPro: true,
-      featureSlug: 'treinos',
     },
     {
       icon: MessageCircle,
