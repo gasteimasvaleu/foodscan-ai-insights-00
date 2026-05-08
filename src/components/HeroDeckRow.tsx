@@ -13,7 +13,13 @@ interface LatestWorkout {
 export const HeroDeckRow: React.FC = () => {
   const navigate = useNavigate();
   const [workout, setWorkout] = useState<LatestWorkout | null>(null);
-  const { isSupported, isConnected, dailySteps, isLoading } = useHealthKit();
+  const { isSupported, isConnected, dailySteps, isLoading, refreshData } = useHealthKit();
+
+  useEffect(() => {
+    if (isSupported && isConnected) {
+      refreshData();
+    }
+  }, [isSupported, isConnected, refreshData]);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,8 +73,8 @@ export const HeroDeckRow: React.FC = () => {
 
       {/* Card direito: passos */}
       <button
-        onClick={() => navigate(isSupported && isConnected ? '/fit-tracker' : '/apple-health')}
-        className="relative bg-[#FFD1E7] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-3 text-center"
+        onClick={() => navigate('/apple-health')}
+        className="relative bg-gradient-to-b from-[#FFD1E7] to-white border border-[#FD46A1]/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all aspect-[4/5] flex flex-col items-center justify-center p-3 text-center"
       >
         {isSupported && isConnected ? (() => {
           const STEP_GOAL = 10000;
