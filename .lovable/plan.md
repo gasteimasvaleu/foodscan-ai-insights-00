@@ -1,39 +1,14 @@
-## Diagnóstico
+## Ajuste no card Apple Health (`src/components/HeroDeckRow.tsx`)
 
-O `SecondaryDeckRow` já carrega dados reais dos últimos 7 dias (refeições, hidratação, exercícios, BMR, HealthKit) — mesma lógica do `ChartsProgress`. O problema é provavelmente um destes:
+O número de passos está encostando no anel porque, no SVG `viewBox="0 0 100 100"`, o raio é 42 com `strokeWidth=10` — sobra pouco espaço interno para o texto `text-xl`.
 
-1. **Estado vazio aparecendo indevidamente**: a guarda `data.some(d => d.balance !== 0)` esconde o gráfico se todos os dias dão exatamente 0 (ex: usuário sem BMR cadastrado e sem exercícios → balance = consumed, mas se também não tem refeições → tudo zero).
-2. **Chart pouco visível**: só renderiza a barra `balance`, sem eixo Y, sem valores, sem comparação. Em altura pequena (~80px) fica difícil enxergar.
-3. **Nenhum log de erro**: se uma das queries falhar silenciosamente, o array fica zerado.
+### Mudanças no SVG do anel (linhas ~88–110)
 
-## Melhorias em `src/components/SecondaryDeckRow.tsx`
+- Aumentar o raio: `r=42` → `r=45`.
+- Reduzir a espessura do anel para liberar mais espaço interno: `strokeWidth=10` → `strokeWidth=7` (nas duas circles, fundo e progresso).
+- Recalcular `circ = 2 * Math.PI * 45` (já é dinâmico — só trocar a constante `radius`).
+- Manter `strokeLinecap="round"` e a transição.
 
-### 1. Mostrar o gráfico sempre que houver qualquer atividade
-Trocar a guarda por `data.some(d => d.balance !== 0 || d.consumed > 0 || d.burned > 0)` — só mostra estado vazio se realmente não houver nada nos 7 dias.
+### Resultado
 
-### 2. Gráfico mais informativo (consumed vs burned)
-Renderizar **duas barras finas lado a lado** por dia:
-- `consumed` em rosa (`#FD46A1`)
-- `burned` em rosa claro (`#FFD1E7` com borda) ou cinza claro (`#E5E7EB`)
-
-Assim o "balanço" fica visível pela diferença das alturas, e o card vira um mini-resumo semanal real.
-
-### 3. Footer com balanço total da semana
-Logo abaixo do mini gráfico, uma linha pequena mostrando:
-```
-Saldo: -1.240 kcal  (Déficit)
-```
-- Verde/rosa para superávit, vermelho suave para déficit.
-- `text-[11px]` para caber.
-
-### 4. Tooltip leve ao tocar
-Manter `Tooltip` desativado para não conflitar com o `onClick` do card (toque no card → vai para `/graficos-progresso`).
-
-### 5. Log de erro visível em dev
-Manter `console.error`, e adicionar um fallback: se as queries retornarem 0 linhas mas o usuário existir, ainda mostrar a estrutura do gráfico (eixo X com os 7 dias) em vez do estado vazio — assim o card nunca parece "quebrado".
-
-## Resultado
-
-- Mini gráfico real sempre visível (consumido vs gasto por dia).
-- Saldo semanal calculado abaixo.
-- Estado vazio só aparece para usuários totalmente sem dados.
+Anel ligeiramente maior e mais fino, criando uma "rosquinha" com mais área central. O número de passos (`text-xl`) e o ícone `Footprints` ficam confortáveis dentro, sem encostar na borda do gráfico.
