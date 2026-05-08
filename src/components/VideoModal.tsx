@@ -39,11 +39,23 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
       const videoId = url.split('youtu.be/')[1]?.split('?')[0];
       return `https://www.youtube.com/embed/${videoId}`;
     }
+    // Vimeo: vimeo.com/{ID} or vimeo.com/{ID}/{HASH} (private videos)
+    if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+      const path = url.split('vimeo.com/')[1]?.split('?')[0] || '';
+      const [videoId, hash] = path.split('/');
+      if (videoId && /^\d+$/.test(videoId)) {
+        return hash
+          ? `https://player.vimeo.com/video/${videoId}?h=${hash}`
+          : `https://player.vimeo.com/video/${videoId}`;
+      }
+    }
     return url;
   };
 
   const embedUrl = getEmbedUrl(workout.video_url);
-  const isYouTube = embedUrl.includes('youtube.com/embed');
+  const isIframeEmbed =
+    embedUrl.includes('youtube.com/embed') ||
+    embedUrl.includes('player.vimeo.com/video');
   const isValidVideoUrl = isValidUrl(workout.video_url);
 
   const openInNewTab = () => {
@@ -71,7 +83,7 @@ export const VideoModal = ({ isOpen, onClose, workout }: VideoModalProps) => {
                   <p className="text-sm text-muted-foreground">Não foi possível carregar o vídeo.</p>
                 </div>
               </div>
-            ) : isYouTube ? (
+            ) : isIframeEmbed ? (
               <iframe
                 src={embedUrl}
                 title={workout.title}
