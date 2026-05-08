@@ -1,39 +1,36 @@
-## Causa real do erro atual
+# Suporte a Vimeo na Central de Treinos
 
-Após corrigir o `getClaims`, a `analyze-nutrition` voltou a rodar mas agora falha no parse do JSON da OpenAI. Logs mostram:
+## Problema
 
-```
-Error parsing JSON: SyntaxError: Unexpected non-whitespace character after JSON at position 1545
-Failed to parse nutrition analysis result
-```
+O `VideoModal` (`src/components/VideoModal.tsx`) só converte links do **YouTube** em iframe embed. Qualquer outra URL é jogada na tag `<video>`, que espera um arquivo `.mp4`/`.webm` direto.
 
-A OpenAI (`gpt-4.1-2025-04-14`) está devolvendo o objeto JSON correto, **seguido de texto explicativo**:
-```
-{ ... "nutrition": {...} }
+O link cadastrado (`https://vimeo.com/1190396539`) é uma **página HTML do Vimeo**, não um arquivo de vídeo. Resultado: a tag `<video>` falha, dispara `onError`, e o modal mostra o estado "Não foi possível reproduzir o vídeo / Abrir externamente".
 
-Explicação dos cálculos:
-- Os valores totais...
-```
+## Solução
 
-O parser atual só remove fences ```` ```json ```` e chama `JSON.parse` direto — quebra com o texto extra.
+Adicionar detecção e conversão de URLs do Vimeo para o player oficial em iframe — mesmo padrão já usado para YouTube.
 
-Esse bug é independente da feature de quota free; só ficou visível agora que o erro anterior (`getClaims`) foi resolvido.
+### Mudanças em `src/components/VideoModal.tsx`
 
-## Correção em `supabase/functions/analyze-nutrition/index.ts`
+1. **Detectar URLs do Vimeo** em `getEmbedUrl()`:
+   - `vimeo.com/{ID}` → `https://player.vimeo.com/video/{ID}`
+   - `vimeo.com/{ID}/{HASH}` (vídeos privados com hash) → `https://player.vimeo.com/video/{ID}?h={HASH}`
+   - `player.vimeo.com/video/{ID}` → mantém como está
 
-No `fetch` da segunda chamada OpenAI (análise nutricional, ~linha 235):
+2. **Tratar Vimeo como iframe**, igual ao YouTube:
+   - Trocar a flag `isYouTube` por `isIframeEmbed` (cobre YouTube + Vimeo)
+   - O bloco `<iframe>` continua igual, apenas com `allow` ajustado para incluir `fullscreen`
 
-1. **Forçar JSON puro**: adicionar no body
-   ```ts
-   response_format: { type: "json_object" }
-   ```
-   E reforçar no prompt/system: "responda APENAS o JSON, sem texto extra".
+3. **Manter o fallback** atual (`videoError` + botão "Abrir externamente") para qualquer outra fonte que falhar.
 
-2. **Parser tolerante (fallback)** no bloco ~255–269: se o `JSON.parse` direto falhar, extrair o trecho entre o primeiro `{` e o `}` correspondente (varredura com contador de chaves, respeitando strings) antes de tentar parsear de novo.
+### Resultado esperado
 
-Nada mais muda — quota, descrição de imagem e resposta seguem iguais.
+- O vídeo "TREINO DE GLÚTEO QUE TRANSFORMA" (link Vimeo já cadastrado) passa a tocar dentro do modal sem precisar trocar nada no admin.
+- Novos cadastros via admin podem usar links do YouTube **ou** Vimeo indistintamente.
+- Arquivos `.mp4` diretos (Supabase Storage) continuam funcionando via tag `<video>`.
 
-## Verificação
+## Observações técnicas
 
-1. Reenviar uma foto pelo FoodScan no preview.
-2. Conferir nos Edge Function logs que não aparece mais `Failed to parse nutrition analysis result` e que a UI exibe `foodName` + nutrição normalmente.
+- Não muda banco de dados, edge functions, nem o admin de treinos.
+- Não muda estilo nem layout do modal.
+- Vídeos privados do Vimeo só tocam embedados se o dono permitir embed em domínios externos (configuração do Vimeo). Se estiver bloqueado, o iframe mostra "Privacy settings" do próprio Vimeo — nesse caso o usuário precisa ajustar as permissões na conta Vimeo.
