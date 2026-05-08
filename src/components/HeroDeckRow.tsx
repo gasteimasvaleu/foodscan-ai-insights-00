@@ -78,13 +78,13 @@ export const HeroDeckRow: React.FC = () => {
       >
         {isSupported && isConnected ? (() => {
           const STEP_GOAL = 10000;
-          const radius = 42;
+          const radius = 45;
           const circ = 2 * Math.PI * radius;
           const pct = Math.min(dailySteps / STEP_GOAL, 1);
           const offset = circ * (1 - pct);
           return (
             <>
-              <div className="relative w-[58%] aspect-square">
+              <div className="relative w-[68%] aspect-square">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                   <circle
                     cx="50"
@@ -92,7 +92,7 @@ export const HeroDeckRow: React.FC = () => {
                     r={radius}
                     fill="none"
                     stroke="rgba(255,255,255,0.55)"
-                    strokeWidth="10"
+                    strokeWidth="7"
                   />
                   <circle
                     cx="50"
@@ -100,7 +100,7 @@ export const HeroDeckRow: React.FC = () => {
                     r={radius}
                     fill="none"
                     stroke="#FD46A1"
-                    strokeWidth="10"
+                    strokeWidth="7"
                     strokeLinecap="round"
                     strokeDasharray={circ}
                     strokeDashoffset={offset}
