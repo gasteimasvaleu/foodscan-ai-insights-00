@@ -1,20 +1,19 @@
-## Diagnóstico de tamanhos
+## Problema
 
-Na largura atual (≈430px), o grid `1.6fr_1fr` com gap dá:
-- Coluna esquerda ≈ 241px → com `aspect-[16/9]` o card tem ≈ 135px de altura + barra inferior
-- Coluna direita ≈ 151px → com `aspect-[4/5]` quer 189px de altura
+O card do Apple Health no `HeroDeckRow` mostra `dailySteps` do `useHealthKit`, mas o hook não busca dados automaticamente — só o faz quando alguém chama `refreshData()` (ex: a página `/apple-health`). Por isso o valor fica em `0` na home.
 
-Com `items-stretch`, o card direito é forçado à altura do esquerdo, mas seu próprio `aspect-[4/5]` recalcula a largura como `altura × 4/5`, ficando mais estreito que a coluna — daí o espaço vazio à direita.
+Além disso, quando conectado, o card navega para `/fit-tracker` em vez de `/apple-health`, e o visual atual (rosa chapado `#FFD1E7`) pode ser refinado.
 
-## Solução
+## Alterações em `src/components/HeroDeckRow.tsx`
 
-Igualar a altura dos dois cards aumentando levemente o card esquerdo para combinar com a altura natural do card direito (Apple Health), mantendo as proporções.
+1. **Buscar passos reais**: ao montar, se `isSupported && isConnected`, chamar `refreshData()` do hook para popular `dailySteps`. Adicionar `refreshData` ao destructuring.
+2. **Rota quando conectado**: trocar o destino de `/fit-tracker` para `/apple-health` (sempre vai para Apple Health, conectado ou não).
+3. **Background**: substituir `bg-[#FFD1E7]` por um gradiente vertical de rosa (topo) para branco (base) usando classes Tailwind: `bg-gradient-to-b from-[#FFD1E7] to-white`.
+4. **Borda fininha**: adicionar `border border-[#FD46A1]/40` (rosa mais escuro do brand, com leve transparência para não pesar).
+5. Manter o resto: `aspect-[4/5]`, conteúdo do estado conectado (anel + passos) e desconectado (imagem + botão "Conectar").
 
-### Alterações em `src/components/HeroDeckRow.tsx`
+## Resultado esperado
 
-1. **Card esquerdo (último treino)**: trocar o placeholder `aspect-[16/9]` por `aspect-[5/4]` (mais alto). Isso dá altura ≈ 193px, praticamente igual aos 189px do card direito → ambos terminam com a mesma altura sem espaço sobrando.
-2. **Card direito (Apple Health)**: manter `aspect-[4/5]` — agora ele preenche a coluna inteira porque a altura imposta pelo grid já bate com seu aspect ratio.
-3. A imagem da thumbnail do treino continua `absolute inset-0 object-cover`, então se adapta ao novo aspect sem distorcer (corta levemente as laterais).
-4. A barra inferior preta (título do treino) continua sobreposta na base, sem mudanças.
-
-Resultado: dois cards um pouco mais altos, alinhados em altura, sem faixa vazia ao lado do Apple Health.
+- Card mostra os passos reais sincronizados com Apple Health.
+- Toque sempre leva para `/apple-health`.
+- Visual mais leve: degradê rosa→branco com fina borda rosa escura.

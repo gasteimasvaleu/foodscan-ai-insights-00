@@ -13,7 +13,13 @@ interface LatestWorkout {
 export const HeroDeckRow: React.FC = () => {
   const navigate = useNavigate();
   const [workout, setWorkout] = useState<LatestWorkout | null>(null);
-  const { isSupported, isConnected, dailySteps, isLoading } = useHealthKit();
+  const { isSupported, isConnected, dailySteps, isLoading, refreshData } = useHealthKit();
+
+  useEffect(() => {
+    if (isSupported && isConnected) {
+      refreshData();
+    }
+  }, [isSupported, isConnected, refreshData]);
 
   useEffect(() => {
     let cancelled = false;
