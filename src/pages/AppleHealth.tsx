@@ -22,6 +22,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid
+} from "recharts";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 const HIDDEN_WORKOUTS_KEY = 'healthkit_hidden_workouts';
@@ -364,55 +368,114 @@ export default function AppleHealth() {
 
 
             {/* Weekly chart */}
-            {weeklyData.length > 0 && (
-              <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
-                <h3 className="font-semibold text-foreground mb-4">Histórico Semanal</h3>
+            {weeklyData.length > 0 && (() => {
+              const chartData = weeklyData.map((d) => ({
+                day: new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'narrow' }),
+                steps: d.steps,
+                calories: d.calories,
+              }));
+              const totalSteps = weeklyData.reduce((s, d) => s + d.steps, 0);
+              const totalCal = weeklyData.reduce((s, d) => s + d.calories, 0);
+              const fmtSteps = totalSteps >= 1000 ? `${(totalSteps / 1000).toFixed(1)}k` : `${totalSteps}`;
+              return (
+                <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-foreground">Histórico Semanal</h3>
+                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Passos
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-orange-500" /> Calorias
+                      </span>
+                    </div>
+                  </div>
 
-                {/* Steps bars */}
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Footprints className="w-3 h-3 text-blue-500" /> Passos
-                </p>
-                <div className="flex items-end gap-1 h-20 mb-4">
-                  {weeklyData.map((d) => {
-                    const maxSteps = Math.max(...weeklyData.map(w => w.steps), 1);
-                    const height = Math.max((d.steps / maxSteps) * 100, 4);
-                    const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'narrow' });
-                    return (
-                      <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-[10px] text-muted-foreground">{d.steps > 0 ? (d.steps / 1000).toFixed(1) + 'k' : ''}</span>
-                        <div
-                          className="w-full bg-blue-400 rounded-t-md transition-all"
-                          style={{ height: `${height}%` }}
-                        />
-                        <span className="text-[10px] text-muted-foreground">{dayLabel}</span>
-                      </div>
-                    );
-                  })}
-                </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                      <Footprints className="w-3.5 h-3.5" /> {fmtSteps}
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                      <Flame className="w-3.5 h-3.5" /> {totalCal.toLocaleString('pt-BR')} kcal
+                    </div>
+                  </div>
 
-                {/* Calories bars */}
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Flame className="w-3 h-3 text-orange-500" /> Calorias
-                </p>
-                <div className="flex items-end gap-1 h-20">
-                  {weeklyData.map((d) => {
-                    const maxCal = Math.max(...weeklyData.map(w => w.calories), 1);
-                    const height = Math.max((d.calories / maxCal) * 100, 4);
-                    const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'narrow' });
-                    return (
-                      <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-[10px] text-muted-foreground">{d.calories > 0 ? d.calories : ''}</span>
-                        <div
-                          className="w-full bg-orange-400 rounded-t-md transition-all"
-                          style={{ height: `${height}%` }}
+                  <div className="h-56 -mx-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="stepsGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#60A5FA" stopOpacity={1} />
+                            <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.85} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid
+                          vertical={false}
+                          strokeDasharray="3 3"
+                          stroke="hsl(var(--border))"
                         />
-                        <span className="text-[10px] text-muted-foreground">{dayLabel}</span>
-                      </div>
-                    );
-                  })}
+                        <XAxis
+                          dataKey="day"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                        />
+                        <YAxis
+                          yAxisId="steps"
+                          orientation="left"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                          tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`}
+                          width={28}
+                        />
+                        <YAxis
+                          yAxisId="calories"
+                          orientation="right"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                          width={28}
+                        />
+                        <Tooltip
+                          cursor={{ fill: 'hsl(var(--muted) / 0.4)' }}
+                          contentStyle={{
+                            background: 'rgba(255,255,255,0.85)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: 12,
+                            fontSize: 12,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                          }}
+                          formatter={(value: any, name: string) => {
+                            if (name === 'steps') return [Number(value).toLocaleString('pt-BR'), 'Passos'];
+                            if (name === 'calories') return [`${Number(value).toLocaleString('pt-BR')} kcal`, 'Calorias'];
+                            return [value, name];
+                          }}
+                          labelFormatter={(l) => `Dia: ${l}`}
+                        />
+                        <Bar
+                          yAxisId="steps"
+                          dataKey="steps"
+                          fill="url(#stepsGradient)"
+                          radius={[8, 8, 0, 0]}
+                          maxBarSize={26}
+                        />
+                        <Line
+                          yAxisId="calories"
+                          type="monotone"
+                          dataKey="calories"
+                          stroke="#FB923C"
+                          strokeWidth={2.5}
+                          dot={{ r: 3, fill: '#FB923C', strokeWidth: 0 }}
+                          activeDot={{ r: 5 }}
+                        />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Connected Apps Workouts */}
             <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-lg">
