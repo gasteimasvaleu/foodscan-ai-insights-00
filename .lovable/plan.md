@@ -1,37 +1,47 @@
-## Espelhar exatamente o `HeroDeckRow`
+## Modernizar card "Histórico Semanal" — `/apple-health`
 
-A linha de cima (`HeroDeckRow`) usa este padrão:
+No screenshot as barras não aparecem (só os números e as letras dos dias). Em vez de tentar consertar as barras manuais (divs com `h-20` que estão colapsando), vamos substituir tudo por um **gráfico Recharts moderno**, com passos e calorias num único visual comparativo.
 
-- Grid: `grid-cols-[1.6fr_1fr]` (card grande à esquerda, pequeno à direita).
-- Card **grande** (treino): imagem absoluta + um placeholder `invisible aspect-[5/4]` que dá altura à coluna.
-- Card **pequeno** (passos): `aspect-[4/5]`.
+### Mudança em `src/pages/AppleHealth.tsx` (linhas ~366–415)
 
-Para a linha de baixo (`SecondaryDeckRow`) ficar com **a mesma altura e o mesmo comprimento**, basta espelhar — só inverter os lados, já que aqui o grande é o do gráfico (direita) e o pequeno é o da Loja (esquerda).
+Substituir o bloco atual por um único gráfico composto:
 
-### Mudanças em `src/components/SecondaryDeckRow.tsx`
+- **ComposedChart (Recharts)** com altura fixa `h-56` (≈220px) — garante render confiável.
+- **Barras de Passos** em azul `#60A5FA` com gradiente vertical (`#60A5FA → #3B82F6`), cantos arredondados `radius={[8,8,0,0]}`.
+- **Linha de Calorias** em laranja `#FB923C`, suavizada (`type="monotone"`), com pontos (`dot`) destacados, sobreposta às barras.
+- **Eixo X**: dias da semana (S T Q Q S S D), fonte 10px, sem linha de eixo.
+- **Eixo Y duplo discreto**: esquerda = passos, direita = kcal, fonte 9px, `tickLine={false}`, `axisLine={false}`.
+- **Grid horizontal leve**: `strokeDasharray="3 3"`, cor `hsl(var(--border))`.
+- **Tooltip customizado** glassmorphism (`bg-white/80 backdrop-blur-md`, `rounded-xl`, sombra) mostrando: dia + "Passos: X" + "kcal: Y".
 
-1. **Grid**: trocar para `grid-cols-[1fr_1.6fr]` (1fr esquerda = pequeno, 1.6fr direita = grande). Já está assim — manter.
+### Header do card
 
-2. **Card esquerdo (Loja, pequeno)** — espelho do card de passos do Hero:
-   - `aspect-[4/5]` (mesmo do card de passos).
-   - Remover o `h-full` que entrou na última edição.
-   - Manter imagem absoluta cobrindo + pílula "Comprar" centralizada embaixo.
+Substituir os dois títulos (`Passos` / `Calorias`) por:
 
-3. **Card direito (Balanço, grande)** — espelho do card de treino do Hero:
-   - Remover `aspect-[16/9]` e remover `h-full`.
-   - Adicionar um placeholder `invisible aspect-[5/4]` dentro do card para dar a mesma altura do card de treino.
-   - Reorganizar o conteúdo (cabeçalho + gráfico + saldo) como **overlay absoluto** sobre esse placeholder, igual ao Hero faz com a thumb + faixa preta. Estrutura:
-     - Wrapper `relative` com fundo gradiente + borda (já existe).
-     - `<div className="invisible aspect-[5/4]" />` para fixar altura.
-     - `<div className="absolute inset-0 flex flex-col p-3">` com:
-       - Cabeçalho ("Últimos 7 dias" / "Balanço Calórico").
-       - `<div className="flex-1 min-h-0">` com `ResponsiveContainer` + `BarChart`.
-       - Rodapé com "Saldo" + valor.
+- Título "Histórico Semanal" (mantém).
+- **Linha de legenda** com bolinha azul "Passos" + bolinha laranja "Calorias".
+- **Pílulas de totais da semana** logo abaixo:
+  - `Footprints` + `32.4k` (soma dos passos).
+  - `Flame` + `1.230 kcal` (soma das calorias).
 
-   Assim o card direito fica com **exatamente a mesma altura** do card de treino acima (que usa `aspect-[5/4]` na coluna 1.6fr), e o card da Loja (`aspect-[4/5]` na coluna 1fr) fica **exatamente do mesmo tamanho** do card de passos.
+### Layout final
 
-### Resultado
+```text
+┌──────────────────────────────────────────┐
+│ Histórico Semanal                        │
+│ ● Passos    ● Calorias                   │
+│ [👟 32.4k]  [🔥 1.230 kcal]              │
+│                                          │
+│   ▆       ▆                              │
+│   ▆   ▆   ▆   ▆        ▆  ← passos      │
+│   ━━╱━╲━━━╲━━━╱━━━━━━     ← calorias    │
+│   S   T   Q   Q   S   S   D              │
+└──────────────────────────────────────────┘
+```
 
-As duas linhas (Hero e Secondary) ficam visualmente idênticas em altura e largura de cada coluna — só o conteúdo muda. A linha inferior vira um espelho horizontal da superior.
+### Detalhes técnicos
 
-Sem mexer em lógica de dados nem em nenhum outro arquivo.
+- Importar de `recharts`: `ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, defs, linearGradient`.
+- Mapear `weeklyData` para `[{ day, steps, calories }]` com `toLocaleDateString('pt-BR', { weekday: 'narrow' })`.
+- Sem alterações em hooks, dados, ou lógica de fetch — apenas presentação.
+- Nenhum outro arquivo precisa ser modificado.
