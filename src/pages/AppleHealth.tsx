@@ -22,6 +22,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid
+} from "recharts";
 
 const HEALTHKIT_DISMISSED_KEY = 'healthkit_prompt_dismissed';
 const HIDDEN_WORKOUTS_KEY = 'healthkit_hidden_workouts';
