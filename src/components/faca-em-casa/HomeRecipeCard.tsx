@@ -30,7 +30,7 @@ const parseNum = (s?: string): number => {
 };
 
 export const HomeRecipeCard = ({ recipe }: Props) => {
-  const nutri = recipe.informacoesNutricionais;
+  const nutri = (recipe.informacoesNutricionais ?? {}) as Partial<NonNullable<Recipe["informacoesNutricionais"]>>;
   const comp = recipe.comparativoNutricional;
   const versao = recipe.versaoCaseira;
   const { user } = useAuth();
@@ -42,11 +42,14 @@ export const HomeRecipeCard = ({ recipe }: Props) => {
 
   const porcoes = Math.max(1, parseNum(recipe.porcoes) || 1);
   const perPortion = {
-    calories: Math.round(parseNum(nutri.calorias) / porcoes),
-    proteins: +(parseNum(nutri.proteinas) / porcoes).toFixed(1),
-    carbohydrates: +(parseNum(nutri.carboidratos) / porcoes).toFixed(1),
-    fats: +(parseNum(nutri.gorduras) / porcoes).toFixed(1),
+    calories: Math.round(parseNum(nutri?.calorias) / porcoes),
+    proteins: +(parseNum(nutri?.proteinas) / porcoes).toFixed(1),
+    carbohydrates: +(parseNum(nutri?.carboidratos) / porcoes).toFixed(1),
+    fats: +(parseNum(nutri?.gorduras) / porcoes).toFixed(1),
   };
+  const hasNutri = !!(nutri?.calorias || nutri?.proteinas || nutri?.carboidratos || nutri?.gorduras);
+  const hasComp = !!(comp?.original && comp?.caseiro);
+  const versaoBeneficios = Array.isArray(versao?.beneficios) ? versao!.beneficios : [];
 
   const handleAdd = async () => {
     if (!user) {
