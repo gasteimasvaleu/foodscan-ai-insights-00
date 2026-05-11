@@ -137,62 +137,70 @@ export const HomeRecipeCard = ({ recipe }: Props) => {
       </Section>
 
       {/* Nutrição */}
-      <Section title="Informações nutricionais" icon={<Flame className="w-4 h-4 text-primary" />}>
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="bg-primary/5 rounded-lg p-2">
-            <p className="text-muted-foreground">Calorias</p>
-            <p className="font-bold text-foreground">{nutri.calorias}</p>
+      {hasNutri && (
+        <Section title="Informações nutricionais" icon={<Flame className="w-4 h-4 text-primary" />}>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {nutri?.calorias && (
+              <div className="bg-primary/5 rounded-lg p-2">
+                <p className="text-muted-foreground">Calorias</p>
+                <p className="font-bold text-foreground">{nutri.calorias}</p>
+              </div>
+            )}
+            {nutri?.proteinas && (
+              <div className="bg-primary/5 rounded-lg p-2">
+                <p className="text-muted-foreground">Proteínas</p>
+                <p className="font-bold text-foreground">{nutri.proteinas}</p>
+              </div>
+            )}
+            {nutri?.carboidratos && (
+              <div className="bg-primary/5 rounded-lg p-2">
+                <p className="text-muted-foreground">Carboidratos</p>
+                <p className="font-bold text-foreground">{nutri.carboidratos}</p>
+              </div>
+            )}
+            {nutri?.gorduras && (
+              <div className="bg-primary/5 rounded-lg p-2">
+                <p className="text-muted-foreground">Gorduras</p>
+                <p className="font-bold text-foreground">{nutri.gorduras}</p>
+              </div>
+            )}
           </div>
-          <div className="bg-primary/5 rounded-lg p-2">
-            <p className="text-muted-foreground">Proteínas</p>
-            <p className="font-bold text-foreground">{nutri.proteinas}</p>
-          </div>
-          <div className="bg-primary/5 rounded-lg p-2">
-            <p className="text-muted-foreground">Carboidratos</p>
-            <p className="font-bold text-foreground">{nutri.carboidratos}</p>
-          </div>
-          {nutri.gorduras && (
-            <div className="bg-primary/5 rounded-lg p-2">
-              <p className="text-muted-foreground">Gorduras</p>
-              <p className="font-bold text-foreground">{nutri.gorduras}</p>
-            </div>
-          )}
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* Comparativo (fast-food) */}
-      {comp && (
+      {hasComp && (
         <Section title="Original vs Caseiro" icon={<Shuffle className="w-4 h-4 text-primary" />}>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="bg-destructive/10 rounded-lg p-2">
               <p className="font-bold text-destructive mb-1">Original</p>
-              <p>🔥 {comp.original.calorias}</p>
-              <p>💪 {comp.original.proteinas}</p>
-              <p>🍞 {comp.original.carboidratos}</p>
-              {comp.original.gorduras && <p>🧈 {comp.original.gorduras}</p>}
+              <p>🔥 {comp!.original?.calorias ?? "—"}</p>
+              <p>💪 {comp!.original?.proteinas ?? "—"}</p>
+              <p>🍞 {comp!.original?.carboidratos ?? "—"}</p>
+              {comp!.original?.gorduras && <p>🧈 {comp!.original.gorduras}</p>}
             </div>
             <div className="bg-emerald-500/10 rounded-lg p-2">
               <p className="font-bold text-emerald-600 mb-1">Caseiro</p>
-              <p>🔥 {comp.caseiro.calorias}</p>
-              <p>💪 {comp.caseiro.proteinas}</p>
-              <p>🍞 {comp.caseiro.carboidratos}</p>
-              {comp.caseiro.gorduras && <p>🧈 {comp.caseiro.gorduras}</p>}
+              <p>🔥 {comp!.caseiro?.calorias ?? "—"}</p>
+              <p>💪 {comp!.caseiro?.proteinas ?? "—"}</p>
+              <p>🍞 {comp!.caseiro?.carboidratos ?? "—"}</p>
+              {comp!.caseiro?.gorduras && <p>🧈 {comp!.caseiro.gorduras}</p>}
             </div>
           </div>
         </Section>
       )}
 
-      {versao && (
+      {versaoBeneficios.length > 0 && (
         <Section title="Por que vale a pena fazer em casa" icon={<Sparkles className="w-4 h-4 text-primary" />}>
           <ul className="space-y-1 mb-2">
-            {versao.beneficios.map((b, i) => (
+            {versaoBeneficios.map((b, i) => (
               <li key={i} className="text-sm flex gap-2">
                 <span className="text-primary">✓</span>
                 <span>{b}</span>
               </li>
             ))}
           </ul>
-          {versao.economiaEstimada && (
+          {versao?.economiaEstimada && (
             <p className="text-xs text-emerald-700 bg-emerald-50 rounded-lg p-2 font-medium">
               💰 {versao.economiaEstimada}
             </p>
