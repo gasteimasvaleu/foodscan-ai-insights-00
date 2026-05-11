@@ -1,47 +1,27 @@
-## Modernizar card "Histórico Semanal" — `/apple-health`
+## Problema
 
-No screenshot as barras não aparecem (só os números e as letras dos dias). Em vez de tentar consertar as barras manuais (divs com `h-20` que estão colapsando), vamos substituir tudo por um **gráfico Recharts moderno**, com passos e calorias num único visual comparativo.
+As edge functions da página `/faca-em-casa` (`identify-dish` e `generate-home-recipe`) ainda usam o padrão antigo, igual ao que quebrou no FoodScan. Dois pontos críticos:
 
-### Mudança em `src/pages/AppleHealth.tsx` (linhas ~366–415)
+1. **`identify-dish`** importa `@supabase/supabase-js@2.45.0`, mas a quota iOS chama `userClient.auth.getClaims(token)`, que só existe a partir da versão **2.57+**. No FoodScan isso causava `TypeError: userClient.auth.getClaims is not a function` para usuários iOS nativos free, e foi corrigido subindo para `2.57.4`.
+2. Ambas funções fazem **`JSON.parse` ingênuo** do retorno da IA. Quando o modelo (Gemini) devolve JSON válido seguido de qualquer texto extra (explicação, espaço, comentário), a chamada quebra com `SyntaxError: Unexpected non-whitespace character after JSON…` — exatamente o sintoma que o FoodScan corrigiu com o parser tolerante (extrai o primeiro objeto JSON balanceado).
 
-Substituir o bloco atual por um único gráfico composto:
+## Correção (frontend não muda)
 
-- **ComposedChart (Recharts)** com altura fixa `h-56` (≈220px) — garante render confiável.
-- **Barras de Passos** em azul `#60A5FA` com gradiente vertical (`#60A5FA → #3B82F6`), cantos arredondados `radius={[8,8,0,0]}`.
-- **Linha de Calorias** em laranja `#FB923C`, suavizada (`type="monotone"`), com pontos (`dot`) destacados, sobreposta às barras.
-- **Eixo X**: dias da semana (S T Q Q S S D), fonte 10px, sem linha de eixo.
-- **Eixo Y duplo discreto**: esquerda = passos, direita = kcal, fonte 9px, `tickLine={false}`, `axisLine={false}`.
-- **Grid horizontal leve**: `strokeDasharray="3 3"`, cor `hsl(var(--border))`.
-- **Tooltip customizado** glassmorphism (`bg-white/80 backdrop-blur-md`, `rounded-xl`, sombra) mostrando: dia + "Passos: X" + "kcal: Y".
+### `supabase/functions/identify-dish/index.ts`
+- Trocar import: `@supabase/supabase-js@2.45.0` → `@supabase/supabase-js@2.57.4`.
+- Substituir `JSON.parse(cleaned)` pelo mesmo parser tolerante usado em `analyze-nutrition`:
+  - Tentar `JSON.parse` direto.
+  - Se falhar, varrer a string respeitando aspas/escape e extrair o **primeiro objeto `{…}` balanceado**, depois fazer parse só desse trecho.
+- Manter o resto (quota, prompt, modelo `google/gemini-2.5-flash`, CORS) inalterado.
 
-### Header do card
+### `supabase/functions/generate-home-recipe/index.ts`
+- Aplicar o mesmo parser tolerante em volta de `JSON.parse(cleaned)`.
+- (Não usa supabase-js, então a versão não é problema aqui.)
 
-Substituir os dois títulos (`Passos` / `Calorias`) por:
+### Sem mudanças
+- Frontend (`useDishRecipe`, `FacaEmCasa.tsx`, componentes) permanece igual — o contrato de resposta não muda.
+- Nenhuma alteração de banco, secrets ou config.toml.
 
-- Título "Histórico Semanal" (mantém).
-- **Linha de legenda** com bolinha azul "Passos" + bolinha laranja "Calorias".
-- **Pílulas de totais da semana** logo abaixo:
-  - `Footprints` + `32.4k` (soma dos passos).
-  - `Flame` + `1.230 kcal` (soma das calorias).
-
-### Layout final
-
-```text
-┌──────────────────────────────────────────┐
-│ Histórico Semanal                        │
-│ ● Passos    ● Calorias                   │
-│ [👟 32.4k]  [🔥 1.230 kcal]              │
-│                                          │
-│   ▆       ▆                              │
-│   ▆   ▆   ▆   ▆        ▆  ← passos      │
-│   ━━╱━╲━━━╲━━━╱━━━━━━     ← calorias    │
-│   S   T   Q   Q   S   S   D              │
-└──────────────────────────────────────────┘
-```
-
-### Detalhes técnicos
-
-- Importar de `recharts`: `ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, defs, linearGradient`.
-- Mapear `weeklyData` para `[{ day, steps, calories }]` com `toLocaleDateString('pt-BR', { weekday: 'narrow' })`.
-- Sem alterações em hooks, dados, ou lógica de fetch — apenas presentação.
-- Nenhum outro arquivo precisa ser modificado.
+## Resultado esperado
+- Quota free no iOS volta a funcionar em `identify-dish`.
+- Respostas com texto extra do Gemini deixam de quebrar — o JSON é extraído de forma tolerante, igual ao FoodScan.
