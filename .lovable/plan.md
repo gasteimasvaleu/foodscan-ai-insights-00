@@ -1,27 +1,22 @@
 ## Problema
 
-As edge functions da página `/faca-em-casa` (`identify-dish` e `generate-home-recipe`) ainda usam o padrão antigo, igual ao que quebrou no FoodScan. Dois pontos críticos:
+`HomeRecipeCard.tsx` quebra com `Cannot read properties of undefined (reading 'calorias')` porque assume que toda receita vem com objetos completos. Quando a IA retorna só parte do comparativo (ex.: `comparativoNutricional` presente mas sem `original` ou sem `caseiro`), ou uma receita salva antiga não tem `informacoesNutricionais`, o componente quebra a página inteira.
 
-1. **`identify-dish`** importa `@supabase/supabase-js@2.45.0`, mas a quota iOS chama `userClient.auth.getClaims(token)`, que só existe a partir da versão **2.57+**. No FoodScan isso causava `TypeError: userClient.auth.getClaims is not a function` para usuários iOS nativos free, e foi corrigido subindo para `2.57.4`.
-2. Ambas funções fazem **`JSON.parse` ingênuo** do retorno da IA. Quando o modelo (Gemini) devolve JSON válido seguido de qualquer texto extra (explicação, espaço, comentário), a chamada quebra com `SyntaxError: Unexpected non-whitespace character after JSON…` — exatamente o sintoma que o FoodScan corrigiu com o parser tolerante (extrai o primeiro objeto JSON balanceado).
+Pontos frágeis no arquivo:
+- L33–48: `recipe.informacoesNutricionais` é usado direto (`nutri.calorias`, etc.) sem checagem.
+- L161–180: `comp && (...)` só checa o objeto pai, mas acessa `comp.original.calorias`, `comp.caseiro.calorias`.
+- L182–198: `versao && (...)` acessa `versao.beneficios.map` sem verificar se é array.
 
-## Correção (frontend não muda)
+## Correção (frontend, defensiva)
 
-### `supabase/functions/identify-dish/index.ts`
-- Trocar import: `@supabase/supabase-js@2.45.0` → `@supabase/supabase-js@2.57.4`.
-- Substituir `JSON.parse(cleaned)` pelo mesmo parser tolerante usado em `analyze-nutrition`:
-  - Tentar `JSON.parse` direto.
-  - Se falhar, varrer a string respeitando aspas/escape e extrair o **primeiro objeto `{…}` balanceado**, depois fazer parse só desse trecho.
-- Manter o resto (quota, prompt, modelo `google/gemini-2.5-flash`, CORS) inalterado.
+Em `src/components/faca-em-casa/HomeRecipeCard.tsx`:
 
-### `supabase/functions/generate-home-recipe/index.ts`
-- Aplicar o mesmo parser tolerante em volta de `JSON.parse(cleaned)`.
-- (Não usa supabase-js, então a versão não é problema aqui.)
+1. **`nutri` seguro**: tratar `recipe.informacoesNutricionais` como possivelmente `undefined`. Usar `const nutri = recipe.informacoesNutricionais ?? {}` e ler campos via optional chain. Esconder o bloco "Informações nutricionais" se nenhum valor existir.
+2. **`comp` seguro**: só renderizar a seção "Original vs Caseiro" quando `comp?.original` E `comp?.caseiro` existirem. Dentro, usar optional chain (`comp.original?.calorias`) com fallback `—`.
+3. **`versao` seguro**: renderizar a seção apenas se `Array.isArray(versao?.beneficios) && versao.beneficios.length > 0`.
+4. **`dicas` / `variacoes`**: já usam `?.length`, manter; só envolver `.map` em `Array.isArray` para não quebrar se vier objeto.
 
-### Sem mudanças
-- Frontend (`useDishRecipe`, `FacaEmCasa.tsx`, componentes) permanece igual — o contrato de resposta não muda.
-- Nenhuma alteração de banco, secrets ou config.toml.
+Sem mudanças em backend, types, hooks ou outras telas.
 
-## Resultado esperado
-- Quota free no iOS volta a funcionar em `identify-dish`.
-- Respostas com texto extra do Gemini deixam de quebrar — o JSON é extraído de forma tolerante, igual ao FoodScan.
+## Resultado
+- A página `/faca-em-casa` deixa de ficar em branco quando a IA devolve um JSON parcial ou quando uma receita salva antiga não tem todos os campos opcionais. Seções incompletas simplesmente não aparecem.
