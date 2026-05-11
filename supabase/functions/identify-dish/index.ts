@@ -205,7 +205,24 @@ serve(async (req) => {
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(cleaned);
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch {
+        const start = cleaned.indexOf("{");
+        if (start === -1) throw new Error("No JSON object found");
+        let depth = 0, inStr = false, escape = false, end = -1;
+        for (let i = start; i < cleaned.length; i++) {
+          const ch = cleaned[i];
+          if (escape) { escape = false; continue; }
+          if (ch === "\\") { escape = true; continue; }
+          if (ch === '"') { inStr = !inStr; continue; }
+          if (inStr) continue;
+          if (ch === "{") depth++;
+          else if (ch === "}") { depth--; if (depth === 0) { end = i; break; } }
+        }
+        if (end === -1) throw new Error("Unbalanced JSON object");
+        parsed = JSON.parse(cleaned.slice(start, end + 1));
+      }
     } catch (e) {
       console.error("JSON parse failed", e, raw);
       return new Response(
