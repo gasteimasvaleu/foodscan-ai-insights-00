@@ -67,6 +67,8 @@ export default function ChatGlobal() {
   // Initial load
   useEffect(() => {
     if (!user) return;
+    // Pre-carrega o profile do próprio usuário para uso na atualização otimista
+    ensureProfile(user.id);
     (async () => {
       const { data, error } = await supabase
         .from("chat_messages")
