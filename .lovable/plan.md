@@ -1,23 +1,17 @@
-## Correção dos modais em /maternidade
+## Refatorar card de inputs da aba Fertilidade
 
-Os dois modais da seção Maternidade (`CycleTracker` em Tentantes e `PregnancyDiary` em Gestação) estão usando classes que ocupam toda a largura horizontal e não seguem o padrão visual do app (glassmorphism + borda rosa).
+O card rosa (`#FFD1E7`) com os campos "1º dia da última menstruação" e "Duração média do ciclo" está com UX ruim no mobile: o grid de 2 colunas espreme os inputs, faz o label quebrar em 2 linhas e o ícone do date picker fica colado na borda do input.
 
-### Padrão oficial do app (usado em `AddObjectiveModal`, `WidgetPromoModal`, etc.)
+### Mudança
 
-```
-w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl
-```
+Arquivo: `src/components/maternidade/tentantes/FertilityCalculator.tsx` (linhas 51–76)
 
-### Arquivos a editar
-
-1. **`src/components/maternidade/tentantes/CycleTracker.tsx`** (linha 186)
-   - Trocar `className="bg-white/70 backdrop-blur-md max-h-[85vh] overflow-y-auto"`
-   - Por `className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-y-auto"`
-
-2. **`src/components/maternidade/gestacao/PregnancyDiary.tsx`** (linha 95)
-   - Trocar `className="bg-white/70 backdrop-blur-md border-white/60 max-w-md max-h-[85vh] overflow-y-auto"`
-   - Por `className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-y-auto"`
+- Trocar o `grid grid-cols-2 gap-3` por layout em coluna única (`space-y-4`) para que cada campo ocupe a largura total.
+- Padronizar inputs com `h-12 rounded-xl` e label `text-sm` em `text-gray-700` (sem quebra).
+- Para "Duração média do ciclo", agrupar input + sufixo "dias" num wrapper flex (input ocupa o restante, sufixo cinza alinhado à direita) para deixar claro a unidade.
+- Manter `bg-[#FFD1E7]` do card e `text-base` nos inputs (regra iOS zoom).
 
 ### Fora do escopo
 
-- Nenhuma alteração em conteúdo, lógica de submit ou estilos internos dos modais.
+- Lógica de cálculo, persistência ou outros cards da página continuam iguais.
+- Não substituir o `<input type="date">` nativo por picker custom.

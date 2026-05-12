@@ -48,28 +48,29 @@ export function FertilityCalculator() {
 
   return (
     <div className="space-y-4">
-      <Card className="border-none bg-[#FFD1E7]">
+      <Card className="border-none bg-[#FFD1E7] rounded-3xl">
         <CardContent className="pt-6 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs text-gray-700">1º dia da última menstruação</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="text-base mt-1 bg-white"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-gray-700">Duração média do ciclo</Label>
+          <div className="space-y-2">
+            <Label className="text-sm text-gray-700">1º dia da última menstruação</Label>
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="text-base h-12 rounded-xl bg-white w-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-sm text-gray-700">Duração média do ciclo</Label>
+            <div className="flex items-center gap-2 bg-white rounded-xl h-12 pr-4">
               <Input
                 type="number"
                 min={20}
                 max={45}
                 value={cycleLength}
                 onChange={(e) => setCycleLength(Number(e.target.value) || 28)}
-                className="text-base mt-1 bg-white"
+                className="text-base h-12 rounded-xl bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
               />
+              <span className="text-sm text-gray-500">dias</span>
             </div>
           </div>
         </CardContent>
