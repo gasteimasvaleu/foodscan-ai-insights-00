@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ChevronDown, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { BabyProfileCard, type BabyProfile } from './BabyProfileCard';
 import { SleepGrowthPanel } from './SleepGrowthPanel';
 import { FeedingDiapers } from './FeedingDiapers';
