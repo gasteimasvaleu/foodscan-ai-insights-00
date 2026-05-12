@@ -205,9 +205,11 @@ export default function ChatGlobal() {
       return;
     }
     setSending(true);
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("chat_messages")
-      .insert({ user_id: user.id, content: text });
+      .insert({ user_id: user.id, content: text })
+      .select("id, user_id, content, created_at, is_deleted")
+      .single();
     setSending(false);
     if (error) {
       const msg = error.message || "";
@@ -216,6 +218,13 @@ export default function ChatGlobal() {
       else if (msg.includes("rate_limit")) friendly = "Aguarde alguns segundos antes de enviar mais mensagens.";
       toast({ title: "Não foi possível enviar", description: friendly, variant: "destructive" });
       return;
+    }
+    if (inserted) {
+      await ensureProfile(user.id);
+      setMessages((prev) =>
+        prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as ChatMsg]
+      );
+      setTimeout(() => scrollToBottom(), 50);
     }
     setInput("");
   };
