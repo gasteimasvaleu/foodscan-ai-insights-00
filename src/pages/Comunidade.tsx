@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { PostForm } from "@/components/community/PostForm";
 import { PostCard } from "@/components/community/PostCard";
-import { Loader2, Users } from "lucide-react";
+import { Loader2, Users, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Post {
@@ -83,6 +83,20 @@ export default function Comunidade() {
               <h1 className="text-lg font-bold text-[#FD46A1]">Comunidade</h1>
             </div>
           </div>
+
+          {/* Chat ao vivo */}
+          <button
+            onClick={() => navigate("/comunidade/chat")}
+            className="w-full bg-[#FFD1E7] hover:bg-[#FFD1E7]/80 transition rounded-3xl shadow p-4 flex items-center gap-3 text-left"
+          >
+            <div className="bg-[#FD46A1] p-2.5 rounded-xl">
+              <MessageCircle className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-base text-gray-800">Chat ao vivo</p>
+              <p className="text-xs text-gray-600">Converse em tempo real com a comunidade</p>
+            </div>
+          </button>
 
         {/* Post Form */}
         <PostForm userId={user.id} onPostCreated={() => { fetchPosts(); }} />

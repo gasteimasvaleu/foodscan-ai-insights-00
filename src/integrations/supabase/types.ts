@@ -97,6 +97,104 @@ export type Database = {
           },
         ]
       }
+      chat_banned_words: {
+        Row: {
+          created_at: string
+          id: string
+          severity: string
+          word: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          severity?: string
+          word: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          severity?: string
+          word?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          deleted_reason: string | null
+          id: string
+          is_deleted: boolean
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deleted_reason?: string | null
+          id?: string
+          is_deleted?: boolean
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deleted_reason?: string | null
+          id?: string
+          is_deleted?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_reports: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          reason: string | null
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          reason?: string | null
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          reason?: string | null
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_posts: {
         Row: {
           after_photo_url: string | null

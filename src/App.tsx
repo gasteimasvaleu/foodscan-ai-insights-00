@@ -35,6 +35,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import Receitas from "./pages/Receitas";
 import Comunidade from "./pages/Comunidade";
+import ChatGlobal from "./pages/ChatGlobal";
+import AdminChat from "./pages/AdminChat";
 import ChartsProgress from "./pages/ChartsProgress";
 import NutriCoach from "./pages/NutriCoach";
 import AppleHealth from "./pages/AppleHealth";
@@ -113,6 +115,8 @@ const App = () => (
             <Route path="/servinutri" element={<ServiNUTRI />} />
             <Route path="/receitas" element={<ProRoute feature="receitas"><Receitas /></ProRoute>} />
             <Route path="/comunidade" element={<Comunidade />} />
+            <Route path="/comunidade/chat" element={<ChatGlobal />} />
+            <Route path="/admin/chat" element={<AdminChat />} />
             <Route path="/nutri-coach" element={<ProRoute feature="nutri-coach"><NutriCoach /></ProRoute>} />
             <Route path="/apple-health" element={<ProRoute feature="apple-health"><AppleHealth /></ProRoute>} />
             <Route path="/hidratacao" element={<ProRoute feature="hidratacao"><Hydration /></ProRoute>} />
