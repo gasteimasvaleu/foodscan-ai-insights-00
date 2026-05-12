@@ -1,82 +1,38 @@
-# Banco de alimentos colaborativo
+# Corrigir seletores de data na página /maternidade (iOS nativo)
 
-Cada nova refeição registrada vira sugestão. Quando ≥ 3 usuários distintos registram o mesmo item normalizado, ela é promovida automaticamente ao `food_catalog` com origem "comunidade", marcada com badge na página `/alimentos`. Itens oficiais continuam intocados.
+## Problema
 
-## 1. Schema novo
+No iOS nativo (WKWebView do Capacitor), `<input type="date">` e `<input type="datetime-local">` não abrem o picker nativo de forma confiável e renderizam o valor centralizado/quebrado, como no screenshot da Calculadora de DPP.
 
-**Tabela `food_catalog_suggestions`** (staging)
-- `name_normalized` (text, único) — lowercase, sem acento, sem números/quantidades
-- `display_name` (text) — versão exibível mais frequente
-- `category` (text) default `preparacoes`
-- `calories_per_100g`, `proteins_per_100g`, `carbs_per_100g`, `fats_per_100g` (numeric) — média ponderada
-- `submissions_count` (int)
-- `distinct_users_count` (int)
-- `status` (text: `pending` | `approved` | `rejected`) default `pending`
-- `promoted_food_id` (uuid, nullable)
-- `last_seen_at`, `created_at`, `updated_at`
+## Solução
 
-**Tabela `food_catalog_suggestion_submissions`**
-- (suggestion_id, user_id) único — base do contador distinto.
+Criar um componente reutilizável **`MatDatePicker`** (Popover + Calendar do shadcn, padrão de design system já documentado no projeto) e substituir todos os `<Input type="date">` da pasta `src/components/maternidade`. Para campos `type="datetime-local"`, dividir em **DatePicker + Input de hora** (`type="time"`), que funciona bem no iOS.
 
-**Coluna nova em `food_catalog`**
-- `source` (text: `official` | `community`) default `official`
-- `community_suggestion_id` (uuid, nullable)
+## Arquivos a alterar
 
-## 2. Lógica de ingestão
+**Novo componente**
+- `src/components/maternidade/MatDatePicker.tsx` — wrapper Popover + Calendar (locale pt-BR), trigger no estilo glassmorphism (`bg-white/70 backdrop-blur-md`, `h-12 rounded-xl`), exibe `dd 'de' MMM 'de' yyyy` ou placeholder. Aceita `value: string (YYYY-MM-DD)` e `onChange(v: string)` para manter compatível com o storage atual.
 
-Trigger `AFTER INSERT` em `meal_records` chama `public.ingest_meal_to_catalog()` (SECURITY DEFINER), que:
+**Substituições `type="date"`**
+- `src/components/maternidade/gestacao/DueDateCalculator.tsx` (linha 47) — DPP
+- `src/components/maternidade/tentantes/CycleTracker.tsx` (linha 194)
+- `src/components/maternidade/tentantes/FertilityCalculator.tsx` (linha 56)
+- `src/components/maternidade/bebe/BabyProfileCard.tsx` (linha 128) — data de nascimento do bebê
+- `src/components/maternidade/bebe/GrowthSleep.tsx` (linha 167)
+- `src/components/maternidade/bebe/sleep/GrowthCard.tsx` (linha 92)
 
-1. Normaliza `food_name` (lowercase + unaccent + remove dígitos e palavras de quantidade: g, ml, prato, fatia, colher, unidade, etc.). Função auxiliar `normalize_food_name(text)`.
-2. Estima gramas da porção via regex no campo `portion`. Sem estimativa confiável → aborta silenciosamente.
-3. Calcula macros por 100g. Outliers (kcal/100g > 900 ou < 0) → aborta.
-4. Filtra contra `chat_banned_words` e exige nome de 3 a 60 chars.
-5. `INSERT ... ON CONFLICT (name_normalized) DO UPDATE`:
-   - Atualiza médias móveis ponderadas
-   - Incrementa `submissions_count`
-   - Insere em `food_catalog_suggestion_submissions` se par novo → recalcula `distinct_users_count`
-6. Se `distinct_users_count >= 3` e `status = 'pending'`:
-   - Insere em `food_catalog` com `source='community'`
-   - Marca sugestão como `approved` + grava `promoted_food_id`
+**Substituições `type="datetime-local"` (dividir em data + hora)**
+- `src/components/maternidade/bebe/sleep/SleepDiaryAdvanced.tsx` (linhas 191 e 195)
+- `src/components/maternidade/bebe/GrowthSleep.tsx` (linhas 197 e 201)
 
-Erros capturados em BEGIN/EXCEPTION para nunca quebrar o INSERT da refeição.
-
-## 3. UI
-
-**`/alimentos`** — badge "Comunidade" (chip rosa claro) ao lado do nome quando `source='community'`. Toggle "Mostrar itens da comunidade" (default ligado).
-
-**`/admin/alimentos-comunidade`** (gated por `has_role admin`):
-- Lista sugestões `pending` ordenadas por `distinct_users_count desc`
-- Mostra nome normalizado, contagens, macros médias
-- Ações: Aprovar agora / Rejeitar / Editar nome+categoria / Mesclar com item existente (busca por similarity via pg_trgm)
-- Lista também itens já promovidos com botão "Despromover"
-
-## 4. Privacidade e segurança
-
-- Não copia `food_name` original — só `name_normalized` + `display_name` agregado.
-- Filtro de palavrões cruzando `chat_banned_words`.
-- RLS em `food_catalog_suggestions`: SELECT só admin; escrita só via função SECURITY DEFINER.
-
-## 5. Threshold
-
-`_PROMOTION_THRESHOLD = 3` como constante no início da função — fácil de ajustar.
-
-## 6. Fora de escopo
-
-- Sem backfill das 19 refeições históricas.
-- Sem mesclagem fuzzy automática com catálogo oficial — só sugestão no painel admin.
+Para esses, criar helpers `splitDateTime(iso)` → `{date, time}` e `joinDateTime(date, time)` → `YYYY-MM-DDTHH:mm`, mantendo o mesmo formato salvo no Supabase.
 
 ## Detalhes técnicos
 
-- Migration única: tabelas + função normalize + função ingest + trigger + RLS + coluna `source` em food_catalog.
-- `useFoodCatalog`: adicionar `source` ao tipo e select.
-- `Alimentos.tsx`: badge condicional + filtro.
-- Nova página `src/pages/admin/AlimentosComunidade.tsx` reutilizando padrão de `/admin/loja`.
-- Rota nova em `src/App.tsx`.
+- Reusar `Calendar` (`@/components/ui/calendar`) com `mode="single"`, `locale={ptBR}` e `className="p-3 pointer-events-auto"` (necessário dentro de Dialog/Drawer).
+- Usar `format`/`parseISO` de `date-fns` para converter entre `Date` e a string `YYYY-MM-DD` que já é persistida.
+- Nenhuma mudança de schema, lógica de negócio ou backend. Apenas presentation.
+- Mantém os tokens de design já em uso (`#FD46A1`, glassmorphism, `text-base`, `h-12 rounded-xl`).
+- Inputs `type="time"` permanecem (já funcionam no iOS com `appearance-none text-left`, conforme memória do projeto).
 
-## Arquivos a criar/editar
-
-- Migration SQL
-- `src/hooks/useFoodCatalog.ts`
-- `src/pages/Alimentos.tsx`
-- `src/pages/admin/AlimentosComunidade.tsx` (novo)
-- `src/App.tsx`
+Posso implementar?
