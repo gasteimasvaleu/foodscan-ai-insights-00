@@ -183,7 +183,7 @@ export function CycleTracker() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="bg-white/70 backdrop-blur-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base">Novo ciclo</DialogTitle>
           </DialogHeader>
