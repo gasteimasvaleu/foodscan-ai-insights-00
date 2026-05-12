@@ -187,44 +187,48 @@ export function CycleTracker() {
           <DialogHeader>
             <DialogTitle className="text-base">Novo ciclo</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-xs">1º dia da menstruação</Label>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">1º dia da menstruação</Label>
               <Input
                 type="date"
                 value={form.cycle_start_date}
                 onChange={(e) => setForm({ ...form, cycle_start_date: e.target.value })}
-                className="text-base mt-1"
+                className="text-base h-12 rounded-xl"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="text-xs">Duração do ciclo (dias)</Label>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Duração do ciclo</Label>
+              <div className="flex items-center gap-2 bg-background rounded-xl h-12 pr-4 border border-input">
                 <Input
                   type="number"
                   min={20}
                   max={45}
                   value={form.cycle_length_days}
                   onChange={(e) => setForm({ ...form, cycle_length_days: Number(e.target.value) || 28 })}
-                  className="text-base mt-1"
+                  className="text-base h-12 rounded-xl bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                 />
+                <span className="text-sm text-gray-500">dias</span>
               </div>
-              <div>
-                <Label className="text-xs">Duração da menstruação</Label>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Duração da menstruação</Label>
+              <div className="flex items-center gap-2 bg-background rounded-xl h-12 pr-4 border border-input">
                 <Input
                   type="number"
                   min={1}
                   max={15}
                   value={form.period_length_days}
                   onChange={(e) => setForm({ ...form, period_length_days: Number(e.target.value) || 5 })}
-                  className="text-base mt-1"
+                  className="text-base h-12 rounded-xl bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                 />
+                <span className="text-sm text-gray-500">dias</span>
               </div>
             </div>
-            <div>
-              <Label className="text-xs">Fluxo</Label>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Fluxo</Label>
               <Select value={form.flow} onValueChange={(v) => setForm({ ...form, flow: v })}>
-                <SelectTrigger className="text-base mt-1">
+                <SelectTrigger className="text-base h-12 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -234,18 +238,18 @@ export function CycleTracker() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs">Humor (opcional)</Label>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Humor (opcional)</Label>
               <Input
                 value={form.mood}
                 onChange={(e) => setForm({ ...form, mood: e.target.value })}
                 placeholder="Ex: irritada, animada..."
-                className="text-base mt-1"
+                className="text-base h-12 rounded-xl"
               />
             </div>
-            <div>
-              <Label className="text-xs">Sintomas</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Sintomas</Label>
+              <div className="flex flex-wrap gap-2">
                 {SYMPTOMS.map((s) => (
                   <button
                     key={s}
@@ -262,13 +266,13 @@ export function CycleTracker() {
                 ))}
               </div>
             </div>
-            <div>
-              <Label className="text-xs">Notas</Label>
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700">Notas</Label>
               <Textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 rows={2}
-                className="text-base mt-1"
+                className="text-base rounded-xl"
               />
             </div>
           </div>
