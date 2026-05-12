@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MaternidadeHeader } from '@/components/maternidade/MaternidadeHeader';
 import { GestacaoPanel } from '@/components/maternidade/gestacao/GestacaoPanel';
 import { PospartoPanel } from '@/components/maternidade/posparto/PospartoPanel';
+import { TentantesPanel } from '@/components/maternidade/tentantes/TentantesPanel';
 
 const ComingSoon = ({ label }: { label: string }) => (
   <div className="bg-[#FFD1E7] rounded-3xl p-8 text-center">
@@ -47,7 +48,7 @@ const Maternidade = () => {
           </TabsList>
 
           <TabsContent value="tentantes">
-            <ComingSoon label="Tentantes" />
+            <TentantesPanel />
           </TabsContent>
           <TabsContent value="gestacao">
             <GestacaoPanel />
