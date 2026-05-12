@@ -31,7 +31,10 @@ export function BabyGenerator() {
       const { data, error } = await supabase.functions.invoke('generate-baby', {
         body: { motherImage: mother, fatherImage: father },
       });
-      if (error) throw error;
+      if (error) {
+        toast.error(error.message || 'Erro ao gerar bebê');
+        return;
+      }
       if (data?.error) { toast.error(data.error); return; }
       if (data?.imageUrl) {
         setResult(data.imageUrl);
@@ -39,8 +42,8 @@ export function BabyGenerator() {
       } else {
         toast.error('Não foi possível gerar a imagem');
       }
-    } catch {
-      toast.error('Erro ao gerar bebê');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Erro ao gerar bebê');
     } finally { setLoading(false); }
   };
 
