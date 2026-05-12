@@ -127,7 +127,7 @@ export function SleepDiaryAdvanced() {
               <Play className="h-4 w-4" />
             </Button>
           )}
-          <Button onClick={() = className="rounded-xl"> { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 px-3 rounded-xl">
+          <Button onClick={() => { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 px-3 rounded-xl">
             Registrar
           </Button>
         </div>
