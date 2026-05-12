@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MaternidadeHeader } from '@/components/maternidade/MaternidadeHeader';
 import { GestacaoPanel } from '@/components/maternidade/gestacao/GestacaoPanel';
+import { PospartoPanel } from '@/components/maternidade/posparto/PospartoPanel';
 
 const ComingSoon = ({ label }: { label: string }) => (
   <div className="bg-[#FFD1E7] rounded-3xl p-8 text-center">
@@ -52,7 +53,7 @@ const Maternidade = () => {
             <GestacaoPanel />
           </TabsContent>
           <TabsContent value="posparto">
-            <ComingSoon label="Pós-parto" />
+            <PospartoPanel />
           </TabsContent>
           <TabsContent value="bebe">
             <ComingSoon label="Bebê & Sono" />
