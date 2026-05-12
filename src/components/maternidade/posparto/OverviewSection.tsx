@@ -46,10 +46,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Heart className="h-5 w-5 text-[#FD46A1]" />
-            {content.whatIs.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.whatIs.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-700 leading-relaxed">{content.whatIs.content}</p>
@@ -108,10 +105,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
       {content.spectrum && (
         <Card className="bg-white/70 backdrop-blur-md border-white/40">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Brain className="h-5 w-5 text-[#FD46A1]" />
-              {content.spectrum.title}
-            </CardTitle>
+            <CardTitle className="text-base">{content.spectrum.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-700 mb-3">{content.spectrum.intro}</p>
@@ -185,10 +179,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2 text-[#FD46A1]">
-            <Heart className="h-5 w-5 fill-current" />
-            {content.message.title}
-          </CardTitle>
+          <CardTitle className="text-base text-[#FD46A1]">{content.message.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-700 italic leading-relaxed">"{content.message.content}"</p>

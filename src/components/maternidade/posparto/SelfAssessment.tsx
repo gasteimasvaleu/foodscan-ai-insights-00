@@ -101,10 +101,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
       <div className="space-y-4">
         <Card className="border-none bg-[#FFD1E7]">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-[#FD46A1]" />
-              {content.title}
-            </CardTitle>
+            <CardTitle className="text-base">{content.title}</CardTitle>
             <CardDescription className="text-sm text-gray-700">{content.intro}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -122,10 +119,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
         {history.length > 0 && (
           <Card className="bg-white/70 backdrop-blur-md border-white/40">
             <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <History className="h-5 w-5 text-[#FD46A1]" />
-                Histórico
-              </CardTitle>
+              <CardTitle className="text-base">Histórico</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -213,9 +207,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
             <Badge variant="outline" className={c.text}>{r.range}</Badge>
             <span className="text-2xl font-bold">{score}/30</span>
           </div>
-          <CardTitle className={`text-base flex items-center gap-2 ${c.text}`}>
-            <Icon className="h-5 w-5" />{r.title}
-          </CardTitle>
+          <CardTitle className={`text-base ${c.text}`}>{r.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-gray-700">{r.description}</p>

@@ -29,10 +29,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="border-amber-200 bg-amber-50">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2 text-amber-700">
-            <AlertTriangle className="h-5 w-5" />
-            {content.signs.title}
-          </CardTitle>
+          <CardTitle className="text-base text-amber-700">{content.signs.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="grid sm:grid-cols-2 gap-2">
@@ -94,10 +91,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-[#FD46A1]" />
-            {content.firstVisit.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.firstVisit.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -113,10 +107,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2 text-[#FD46A1]">
-            <Users className="h-5 w-5" />
-            {content.family.title}
-          </CardTitle>
+          <CardTitle className="text-base text-[#FD46A1]">{content.family.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-2">
