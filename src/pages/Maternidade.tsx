@@ -31,7 +31,7 @@ const Maternidade = () => {
     <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
       <Navbar />
 
-      <main className="px-4 py-4 max-w-3xl mx-auto space-y-4">
+      <main className="px-4 pb-4 max-w-3xl mx-auto space-y-4">
         <MaternidadeHeader />
         <SectionPicker options={TABS} value={tab} onChange={setTab} />
 
