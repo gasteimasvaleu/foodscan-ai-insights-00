@@ -181,7 +181,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 justify-start">
                   {cat.items.map((item) => {
                     const active = selected.includes(item);
                     return (
@@ -190,7 +190,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
                         type="button"
                         disabled={!loaded}
                         onClick={() => toggle(key, item)}
-                        className={`text-xs px-3 py-1.5 rounded-full border transition-all flex items-center gap-1 ${
+                        className={`text-xs text-left px-3 py-1.5 rounded-lg border transition-all inline-flex items-center gap-1 ${
                           active
                             ? 'bg-[#FFD1E7] border-[#FD46A1] text-[#FD46A1]'
                             : 'bg-white border-pink-100 text-gray-700 hover:border-[#FD46A1]/50'
@@ -217,7 +217,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-start">
             {content.redFlags.items.map((item) => {
               const active = todayEntry.redFlags.includes(item);
               return (
@@ -226,7 +226,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
                   type="button"
                   disabled={!loaded}
                   onClick={() => toggle('redFlags', item)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all flex items-center gap-1 ${
+                  className={`text-xs text-left px-3 py-1.5 rounded-lg border transition-all inline-flex items-center gap-1 ${
                     active
                       ? 'bg-red-200 border-red-500 text-red-800'
                       : 'bg-white border-red-200 text-red-700 hover:border-red-400'
