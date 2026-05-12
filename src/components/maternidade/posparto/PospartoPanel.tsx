@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Phone } from 'lucide-react';
 import postpartumData from '@/data/maternidade/postpartum-pt.json';
@@ -9,6 +10,7 @@ import { ResourcesSection } from './ResourcesSection';
 
 export const PospartoPanel = () => {
   const c = (postpartumData as any).pt;
+  const [tab, setTab] = useState('overview');
 
   return (
     <div className="space-y-3">
@@ -28,7 +30,7 @@ export const PospartoPanel = () => {
         <span className="text-sm font-semibold text-red-700">Ligar 188</span>
       </a>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid w-full grid-cols-5 h-auto bg-white/70 backdrop-blur-md p-1 rounded-2xl">
           {[
             ['overview', c.navigation.overview],
@@ -51,7 +53,7 @@ export const PospartoPanel = () => {
           <OverviewSection content={c.overview} />
         </TabsContent>
         <TabsContent value="symptoms" className="mt-4">
-          <SymptomsSection content={c.symptoms} />
+          <SymptomsSection content={c.symptoms} onGoToEpds={() => setTab('epds')} />
         </TabsContent>
         <TabsContent value="epds" className="mt-4">
           <SelfAssessment content={c.selfAssessment} emergencyContent={c.emergency} />
