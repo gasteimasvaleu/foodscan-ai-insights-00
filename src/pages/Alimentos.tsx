@@ -139,13 +139,13 @@ const Alimentos = () => {
           <div className="space-y-2">
             {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-16 rounded-2xl" />)}
           </div>
-        ) : (foods?.length ?? 0) === 0 ? (
+        ) : foods.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-12">
             Nenhum alimento encontrado.
           </p>
         ) : (
           <div className="space-y-2">
-            {foods!.map(f => (
+            {foods.map(f => (
               <Card
                 key={f.id}
                 className="bg-[#FFD1E7] border-0 rounded-2xl p-3 flex items-center gap-3 cursor-pointer hover:bg-[#FFC1DE] transition-colors"
@@ -167,6 +167,11 @@ const Alimentos = () => {
                 <Plus className="w-5 h-5 text-[#FD46A1] flex-shrink-0" />
               </Card>
             ))}
+            <div ref={sentinelRef} className="h-8 flex items-center justify-center">
+              {isFetchingNextPage && (
+                <span className="text-xs text-muted-foreground">Carregando mais…</span>
+              )}
+            </div>
           </div>
         )}
       </div>
