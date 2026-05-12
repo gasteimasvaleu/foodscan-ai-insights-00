@@ -1,0 +1,1892 @@
+{
+  "pt": {
+    "title": "Saúde Mental Perinatal",
+    "subtitle": "Você não está sozinha. Entenda, reconheça e busque ajuda.",
+    "navigation": {
+      "overview": "Visão Geral",
+      "symptoms": "Sintomas",
+      "selfAssessment": "Auto-Avaliação",
+      "support": "Buscar Ajuda",
+      "resources": "Recursos"
+    },
+    "emergency": {
+      "title": "Em crise? Ligue agora:",
+      "cvv": "CVV 188"
+    },
+    "disclaimer": "Este conteúdo é informativo e não substitui avaliação profissional. Se você está em sofrimento, procure ajuda especializada.",
+    "overview": {
+      "title": "O Espectro de Transtornos Perinatais",
+      "intro": "A maternidade é uma experiência transformadora que traz alegrias imensas, mas também desafios significativos. Dificuldades emocionais no período perinatal são muito mais comuns do que se imagina — e, o mais importante: são tratáveis. Você não está sozinha.",
+      "whatIs": {
+        "title": "O que é Depressão Pós-Parto?",
+        "content": "A Depressão Pós-Parto (DPP) é um transtorno de humor sério que afeta 15-20% das mães após o nascimento do bebê. Diferente da tristeza passageira do 'baby blues', a DPP é mais intensa, persistente e pode interferir significativamente na sua vida e no cuidado com o bebê. Afeta 1 em cada 5 mães — você não está sozinha. Pode surgir a qualquer momento no primeiro ano após o parto. NÃO é fraqueza, falta de amor ou culpa sua. É uma condição médica com causas biológicas, hormonais e ambientais. É tratável — com apoio adequado, a recuperação é possível e esperada."
+      },
+      "babyBlues": {
+        "title": "Baby Blues vs Depressão Pós-Parto",
+        "blues": {
+          "title": "Baby Blues (Normal)",
+          "items": [
+            "Afeta até 80% das mães",
+            "Dura até 2 semanas",
+            "Choro fácil e sem motivo aparente",
+            "Irritabilidade leve",
+            "Ansiedade sobre o bebê",
+            "Alterações de humor rápidas",
+            "Dificuldade para dormir",
+            "Sensação de sobrecarga",
+            "Melhora naturalmente com descanso e apoio"
+          ]
+        },
+        "dpp": {
+          "title": "Depressão Pós-Parto (Requer Atenção)",
+          "items": [
+            "Afeta 15-20% das mães",
+            "Dura mais de 2 semanas",
+            "Tristeza profunda e persistente",
+            "Perda de interesse no bebê ou em si mesma",
+            "Pensamentos de inadequação ou culpa intensa",
+            "Dificuldade extrema de sono (mesmo quando o bebê dorme)",
+            "Pensamentos assustadores ou intrusivos",
+            "Dificuldade de se conectar com o bebê",
+            "Requer tratamento profissional"
+          ]
+        }
+      },
+      "riskFactors": {
+        "title": "Fatores de Risco",
+        "items": [
+          "Histórico pessoal de depressão ou ansiedade",
+          "Histórico familiar de transtornos de humor",
+          "Depressão ou ansiedade durante a gravidez",
+          "Parto traumático ou com complicações",
+          "Bebê na UTI neonatal",
+          "Falta de rede de apoio",
+          "Problemas no relacionamento",
+          "Dificuldades financeiras",
+          "Gravidez não planejada",
+          "Problemas de amamentação",
+          "Histórico de trauma ou abuso",
+          "Privação severa de sono",
+          "Bebê com cólicas intensas",
+          "DPP em gestação anterior"
+        ]
+      },
+      "myths": {
+        "title": "Mitos e Verdades",
+        "items": [
+          {
+            "myth": "Mães com DPP não amam seus bebês",
+            "truth": "O amor existe, mas a doença cria uma barreira para sentir e expressar esse amor. Com tratamento, o vínculo floresce."
+          },
+          {
+            "myth": "É só cansaço — vai passar sozinho",
+            "truth": "Embora cansaço seja normal no pós-parto, sintomas persistentes por mais de 2 semanas não são 'só cansaço' e merecem atenção."
+          },
+          {
+            "myth": "Se eu pedir ajuda, vão tirar meu bebê",
+            "truth": "Buscar ajuda demonstra responsabilidade e amor. Profissionais de saúde querem ajudar você a se recuperar, não separar famílias."
+          },
+          {
+            "myth": "Antidepressivos são perigosos durante a amamentação",
+            "truth": "Existem diversas medicações seguras e bem estudadas para uso durante a amamentação. Seu médico pode orientar sobre as melhores opções."
+          },
+          {
+            "myth": "DPP só começa logo após o parto",
+            "truth": "A DPP pode surgir a qualquer momento no primeiro ano após o nascimento. Não descarte sintomas só porque 'já passou muito tempo'."
+          },
+          {
+            "myth": "Só mães de primeira viagem têm DPP",
+            "truth": "A DPP pode acontecer em qualquer gestação, mesmo que você não tenha tido na primeira."
+          },
+          {
+            "myth": "Pensamentos ruins sobre o bebê significam que sou perigosa",
+            "truth": "Pensamentos intrusivos são sintoma de TOC perinatal, não indicam risco real. Mães com esses pensamentos têm MEDO de machucar — isso é protetor."
+          },
+          {
+            "myth": "Se eu tiver DPP, serei uma mãe ruim para sempre",
+            "truth": "Com tratamento adequado, a maioria das mães se recupera completamente. A DPP não define quem você é como mãe."
+          }
+        ]
+      },
+      "message": {
+        "title": "Você Merece Cuidado e Apoio",
+        "content": "Sentir-se assim não é sua culpa. Você não escolheu isso e você não falhou como mãe. O que você está vivendo tem nome, tem tratamento e tem fim. Milhares de mulheres passaram por isso e se recuperaram — algumas são suas amigas, colegas, ou mulheres que você admira. Com o apoio certo, você também vai passar por isso. Você é mais forte do que pensa, e pedir ajuda é um ato de coragem e amor."
+      },
+      "spectrum": {
+        "title": "O Espectro de Transtornos Perinatais",
+        "intro": "Além da Depressão Pós-Parto, existem outras condições que podem afetar a saúde mental no período perinatal. Conhecer essas condições ajuda a identificar sinais e buscar o tratamento adequado.",
+        "conditions": [
+          {
+            "id": "anxiety",
+            "name": "Ansiedade Pós-Parto",
+            "icon": "AlertCircle",
+            "color": "blue",
+            "prevalence": "15-20% das mães",
+            "description": "Preocupação intensa e persistente que vai além do normal. Diferente da DPP, o foco principal são medos e preocupações excessivas, não necessariamente tristeza.",
+            "symptoms": [
+              "Preocupação constante e desproporcional",
+              "Sensação de que algo ruim vai acontecer",
+              "Dificuldade de relaxar ou desligar a mente",
+              "Sintomas físicos: coração acelerado, tensão, tremores",
+              "Ataques de pânico",
+              "Evitar situações por medo",
+              "Dificuldade de dormir por preocupação"
+            ],
+            "important": "A ansiedade pós-parto pode ocorrer junto com a DPP. É muito tratável com terapia e, quando necessário, medicação."
+          },
+          {
+            "id": "ocd",
+            "name": "TOC Perinatal",
+            "icon": "Brain",
+            "color": "teal",
+            "prevalence": "3-5% das mães",
+            "description": "Caracteriza-se por pensamentos intrusivos, indesejados e repetitivos (obsessões), frequentemente sobre machucar o bebê. A diferença crucial: mães com TOC têm MEDO desses pensamentos e NÃO querem agir neles.",
+            "symptoms": [
+              "Pensamentos intrusivos e assustadores sobre o bebê",
+              "Imagens mentais indesejadas de dano ao bebê",
+              "Medo intenso de ser uma 'má mãe'",
+              "Comportamentos repetitivos para 'neutralizar' os pensamentos",
+              "Verificar repetidamente se o bebê está respirando",
+              "Evitar objetos cortantes ou situações 'perigosas'",
+              "Angústia extrema por ter esses pensamentos"
+            ],
+            "important": "Ter pensamentos intrusivos NÃO significa que você vai agir neles. O próprio medo e angústia que você sente são PROTETORES. Mães com TOC perinatal NÃO machucam seus bebês — elas têm medo de fazê-lo, o que é completamente diferente."
+          },
+          {
+            "id": "ptsd",
+            "name": "TEPT Pós-Parto",
+            "icon": "Shield",
+            "color": "gray",
+            "prevalence": "9% das mães",
+            "description": "Pode ocorrer após um parto traumático, complicações graves, ou experiências de perda. Envolve reviver o trauma através de flashbacks, pesadelos e evitação.",
+            "symptoms": [
+              "Flashbacks ou memórias intrusivas do parto",
+              "Pesadelos sobre o parto ou trauma",
+              "Evitar falar sobre o parto",
+              "Evitar consultas médicas ou hospitais",
+              "Sentir-se emocionalmente entorpecida",
+              "Hipervigilância e sobressalto fácil",
+              "Irritabilidade e raiva",
+              "Sentimentos de culpa ou vergonha sobre o parto"
+            ],
+            "important": "O trauma de parto é real e válido, mesmo que outros digam que 'deu tudo certo no final'. Suas experiências e sentimentos importam."
+          },
+          {
+            "id": "psychosis",
+            "name": "Psicose Puerperal",
+            "icon": "AlertTriangle",
+            "color": "red",
+            "prevalence": "0.1-0.2% das mães",
+            "description": "Uma emergência médica rara mas grave que geralmente surge nas primeiras 2 semanas após o parto. Requer atendimento médico IMEDIATO.",
+            "symptoms": [
+              "Alucinações (ver ou ouvir coisas que outros não veem)",
+              "Delírios (crenças bizarras ou paranoicas)",
+              "Confusão mental severa",
+              "Agitação extrema ou comportamento desorganizado",
+              "Incapacidade de dormir por dias",
+              "Mudanças rápidas de humor",
+              "Pensamentos ou comportamentos que colocam em risco a si ou ao bebê"
+            ],
+            "important": "⚠️ EMERGÊNCIA MÉDICA: Se você ou alguém que você conhece está apresentando esses sintomas, ligue IMEDIATAMENTE para o SAMU (192) ou vá ao pronto-socorro. A psicose puerperal é tratável, mas requer intervenção médica urgente."
+          },
+          {
+            "id": "paternal",
+            "name": "Depressão Pós-Parto Paterna",
+            "icon": "Users",
+            "color": "purple",
+            "prevalence": "8-10% dos pais",
+            "description": "Pais também podem desenvolver depressão pós-parto. Muitas vezes não é reconhecida porque os sintomas podem se manifestar de forma diferente.",
+            "symptoms": [
+              "Irritabilidade e raiva (mais comum que tristeza)",
+              "Isolar-se da família",
+              "Trabalhar excessivamente para evitar estar em casa",
+              "Comportamentos de risco ou impulsivos",
+              "Dificuldade de se conectar com o bebê",
+              "Sentir-se sobrecarregado ou inadequado",
+              "Problemas de sono ou fadiga",
+              "Perda de interesse em hobbies",
+              "Uso aumentado de álcool"
+            ],
+            "important": "Pais: sua saúde mental importa tanto quanto a da mãe. Pedir ajuda não é fraqueza — é cuidar da sua família. Se você está lutando, converse com um profissional."
+          }
+        ]
+      }
+    },
+    "symptoms": {
+      "title": "Reconhecendo os Sinais",
+      "intro": "Os sintomas dos transtornos de humor perinatais variam de pessoa para pessoa e em intensidade. Nem toda mãe experimentará todos eles. Reconhecer esses sinais é o primeiro passo — e o mais corajoso — para buscar ajuda.",
+      "categories": {
+        "emotional": {
+          "title": "Sintomas Emocionais",
+          "icon": "Heart",
+          "items": [
+            "Tristeza profunda e persistente",
+            "Choro frequente, às vezes sem motivo",
+            "Sentimento de vazio ou desconexão",
+            "Desesperança — sensação de que nada vai melhorar",
+            "Culpa intensa e irracional",
+            "Irritabilidade desproporcional ou raiva",
+            "Ansiedade constante sobre o bebê",
+            "Medo de ficar sozinha com o bebê",
+            "Sensação de não merecer ser mãe",
+            "Perda de interesse em coisas que antes traziam alegria"
+          ]
+        },
+        "physical": {
+          "title": "Sintomas Físicos",
+          "icon": "Activity",
+          "items": [
+            "Fadiga extrema que não melhora com descanso",
+            "Alterações de apetite — comer demais ou não conseguir comer",
+            "Insônia mesmo quando o bebê está dormindo",
+            "Dormir demais e ainda sentir-se exausta",
+            "Dores de cabeça tensionais frequentes",
+            "Tensão muscular, especialmente no pescoço e ombros",
+            "Palpitações ou sensação de aperto no peito",
+            "Falta de ar ou dificuldade para respirar",
+            "Problemas gastrointestinais",
+            "Baixa energia para atividades básicas"
+          ]
+        },
+        "behavioral": {
+          "title": "Sintomas Comportamentais",
+          "icon": "Users",
+          "items": [
+            "Isolar-se de família e amigos",
+            "Dificuldade de criar vínculo com o bebê",
+            "Negligenciar o próprio cuidado",
+            "Evitar sair de casa",
+            "Dificuldade de tomar decisões simples",
+            "Verificar repetidamente se o bebê está respirando",
+            "Rituais excessivos de limpeza",
+            "Evitar atividades por medo de machucar o bebê",
+            "Não conseguir cuidar da casa ou de si",
+            "Perda de interesse no parceiro"
+          ]
+        },
+        "cognitive": {
+          "title": "Sintomas Cognitivos",
+          "icon": "Brain",
+          "items": [
+            "Dificuldade de concentração ('névoa cerebral')",
+            "Esquecimentos frequentes",
+            "Pensamentos negativos recorrentes sobre si mesma",
+            "Pensamentos intrusivos e assustadores",
+            "Confusão mental e dificuldade de raciocinar",
+            "Pensamentos de que o bebê estaria melhor sem você",
+            "Pensamentos de morte ou desejo de 'sumir'",
+            "Dificuldade de planejar ou organizar",
+            "Sensação de estar 'desconectada' da realidade"
+          ]
+        }
+      },
+      "timeline": {
+        "title": "Quando os Sintomas Podem Aparecer",
+        "items": [
+          {
+            "period": "0-2 semanas",
+            "description": "Baby blues é comum e esperado. Choro, irritabilidade e oscilações de humor que melhoram naturalmente."
+          },
+          {
+            "period": "2-6 semanas",
+            "description": "Se os sintomas do baby blues não melhoraram ou pioraram, pode indicar DPP. Este é um momento importante para buscar avaliação."
+          },
+          {
+            "period": "6 semanas - 6 meses",
+            "description": "A maioria dos casos de DPP se manifesta neste período. Fique atenta aos sinais e não hesite em pedir ajuda."
+          },
+          {
+            "period": "6 - 12 meses",
+            "description": "A DPP pode surgir até 1 ano após o parto. Não descarte sintomas só porque 'já faz tempo' desde o nascimento."
+          }
+        ]
+      },
+      "redFlags": {
+        "title": "⚠️ Sinais de Alerta — Busque Ajuda IMEDIATAMENTE",
+        "items": [
+          "Pensamentos de se machucar ou de suicídio",
+          "Vontade real de machucar o bebê (diferente de pensamentos intrusivos)",
+          "Ouvir vozes ou ver coisas que outros não veem",
+          "Delírios ou crenças bizarras",
+          "Confusão mental severa",
+          "Não conseguir dormir por vários dias seguidos",
+          "Comportamento muito acelerado ou desorganizado",
+          "Sentir que você ou o bebê estão em perigo real"
+        ],
+        "action": "Se você está experimentando qualquer um desses sinais, isto é uma EMERGÊNCIA MÉDICA. Ligue para o CVV (188), SAMU (192) ou vá imediatamente ao pronto-socorro."
+      }
+    },
+    "selfAssessment": {
+      "title": "Escala de Depressão Pós-Parto de Edimburgo (EPDS)",
+      "intro": "Este questionário é uma ferramenta validada internacionalmente para identificar sintomas de depressão pós-parto. Responda com base em como você se sentiu nos últimos 7 dias.",
+      "disclaimer": "IMPORTANTE: Esta é uma ferramenta de RASTREIO e NÃO substitui diagnóstico profissional. Se você está sofrendo, procure ajuda.",
+      "questions": [
+        {
+          "question": "Eu tenho sido capaz de rir e achar graça das coisas",
+          "options": [
+            { "text": "Como eu sempre fiz", "score": 0 },
+            { "text": "Não tanto quanto antes", "score": 1 },
+            { "text": "Sem dúvida, menos que antes", "score": 2 },
+            { "text": "De jeito nenhum", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho olhado para o futuro com prazer",
+          "options": [
+            { "text": "Tanto quanto sempre fiz", "score": 0 },
+            { "text": "Um pouco menos do que eu costumava fazer", "score": 1 },
+            { "text": "Muito menos do que eu costumava fazer", "score": 2 },
+            { "text": "Quase nunca", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me culpado sem necessidade quando as coisas dão errado",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Não muito frequentemente", "score": 1 },
+            { "text": "Sim, às vezes", "score": 2 },
+            { "text": "Sim, a maior parte do tempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me sentido ansiosa ou preocupada sem uma boa razão",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Raramente", "score": 1 },
+            { "text": "Sim, às vezes", "score": 2 },
+            { "text": "Sim, frequentemente", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me sentido assustada ou em pânico sem um bom motivo",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Não, não muito", "score": 1 },
+            { "text": "Sim, às vezes", "score": 2 },
+            { "text": "Sim, bastante", "score": 3 }
+          ]
+        },
+        {
+          "question": "As coisas têm me sobrecarregado",
+          "options": [
+            { "text": "Não, tenho dado conta bem como sempre", "score": 0 },
+            { "text": "Não, na maioria das vezes tenho dado conta", "score": 1 },
+            { "text": "Sim, às vezes não tenho conseguido dar conta", "score": 2 },
+            { "text": "Sim, na maioria das vezes não consigo dar conta", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me sentido tão infeliz que tenho tido dificuldade para dormir",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Não frequentemente", "score": 1 },
+            { "text": "Sim, às vezes", "score": 2 },
+            { "text": "Sim, na maioria das vezes", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me sentido triste ou muito mal",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Não frequentemente", "score": 1 },
+            { "text": "Sim, frequentemente", "score": 2 },
+            { "text": "Sim, a maior parte do tempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "Eu tenho me sentido tão infeliz que tenho chorado",
+          "options": [
+            { "text": "Não, de jeito nenhum", "score": 0 },
+            { "text": "Só de vez em quando", "score": 1 },
+            { "text": "Sim, frequentemente", "score": 2 },
+            { "text": "Sim, a maior parte do tempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "A ideia de me machucar passou pela minha cabeça",
+          "options": [
+            { "text": "Nunca", "score": 0 },
+            { "text": "Quase nunca", "score": 1 },
+            { "text": "Às vezes", "score": 2 },
+            { "text": "Sim, frequentemente", "score": 3 }
+          ]
+        }
+      ],
+      "results": {
+        "low": {
+          "range": "0-9",
+          "title": "Baixa probabilidade de depressão pós-parto",
+          "description": "Seus sintomas parecem estar dentro do esperado para o período pós-parto. Continue atenta e cuidando de si mesma.",
+          "recommendation": "Mantenha sua rede de apoio ativa, aceite ajuda, priorize o descanso quando possível e não hesite em refazer este teste se seus sentimentos mudarem."
+        },
+        "moderate": {
+          "range": "10-12",
+          "title": "Possíveis sinais de depressão — atenção recomendada",
+          "description": "Alguns dos seus sintomas merecem atenção profissional. Isso não significa que você está falhando.",
+          "recommendation": "Seria muito importante agendar uma consulta com seu médico ou um profissional de saúde mental para uma avaliação mais completa."
+        },
+        "high": {
+          "range": "13-30",
+          "title": "Sinais significativos — busque ajuda em breve",
+          "description": "Seus sintomas indicam que você provavelmente está passando por um momento muito difícil. Você não está sozinha.",
+          "recommendation": "É muito importante buscar ajuda profissional o mais breve possível. Fale com seu médico ou ligue para o CVV (188) se precisar de apoio imediato."
+        }
+      },
+      "buttons": {
+        "start": "Iniciar Avaliação",
+        "next": "Próxima",
+        "previous": "Anterior",
+        "finish": "Ver Resultado",
+        "restart": "Refazer Teste",
+        "share": "Compartilhar com Profissional"
+      }
+    },
+    "whenToSeekHelp": {
+      "title": "Quando e Como Buscar Ajuda",
+      "intro": "Pedir ajuda não é fraqueza — é uma das decisões mais corajosas e amorosas que você pode tomar por si mesma e por seu bebê.",
+      "signs": {
+        "title": "Busque ajuda profissional se você:",
+        "items": [
+          "Sente tristeza ou desesperança na maior parte do dia",
+          "Perdeu o interesse em coisas que antes gostava",
+          "Tem dificuldade de se conectar com seu bebê",
+          "Sente que não está conseguindo cuidar de si mesma",
+          "Tem pensamentos que a assustam",
+          "Se sente constantemente sobrecarregada",
+          "Está tendo dificuldade para dormir",
+          "Se sente irritada ou com raiva desproporcional",
+          "Tem pensamentos de se machucar",
+          "Os sintomas persistem por mais de 2 semanas"
+        ]
+      },
+      "professionals": {
+        "title": "Quem pode ajudar",
+        "items": [
+          {
+            "title": "Obstetra / Ginecologista",
+            "description": "Pode fazer avaliação inicial, descartar causas físicas e encaminhar para especialistas."
+          },
+          {
+            "title": "Psicólogo(a)",
+            "description": "Oferece psicoterapia especializada. A terapia cognitivo-comportamental é especialmente eficaz."
+          },
+          {
+            "title": "Psiquiatra",
+            "description": "Médico especializado que pode avaliar, diagnosticar e prescrever medicações quando necessário."
+          },
+          {
+            "title": "Médico de Família",
+            "description": "Pode fazer avaliação inicial e encaminhar para especialistas quando necessário."
+          }
+        ]
+      },
+      "treatments": {
+        "title": "Opções de Tratamento",
+        "items": [
+          {
+            "title": "Psicoterapia",
+            "description": "Conversar com um profissional treinado pode transformar sua experiência. A terapia ajuda a processar emoções e desenvolver estratégias de enfrentamento."
+          },
+          {
+            "title": "Medicação",
+            "description": "Antidepressivos podem ser muito eficazes, especialmente para casos moderados a graves. Muitas medicações são seguras durante a amamentação."
+          },
+          {
+            "title": "Grupos de Apoio",
+            "description": "Compartilhar experiências com outras mães que entendem o que você está passando pode ser profundamente terapêutico."
+          },
+          {
+            "title": "Tratamento Combinado",
+            "description": "Para muitas mulheres, a combinação de psicoterapia e medicação oferece os melhores resultados."
+          }
+        ]
+      },
+      "firstVisit": {
+        "title": "O que esperar da primeira consulta",
+        "items": [
+          "O profissional vai criar um ambiente seguro e sem julgamentos",
+          "Você será perguntada sobre seus sintomas e como afetam sua vida",
+          "Perguntas sobre histórico de saúde mental são normais",
+          "Pode haver aplicação de questionários de rastreio",
+          "Você terá espaço para fazer perguntas",
+          "Juntas, vocês criarão um plano de cuidado inicial",
+          "É normal sentir nervosismo",
+          "Você NÃO será julgada e NÃO vão tirar seu bebê"
+        ]
+      },
+      "family": {
+        "title": "Como a família e parceiros podem ajudar",
+        "items": [
+          "OUVIR sem tentar resolver",
+          "Oferecer ajuda PRÁTICA: cuidar do bebê, fazer comida, cuidar da casa",
+          "EVITAR frases como 'você deveria estar feliz'",
+          "NÃO MINIMIZAR o que ela está sentindo",
+          "INCENTIVAR a busca por ajuda profissional",
+          "ACOMPANHAR em consultas se ela desejar",
+          "LEMBRAR que isso não é culpa dela",
+          "CUIDAR de si também",
+          "SER PACIENTE — a recuperação leva tempo"
+        ]
+      }
+    },
+    "resources": {
+      "title": "Central de Recursos e Apoio",
+      "intro": "Você não precisa enfrentar isso sozinha. Existem muitas pessoas e recursos disponíveis para ajudar você nessa jornada.",
+      "emergency": {
+        "title": "🆘 Emergência e Crise — Ajuda Imediata",
+        "items": [
+          {
+            "name": "CVV - Centro de Valorização da Vida",
+            "contact": "188",
+            "description": "Apoio emocional 24 horas, 7 dias por semana. Ligação GRATUITA.",
+            "type": "phone"
+          },
+          {
+            "name": "SAMU",
+            "contact": "192",
+            "description": "Para emergências médicas, incluindo crises de saúde mental graves.",
+            "type": "phone"
+          },
+          {
+            "name": "CAPS - Centro de Atenção Psicossocial",
+            "contact": "Procure a unidade mais próxima",
+            "description": "Atendimento público gratuito em saúde mental pelo SUS.",
+            "type": "location"
+          },
+          {
+            "name": "UBS - Unidade Básica de Saúde",
+            "contact": "Procure a unidade do seu bairro",
+            "description": "Porta de entrada do SUS para avaliação inicial.",
+            "type": "location"
+          }
+        ]
+      },
+      "online": {
+        "title": "🌐 Recursos Online",
+        "items": [
+          {
+            "name": "CVV - Chat Online",
+            "url": "https://cvv.org.br",
+            "description": "Chat de apoio emocional em tempo real. Funciona 24h."
+          },
+          {
+            "name": "Postpartum Support International",
+            "url": "https://postpartum.net",
+            "description": "Organização internacional com recursos em português e grupos de apoio."
+          },
+          {
+            "name": "Doctoralia",
+            "url": "https://doctoralia.com.br",
+            "description": "Plataforma para encontrar e agendar com psicólogos e psiquiatras."
+          }
+        ]
+      },
+      "apps": {
+        "title": "📱 Aplicativos de Apoio",
+        "items": [
+          {
+            "name": "Cingulo",
+            "description": "Terapia guiada com psicólogos brasileiros. Oferece programas específicos para ansiedade e depressão."
+          },
+          {
+            "name": "Headspace",
+            "description": "Meditação guiada e mindfulness. Tem seção específica para sono e ansiedade."
+          },
+          {
+            "name": "Daylio",
+            "description": "Diário de humor para acompanhar seus sentimentos ao longo do tempo."
+          }
+        ]
+      },
+      "books": {
+        "title": "📚 Livros Recomendados",
+        "items": [
+          {
+            "title": "Mãe Fora da Caixa",
+            "author": "Thaís Vilarinho",
+            "description": "Reflexões honestas sobre maternidade real, sem romantização."
+          },
+          {
+            "title": "A Mãe Suficientemente Boa",
+            "author": "D.W. Winnicott",
+            "description": "Clássico que alivia a pressão da perfeição materna."
+          },
+          {
+            "title": "Good Moms Have Scary Thoughts",
+            "author": "Karen Kleiman",
+            "description": "Livro ilustrado que normaliza pensamentos intrusivos."
+          },
+          {
+            "title": "This Isn't What I Expected",
+            "author": "Karen Kleiman & Valerie Raskin",
+            "description": "Guia clássico e prático para superar a depressão pós-parto."
+          }
+        ]
+      },
+      "forPartners": {
+        "title": "💑 Para Parceiros e Família",
+        "content": "Se você está aqui porque alguém que ama pode estar com DPP, seu papel é fundamental. Seu apoio pode acelerar a recuperação e fazer toda a diferença. Informe-se sobre DPP, ofereça ajuda prática sem esperar ser pedido, evite dar conselhos e simplesmente ouça. Não minimize os sentimentos dela, incentive gentilmente a busca por ajuda profissional, e cuide do bebê para ela poder descansar. Lembre-a de que isso não é culpa dela. E não se esqueça de cuidar de você também — você não pode ajudar se estiver esgotado."
+      }
+    }
+  },
+  "en": {
+    "title": "Perinatal Mental Health",
+    "subtitle": "You are not alone. Understand, recognize, and seek help.",
+    "navigation": {
+      "overview": "Overview",
+      "symptoms": "Symptoms",
+      "selfAssessment": "Self-Assessment",
+      "support": "Get Help",
+      "resources": "Resources"
+    },
+    "emergency": {
+      "title": "In crisis? Call now:",
+      "cvv": "988 Lifeline"
+    },
+    "disclaimer": "This content is informational and does not replace professional evaluation. If you are suffering, seek specialized help.",
+    "overview": {
+      "title": "The Spectrum of Perinatal Disorders",
+      "intro": "Motherhood is a transformative experience that brings immense joy, but also significant challenges. Emotional difficulties in the perinatal period are much more common than imagined — and most importantly: they are treatable. You are not alone.",
+      "whatIs": {
+        "title": "What is Postpartum Depression?",
+        "content": "Postpartum Depression (PPD) is a serious mood disorder that affects 15-20% of mothers after childbirth. Unlike the passing 'baby blues', PPD is more intense, persistent, and can significantly interfere with your life and baby care. It affects 1 in 5 mothers — you are not alone. It can appear anytime in the first year after birth. It is NOT weakness, lack of love, or your fault. It is a medical condition with biological, hormonal, and environmental causes. It is treatable — with proper support, recovery is possible and expected."
+      },
+      "babyBlues": {
+        "title": "Baby Blues vs Postpartum Depression",
+        "blues": {
+          "title": "Baby Blues (Normal)",
+          "items": [
+            "Affects up to 80% of mothers",
+            "Lasts up to 2 weeks",
+            "Easy crying for no apparent reason",
+            "Mild irritability",
+            "Anxiety about the baby",
+            "Rapid mood swings",
+            "Difficulty sleeping",
+            "Feeling overwhelmed",
+            "Improves naturally with rest and support"
+          ]
+        },
+        "dpp": {
+          "title": "Postpartum Depression (Needs Attention)",
+          "items": [
+            "Affects 15-20% of mothers",
+            "Lasts more than 2 weeks",
+            "Deep and persistent sadness",
+            "Loss of interest in the baby or yourself",
+            "Thoughts of inadequacy or intense guilt",
+            "Extreme sleep difficulty (even when baby sleeps)",
+            "Scary or intrusive thoughts",
+            "Difficulty connecting with the baby",
+            "Requires professional treatment"
+          ]
+        }
+      },
+      "riskFactors": {
+        "title": "Risk Factors",
+        "items": [
+          "Personal history of depression or anxiety",
+          "Family history of mood disorders",
+          "Depression or anxiety during pregnancy",
+          "Traumatic or complicated birth",
+          "Baby in NICU",
+          "Lack of support network",
+          "Relationship problems",
+          "Financial difficulties",
+          "Unplanned pregnancy",
+          "Breastfeeding problems",
+          "History of trauma or abuse",
+          "Severe sleep deprivation",
+          "Baby with intense colic",
+          "PPD in previous pregnancy"
+        ]
+      },
+      "myths": {
+        "title": "Myths and Facts",
+        "items": [
+          {
+            "myth": "Mothers with PPD don't love their babies",
+            "truth": "Love exists, but the illness creates a barrier to feeling and expressing that love. With treatment, the bond flourishes."
+          },
+          {
+            "myth": "It's just tiredness — it will pass on its own",
+            "truth": "While tiredness is normal postpartum, symptoms persisting more than 2 weeks are not 'just tiredness' and deserve attention."
+          },
+          {
+            "myth": "If I ask for help, they'll take my baby away",
+            "truth": "Seeking help demonstrates responsibility and love. Health professionals want to help you recover, not separate families."
+          },
+          {
+            "myth": "Antidepressants are dangerous during breastfeeding",
+            "truth": "There are several safe and well-studied medications for use during breastfeeding. Your doctor can guide you."
+          },
+          {
+            "myth": "PPD only starts right after birth",
+            "truth": "PPD can appear anytime in the first year after birth. Don't dismiss symptoms because 'too much time has passed'."
+          },
+          {
+            "myth": "Only first-time mothers get PPD",
+            "truth": "PPD can happen in any pregnancy, even if you didn't have it in the first."
+          },
+          {
+            "myth": "Bad thoughts about the baby mean I'm dangerous",
+            "truth": "Intrusive thoughts are a symptom of perinatal OCD, not an indication of real risk. Mothers with these thoughts are AFRAID of harming — this is protective."
+          },
+          {
+            "myth": "If I have PPD, I'll be a bad mother forever",
+            "truth": "With proper treatment, most mothers recover completely. PPD doesn't define who you are as a mother."
+          }
+        ]
+      },
+      "message": {
+        "title": "You Deserve Care and Support",
+        "content": "Feeling this way is not your fault. You didn't choose this and you haven't failed as a mother. What you're experiencing has a name, has treatment, and has an end. Thousands of women have been through this and recovered — some are your friends, colleagues, or women you admire. With the right support, you will get through this too. You are stronger than you think, and asking for help is an act of courage and love."
+      },
+      "spectrum": {
+        "title": "The Spectrum of Perinatal Disorders",
+        "intro": "Beyond Postpartum Depression, there are other conditions that can affect mental health during the perinatal period. Knowing these conditions helps identify signs and seek appropriate treatment.",
+        "conditions": [
+          {
+            "id": "anxiety",
+            "name": "Postpartum Anxiety",
+            "icon": "AlertCircle",
+            "color": "blue",
+            "prevalence": "15-20% of mothers",
+            "description": "Intense and persistent worry that goes beyond normal. Unlike PPD, the main focus is excessive fears and worries, not necessarily sadness.",
+            "symptoms": [
+              "Constant and disproportionate worry",
+              "Feeling that something bad will happen",
+              "Difficulty relaxing or turning off the mind",
+              "Physical symptoms: racing heart, tension, trembling",
+              "Panic attacks",
+              "Avoiding situations out of fear",
+              "Difficulty sleeping due to worry"
+            ],
+            "important": "Postpartum anxiety can occur together with PPD. It is very treatable with therapy and, when necessary, medication."
+          },
+          {
+            "id": "ocd",
+            "name": "Perinatal OCD",
+            "icon": "Brain",
+            "color": "teal",
+            "prevalence": "3-5% of mothers",
+            "description": "Characterized by intrusive, unwanted, and repetitive thoughts (obsessions), often about harming the baby. The crucial difference: mothers with OCD are AFRAID of these thoughts and do NOT want to act on them.",
+            "symptoms": [
+              "Intrusive and scary thoughts about the baby",
+              "Unwanted mental images of harm to baby",
+              "Intense fear of being a 'bad mother'",
+              "Repetitive behaviors to 'neutralize' thoughts",
+              "Repeatedly checking if baby is breathing",
+              "Avoiding sharp objects or 'dangerous' situations",
+              "Extreme distress about having these thoughts"
+            ],
+            "important": "Having intrusive thoughts does NOT mean you will act on them. The fear and distress you feel are PROTECTIVE. Mothers with perinatal OCD do NOT harm their babies — they are afraid of doing so, which is completely different."
+          },
+          {
+            "id": "ptsd",
+            "name": "Postpartum PTSD",
+            "icon": "Shield",
+            "color": "gray",
+            "prevalence": "9% of mothers",
+            "description": "Can occur after a traumatic birth, serious complications, or experiences of loss. Involves reliving the trauma through flashbacks, nightmares, and avoidance.",
+            "symptoms": [
+              "Flashbacks or intrusive memories of birth",
+              "Nightmares about birth or trauma",
+              "Avoiding talking about the birth",
+              "Avoiding medical appointments or hospitals",
+              "Feeling emotionally numb",
+              "Hypervigilance and easy startle",
+              "Irritability and anger",
+              "Feelings of guilt or shame about the birth"
+            ],
+            "important": "Birth trauma is real and valid, even if others say 'everything turned out fine in the end.' Your experiences and feelings matter."
+          },
+          {
+            "id": "psychosis",
+            "name": "Postpartum Psychosis",
+            "icon": "AlertTriangle",
+            "color": "red",
+            "prevalence": "0.1-0.2% of mothers",
+            "description": "A rare but serious medical emergency that usually appears in the first 2 weeks after birth. Requires IMMEDIATE medical attention.",
+            "symptoms": [
+              "Hallucinations (seeing or hearing things others don't)",
+              "Delusions (bizarre or paranoid beliefs)",
+              "Severe mental confusion",
+              "Extreme agitation or disorganized behavior",
+              "Inability to sleep for days",
+              "Rapid mood changes",
+              "Thoughts or behaviors that put self or baby at risk"
+            ],
+            "important": "⚠️ MEDICAL EMERGENCY: If you or someone you know is experiencing these symptoms, call 911 or go to the emergency room IMMEDIATELY. Postpartum psychosis is treatable, but requires urgent medical intervention."
+          },
+          {
+            "id": "paternal",
+            "name": "Paternal Postpartum Depression",
+            "icon": "Users",
+            "color": "purple",
+            "prevalence": "8-10% of fathers",
+            "description": "Fathers can also develop postpartum depression. It often goes unrecognized because symptoms may manifest differently.",
+            "symptoms": [
+              "Irritability and anger (more common than sadness)",
+              "Isolating from family",
+              "Working excessively to avoid being home",
+              "Risk-taking or impulsive behaviors",
+              "Difficulty connecting with the baby",
+              "Feeling overwhelmed or inadequate",
+              "Sleep problems or fatigue",
+              "Loss of interest in hobbies",
+              "Increased alcohol use"
+            ],
+            "important": "Fathers: your mental health matters as much as the mother's. Asking for help is not weakness — it's taking care of your family. If you're struggling, talk to a professional."
+          }
+        ]
+      }
+    },
+    "symptoms": {
+      "title": "Recognizing the Signs",
+      "intro": "Symptoms of perinatal mood disorders vary from person to person and in intensity. Not every mother will experience all of them. Recognizing these signs is the first step — and the bravest one — to seeking help.",
+      "categories": {
+        "emotional": {
+          "title": "Emotional Symptoms",
+          "icon": "Heart",
+          "items": [
+            "Deep and persistent sadness",
+            "Frequent crying, sometimes for no reason",
+            "Feeling of emptiness or disconnection",
+            "Hopelessness — feeling that nothing will get better",
+            "Intense and irrational guilt",
+            "Disproportionate irritability or anger",
+            "Constant anxiety about the baby",
+            "Fear of being alone with the baby",
+            "Feeling like you don't deserve to be a mother",
+            "Loss of interest in things that once brought joy"
+          ]
+        },
+        "physical": {
+          "title": "Physical Symptoms",
+          "icon": "Activity",
+          "items": [
+            "Extreme fatigue that doesn't improve with rest",
+            "Appetite changes — eating too much or unable to eat",
+            "Insomnia even when the baby is sleeping",
+            "Sleeping too much and still feeling exhausted",
+            "Frequent tension headaches",
+            "Muscle tension, especially in neck and shoulders",
+            "Palpitations or chest tightness",
+            "Shortness of breath or difficulty breathing",
+            "Gastrointestinal problems",
+            "Low energy for basic activities"
+          ]
+        },
+        "behavioral": {
+          "title": "Behavioral Symptoms",
+          "icon": "Users",
+          "items": [
+            "Isolating from family and friends",
+            "Difficulty bonding with the baby",
+            "Neglecting self-care",
+            "Avoiding leaving the house",
+            "Difficulty making simple decisions",
+            "Repeatedly checking if baby is breathing",
+            "Excessive cleaning rituals",
+            "Avoiding activities for fear of harming baby",
+            "Unable to take care of house or yourself",
+            "Loss of interest in partner"
+          ]
+        },
+        "cognitive": {
+          "title": "Cognitive Symptoms",
+          "icon": "Brain",
+          "items": [
+            "Difficulty concentrating ('brain fog')",
+            "Frequent forgetfulness",
+            "Recurring negative thoughts about yourself",
+            "Intrusive and frightening thoughts",
+            "Mental confusion and difficulty reasoning",
+            "Thoughts that the baby would be better off without you",
+            "Thoughts of death or desire to 'disappear'",
+            "Difficulty planning or organizing",
+            "Feeling 'disconnected' from reality"
+          ]
+        }
+      },
+      "timeline": {
+        "title": "When Symptoms May Appear",
+        "items": [
+          {
+            "period": "0-2 weeks",
+            "description": "Baby blues is common and expected. Crying, irritability, and mood swings that naturally improve."
+          },
+          {
+            "period": "2-6 weeks",
+            "description": "If baby blues symptoms haven't improved or have worsened, it may indicate PPD. Important time to seek evaluation."
+          },
+          {
+            "period": "6 weeks - 6 months",
+            "description": "Most cases of PPD manifest during this period. Stay alert to signs and don't hesitate to ask for help."
+          },
+          {
+            "period": "6 - 12 months",
+            "description": "PPD can appear up to 1 year after birth. Don't dismiss symptoms because 'it's been a while'."
+          }
+        ]
+      },
+      "redFlags": {
+        "title": "⚠️ Warning Signs — Seek Help IMMEDIATELY",
+        "items": [
+          "Thoughts of harming yourself or suicide",
+          "Actual desire to harm the baby (different from intrusive thoughts)",
+          "Hearing voices or seeing things others don't see",
+          "Delusions or bizarre beliefs",
+          "Severe mental confusion",
+          "Unable to sleep for several consecutive days",
+          "Very accelerated or disorganized behavior",
+          "Feeling that you or the baby are in real danger"
+        ],
+        "action": "If you are experiencing any of these signs, this is a MEDICAL EMERGENCY. Call 988, 911, or go immediately to the emergency room."
+      }
+    },
+    "selfAssessment": {
+      "title": "Edinburgh Postnatal Depression Scale (EPDS)",
+      "intro": "This questionnaire is an internationally validated tool to identify symptoms of postpartum depression. Answer based on how you have felt in the last 7 days.",
+      "disclaimer": "IMPORTANT: This is a SCREENING tool and does NOT replace professional diagnosis. If you are suffering, seek help.",
+      "questions": [
+        {
+          "question": "I have been able to laugh and see the funny side of things",
+          "options": [
+            { "text": "As much as I always could", "score": 0 },
+            { "text": "Not quite so much now", "score": 1 },
+            { "text": "Definitely not so much now", "score": 2 },
+            { "text": "Not at all", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have looked forward with enjoyment to things",
+          "options": [
+            { "text": "As much as I ever did", "score": 0 },
+            { "text": "Rather less than I used to", "score": 1 },
+            { "text": "Definitely less than I used to", "score": 2 },
+            { "text": "Hardly at all", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have blamed myself unnecessarily when things went wrong",
+          "options": [
+            { "text": "No, never", "score": 0 },
+            { "text": "Not very often", "score": 1 },
+            { "text": "Yes, sometimes", "score": 2 },
+            { "text": "Yes, most of the time", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have been anxious or worried for no good reason",
+          "options": [
+            { "text": "No, not at all", "score": 0 },
+            { "text": "Hardly ever", "score": 1 },
+            { "text": "Yes, sometimes", "score": 2 },
+            { "text": "Yes, very often", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have felt scared or panicky for no very good reason",
+          "options": [
+            { "text": "No, not at all", "score": 0 },
+            { "text": "No, not much", "score": 1 },
+            { "text": "Yes, sometimes", "score": 2 },
+            { "text": "Yes, quite a lot", "score": 3 }
+          ]
+        },
+        {
+          "question": "Things have been getting on top of me",
+          "options": [
+            { "text": "No, I have been coping as well as ever", "score": 0 },
+            { "text": "No, most of the time I cope quite well", "score": 1 },
+            { "text": "Yes, sometimes I haven't been coping as well", "score": 2 },
+            { "text": "Yes, most of the time I haven't been able to cope", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have been so unhappy that I have had difficulty sleeping",
+          "options": [
+            { "text": "No, not at all", "score": 0 },
+            { "text": "Not very often", "score": 1 },
+            { "text": "Yes, sometimes", "score": 2 },
+            { "text": "Yes, most of the time", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have felt sad or miserable",
+          "options": [
+            { "text": "No, not at all", "score": 0 },
+            { "text": "Not very often", "score": 1 },
+            { "text": "Yes, quite often", "score": 2 },
+            { "text": "Yes, most of the time", "score": 3 }
+          ]
+        },
+        {
+          "question": "I have been so unhappy that I have been crying",
+          "options": [
+            { "text": "No, never", "score": 0 },
+            { "text": "Only occasionally", "score": 1 },
+            { "text": "Yes, quite often", "score": 2 },
+            { "text": "Yes, most of the time", "score": 3 }
+          ]
+        },
+        {
+          "question": "The thought of harming myself has occurred to me",
+          "options": [
+            { "text": "Never", "score": 0 },
+            { "text": "Hardly ever", "score": 1 },
+            { "text": "Sometimes", "score": 2 },
+            { "text": "Yes, quite often", "score": 3 }
+          ]
+        }
+      ],
+      "results": {
+        "low": {
+          "range": "0-9",
+          "title": "Low likelihood of postpartum depression",
+          "description": "Your symptoms appear to be within the expected range for the postpartum period. Keep taking care of yourself.",
+          "recommendation": "Keep your support network active, accept help, prioritize rest when possible, and don't hesitate to retake this test if your feelings change."
+        },
+        "moderate": {
+          "range": "10-12",
+          "title": "Possible signs of depression — attention recommended",
+          "description": "Some of your symptoms deserve professional attention. This doesn't mean you're failing.",
+          "recommendation": "It would be very important to schedule an appointment with your doctor or a mental health professional for a more complete evaluation."
+        },
+        "high": {
+          "range": "13-30",
+          "title": "Significant signs — seek help soon",
+          "description": "Your symptoms indicate you're probably going through a very difficult time. You are not alone.",
+          "recommendation": "It's very important to seek professional help as soon as possible. Talk to your doctor or call the 988 Lifeline if you need immediate support."
+        }
+      },
+      "buttons": {
+        "start": "Start Assessment",
+        "next": "Next",
+        "previous": "Previous",
+        "finish": "See Result",
+        "restart": "Retake Test",
+        "share": "Share with Professional"
+      }
+    },
+    "whenToSeekHelp": {
+      "title": "When and How to Seek Help",
+      "intro": "Asking for help is not weakness — it's one of the most courageous and loving decisions you can make for yourself and your baby.",
+      "signs": {
+        "title": "Seek professional help if you:",
+        "items": [
+          "Feel sadness or hopelessness most of the day",
+          "Lost interest in things you used to enjoy",
+          "Have difficulty connecting with your baby",
+          "Feel like you can't take care of yourself",
+          "Have thoughts that scare you",
+          "Feel constantly overwhelmed",
+          "Are having difficulty sleeping",
+          "Feel disproportionately irritable or angry",
+          "Have thoughts of harming yourself",
+          "Symptoms persist for more than 2 weeks"
+        ]
+      },
+      "professionals": {
+        "title": "Who can help",
+        "items": [
+          {
+            "title": "OB/GYN",
+            "description": "Can do initial evaluation, rule out physical causes, and refer to specialists."
+          },
+          {
+            "title": "Psychologist",
+            "description": "Offers specialized psychotherapy. Cognitive behavioral therapy is especially effective."
+          },
+          {
+            "title": "Psychiatrist",
+            "description": "Specialized doctor who can evaluate, diagnose, and prescribe medications when needed."
+          },
+          {
+            "title": "Family Doctor",
+            "description": "Can do initial evaluation and refer to specialists when needed."
+          }
+        ]
+      },
+      "treatments": {
+        "title": "Treatment Options",
+        "items": [
+          {
+            "title": "Psychotherapy",
+            "description": "Talking with a trained professional can transform your experience. Therapy helps process emotions and develop coping strategies."
+          },
+          {
+            "title": "Medication",
+            "description": "Antidepressants can be very effective, especially for moderate to severe cases. Many medications are safe during breastfeeding."
+          },
+          {
+            "title": "Support Groups",
+            "description": "Sharing experiences with other mothers who understand what you're going through can be deeply therapeutic."
+          },
+          {
+            "title": "Combined Treatment",
+            "description": "For many women, the combination of psychotherapy and medication offers the best results."
+          }
+        ]
+      },
+      "firstVisit": {
+        "title": "What to expect from the first visit",
+        "items": [
+          "The professional will create a safe, non-judgmental environment",
+          "You'll be asked about your symptoms and how they affect your life",
+          "Questions about mental health history are normal",
+          "There may be screening questionnaires",
+          "You'll have space to ask questions",
+          "Together, you'll create an initial care plan",
+          "It's normal to feel nervous",
+          "You will NOT be judged and they will NOT take your baby"
+        ]
+      },
+      "family": {
+        "title": "How family and partners can help",
+        "items": [
+          "LISTEN without trying to fix",
+          "Offer PRACTICAL help: take care of the baby, cook, clean",
+          "AVOID phrases like 'you should be happy'",
+          "DON'T MINIMIZE what she's feeling",
+          "ENCOURAGE seeking professional help",
+          "ACCOMPANY to appointments if she wishes",
+          "REMIND her this is not her fault",
+          "TAKE CARE of yourself too",
+          "BE PATIENT — recovery takes time"
+        ]
+      }
+    },
+    "resources": {
+      "title": "Resource and Support Center",
+      "intro": "You don't have to face this alone. There are many people and resources available to help you on this journey.",
+      "emergency": {
+        "title": "🆘 Emergency and Crisis — Immediate Help",
+        "items": [
+          {
+            "name": "988 Suicide & Crisis Lifeline",
+            "contact": "988",
+            "description": "24/7 emotional support. FREE call or text.",
+            "type": "phone"
+          },
+          {
+            "name": "911",
+            "contact": "911",
+            "description": "For medical emergencies, including severe mental health crises.",
+            "type": "phone"
+          },
+          {
+            "name": "Postpartum Support International Helpline",
+            "contact": "1-800-944-4773",
+            "description": "Specialized support for perinatal mental health concerns.",
+            "type": "phone"
+          },
+          {
+            "name": "Crisis Text Line",
+            "contact": "Text HOME to 741741",
+            "description": "Free 24/7 support via text message.",
+            "type": "phone"
+          }
+        ]
+      },
+      "online": {
+        "title": "🌐 Online Resources",
+        "items": [
+          {
+            "name": "Postpartum Support International",
+            "url": "https://postpartum.net",
+            "description": "Comprehensive resources, online support groups, and professional directory."
+          },
+          {
+            "name": "Psychology Today",
+            "url": "https://psychologytoday.com",
+            "description": "Find therapists and psychiatrists in your area."
+          },
+          {
+            "name": "SAMHSA Treatment Locator",
+            "url": "https://findtreatment.samhsa.gov",
+            "description": "Find mental health treatment facilities and resources."
+          }
+        ]
+      },
+      "apps": {
+        "title": "📱 Support Apps",
+        "items": [
+          {
+            "name": "Headspace",
+            "description": "Guided meditation and mindfulness. Has specific sections for sleep and anxiety."
+          },
+          {
+            "name": "Calm",
+            "description": "Meditation, sleep stories, and relaxation exercises."
+          },
+          {
+            "name": "Daylio",
+            "description": "Mood diary to track your feelings over time."
+          }
+        ]
+      },
+      "books": {
+        "title": "📚 Recommended Books",
+        "items": [
+          {
+            "title": "This Isn't What I Expected",
+            "author": "Karen Kleiman & Valerie Raskin",
+            "description": "Classic practical guide for overcoming postpartum depression."
+          },
+          {
+            "title": "Good Moms Have Scary Thoughts",
+            "author": "Karen Kleiman",
+            "description": "Illustrated book that normalizes intrusive thoughts."
+          },
+          {
+            "title": "The Postpartum Husband",
+            "author": "Karen Kleiman",
+            "description": "Practical guide written specifically for partners."
+          },
+          {
+            "title": "Motherhood: Facing and Finding Yourself",
+            "author": "Lisa Marchiano",
+            "description": "Addresses the psychological transformation of motherhood."
+          }
+        ]
+      },
+      "forPartners": {
+        "title": "💑 For Partners and Family",
+        "content": "If you're here because someone you love may have PPD, your role is fundamental. Your support can accelerate recovery and make all the difference. Learn about PPD, offer practical help without waiting to be asked, avoid giving advice and just listen. Don't minimize her feelings, gently encourage seeking professional help, and take care of the baby so she can rest. Remind her this is not her fault. And don't forget to take care of yourself too — you can't help if you're exhausted."
+      }
+    }
+  },
+  "es": {
+    "title": "Salud Mental Perinatal",
+    "subtitle": "No estás sola. Entiende, reconoce y busca ayuda.",
+    "navigation": {
+      "overview": "Visión General",
+      "symptoms": "Síntomas",
+      "selfAssessment": "Auto-Evaluación",
+      "support": "Buscar Ayuda",
+      "resources": "Recursos"
+    },
+    "emergency": {
+      "title": "¿En crisis? Llama ahora:",
+      "cvv": "024"
+    },
+    "disclaimer": "Este contenido es informativo y no sustituye la evaluación profesional. Si estás sufriendo, busca ayuda especializada.",
+    "overview": {
+      "title": "El Espectro de Trastornos Perinatales",
+      "intro": "La maternidad es una experiencia transformadora que trae inmensas alegrías, pero también desafíos significativos. Las dificultades emocionales en el período perinatal son mucho más comunes de lo que se imagina — y lo más importante: son tratables. No estás sola.",
+      "whatIs": {
+        "title": "¿Qué es la Depresión Posparto?",
+        "content": "La Depresión Posparto (DPP) es un trastorno del estado de ánimo serio que afecta al 15-20% de las madres después del nacimiento del bebé. A diferencia de la tristeza pasajera del 'baby blues', la DPP es más intensa, persistente y puede interferir significativamente en tu vida y en el cuidado del bebé. Afecta a 1 de cada 5 madres — no estás sola. Puede surgir en cualquier momento del primer año después del parto. NO es debilidad, falta de amor o tu culpa. Es una condición médica con causas biológicas, hormonales y ambientales. Es tratable — con el apoyo adecuado, la recuperación es posible y esperada."
+      },
+      "babyBlues": {
+        "title": "Baby Blues vs Depresión Posparto",
+        "blues": {
+          "title": "Baby Blues (Normal)",
+          "items": [
+            "Afecta hasta el 80% de las madres",
+            "Dura hasta 2 semanas",
+            "Llanto fácil y sin motivo aparente",
+            "Irritabilidad leve",
+            "Ansiedad por el bebé",
+            "Cambios de humor rápidos",
+            "Dificultad para dormir",
+            "Sensación de sobrecarga",
+            "Mejora naturalmente con descanso y apoyo"
+          ]
+        },
+        "dpp": {
+          "title": "Depresión Posparto (Requiere Atención)",
+          "items": [
+            "Afecta al 15-20% de las madres",
+            "Dura más de 2 semanas",
+            "Tristeza profunda y persistente",
+            "Pérdida de interés en el bebé o en sí misma",
+            "Pensamientos de inadecuación o culpa intensa",
+            "Dificultad extrema para dormir (incluso cuando el bebé duerme)",
+            "Pensamientos aterradores o intrusivos",
+            "Dificultad para conectar con el bebé",
+            "Requiere tratamiento profesional"
+          ]
+        }
+      },
+      "riskFactors": {
+        "title": "Factores de Riesgo",
+        "items": [
+          "Historial personal de depresión o ansiedad",
+          "Historial familiar de trastornos del estado de ánimo",
+          "Depresión o ansiedad durante el embarazo",
+          "Parto traumático o con complicaciones",
+          "Bebé en UCI neonatal",
+          "Falta de red de apoyo",
+          "Problemas en la relación",
+          "Dificultades financieras",
+          "Embarazo no planificado",
+          "Problemas de lactancia",
+          "Historial de trauma o abuso",
+          "Privación severa de sueño",
+          "Bebé con cólicos intensos",
+          "DPP en embarazo anterior"
+        ]
+      },
+      "myths": {
+        "title": "Mitos y Verdades",
+        "items": [
+          {
+            "myth": "Las madres con DPP no aman a sus bebés",
+            "truth": "El amor existe, pero la enfermedad crea una barrera para sentir y expresar ese amor. Con tratamiento, el vínculo florece."
+          },
+          {
+            "myth": "Es solo cansancio — pasará solo",
+            "truth": "Aunque el cansancio es normal en el posparto, los síntomas persistentes por más de 2 semanas no son 'solo cansancio' y merecen atención."
+          },
+          {
+            "myth": "Si pido ayuda, me quitarán a mi bebé",
+            "truth": "Buscar ayuda demuestra responsabilidad y amor. Los profesionales de salud quieren ayudarte a recuperarte, no separar familias."
+          },
+          {
+            "myth": "Los antidepresivos son peligrosos durante la lactancia",
+            "truth": "Existen varias medicaciones seguras y bien estudiadas para uso durante la lactancia. Tu médico puede orientarte."
+          },
+          {
+            "myth": "La DPP solo comienza justo después del parto",
+            "truth": "La DPP puede surgir en cualquier momento del primer año después del nacimiento. No descartes síntomas porque 'ya pasó mucho tiempo'."
+          },
+          {
+            "myth": "Solo las madres primerizas tienen DPP",
+            "truth": "La DPP puede ocurrir en cualquier embarazo, incluso si no la tuviste en el primero."
+          },
+          {
+            "myth": "Los pensamientos malos sobre el bebé significan que soy peligrosa",
+            "truth": "Los pensamientos intrusivos son síntoma de TOC perinatal, no indican riesgo real. Las madres con estos pensamientos tienen MIEDO de hacer daño — esto es protector."
+          },
+          {
+            "myth": "Si tengo DPP, seré una mala madre para siempre",
+            "truth": "Con tratamiento adecuado, la mayoría de las madres se recupera completamente. La DPP no define quién eres como madre."
+          }
+        ]
+      },
+      "message": {
+        "title": "Mereces Cuidado y Apoyo",
+        "content": "Sentirte así no es tu culpa. No elegiste esto y no has fallado como madre. Lo que estás viviendo tiene nombre, tiene tratamiento y tiene fin. Miles de mujeres pasaron por esto y se recuperaron — algunas son tus amigas, colegas, o mujeres que admiras. Con el apoyo adecuado, tú también pasarás por esto. Eres más fuerte de lo que piensas, y pedir ayuda es un acto de coraje y amor."
+      },
+      "spectrum": {
+        "title": "El Espectro de Trastornos Perinatales",
+        "intro": "Además de la Depresión Posparto, existen otras condiciones que pueden afectar la salud mental en el período perinatal. Conocer estas condiciones ayuda a identificar señales y buscar el tratamiento adecuado.",
+        "conditions": [
+          {
+            "id": "anxiety",
+            "name": "Ansiedad Posparto",
+            "icon": "AlertCircle",
+            "color": "blue",
+            "prevalence": "15-20% de las madres",
+            "description": "Preocupación intensa y persistente que va más allá de lo normal. A diferencia de la DPP, el foco principal son miedos y preocupaciones excesivas, no necesariamente tristeza.",
+            "symptoms": [
+              "Preocupación constante y desproporcionada",
+              "Sensación de que algo malo va a pasar",
+              "Dificultad para relajarse o desconectar la mente",
+              "Síntomas físicos: corazón acelerado, tensión, temblores",
+              "Ataques de pánico",
+              "Evitar situaciones por miedo",
+              "Dificultad para dormir por preocupación"
+            ],
+            "important": "La ansiedad posparto puede ocurrir junto con la DPP. Es muy tratable con terapia y, cuando es necesario, medicación."
+          },
+          {
+            "id": "ocd",
+            "name": "TOC Perinatal",
+            "icon": "Brain",
+            "color": "teal",
+            "prevalence": "3-5% de las madres",
+            "description": "Se caracteriza por pensamientos intrusivos, indeseados y repetitivos (obsesiones), frecuentemente sobre dañar al bebé. La diferencia crucial: las madres con TOC tienen MIEDO de estos pensamientos y NO quieren actuar en ellos.",
+            "symptoms": [
+              "Pensamientos intrusivos y aterradores sobre el bebé",
+              "Imágenes mentales indeseadas de daño al bebé",
+              "Miedo intenso de ser una 'mala madre'",
+              "Comportamientos repetitivos para 'neutralizar' los pensamientos",
+              "Verificar repetidamente si el bebé está respirando",
+              "Evitar objetos cortantes o situaciones 'peligrosas'",
+              "Angustia extrema por tener estos pensamientos"
+            ],
+            "important": "Tener pensamientos intrusivos NO significa que vas a actuar en ellos. El propio miedo y angustia que sientes son PROTECTORES. Las madres con TOC perinatal NO hacen daño a sus bebés — tienen miedo de hacerlo, lo cual es completamente diferente."
+          },
+          {
+            "id": "ptsd",
+            "name": "TEPT Posparto",
+            "icon": "Shield",
+            "color": "gray",
+            "prevalence": "9% de las madres",
+            "description": "Puede ocurrir después de un parto traumático, complicaciones graves, o experiencias de pérdida. Involucra revivir el trauma a través de flashbacks, pesadillas y evitación.",
+            "symptoms": [
+              "Flashbacks o memorias intrusivas del parto",
+              "Pesadillas sobre el parto o trauma",
+              "Evitar hablar sobre el parto",
+              "Evitar consultas médicas u hospitales",
+              "Sentirse emocionalmente entumecida",
+              "Hipervigilancia y sobresalto fácil",
+              "Irritabilidad y rabia",
+              "Sentimientos de culpa o vergüenza sobre el parto"
+            ],
+            "important": "El trauma de parto es real y válido, incluso si otros dicen que 'todo salió bien al final'. Tus experiencias y sentimientos importan."
+          },
+          {
+            "id": "psychosis",
+            "name": "Psicosis Puerperal",
+            "icon": "AlertTriangle",
+            "color": "red",
+            "prevalence": "0.1-0.2% de las madres",
+            "description": "Una emergencia médica rara pero grave que generalmente surge en las primeras 2 semanas después del parto. Requiere atención médica INMEDIATA.",
+            "symptoms": [
+              "Alucinaciones (ver u oír cosas que otros no ven)",
+              "Delirios (creencias bizarras o paranoicas)",
+              "Confusión mental severa",
+              "Agitación extrema o comportamiento desorganizado",
+              "Incapacidad de dormir por días",
+              "Cambios rápidos de humor",
+              "Pensamientos o comportamientos que ponen en riesgo a sí misma o al bebé"
+            ],
+            "important": "⚠️ EMERGENCIA MÉDICA: Si tú o alguien que conoces está presentando estos síntomas, llama INMEDIATAMENTE al servicio de emergencias o ve a urgencias. La psicosis puerperal es tratable, pero requiere intervención médica urgente."
+          },
+          {
+            "id": "paternal",
+            "name": "Depresión Posparto Paterna",
+            "icon": "Users",
+            "color": "purple",
+            "prevalence": "8-10% de los padres",
+            "description": "Los padres también pueden desarrollar depresión posparto. Muchas veces no se reconoce porque los síntomas pueden manifestarse de forma diferente.",
+            "symptoms": [
+              "Irritabilidad y rabia (más común que tristeza)",
+              "Aislarse de la familia",
+              "Trabajar excesivamente para evitar estar en casa",
+              "Comportamientos de riesgo o impulsivos",
+              "Dificultad para conectar con el bebé",
+              "Sentirse sobrecargado o inadecuado",
+              "Problemas de sueño o fatiga",
+              "Pérdida de interés en hobbies",
+              "Uso aumentado de alcohol"
+            ],
+            "important": "Padres: su salud mental importa tanto como la de la madre. Pedir ayuda no es debilidad — es cuidar de su familia. Si estás luchando, habla con un profesional."
+          }
+        ]
+      }
+    },
+    "symptoms": {
+      "title": "Reconociendo las Señales",
+      "intro": "Los síntomas de los trastornos del estado de ánimo perinatales varían de persona a persona y en intensidad. No toda madre experimentará todos ellos. Reconocer estas señales es el primer paso — y el más valiente — para buscar ayuda.",
+      "categories": {
+        "emotional": {
+          "title": "Síntomas Emocionales",
+          "icon": "Heart",
+          "items": [
+            "Tristeza profunda y persistente",
+            "Llanto frecuente, a veces sin motivo",
+            "Sentimiento de vacío o desconexión",
+            "Desesperanza — sensación de que nada mejorará",
+            "Culpa intensa e irracional",
+            "Irritabilidad desproporcionada o rabia",
+            "Ansiedad constante sobre el bebé",
+            "Miedo de quedarse sola con el bebé",
+            "Sensación de no merecer ser madre",
+            "Pérdida de interés en cosas que antes traían alegría"
+          ]
+        },
+        "physical": {
+          "title": "Síntomas Físicos",
+          "icon": "Activity",
+          "items": [
+            "Fatiga extrema que no mejora con descanso",
+            "Cambios de apetito — comer demasiado o no poder comer",
+            "Insomnio incluso cuando el bebé duerme",
+            "Dormir demasiado y aún sentirse agotada",
+            "Dolores de cabeza tensionales frecuentes",
+            "Tensión muscular, especialmente en cuello y hombros",
+            "Palpitaciones o sensación de opresión en el pecho",
+            "Falta de aire o dificultad para respirar",
+            "Problemas gastrointestinales",
+            "Baja energía para actividades básicas"
+          ]
+        },
+        "behavioral": {
+          "title": "Síntomas de Comportamiento",
+          "icon": "Users",
+          "items": [
+            "Aislarse de familia y amigos",
+            "Dificultad de crear vínculo con el bebé",
+            "Descuidar el autocuidado",
+            "Evitar salir de casa",
+            "Dificultad para tomar decisiones simples",
+            "Verificar repetidamente si el bebé respira",
+            "Rituales excesivos de limpieza",
+            "Evitar actividades por miedo a lastimar al bebé",
+            "No poder cuidar la casa o de sí misma",
+            "Pérdida de interés en la pareja"
+          ]
+        },
+        "cognitive": {
+          "title": "Síntomas Cognitivos",
+          "icon": "Brain",
+          "items": [
+            "Dificultad de concentración ('niebla mental')",
+            "Olvidos frecuentes",
+            "Pensamientos negativos recurrentes sobre sí misma",
+            "Pensamientos intrusivos y aterradores",
+            "Confusión mental y dificultad de razonar",
+            "Pensamientos de que el bebé estaría mejor sin ti",
+            "Pensamientos de muerte o deseo de 'desaparecer'",
+            "Dificultad para planificar u organizar",
+            "Sensación de estar 'desconectada' de la realidad"
+          ]
+        }
+      },
+      "timeline": {
+        "title": "Cuándo Pueden Aparecer los Síntomas",
+        "items": [
+          {
+            "period": "0-2 semanas",
+            "description": "El baby blues es común y esperado. Llanto, irritabilidad y oscilaciones de humor que mejoran naturalmente."
+          },
+          {
+            "period": "2-6 semanas",
+            "description": "Si los síntomas del baby blues no mejoraron o empeoraron, puede indicar DPP. Momento importante para buscar evaluación."
+          },
+          {
+            "period": "6 semanas - 6 meses",
+            "description": "La mayoría de los casos de DPP se manifiestan en este período. Esté atenta a las señales y no dude en pedir ayuda."
+          },
+          {
+            "period": "6 - 12 meses",
+            "description": "La DPP puede surgir hasta 1 año después del parto. No descartes síntomas porque 'ya hace tiempo'."
+          }
+        ]
+      },
+      "redFlags": {
+        "title": "⚠️ Señales de Alerta — Busca Ayuda INMEDIATAMENTE",
+        "items": [
+          "Pensamientos de hacerte daño o de suicidio",
+          "Deseo real de lastimar al bebé (diferente de pensamientos intrusivos)",
+          "Escuchar voces o ver cosas que otros no ven",
+          "Delirios o creencias bizarras",
+          "Confusión mental severa",
+          "No poder dormir por varios días seguidos",
+          "Comportamiento muy acelerado o desorganizado",
+          "Sentir que tú o el bebé están en peligro real"
+        ],
+        "action": "Si estás experimentando cualquiera de estas señales, esto es una EMERGENCIA MÉDICA. Llama al 024, 112, o ve inmediatamente a urgencias."
+      }
+    },
+    "selfAssessment": {
+      "title": "Escala de Depresión Posparto de Edimburgo (EPDS)",
+      "intro": "Este cuestionario es una herramienta validada internacionalmente para identificar síntomas de depresión posparto. Responde según cómo te has sentido en los últimos 7 días.",
+      "disclaimer": "IMPORTANTE: Esta es una herramienta de TAMIZAJE y NO sustituye el diagnóstico profesional. Si estás sufriendo, busca ayuda.",
+      "questions": [
+        {
+          "question": "He sido capaz de reír y ver el lado divertido de las cosas",
+          "options": [
+            { "text": "Tanto como siempre", "score": 0 },
+            { "text": "No tanto ahora", "score": 1 },
+            { "text": "Mucho menos ahora", "score": 2 },
+            { "text": "No, para nada", "score": 3 }
+          ]
+        },
+        {
+          "question": "He mirado el futuro con placer",
+          "options": [
+            { "text": "Tanto como siempre", "score": 0 },
+            { "text": "Algo menos de lo que solía hacer", "score": 1 },
+            { "text": "Definitivamente menos de lo que solía hacer", "score": 2 },
+            { "text": "Prácticamente nunca", "score": 3 }
+          ]
+        },
+        {
+          "question": "Me he culpado sin necesidad cuando las cosas marchaban mal",
+          "options": [
+            { "text": "No, nunca", "score": 0 },
+            { "text": "No muy a menudo", "score": 1 },
+            { "text": "Sí, a veces", "score": 2 },
+            { "text": "Sí, la mayoría del tiempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "He estado ansiosa o preocupada sin motivo",
+          "options": [
+            { "text": "No, para nada", "score": 0 },
+            { "text": "Casi nunca", "score": 1 },
+            { "text": "Sí, a veces", "score": 2 },
+            { "text": "Sí, muy a menudo", "score": 3 }
+          ]
+        },
+        {
+          "question": "He sentido miedo o pánico sin motivo alguno",
+          "options": [
+            { "text": "No, para nada", "score": 0 },
+            { "text": "No, no mucho", "score": 1 },
+            { "text": "Sí, a veces", "score": 2 },
+            { "text": "Sí, bastante", "score": 3 }
+          ]
+        },
+        {
+          "question": "Las cosas me oprimen o agobian",
+          "options": [
+            { "text": "No, he podido hacer las cosas bien como siempre", "score": 0 },
+            { "text": "No, la mayoría de las veces he podido hacer las cosas bien", "score": 1 },
+            { "text": "Sí, a veces no he podido hacer las cosas tan bien", "score": 2 },
+            { "text": "Sí, la mayoría de las veces no he podido hacer las cosas", "score": 3 }
+          ]
+        },
+        {
+          "question": "Me he sentido tan infeliz que he tenido dificultad para dormir",
+          "options": [
+            { "text": "No, para nada", "score": 0 },
+            { "text": "No muy a menudo", "score": 1 },
+            { "text": "Sí, a veces", "score": 2 },
+            { "text": "Sí, la mayoría de las veces", "score": 3 }
+          ]
+        },
+        {
+          "question": "Me he sentido triste o desgraciada",
+          "options": [
+            { "text": "No, para nada", "score": 0 },
+            { "text": "No muy a menudo", "score": 1 },
+            { "text": "Sí, bastante a menudo", "score": 2 },
+            { "text": "Sí, la mayor parte del tiempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "Me he sentido tan infeliz que he estado llorando",
+          "options": [
+            { "text": "No, nunca", "score": 0 },
+            { "text": "Solo ocasionalmente", "score": 1 },
+            { "text": "Sí, bastante a menudo", "score": 2 },
+            { "text": "Sí, la mayor parte del tiempo", "score": 3 }
+          ]
+        },
+        {
+          "question": "He pensado en hacerme daño",
+          "options": [
+            { "text": "Nunca", "score": 0 },
+            { "text": "Casi nunca", "score": 1 },
+            { "text": "A veces", "score": 2 },
+            { "text": "Sí, bastante a menudo", "score": 3 }
+          ]
+        }
+      ],
+      "results": {
+        "low": {
+          "range": "0-9",
+          "title": "Baja probabilidad de depresión posparto",
+          "description": "Tus síntomas parecen estar dentro de lo esperado para el período posparto. Continúa cuidándote.",
+          "recommendation": "Mantén tu red de apoyo activa, acepta ayuda, prioriza el descanso cuando sea posible y no dudes en repetir este test si tus sentimientos cambian."
+        },
+        "moderate": {
+          "range": "10-12",
+          "title": "Posibles signos de depresión — atención recomendada",
+          "description": "Algunos de tus síntomas merecen atención profesional. Esto no significa que estás fallando.",
+          "recommendation": "Sería muy importante agendar una consulta con tu médico o un profesional de salud mental para una evaluación más completa."
+        },
+        "high": {
+          "range": "13-30",
+          "title": "Signos significativos — busca ayuda pronto",
+          "description": "Tus síntomas indican que probablemente estás pasando por un momento muy difícil. No estás sola.",
+          "recommendation": "Es muy importante buscar ayuda profesional lo antes posible. Habla con tu médico o llama al 024 si necesitas apoyo inmediato."
+        }
+      },
+      "buttons": {
+        "start": "Iniciar Evaluación",
+        "next": "Siguiente",
+        "previous": "Anterior",
+        "finish": "Ver Resultado",
+        "restart": "Repetir Test",
+        "share": "Compartir con Profesional"
+      }
+    },
+    "whenToSeekHelp": {
+      "title": "Cuándo y Cómo Buscar Ayuda",
+      "intro": "Pedir ayuda no es debilidad — es una de las decisiones más valientes y amorosas que puedes tomar por ti misma y por tu bebé.",
+      "signs": {
+        "title": "Busca ayuda profesional si:",
+        "items": [
+          "Sientes tristeza o desesperanza la mayor parte del día",
+          "Perdiste interés en cosas que antes disfrutabas",
+          "Tienes dificultad para conectar con tu bebé",
+          "Sientes que no puedes cuidar de ti misma",
+          "Tienes pensamientos que te asustan",
+          "Te sientes constantemente agobiada",
+          "Tienes dificultad para dormir",
+          "Te sientes irritable o con rabia desproporcionada",
+          "Tienes pensamientos de hacerte daño",
+          "Los síntomas persisten por más de 2 semanas"
+        ]
+      },
+      "professionals": {
+        "title": "Quién puede ayudar",
+        "items": [
+          {
+            "title": "Ginecólogo/Obstetra",
+            "description": "Puede hacer evaluación inicial, descartar causas físicas y derivar a especialistas."
+          },
+          {
+            "title": "Psicólogo/a",
+            "description": "Ofrece psicoterapia especializada. La terapia cognitivo-conductual es especialmente eficaz."
+          },
+          {
+            "title": "Psiquiatra",
+            "description": "Médico especializado que puede evaluar, diagnosticar y prescribir medicamentos cuando sea necesario."
+          },
+          {
+            "title": "Médico de Familia",
+            "description": "Puede hacer evaluación inicial y derivar a especialistas cuando sea necesario."
+          }
+        ]
+      },
+      "treatments": {
+        "title": "Opciones de Tratamiento",
+        "items": [
+          {
+            "title": "Psicoterapia",
+            "description": "Hablar con un profesional entrenado puede transformar tu experiencia. La terapia ayuda a procesar emociones y desarrollar estrategias de afrontamiento."
+          },
+          {
+            "title": "Medicación",
+            "description": "Los antidepresivos pueden ser muy eficaces, especialmente para casos moderados a graves. Muchos medicamentos son seguros durante la lactancia."
+          },
+          {
+            "title": "Grupos de Apoyo",
+            "description": "Compartir experiencias con otras madres que entienden lo que estás pasando puede ser profundamente terapéutico."
+          },
+          {
+            "title": "Tratamiento Combinado",
+            "description": "Para muchas mujeres, la combinación de psicoterapia y medicación ofrece los mejores resultados."
+          }
+        ]
+      },
+      "firstVisit": {
+        "title": "Qué esperar de la primera consulta",
+        "items": [
+          "El profesional creará un ambiente seguro y sin juicios",
+          "Te preguntarán sobre tus síntomas y cómo afectan tu vida",
+          "Las preguntas sobre historial de salud mental son normales",
+          "Puede haber aplicación de cuestionarios de tamizaje",
+          "Tendrás espacio para hacer preguntas",
+          "Juntas, crearán un plan de cuidado inicial",
+          "Es normal sentir nerviosismo",
+          "NO serás juzgada y NO te quitarán a tu bebé"
+        ]
+      },
+      "family": {
+        "title": "Cómo la familia y parejas pueden ayudar",
+        "items": [
+          "ESCUCHAR sin intentar resolver",
+          "Ofrecer ayuda PRÁCTICA: cuidar del bebé, cocinar, limpiar",
+          "EVITAR frases como 'deberías estar feliz'",
+          "NO MINIMIZAR lo que ella está sintiendo",
+          "INCENTIVAR la búsqueda de ayuda profesional",
+          "ACOMPAÑAR a consultas si ella lo desea",
+          "RECORDARLE que esto no es su culpa",
+          "CUIDAR de ti también",
+          "SER PACIENTE — la recuperación lleva tiempo"
+        ]
+      }
+    },
+    "resources": {
+      "title": "Central de Recursos y Apoyo",
+      "intro": "No tienes que enfrentar esto sola. Hay muchas personas y recursos disponibles para ayudarte en este camino.",
+      "emergency": {
+        "title": "🆘 Emergencia y Crisis — Ayuda Inmediata",
+        "items": [
+          {
+            "name": "Teléfono de la Esperanza",
+            "contact": "024",
+            "description": "Apoyo emocional 24 horas. Llamada GRATUITA.",
+            "type": "phone"
+          },
+          {
+            "name": "112",
+            "contact": "112",
+            "description": "Para emergencias médicas, incluyendo crisis de salud mental graves.",
+            "type": "phone"
+          },
+          {
+            "name": "Centro de Salud Mental",
+            "contact": "Busca el más cercano",
+            "description": "Atención pública gratuita en salud mental.",
+            "type": "location"
+          },
+          {
+            "name": "Centro de Salud",
+            "contact": "Busca el de tu zona",
+            "description": "Puerta de entrada para evaluación inicial.",
+            "type": "location"
+          }
+        ]
+      },
+      "online": {
+        "title": "🌐 Recursos Online",
+        "items": [
+          {
+            "name": "Postpartum Support International",
+            "url": "https://postpartum.net",
+            "description": "Organización internacional con recursos en español y grupos de apoyo."
+          },
+          {
+            "name": "Doctoralia",
+            "url": "https://doctoralia.es",
+            "description": "Plataforma para encontrar y agendar con psicólogos y psiquiatras."
+          },
+          {
+            "name": "Teléfono de la Esperanza",
+            "url": "https://telefonodelaesperanza.org",
+            "description": "Apoyo emocional y orientación en crisis."
+          }
+        ]
+      },
+      "apps": {
+        "title": "📱 Aplicaciones de Apoyo",
+        "items": [
+          {
+            "name": "Headspace",
+            "description": "Meditación guiada y mindfulness. Tiene sección específica para sueño y ansiedad."
+          },
+          {
+            "name": "Calm",
+            "description": "Meditación, historias para dormir y ejercicios de relajación."
+          },
+          {
+            "name": "Daylio",
+            "description": "Diario de humor para acompañar tus sentimientos a lo largo del tiempo."
+          }
+        ]
+      },
+      "books": {
+        "title": "📚 Libros Recomendados",
+        "items": [
+          {
+            "title": "Mamá desobediente",
+            "author": "Esther Vivas",
+            "description": "Una mirada feminista a la maternidad."
+          },
+          {
+            "title": "No eres una mala madre",
+            "author": "Iria Marañón",
+            "description": "Cómo superar la culpa y el sentimiento de fracaso maternal."
+          },
+          {
+            "title": "Good Moms Have Scary Thoughts",
+            "author": "Karen Kleiman",
+            "description": "Libro ilustrado que normaliza los pensamientos intrusivos."
+          },
+          {
+            "title": "This Isn't What I Expected",
+            "author": "Karen Kleiman & Valerie Raskin",
+            "description": "Guía clásica y práctica para superar la depresión posparto."
+          }
+        ]
+      },
+      "forPartners": {
+        "title": "💑 Para Parejas y Familia",
+        "content": "Si estás aquí porque alguien que amas puede tener DPP, tu papel es fundamental. Tu apoyo puede acelerar la recuperación y hacer toda la diferencia. Infórmate sobre DPP, ofrece ayuda práctica sin esperar que te la pidan, evita dar consejos y simplemente escucha. No minimices sus sentimientos, incentiva gentilmente la búsqueda de ayuda profesional, y cuida del bebé para que ella pueda descansar. Recuérdale que esto no es su culpa. Y no olvides cuidar de ti también — no puedes ayudar si estás agotado/a."
+      }
+    }
+  }
+}
