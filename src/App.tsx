@@ -49,6 +49,7 @@ import FacaEmCasa from "./pages/FacaEmCasa";
 import Provador from "./pages/Provador";
 import Loja from "./pages/Loja";
 import AdminLoja from "./pages/AdminLoja";
+import AdminAlimentosComunidade from "./pages/AdminAlimentosComunidade";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
 import AdicionarRefeicao from "./pages/AdicionarRefeicao";
@@ -138,6 +139,7 @@ const App = () => (
             <Route path="/admin/banners" element={<AdminBanners />} />
             <Route path="/admin/treinos" element={<AdminTreinos />} />
             <Route path="/admin/loja" element={<AdminLoja />} />
+            <Route path="/admin/alimentos-comunidade" element={<AdminAlimentosComunidade />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />

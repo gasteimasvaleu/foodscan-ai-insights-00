@@ -132,7 +132,14 @@ const Alimentos = () => {
                 onClick={() => openFood(f)}
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-base text-foreground truncate">{f.name}</p>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <p className="text-base text-foreground truncate">{f.name}</p>
+                    {f.source === "community" && (
+                      <span className="flex-shrink-0 text-[10px] uppercase tracking-wide font-semibold text-[#FD46A1] bg-white/70 rounded-full px-2 py-0.5 border border-white">
+                        Comunidade
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">
                     {f.common_portion_label} • {Math.round(f.calories_per_100g * f.common_portion_g / 100)} kcal
                   </p>
