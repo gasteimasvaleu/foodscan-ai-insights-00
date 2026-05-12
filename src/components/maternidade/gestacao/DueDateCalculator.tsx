@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { matGet, matSet } from '@/lib/maternidadeStorage';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { Progress } from '@/components/ui/progress';
 import { addDays, differenceInDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -43,11 +43,11 @@ export const DueDateCalculator = () => {
 
       <div className="space-y-2">
         <label className="text-sm text-gray-700">Data da última menstruação</label>
-        <Input
-          type="date"
+        <MatDatePicker
           value={lastPeriod}
-          onChange={(e) => setLastPeriod(e.target.value)}
-          className="bg-white/70 backdrop-blur-md border-white/60 text-base"
+          onChange={setLastPeriod}
+          placeholder="Selecionar data"
+          className="bg-white/70 backdrop-blur-md border-white/60"
         />
       </div>
 

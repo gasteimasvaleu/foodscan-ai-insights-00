@@ -7,6 +7,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -124,11 +125,10 @@ export function BabyProfileCard({
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Data de nascimento</Label>
-              <Input
-                type="date"
+              <MatDatePicker
                 value={form.birth_date}
-                onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
-                className="text-base h-12 rounded-xl"
+                onChange={(v) => setForm({ ...form, birth_date: v })}
+                disabled={(d) => d > new Date()}
               />
             </div>
             <div className="space-y-2">
