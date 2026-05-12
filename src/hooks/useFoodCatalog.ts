@@ -17,9 +17,13 @@ export interface CatalogFood {
 }
 
 export function useFoodCatalogSearch(query: string, category?: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["food-catalog", query, category],
-    queryFn: async () => {
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = (pageParam as number) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
       let q = supabase
         .from("food_catalog")
         .select("id,name,category,calories_per_100g,proteins_per_100g,carbs_per_100g,fats_per_100g,common_portion_g,common_portion_label,source")
@@ -32,12 +36,12 @@ export function useFoodCatalogSearch(query: string, category?: string) {
         q = q.eq("category", category);
       }
 
-      q = q.order("name").limit(60);
-
-      const { data, error } = await q;
+      const { data, error } = await q.order("name").range(from, to);
       if (error) throw error;
       return (data ?? []) as CatalogFood[];
     },
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < PAGE_SIZE ? undefined : allPages.length,
   });
 }
 
