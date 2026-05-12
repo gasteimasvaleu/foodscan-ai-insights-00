@@ -6,13 +6,7 @@ import { MaternidadeHeader } from '@/components/maternidade/MaternidadeHeader';
 import { GestacaoPanel } from '@/components/maternidade/gestacao/GestacaoPanel';
 import { PospartoPanel } from '@/components/maternidade/posparto/PospartoPanel';
 import { TentantesPanel } from '@/components/maternidade/tentantes/TentantesPanel';
-
-const ComingSoon = ({ label }: { label: string }) => (
-  <div className="bg-[#FFD1E7] rounded-3xl p-8 text-center">
-    <h3 className="text-base text-gray-800 mb-1">{label}</h3>
-    <p className="text-sm text-gray-600">Em breve nesta seção.</p>
-  </div>
-);
+import { BebePanel } from '@/components/maternidade/bebe/BebePanel';
 
 const Maternidade = () => {
   const { user, authReady } = useAuth();
@@ -57,7 +51,7 @@ const Maternidade = () => {
             <PospartoPanel />
           </TabsContent>
           <TabsContent value="bebe">
-            <ComingSoon label="Bebê & Sono" />
+            <BebePanel />
           </TabsContent>
         </Tabs>
       </main>

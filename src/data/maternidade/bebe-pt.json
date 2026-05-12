@@ -1,0 +1,61 @@
+{
+  "vaccines": [
+    { "key": "vac_bcg", "label": "BCG (ao nascer)", "ageMonths": 0 },
+    { "key": "vac_hep_b_0", "label": "Hepatite B (ao nascer)", "ageMonths": 0 },
+    { "key": "vac_penta_2m", "label": "Pentavalente (2 meses)", "ageMonths": 2 },
+    { "key": "vac_vip_2m", "label": "VIP - Poliomielite (2 meses)", "ageMonths": 2 },
+    { "key": "vac_pneumo_2m", "label": "Pneumocócica 10 (2 meses)", "ageMonths": 2 },
+    { "key": "vac_rota_2m", "label": "Rotavírus (2 meses)", "ageMonths": 2 },
+    { "key": "vac_meningo_3m", "label": "Meningocócica C (3 meses)", "ageMonths": 3 },
+    { "key": "vac_penta_4m", "label": "Pentavalente (4 meses)", "ageMonths": 4 },
+    { "key": "vac_vip_4m", "label": "VIP - Poliomielite (4 meses)", "ageMonths": 4 },
+    { "key": "vac_pneumo_4m", "label": "Pneumocócica 10 (4 meses)", "ageMonths": 4 },
+    { "key": "vac_rota_4m", "label": "Rotavírus (4 meses)", "ageMonths": 4 },
+    { "key": "vac_meningo_5m", "label": "Meningocócica C (5 meses)", "ageMonths": 5 },
+    { "key": "vac_penta_6m", "label": "Pentavalente (6 meses)", "ageMonths": 6 },
+    { "key": "vac_vip_6m", "label": "VIP - Poliomielite (6 meses)", "ageMonths": 6 },
+    { "key": "vac_febre_amarela_9m", "label": "Febre amarela (9 meses)", "ageMonths": 9 },
+    { "key": "vac_pneumo_reforco", "label": "Pneumocócica 10 - reforço (12 meses)", "ageMonths": 12 },
+    { "key": "vac_meningo_reforco", "label": "Meningocócica C - reforço (12 meses)", "ageMonths": 12 },
+    { "key": "vac_triplice_viral", "label": "Tríplice viral (12 meses)", "ageMonths": 12 }
+  ],
+  "milestones": [
+    { "key": "ms_smile", "label": "Sorri socialmente", "ageMonths": 2 },
+    { "key": "ms_head", "label": "Sustenta a cabeça", "ageMonths": 3 },
+    { "key": "ms_roll", "label": "Rola sozinho", "ageMonths": 4 },
+    { "key": "ms_grab", "label": "Pega objetos com a mão", "ageMonths": 5 },
+    { "key": "ms_sit", "label": "Senta sem apoio", "ageMonths": 6 },
+    { "key": "ms_food", "label": "Inicia introdução alimentar", "ageMonths": 6 },
+    { "key": "ms_babble", "label": "Balbucia (mama, papa)", "ageMonths": 8 },
+    { "key": "ms_crawl", "label": "Engatinha", "ageMonths": 9 },
+    { "key": "ms_stand", "label": "Fica de pé com apoio", "ageMonths": 10 },
+    { "key": "ms_word", "label": "Fala primeira palavra", "ageMonths": 12 },
+    { "key": "ms_walk", "label": "Anda sozinho", "ageMonths": 14 }
+  ],
+  "education": [
+    {
+      "title": "Sono seguro do bebê",
+      "body": "Sempre coloque o bebê para dormir de barriga para cima, em colchão firme, sem travesseiros, cobertores soltos, almofadas ou bichinhos no berço. Mantenha o ambiente fresco e arejado. O quarto compartilhado (não a cama) é recomendado nos primeiros 6 meses."
+    },
+    {
+      "title": "Choro do bebê",
+      "body": "Chorar é a principal forma de comunicação. Cheque fome, sono, fralda, temperatura, gases e necessidade de colo. Bebês saudáveis podem chorar 1-3 horas por dia, com pico entre 6-8 semanas. Se o choro for inconsolável e acompanhado de febre, vômitos ou letargia, procure ajuda médica."
+    },
+    {
+      "title": "Introdução alimentar (a partir de 6 meses)",
+      "body": "Comece com frutas amassadas e papas salgadas com legumes, cereais e proteína. Ofereça água nas refeições. Evite açúcar, sal e mel no primeiro ano. Respeite o ritmo do bebê e ofereça os mesmos alimentos várias vezes — pode levar de 8 a 15 tentativas para aceitar."
+    },
+    {
+      "title": "Sinais de alerta",
+      "body": "Procure o pediatra rapidamente em caso de febre acima de 38°C em menores de 3 meses, recusa alimentar persistente, vômitos repetidos, diarreia com sangue, dificuldade para respirar, choro inconsolável, gemência, palidez, lábios arroxeados ou letargia."
+    },
+    {
+      "title": "Estimulação e brincadeiras",
+      "body": "Converse, cante e olhe nos olhos do bebê desde os primeiros dias — isso desenvolve linguagem e vínculo. Tummy time (barriga para baixo, supervisionado) fortalece o pescoço. Brinquedos de cores contrastantes, chocalhos e livros de pano estimulam visão, audição e coordenação."
+    },
+    {
+      "title": "Amamentação e mamadeira",
+      "body": "O leite materno é recomendado de forma exclusiva até os 6 meses e complementar até 2 anos ou mais. Bebês em livre demanda mamam de 8 a 12 vezes por dia. Em caso de fórmula, siga a diluição correta da lata, esterilize bicos e mamadeiras e ofereça em posição semi-sentada."
+    }
+  ]
+}
