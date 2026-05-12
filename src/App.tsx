@@ -49,6 +49,7 @@ import FacaEmCasa from "./pages/FacaEmCasa";
 import Provador from "./pages/Provador";
 import Loja from "./pages/Loja";
 import AdminLoja from "./pages/AdminLoja";
+import AdminAlimentosComunidade from "./pages/AdminAlimentosComunidade";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
 import AdicionarRefeicao from "./pages/AdicionarRefeicao";
