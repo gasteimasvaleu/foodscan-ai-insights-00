@@ -79,6 +79,12 @@ const AdminDashboard = () => {
       path: '/admin/chat',
     },
     {
+      title: 'Alimentos da comunidade',
+      description: 'Aprovar sugestões geradas pelas refeições dos usuários',
+      icon: Apple,
+      path: '/admin/alimentos-comunidade',
+    },
+    {
       title: 'Assinaturas Promocionais',
       description: 'Enviar convites e tokens de acesso por email',
       icon: Tag,
