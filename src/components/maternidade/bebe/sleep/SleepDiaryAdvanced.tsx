@@ -116,7 +116,7 @@ export function SleepDiaryAdvanced() {
   return (
     <Card className="bg-white/70 backdrop-blur-md border-white/40">
       <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-base">Diário de sono</CardTitle>
+        <CardTitle className="text-base font-semibold">Diário de sono</CardTitle>
         <div className="flex items-center gap-2">
           {timerStart ? (
             <Button onClick={stopTimer} size="icon" aria-label="Parar cronômetro" className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 w-9 rounded-xl">
@@ -127,7 +127,7 @@ export function SleepDiaryAdvanced() {
               <Play className="h-4 w-4" />
             </Button>
           )}
-          <Button onClick={() => { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 px-3 rounded-xl">
+          <Button onClick={() = className="rounded-xl"> { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 px-3 rounded-xl">
             Registrar
           </Button>
         </div>
@@ -215,7 +215,7 @@ export function SleepDiaryAdvanced() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>

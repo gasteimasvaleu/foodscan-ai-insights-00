@@ -51,7 +51,7 @@ export function WakeWindowCalculator() {
 
   return (
     <Card className="bg-white/70 backdrop-blur-md border-white/40">
-      <CardHeader className="pb-2"><CardTitle className="text-base">Janelas de vigília</CardTitle></CardHeader>
+      <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Janelas de vigília</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-700">
           Quanto tempo seu bebê deve ficar acordado entre as sonecas.

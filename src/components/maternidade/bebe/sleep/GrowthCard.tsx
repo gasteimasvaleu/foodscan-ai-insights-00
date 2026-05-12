@@ -54,8 +54,8 @@ export function GrowthCard() {
   return (
     <Card className="border-none bg-[#FFD1E7] rounded-3xl">
       <CardHeader className="flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base text-gray-800">Crescimento</CardTitle>
-        <Button size="sm" onClick={() => setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+        <CardTitle className="text-base text-gray-800 font-semibold">Crescimento</CardTitle>
+        <Button size="sm" onClick={() = className="rounded-xl"> setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
           Registrar
         </Button>
       </CardHeader>
@@ -96,7 +96,7 @@ export function GrowthCard() {
             <Field label="Perímetro cefálico" suffix="cm" value={form.head_cm} onChange={(v) => setForm({ ...form, head_cm: v })} step="0.1" />
           </div>
           <DialogFooter>
-            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>

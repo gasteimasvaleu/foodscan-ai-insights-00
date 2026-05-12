@@ -77,7 +77,7 @@ function ChecklistCard({
   return (
     <Card className={`${bg} border-none rounded-3xl`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base text-gray-800">{title}</CardTitle>
+        <CardTitle className="text-base text-gray-800 font-semibold">{title}</CardTitle>
         <div className="flex items-center gap-2 mt-2">
           <div className="flex-1 h-2 bg-white/70 rounded-full overflow-hidden">
             <div className="h-full bg-[#FD46A1]" style={{ width: `${pct}%` }} />

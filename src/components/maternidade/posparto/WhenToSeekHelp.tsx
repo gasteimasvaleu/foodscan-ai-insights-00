@@ -29,7 +29,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="border-amber-200 bg-amber-50">
         <CardHeader>
-          <CardTitle className="text-base text-amber-700">{content.signs.title}</CardTitle>
+          <CardTitle className="text-base text-amber-700 font-semibold">{content.signs.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="grid sm:grid-cols-2 gap-2">
@@ -43,7 +43,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
       </Card>
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader><CardTitle className="text-base">{content.professionals.title}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base font-semibold">{content.professionals.title}</CardTitle></CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
             {content.professionals.items.map((p, i) => {
@@ -67,7 +67,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
       </Card>
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader><CardTitle className="text-base">{content.treatments.title}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base font-semibold">{content.treatments.title}</CardTitle></CardHeader>
         <CardContent>
           <Accordion type="single" collapsible>
             {content.treatments.items.map((t, i) => {
@@ -91,7 +91,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.firstVisit.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.firstVisit.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -107,7 +107,7 @@ export function WhenToSeekHelp({ content }: WhenToSeekHelpProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base text-[#FD46A1]">{content.family.title}</CardTitle>
+          <CardTitle className="text-base text-[#FD46A1] font-semibold">{content.family.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-2">

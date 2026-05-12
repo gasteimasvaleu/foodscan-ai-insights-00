@@ -89,12 +89,12 @@ export function BabyNames() {
   return (
     <div className="space-y-4">
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="pb-2"><CardTitle className="text-base">Nomes de bebê</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Nomes de bebê</CardTitle></CardHeader>
         <CardContent>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="grid grid-cols-2 w-full bg-white/50 rounded-xl">
-              <TabsTrigger value="generate" className="rounded-lg data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Sugerir</TabsTrigger>
-              <TabsTrigger value="search" className="rounded-lg data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Buscar</TabsTrigger>
+              <TabsTrigger value="generate" className="rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Sugerir</TabsTrigger>
+              <TabsTrigger value="search" className="rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Buscar</TabsTrigger>
             </TabsList>
 
             <TabsContent value="generate" className="space-y-3 mt-4">
@@ -162,7 +162,7 @@ export function BabyNames() {
 
       {favorites.length > 0 && (
         <Card className="border-none bg-[#FFD1E7] rounded-3xl">
-          <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800">Favoritos</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800 font-semibold">Favoritos</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {favorites.map((f) => (
               <div key={f.id} className="bg-white/60 rounded-xl px-3 py-2 flex items-start gap-2">

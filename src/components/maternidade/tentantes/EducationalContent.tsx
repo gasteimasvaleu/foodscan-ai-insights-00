@@ -19,7 +19,7 @@ export function EducationalContent({ content }: Props) {
       {content.cards.map((card, i) => (
         <Card key={i} className="bg-white/70 backdrop-blur-md border-white/40">
           <CardHeader>
-            <CardTitle className="text-base">{card.title}</CardTitle>
+            <CardTitle className="text-base font-semibold">{card.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm text-gray-700 list-disc pl-5">

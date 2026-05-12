@@ -96,7 +96,7 @@ export function FeedingDiapers() {
   return (
     <div className="space-y-4">
       <Card className="border-none bg-[#FFD1E7] rounded-3xl">
-        <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800">Alimentação</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800 font-semibold">Alimentação</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(FEED_KINDS).map(([k, label]) => (
@@ -126,7 +126,7 @@ export function FeedingDiapers() {
       </Card>
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="pb-2"><CardTitle className="text-base">Fraldas</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Fraldas</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-3 gap-2">
             {Object.entries(DIAPER_KINDS).map(([k, label]) => (
@@ -164,7 +164,7 @@ export function FeedingDiapers() {
             <p className="text-xs text-gray-500">Preencha o que fizer sentido — campos opcionais.</p>
           </div>
           <DialogFooter>
-            <Button onClick={saveFeed} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={saveFeed} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Registrar agora'}
             </Button>
           </DialogFooter>
