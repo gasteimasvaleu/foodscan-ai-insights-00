@@ -52,6 +52,7 @@ import AdminLoja from "./pages/AdminLoja";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
 import AdicionarRefeicao from "./pages/AdicionarRefeicao";
+import Maternidade from "./pages/Maternidade";
 import Alimentos from "./pages/Alimentos";
 import Paywall from "./pages/Paywall";
 import { ProRoute } from "@/components/ProRoute";
@@ -131,6 +132,7 @@ const App = () => (
             <Route path="/lista-de-compras" element={<ShoppingList />} />
             <Route path="/lista-de-compras/:id" element={<ShoppingListDetail />} />
             <Route path="/adicionar-refeicao" element={<AdicionarRefeicao />} />
+            <Route path="/maternidade" element={<Maternidade />} />
             <Route path="/alimentos" element={<Alimentos />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/banners" element={<AdminBanners />} />

@@ -1,0 +1,996 @@
+{
+  "title": "Guia da Gestação",
+  "subtitle": "Acompanhe cada semana da sua gravidez com dicas, informações e ferramentas personalizadas",
+  "weeks": {
+    "trimester1": {
+      "title": "1º Trimestre",
+      "subtitle": "Semanas 1-12",
+      "description": "O início da jornada - formação do embrião",
+      "weeks": [
+        {
+          "week": 1,
+          "babySize": "Óvulo fecundado",
+          "babyLength": "0.1mm",
+          "development": "A fecundação ocorre e o zigoto começa a se dividir.",
+          "symptoms": [
+            "Nenhum sintoma ainda",
+            "Possível leve sangramento de implantação"
+          ],
+          "tips": [
+            "Comece a tomar ácido fólico",
+            "Evite álcool e cigarro",
+            "Mantenha uma alimentação saudável"
+          ]
+        },
+        {
+          "week": 2,
+          "babySize": "Blastocisto",
+          "babyLength": "0.2mm",
+          "development": "O embrião se implanta no útero.",
+          "symptoms": [
+            "Possível sensibilidade nos seios",
+            "Leve cansaço"
+          ],
+          "tips": [
+            "Continue com ácido fólico",
+            "Beba bastante água",
+            "Descanse bem"
+          ]
+        },
+        {
+          "week": 3,
+          "babySize": "Semente de papoula",
+          "babyLength": "1mm",
+          "development": "O coração primitivo começa a se formar.",
+          "symptoms": [
+            "Atraso menstrual",
+            "Náuseas leves",
+            "Fadiga"
+          ],
+          "tips": [
+            "Faça o teste de gravidez",
+            "Agende consulta pré-natal",
+            "Evite medicamentos sem prescrição"
+          ]
+        },
+        {
+          "week": 4,
+          "babySize": "Semente de gergelim",
+          "babyLength": "2mm",
+          "development": "Formação do tubo neural e início do sistema nervoso.",
+          "symptoms": [
+            "Enjoos matinais",
+            "Sensibilidade nos seios",
+            "Mudanças de humor"
+          ],
+          "tips": [
+            "Faça refeições pequenas e frequentes",
+            "Evite odores fortes",
+            "Descanse sempre que possível"
+          ]
+        },
+        {
+          "week": 5,
+          "babySize": "Semente de maçã",
+          "babyLength": "3mm",
+          "development": "O coração começa a bater. Formação dos brotos dos membros.",
+          "symptoms": [
+            "Náuseas mais intensas",
+            "Aversão a alimentos",
+            "Cansaço extremo"
+          ],
+          "tips": [
+            "Coma bolachas salgadas ao acordar",
+            "Experimente gengibre para náuseas",
+            "Durma mais cedo"
+          ]
+        },
+        {
+          "week": 6,
+          "babySize": "Lentilha",
+          "babyLength": "5mm",
+          "development": "Formação dos olhos, ouvidos e boca primitivos.",
+          "symptoms": [
+            "Micção frequente",
+            "Constipação",
+            "Inchaço abdominal"
+          ],
+          "tips": [
+            "Beba mais água",
+            "Aumente fibras na dieta",
+            "Use roupas confortáveis"
+          ]
+        },
+        {
+          "week": 7,
+          "babySize": "Mirtilo",
+          "babyLength": "1cm",
+          "development": "Formação dos dedos das mãos. O cérebro cresce rapidamente.",
+          "symptoms": [
+            "Salivação excessiva",
+            "Azia",
+            "Dores de cabeça"
+          ],
+          "tips": [
+            "Evite alimentos gordurosos",
+            "Faça caminhadas leves",
+            "Mantenha-se hidratada"
+          ]
+        },
+        {
+          "week": 8,
+          "babySize": "Framboesa",
+          "babyLength": "1.6cm",
+          "development": "Formação dos dedos dos pés. O bebê começa a se mover.",
+          "symptoms": [
+            "Náuseas persistentes",
+            "Aumento da frequência urinária",
+            "Alterações no paladar"
+          ],
+          "tips": [
+            "Primeira ultrassonografia",
+            "Converse com seu médico sobre exames",
+            "Tire fotos da barriga"
+          ]
+        },
+        {
+          "week": 9,
+          "babySize": "Azeitona",
+          "babyLength": "2.3cm",
+          "development": "Formação das pálpebras e orelhas externas.",
+          "symptoms": [
+            "Mudanças de humor intensas",
+            "Seios mais sensíveis",
+            "Cansaço"
+          ],
+          "tips": [
+            "Pratique técnicas de relaxamento",
+            "Use sutiã de suporte",
+            "Aceite ajuda"
+          ]
+        },
+        {
+          "week": 10,
+          "babySize": "Morango",
+          "babyLength": "3cm",
+          "development": "Todos os órgãos vitais estão formados. Fase fetal começa.",
+          "symptoms": [
+            "Veias mais visíveis",
+            "Aumento da libido ou diminuição",
+            "Congestão nasal"
+          ],
+          "tips": [
+            "Exame de translucência nucal",
+            "Continue vitaminas pré-natais",
+            "Hidrate a pele"
+          ]
+        },
+        {
+          "week": 11,
+          "babySize": "Lima",
+          "babyLength": "4cm",
+          "development": "Unhas e cabelos começam a crescer.",
+          "symptoms": [
+            "Gases e inchaço",
+            "Manchas na pele",
+            "Gengivas sensíveis"
+          ],
+          "tips": [
+            "Use protetor solar",
+            "Cuide da saúde bucal",
+            "Evite alimentos que causam gases"
+          ]
+        },
+        {
+          "week": 12,
+          "babySize": "Limão",
+          "babyLength": "5cm",
+          "development": "Reflexos começam a se desenvolver. Órgãos genitais se formam.",
+          "symptoms": [
+            "Náuseas começam a diminuir",
+            "Mais energia",
+            "Barriga começa a aparecer"
+          ],
+          "tips": [
+            "Compartilhe a notícia!",
+            "Planeje o enxoval",
+            "Exame de sangue NIPT (opcional)"
+          ]
+        }
+      ]
+    },
+    "trimester2": {
+      "title": "2º Trimestre",
+      "subtitle": "Semanas 13-27",
+      "description": "O período de ouro - mais energia e os primeiros movimentos",
+      "weeks": [
+        {
+          "week": 13,
+          "babySize": "Pêssego",
+          "babyLength": "7cm",
+          "development": "Cordas vocais se formam. Impressões digitais únicas aparecem.",
+          "symptoms": [
+            "Mais energia",
+            "Menos náuseas",
+            "Aumento do apetite"
+          ],
+          "tips": [
+            "Aproveite a energia extra",
+            "Comece exercícios leves",
+            "Hidrate bem a pele"
+          ]
+        },
+        {
+          "week": 14,
+          "babySize": "Limão siciliano",
+          "babyLength": "8.5cm",
+          "development": "Bebê começa a fazer expressões faciais.",
+          "symptoms": [
+            "Cabelos mais brilhantes",
+            "Unhas crescendo mais rápido",
+            "Congestão nasal"
+          ],
+          "tips": [
+            "Use umidificador",
+            "Agende ultrassom morfológico",
+            "Comece a usar óleo para estrias"
+          ]
+        },
+        {
+          "week": 15,
+          "babySize": "Maçã",
+          "babyLength": "10cm",
+          "development": "Ossos estão endurecendo. Bebê consegue sugar o polegar.",
+          "symptoms": [
+            "Gengivas sangrando",
+            "Nariz entupido",
+            "Mais disposição"
+          ],
+          "tips": [
+            "Visite o dentista",
+            "Use soro fisiológico no nariz",
+            "Faça caminhadas diárias"
+          ]
+        },
+        {
+          "week": 16,
+          "babySize": "Abacate",
+          "babyLength": "11.5cm",
+          "development": "Bebê começa a ouvir sons. Músculos faciais funcionam.",
+          "symptoms": [
+            "Primeiros movimentos (borboletas)",
+            "Constipação",
+            "Dor nas costas"
+          ],
+          "tips": [
+            "Converse com seu bebê",
+            "Aumente fibras na dieta",
+            "Pratique postura correta"
+          ]
+        },
+        {
+          "week": 17,
+          "babySize": "Pera",
+          "babyLength": "13cm",
+          "development": "Gordura subcutânea começa a se formar.",
+          "symptoms": [
+            "Movimentos mais perceptíveis",
+            "Coceira na barriga",
+            "Tontura ao levantar"
+          ],
+          "tips": [
+            "Hidrate a barriga diariamente",
+            "Levante devagar",
+            "Durma do lado esquerdo"
+          ]
+        },
+        {
+          "week": 18,
+          "babySize": "Batata-doce",
+          "babyLength": "14cm",
+          "development": "Bebê pode bocejar e soluçar. Ouvidos funcionam melhor.",
+          "symptoms": [
+            "Inchaço nos pés",
+            "Varizes começando",
+            "Cãibras noturnas"
+          ],
+          "tips": [
+            "Eleve os pés ao descansar",
+            "Use meias de compressão",
+            "Coma banana para cãibras"
+          ]
+        },
+        {
+          "week": 19,
+          "babySize": "Manga",
+          "babyLength": "15cm",
+          "development": "Vernix caseosa protege a pele. Cabelos crescem.",
+          "symptoms": [
+            "Dor no ligamento redondo",
+            "Tontura",
+            "Falta de ar leve"
+          ],
+          "tips": [
+            "Mova-se devagar",
+            "Faça exercícios de respiração",
+            "Ultrassom morfológico agora"
+          ]
+        },
+        {
+          "week": 20,
+          "babySize": "Banana",
+          "babyLength": "16.5cm",
+          "development": "Metade da gestação! Bebê engole líquido amniótico.",
+          "symptoms": [
+            "Umbigo começando a saltar",
+            "Inchaço facial",
+            "Sono irregular"
+          ],
+          "tips": [
+            "Celebre a metade!",
+            "Faça lista do enxoval",
+            "Pratique relaxamento antes de dormir"
+          ]
+        },
+        {
+          "week": 21,
+          "babySize": "Cenoura grande",
+          "babyLength": "27cm",
+          "development": "Bebê tem ciclos de sono definidos.",
+          "symptoms": [
+            "Contrações de Braxton Hicks",
+            "Estrias aparecendo",
+            "Mais apetite"
+          ],
+          "tips": [
+            "Hidrate muito a pele",
+            "Não se assuste com contrações leves",
+            "Coma porções menores"
+          ]
+        },
+        {
+          "week": 22,
+          "babySize": "Papaia",
+          "babyLength": "28cm",
+          "development": "Lábios e sobrancelhas mais definidos. Olhos formados mas sem cor ainda.",
+          "symptoms": [
+            "Dores nas costas",
+            "Síndrome do túnel do carpo",
+            "Hemorroidas"
+          ],
+          "tips": [
+            "Use travesseiro de gestante",
+            "Faça alongamentos",
+            "Aumente água e fibras"
+          ]
+        },
+        {
+          "week": 23,
+          "babySize": "Toranja",
+          "babyLength": "29cm",
+          "development": "Pulmões desenvolvendo surfactante. Pele enrugada e rosada.",
+          "symptoms": [
+            "Inchaço generalizado",
+            "Linha negra na barriga",
+            "Melasma"
+          ],
+          "tips": [
+            "Reduza sal na dieta",
+            "Use protetor solar sempre",
+            "Evite sol forte"
+          ]
+        },
+        {
+          "week": 24,
+          "babySize": "Espiga de milho",
+          "babyLength": "30cm",
+          "development": "Bebê viável fora do útero com cuidados intensivos. Rosto completo.",
+          "symptoms": [
+            "Coceira intensa",
+            "Olhos secos",
+            "Dor ciática"
+          ],
+          "tips": [
+            "Hidrate a pele com frequência",
+            "Use colírios lubrificantes",
+            "Faça exercícios para ciática"
+          ]
+        },
+        {
+          "week": 25,
+          "babySize": "Nabo grande",
+          "babyLength": "34cm",
+          "development": "Cabelo com cor e textura. Reflexo de agarrar.",
+          "symptoms": [
+            "Azia frequente",
+            "Síndrome das pernas inquietas",
+            "Insônia"
+          ],
+          "tips": [
+            "Evite comer antes de deitar",
+            "Faça caminhadas à tarde",
+            "Mantenha rotina de sono"
+          ]
+        },
+        {
+          "week": 26,
+          "babySize": "Abobrinha",
+          "babyLength": "35cm",
+          "development": "Olhos começam a se abrir. Sistema imunológico desenvolvendo.",
+          "symptoms": [
+            "Dores de cabeça",
+            "Pressão no abdômen",
+            "Falta de ar"
+          ],
+          "tips": [
+            "Descanse quando precisar",
+            "Monitore pressão arterial",
+            "Pratique respiração profunda"
+          ]
+        },
+        {
+          "week": 27,
+          "babySize": "Couve-flor",
+          "babyLength": "36cm",
+          "development": "Cérebro muito ativo. Bebê reconhece vozes familiares.",
+          "symptoms": [
+            "Contrações mais frequentes",
+            "Fadiga",
+            "Ansiedade"
+          ],
+          "tips": [
+            "Converse mais com o bebê",
+            "Prepare enxoval",
+            "Inicie curso de gestantes"
+          ]
+        }
+      ]
+    },
+    "trimester3": {
+      "title": "3º Trimestre",
+      "subtitle": "Semanas 28-40",
+      "description": "A reta final - preparação para o grande dia",
+      "weeks": [
+        {
+          "week": 28,
+          "babySize": "Berinjela",
+          "babyLength": "37cm",
+          "development": "Bebê sonha durante o sono REM. Pode ter soluços frequentes.",
+          "symptoms": [
+            "Falta de ar intensa",
+            "Inchaço nos pés",
+            "Dificuldade para dormir"
+          ],
+          "tips": [
+            "Durma com travesseiros extras",
+            "Eleve os pés",
+            "Inicie contagem de movimentos"
+          ]
+        },
+        {
+          "week": 29,
+          "babySize": "Abóbora manteiga",
+          "babyLength": "38cm",
+          "development": "Músculos e pulmões amadurecendo. Ossos endurecendo.",
+          "symptoms": [
+            "Constipação severa",
+            "Varizes mais visíveis",
+            "Cansaço extremo"
+          ],
+          "tips": [
+            "Coma muitas fibras",
+            "Descanse o máximo",
+            "Use meias de compressão"
+          ]
+        },
+        {
+          "week": 30,
+          "babySize": "Repolho grande",
+          "babyLength": "39cm",
+          "development": "Bebê acumulando gordura. Espaço ficando apertado.",
+          "symptoms": [
+            "Movimentos mais fortes",
+            "Azia intensa",
+            "Micção muito frequente"
+          ],
+          "tips": [
+            "Monte a mala da maternidade",
+            "Faça pequenas refeições",
+            "Prepare o quarto do bebê"
+          ]
+        },
+        {
+          "week": 31,
+          "babySize": "Coco",
+          "babyLength": "40cm",
+          "development": "Cérebro desenvolvendo bilhões de conexões neurais.",
+          "symptoms": [
+            "Vazamento de colostro",
+            "Dor nas costelas",
+            "Contrações de treino"
+          ],
+          "tips": [
+            "Use absorventes de seio",
+            "Mude de posição com frequência",
+            "Relaxe e respire"
+          ]
+        },
+        {
+          "week": 32,
+          "babySize": "Jicama",
+          "babyLength": "42cm",
+          "development": "Unhas crescidas. Bebê pratica respiração.",
+          "symptoms": [
+            "Dor lombar intensa",
+            "Dificuldade para respirar",
+            "Inchaço generalizado"
+          ],
+          "tips": [
+            "Faça alongamentos suaves",
+            "Descanse sentada inclinada",
+            "Monitore inchaço"
+          ]
+        },
+        {
+          "week": 33,
+          "babySize": "Abacaxi",
+          "babyLength": "43cm",
+          "development": "Sistema imunológico fortalecendo. Crânio ainda maleável.",
+          "symptoms": [
+            "Dificuldade para andar",
+            "Pressão pélvica",
+            "Insônia"
+          ],
+          "tips": [
+            "Use calçados confortáveis",
+            "Faça exercícios de Kegel",
+            "Tome banhos mornos"
+          ]
+        },
+        {
+          "week": 34,
+          "babySize": "Melão cantaloupe",
+          "babyLength": "44cm",
+          "development": "Pulmões quase prontos. Camada de gordura protege.",
+          "symptoms": [
+            "Fadiga extrema",
+            "Necessidade de urinar constantemente",
+            "Dor ciática"
+          ],
+          "tips": [
+            "Descanse muito",
+            "Fique perto do banheiro",
+            "Faça massagens"
+          ]
+        },
+        {
+          "week": 35,
+          "babySize": "Melão honeydew",
+          "babyLength": "45cm",
+          "development": "Rins completamente funcionais. Fígado processando.",
+          "symptoms": [
+            "Contrações mais regulares",
+            "Dor nas costas constante",
+            "Ansiedade pelo parto"
+          ],
+          "tips": [
+            "Teste de Streptococcus B",
+            "Revise plano de parto",
+            "Pratique técnicas de relaxamento"
+          ]
+        },
+        {
+          "week": 36,
+          "babySize": "Alface romana",
+          "babyLength": "47cm",
+          "development": "Bebê está encaixando. Vérnix começando a desaparecer.",
+          "symptoms": [
+            "Pressão no baixo ventre",
+            "Mais facilidade para respirar",
+            "Perda do tampão mucoso"
+          ],
+          "tips": [
+            "Consultas semanais agora",
+            "Tenha mala pronta",
+            "Descanse bastante"
+          ]
+        },
+        {
+          "week": 37,
+          "babySize": "Acelga suíça",
+          "babyLength": "48cm",
+          "development": "Bebê considerado a termo! Pronto para nascer.",
+          "symptoms": [
+            "Nesting (instinto de organizar)",
+            "Diarreia leve",
+            "Contrações irregulares"
+          ],
+          "tips": [
+            "Aproveite para descansar",
+            "Organize últimos detalhes",
+            "Fique atenta aos sinais de parto"
+          ]
+        },
+        {
+          "week": 38,
+          "babySize": "Alho-poró",
+          "babyLength": "49cm",
+          "development": "Todos os sistemas prontos. Aguardando o momento.",
+          "symptoms": [
+            "Inchaço máximo",
+            "Dificuldade para dormir",
+            "Ansiedade"
+          ],
+          "tips": [
+            "Durma quando puder",
+            "Fale com o bebê",
+            "Mantenha celular carregado"
+          ]
+        },
+        {
+          "week": 39,
+          "babySize": "Mini melancia",
+          "babyLength": "50cm",
+          "development": "Bebê continua ganhando peso e se preparando.",
+          "symptoms": [
+            "Pressão intensa",
+            "Contrações mais fortes",
+            "Inquietação"
+          ],
+          "tips": [
+            "Tenha número do hospital à mão",
+            "Reconheça sinais de parto",
+            "Mantenha a calma"
+          ]
+        },
+        {
+          "week": 40,
+          "babySize": "Melancia pequena",
+          "babyLength": "51cm",
+          "development": "Bebê pronto! Pode nascer a qualquer momento.",
+          "symptoms": [
+            "Possível perda do tampão",
+            "Contrações regulares",
+            "Ruptura da bolsa"
+          ],
+          "tips": [
+            "Monitore contrações",
+            "Vá ao hospital quando indicado",
+            "Parabéns, mamãe!"
+          ]
+        }
+      ]
+    }
+  },
+  "exams": {
+    "title": "Exames por Trimestre",
+    "trimester1": {
+      "title": "1º Trimestre",
+      "items": [
+        {
+          "name": "Beta-HCG",
+          "description": "Confirma a gravidez e monitora níveis hormonais",
+          "when": "Semanas 4-6"
+        },
+        {
+          "name": "Ultrassom transvaginal",
+          "description": "Visualiza saco gestacional e batimentos cardíacos",
+          "when": "Semanas 6-8"
+        },
+        {
+          "name": "Tipagem sanguínea e fator Rh",
+          "description": "Identifica tipo sanguíneo e incompatibilidade",
+          "when": "Primeira consulta"
+        },
+        {
+          "name": "Hemograma completo",
+          "description": "Verifica anemia e saúde geral",
+          "when": "Primeira consulta"
+        },
+        {
+          "name": "Glicemia de jejum",
+          "description": "Rastreia diabetes gestacional",
+          "when": "Primeira consulta"
+        },
+        {
+          "name": "Sorologias (HIV, Sífilis, Hepatites, Toxoplasmose, Rubéola, CMV)",
+          "description": "Detecta infecções que podem afetar o bebê",
+          "when": "Primeira consulta"
+        },
+        {
+          "name": "Urina tipo I e urocultura",
+          "description": "Detecta infecções urinárias",
+          "when": "Primeira consulta"
+        },
+        {
+          "name": "Translucência nucal",
+          "description": "Rastreia síndromes cromossômicas",
+          "when": "Semanas 11-14"
+        },
+        {
+          "name": "NIPT (opcional)",
+          "description": "Teste genético não invasivo",
+          "when": "A partir da semana 10"
+        }
+      ]
+    },
+    "trimester2": {
+      "title": "2º Trimestre",
+      "items": [
+        {
+          "name": "Ultrassom morfológico",
+          "description": "Avalia anatomia fetal detalhadamente",
+          "when": "Semanas 18-24"
+        },
+        {
+          "name": "Teste de tolerância à glicose (TOTG)",
+          "description": "Diagnóstico de diabetes gestacional",
+          "when": "Semanas 24-28"
+        },
+        {
+          "name": "Hemograma",
+          "description": "Monitora anemia",
+          "when": "Segundo trimestre"
+        },
+        {
+          "name": "Sorologias (repetição)",
+          "description": "Reconfirma status de infecções",
+          "when": "Segundo trimestre"
+        },
+        {
+          "name": "Ultrassom de crescimento",
+          "description": "Acompanha desenvolvimento fetal",
+          "when": "Conforme necessidade"
+        }
+      ]
+    },
+    "trimester3": {
+      "title": "3º Trimestre",
+      "items": [
+        {
+          "name": "Cultura para Streptococcus B",
+          "description": "Detecta bactéria que pode afetar o bebê no parto",
+          "when": "Semanas 35-37"
+        },
+        {
+          "name": "Cardiotocografia (CTG)",
+          "description": "Monitora batimentos cardíacos e contrações",
+          "when": "A partir da semana 36"
+        },
+        {
+          "name": "Ultrassom de posição e líquido",
+          "description": "Verifica posição do bebê e quantidade de líquido",
+          "when": "Semanas 36-40"
+        },
+        {
+          "name": "Hemograma e sorologias finais",
+          "description": "Checagem final antes do parto",
+          "when": "Semanas 35-36"
+        },
+        {
+          "name": "Perfil biofísico fetal",
+          "description": "Avalia bem-estar fetal",
+          "when": "Conforme necessidade"
+        }
+      ]
+    }
+  },
+  "checklist": {
+    "title": "Checklist do Enxoval",
+    "categories": {
+      "roupas": {
+        "title": "Roupas do Bebê",
+        "items": [
+          "6 bodies manga curta",
+          "6 bodies manga longa",
+          "4 macacões",
+          "4 mijões/calças",
+          "3 casaquinhos",
+          "6 pares de meias",
+          "2 pares de luvinhas",
+          "2 toucas",
+          "3 babadores",
+          "2 mantas leves",
+          "1 manta quente",
+          "1 saco de dormir"
+        ]
+      },
+      "higiene": {
+        "title": "Higiene",
+        "items": [
+          "Fraldas RN (2 pacotes)",
+          "Fraldas P (4 pacotes)",
+          "Lenços umedecidos sem perfume",
+          "Algodão",
+          "Pomada para assaduras",
+          "Sabonete líquido neutro",
+          "Shampoo neutro",
+          "Óleo de amêndoas",
+          "Escova e pente de bebê",
+          "Cortador de unhas ou tesoura",
+          "Termômetro digital",
+          "Aspirador nasal",
+          "Álcool 70% (para umbigo)",
+          "Hastes flexíveis com protetor",
+          "Toalhas de banho com capuz (2)"
+        ]
+      },
+      "quarto": {
+        "title": "Quarto do Bebê",
+        "items": [
+          "Berço com certificação INMETRO",
+          "Colchão firme para berço",
+          "2 jogos de lençol para berço",
+          "Protetor de colchão impermeável",
+          "Trocador",
+          "Cômoda",
+          "Lixeira com tampa",
+          "Babá eletrônica",
+          "Umidificador de ar",
+          "Luminária noturna",
+          "Móbile",
+          "Poltrona de amamentação"
+        ]
+      },
+      "amamentacao": {
+        "title": "Amamentação",
+        "items": [
+          "2-3 sutiãs de amamentação",
+          "Conchas protetoras",
+          "Absorventes de seio",
+          "Pomada de lanolina",
+          "Almofada de amamentação",
+          "Bomba extratora (manual ou elétrica)",
+          "Bolsas para armazenar leite",
+          "Mamadeiras (caso necessário)",
+          "Esterilizador"
+        ]
+      },
+      "passeio": {
+        "title": "Passeio",
+        "items": [
+          "Carrinho de bebê",
+          "Bebê conforto (cadeirinha para carro)",
+          "Base para bebê conforto",
+          "Canguru ou sling",
+          "Bolsa maternidade",
+          "Trocador portátil",
+          "Protetor solar para carrinho",
+          "Manta para sair"
+        ]
+      },
+      "maternidade": {
+        "title": "Mala da Maternidade",
+        "items": [
+          "Documentos (RG, plano de saúde, exames)",
+          "4-6 bodies",
+          "4-6 macacões",
+          "2 pares de luvinhas e meias",
+          "2 toucas",
+          "Fraldas RN",
+          "Manta",
+          "Roupa de saída",
+          "Itens para a mãe (roupas, chinelo, necessaire)"
+        ]
+      }
+    }
+  },
+  "symptoms": {
+    "title": "Sintomas Comuns",
+    "items": [
+      {
+        "name": "Enjoos e náuseas",
+        "description": "Comuns no 1º trimestre devido às mudanças hormonais",
+        "tips": [
+          "Coma pequenas porções frequentes",
+          "Experimente gengibre",
+          "Evite odores fortes",
+          "Coma bolachas salgadas ao acordar"
+        ]
+      },
+      {
+        "name": "Cansaço extremo",
+        "description": "O corpo trabalha muito para desenvolver o bebê",
+        "tips": [
+          "Descanse sempre que possível",
+          "Durma cedo",
+          "Aceite ajuda",
+          "Faça pausas durante o dia"
+        ]
+      },
+      {
+        "name": "Dores nas costas",
+        "description": "Causadas pelo peso extra e mudança no centro de gravidade",
+        "tips": [
+          "Mantenha postura correta",
+          "Use travesseiro de gestante",
+          "Faça alongamentos",
+          "Evite saltos altos"
+        ]
+      },
+      {
+        "name": "Azia e refluxo",
+        "description": "O útero pressiona o estômago e hormônios relaxam válvulas",
+        "tips": [
+          "Evite comer antes de deitar",
+          "Faça refeições menores",
+          "Evite alimentos ácidos e gordurosos",
+          "Durma levemente inclinada"
+        ]
+      },
+      {
+        "name": "Inchaço",
+        "description": "Retenção de líquidos é comum, especialmente nos pés",
+        "tips": [
+          "Eleve os pés quando possível",
+          "Reduza sal na dieta",
+          "Use meias de compressão",
+          "Beba bastante água"
+        ]
+      },
+      {
+        "name": "Contrações de Braxton Hicks",
+        "description": "Contrações de treino que preparam o útero para o parto",
+        "tips": [
+          "São normais e não dolorosas",
+          "Descanse quando ocorrerem",
+          "Diferencie de contrações reais",
+          "Beba água"
+        ]
+      }
+    ]
+  },
+  "tools": {
+    "dueDate": {
+      "title": "Calculadora de DPP",
+      "description": "Calcule a data provável do parto",
+      "lastPeriod": "Data da última menstruação",
+      "calculate": "Calcular",
+      "result": "Data Provável do Parto",
+      "currentWeek": "Semana atual",
+      "daysRemaining": "Dias restantes",
+      "trimester": "Trimestre"
+    },
+    "kickCounter": {
+      "title": "Contador de Movimentos",
+      "description": "Acompanhe os movimentos do seu bebê",
+      "count": "Registrar Movimento",
+      "today": "Hoje",
+      "history": "Histórico",
+      "goal": "Meta: 10 movimentos em 2 horas",
+      "lastCount": "Último registro"
+    },
+    "weightTracker": {
+      "title": "Rastreador de Peso",
+      "description": "Acompanhe seu ganho de peso",
+      "currentWeight": "Peso atual",
+      "prePregnancy": "Peso pré-gestação",
+      "gained": "Ganho total",
+      "recommended": "Ganho recomendado",
+      "addRecord": "Registrar Peso"
+    },
+    "checklist": {
+      "title": "Checklist do Enxoval",
+      "description": "Organize as compras do bebê",
+      "progress": "Progresso",
+      "purchased": "Comprados",
+      "remaining": "Faltando"
+    },
+    "diary": {
+      "title": "Diário da Gestação",
+      "description": "Registre memórias e sintomas",
+      "addEntry": "Nova Entrada",
+      "symptoms": "Sintomas",
+      "mood": "Humor",
+      "notes": "Anotações",
+      "photo": "Foto da barriga"
+    }
+  },
+  "navigation": {
+    "weekByWeek": "Semana a Semana",
+    "tools": "Ferramentas",
+    "exams": "Exames",
+    "symptoms": "Sintomas",
+    "checklist": "Enxoval"
+  }
+}
