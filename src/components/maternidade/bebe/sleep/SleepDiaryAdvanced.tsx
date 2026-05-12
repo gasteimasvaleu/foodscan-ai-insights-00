@@ -115,24 +115,24 @@ export function SleepDiaryAdvanced() {
 
   return (
     <Card className="bg-white/70 backdrop-blur-md border-white/40">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">Diário de sono</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-2">
           {timerStart ? (
-            <Button onClick={stopTimer} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-10 rounded-xl">
-              <Square className="h-4 w-4 mr-1" />Parar
+            <Button onClick={stopTimer} size="icon" aria-label="Parar cronômetro" className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 w-9 rounded-xl">
+              <Square className="h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="outline" onClick={startTimer} className="h-10 rounded-xl">
-              <Play className="h-4 w-4 mr-1" />Iniciar
+            <Button variant="outline" onClick={startTimer} size="icon" aria-label="Iniciar cronômetro" className="h-9 w-9 rounded-xl">
+              <Play className="h-4 w-4" />
             </Button>
           )}
-          <Button onClick={() => { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-10 rounded-xl">
+          <Button onClick={() => { setForm(initialForm()); setOpen(true); }} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-9 px-3 rounded-xl">
             Registrar
           </Button>
         </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
         <p className="text-sm text-gray-700">
           Hoje: <span className="text-gray-900">{fmtDur(todayTotal)}</span>
         </p>
