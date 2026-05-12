@@ -73,6 +73,12 @@ const AdminDashboard = () => {
       path: '/admin/loja',
     },
     {
+      title: 'Chat ao vivo',
+      description: 'Moderar denúncias e gerenciar palavras banidas',
+      icon: MessageCircle,
+      path: '/admin/chat',
+    },
+    {
       title: 'Assinaturas Promocionais',
       description: 'Enviar convites e tokens de acesso por email',
       icon: Tag,
