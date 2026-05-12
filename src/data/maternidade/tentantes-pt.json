@@ -1,0 +1,94 @@
+{
+  "navigation": {
+    "cycle": "Ciclo",
+    "fertility": "Fertilidade",
+    "checklist": "Pré-concepção",
+    "education": "Educativo"
+  },
+  "checklist": {
+    "intro": "Itens recomendados para quem está se preparando para engravidar. Marque conforme for cumprindo.",
+    "groups": [
+      {
+        "title": "Exames",
+        "items": [
+          { "key": "exam_blood", "label": "Hemograma completo", "description": "Avalia anemia e infecções." },
+          { "key": "exam_glucose", "label": "Glicemia de jejum", "description": "Verifica risco de diabetes." },
+          { "key": "exam_thyroid", "label": "TSH (tireoide)", "description": "Disfunções tireoidianas afetam fertilidade." },
+          { "key": "exam_serology", "label": "Sorologias (HIV, sífilis, hepatites, rubéola, toxoplasmose)", "description": "Importante para prevenção materno-fetal." },
+          { "key": "exam_pap", "label": "Papanicolau em dia", "description": "Rastreio de alterações no colo do útero." },
+          { "key": "exam_dental", "label": "Avaliação odontológica", "description": "Saúde bucal impacta a gestação." }
+        ]
+      },
+      {
+        "title": "Suplementação",
+        "items": [
+          { "key": "supp_folic", "label": "Ácido fólico (400-800 mcg/dia)", "description": "Inicie pelo menos 3 meses antes de engravidar." },
+          { "key": "supp_vitd", "label": "Vitamina D conforme orientação médica", "description": "Avalie níveis com exame de sangue." },
+          { "key": "supp_iron", "label": "Ferro se houver deficiência", "description": "Apenas se exames indicarem." }
+        ]
+      },
+      {
+        "title": "Hábitos",
+        "items": [
+          { "key": "habit_alcohol", "label": "Reduzir/eliminar álcool", "description": "Sem dose segura na gestação." },
+          { "key": "habit_smoke", "label": "Parar de fumar", "description": "Inclui cigarro eletrônico." },
+          { "key": "habit_weight", "label": "Manter peso saudável", "description": "IMC entre 18,5 e 24,9 favorece fertilidade." },
+          { "key": "habit_exercise", "label": "Praticar atividade física regular", "description": "Pelo menos 150 min/semana." },
+          { "key": "habit_sleep", "label": "Dormir 7-9 horas por noite", "description": "Sono regula hormônios reprodutivos." },
+          { "key": "habit_caffeine", "label": "Limitar cafeína (até 200 mg/dia)", "description": "Cerca de 1-2 xícaras de café." }
+        ]
+      },
+      {
+        "title": "Consultas",
+        "items": [
+          { "key": "appt_gyn", "label": "Consulta com ginecologista", "description": "Avaliação pré-concepcional completa." },
+          { "key": "appt_partner", "label": "Avaliação do parceiro (se aplicável)", "description": "Saúde reprodutiva do casal." },
+          { "key": "appt_genetic", "label": "Aconselhamento genético se houver histórico", "description": "Doenças hereditárias na família." }
+        ]
+      }
+    ]
+  },
+  "education": {
+    "intro": "Conteúdo informativo para quem está tentando engravidar. Não substitui orientação médica.",
+    "cards": [
+      {
+        "title": "Dicas para aumentar a fertilidade",
+        "items": [
+          "Identifique sua janela fértil e tenha relações nesse período (idealmente a cada 1-2 dias).",
+          "Mantenha o estresse sob controle — meditação, terapia e descanso ajudam.",
+          "Evite lubrificantes que prejudicam espermatozoides; prefira os ditos 'fertility-friendly'.",
+          "Cuide da saúde do parceiro — fertilidade masculina é metade da equação."
+        ]
+      },
+      {
+        "title": "Alimentação que favorece a fertilidade",
+        "items": [
+          "Priorize gorduras boas (azeite, abacate, castanhas) e proteínas magras.",
+          "Aumente vegetais verde-escuros (folato natural) e frutas variadas.",
+          "Inclua grãos integrais e reduza ultraprocessados e açúcar.",
+          "Hidrate-se bem — pelo menos 2 L de água por dia."
+        ]
+      },
+      {
+        "title": "Primeiros sinais de gravidez",
+        "items": [
+          "Atraso menstrual é o sinal mais clássico.",
+          "Sensibilidade nas mamas e mudança de cor dos mamilos.",
+          "Náuseas, especialmente pela manhã, a partir de 5-6 semanas.",
+          "Cansaço excessivo, vontade frequente de urinar e alterações de paladar.",
+          "Confirme com teste de farmácia após o atraso e exame Beta-hCG no sangue."
+        ]
+      },
+      {
+        "title": "Quando procurar um especialista",
+        "items": [
+          "Após 12 meses de tentativas sem sucesso (mulheres até 35 anos).",
+          "Após 6 meses de tentativas (mulheres acima de 35 anos).",
+          "Se houver ciclos muito irregulares ou ausência de menstruação.",
+          "Histórico de aborto recorrente, endometriose, SOP ou cirurgias pélvicas.",
+          "Suspeita de fator masculino (infertilidade, doenças prévias)."
+        ]
+      }
+    ]
+  }
+}
