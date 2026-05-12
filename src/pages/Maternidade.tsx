@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { Navbar } from '@/components/Navbar';
 import { MaternidadeHeader } from '@/components/maternidade/MaternidadeHeader';
 import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { GestacaoPanel } from '@/components/maternidade/gestacao/GestacaoPanel';
@@ -27,10 +28,11 @@ const Maternidade = () => {
   if (!authReady || !user) return null;
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+0rem)] pb-28">
-      <MaternidadeHeader />
+    <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
+      <Navbar />
 
       <main className="px-4 py-4 max-w-3xl mx-auto space-y-4">
+        <MaternidadeHeader />
         <SectionPicker options={TABS} value={tab} onChange={setTab} />
 
         {tab === 'tentantes' && <TentantesPanel />}

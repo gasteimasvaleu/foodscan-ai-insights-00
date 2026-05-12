@@ -1,38 +1,32 @@
-## Objetivo
+## Mudanças
 
-Padronizar a UI da página `/maternidade`:
-1. Todos os botões com `rounded-xl` (cards seguem `rounded-3xl`, modais/inputs/dialogs `rounded-2xl`/`rounded-xl` como já estão).
-2. Todos os `CardTitle` dentro de `src/components/maternidade/**` e `src/pages/Maternidade.tsx` em negrito (`font-semibold`), mantendo `text-base`. Exceção apenas dentro da Maternidade — sem alterar a regra global.
+### 1. Adicionar Maternidade no menu "+" (`src/components/ui/tubelight-navbar.tsx`)
+Acrescentar no array `moreSheetItems` uma entrada nova:
+```ts
+{ name: 'Maternidade', description: 'Tentantes, gestação, pós-parto e bebê', url: '/maternidade', icon: Baby }
+```
+Importar `Baby` de `lucide-react`. Posicionar logo após "Sono" para agrupar com saúde/bem-estar.
 
-## Escopo
+### 2. Renderizar a Navbar superior em `/maternidade` (`src/pages/Maternidade.tsx`)
+- Importar e renderizar `<Navbar />` no topo do retorno (mesmo padrão de Profile/WidgetGuide).
+- Trocar o padding do container para `pt-[calc(env(safe-area-inset-top)+4rem)]` (padrão das páginas internas) para não esconder atrás da Navbar fixa.
+- Remover o `<MaternidadeHeader />` antigo (sticky com botão voltar) — ele duplicava header e cobria a Navbar global.
 
-Varredura em:
-- `src/pages/Maternidade.tsx`
-- `src/components/maternidade/**/*.tsx`
-
-## Alterações
-
-### 1. Border radius dos botões
-Procurar todos os `<Button ...>` (e `<button>` quando for ação tipo botão de fato — não chips/badges/pills decorativos com `rounded-full`) e normalizar para `rounded-xl`. Casos identificados a corrigir:
-- `BabyGenerator.tsx`: ícone de remover imagem usa `rounded-full` (manter — é ícone circular). Demais botões já estão `rounded-xl`.
-- `BabyNames.tsx`: `TabsTrigger` com `rounded-lg` → `rounded-xl`.
-- Qualquer `<Button>` sem classe de radius explícito ou com `rounded-lg`/`rounded-md`/`rounded-2xl`/`rounded-full` (exceto os intencionalmente circulares como close X, ícones avatar, chips tipo tag) → trocar para `rounded-xl`.
-
-Não mexer em:
-- Cards (`rounded-3xl`), modais (`rounded-2xl`), DrawerContent, badges/chips com `rounded-full`, barras de progresso (`rounded-t-md`/`rounded-full`), avatares circulares.
-
-### 2. Títulos dos cards em negrito
-Em todos os arquivos de `src/components/maternidade/**` e `src/pages/Maternidade.tsx`:
-- Adicionar `font-semibold` aos `CardTitle` que ainda não têm peso definido (a maioria está `text-base` apenas).
-- Manter `text-base` e cores existentes.
-
-## Detalhes técnicos
-
-- Usar `rg` para listar todos os `<Button` e `CardTitle` afetados, depois aplicar edits com `code--line_replace` arquivo por arquivo.
-- Não alterar a memória global de tipografia (a regra "card titles normal weight" continua valendo fora da Maternidade).
+### 3. Padronizar o card de título (substituir `MaternidadeHeader.tsx`)
+Refatorar `MaternidadeHeader` para usar o padrão global de page header:
+```tsx
+<div className="mb-4 animate-fade-in">
+  <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+      <Baby className="w-6 h-6 text-white" />
+    </div>
+    <h1 className="text-lg font-bold text-[#FD46A1]">Maternidade</h1>
+  </div>
+</div>
+```
+- Remove botão "voltar" (Navbar global cobre navegação).
+- Mantém ícone `Baby` consistente com a entrada do menu.
 
 ## Fora do escopo
-
-- Lógica funcional dos componentes.
-- Outras páginas do app.
-- Cards, modais, badges e elementos circulares por design.
+- Lógica das abas (Tentantes/Gestação/Pós-parto/Bebê) e dos sub-painéis.
+- Outras páginas.
