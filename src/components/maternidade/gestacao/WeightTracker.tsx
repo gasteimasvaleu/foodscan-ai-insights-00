@@ -43,7 +43,7 @@ export const WeightTracker = () => {
         </div>
         <Button
           size="sm"
-          onClick={() = className="rounded-xl"> setShowForm((v) => !v)}
+          onClick={() => setShowForm((v) => !v)}
           className="bg-white/70 hover:bg-white text-[#FD46A1] border border-white/60 backdrop-blur-md h-8 px-3"
         >
           <Plus className="w-3.5 h-3.5 mr-1" /> Registrar

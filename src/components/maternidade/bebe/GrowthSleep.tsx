@@ -104,7 +104,7 @@ export function GrowthSleep() {
       <Card className="border-none bg-[#FFD1E7] rounded-3xl">
         <CardHeader className="flex-row items-center justify-between pb-2">
           <CardTitle className="text-base text-gray-800 font-semibold">Crescimento</CardTitle>
-          <Button size="sm" onClick={() = className="rounded-xl"> setOpenG(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+          <Button size="sm" onClick={() => setOpenG(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
             Registrar
           </Button>
         </CardHeader>
@@ -136,7 +136,7 @@ export function GrowthSleep() {
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="flex-row items-center justify-between pb-2">
           <CardTitle className="text-base font-semibold">Sono</CardTitle>
-          <Button size="sm" onClick={() = className="rounded-xl"> setOpenS(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+          <Button size="sm" onClick={() => setOpenS(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
             Registrar
           </Button>
         </CardHeader>

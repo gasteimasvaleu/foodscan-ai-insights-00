@@ -128,7 +128,7 @@ export function CycleTracker() {
       )}
 
       <Button
-        onClick={() = className="rounded-xl"> setOpen(true)}
+        onClick={() => setOpen(true)}
         className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-2xl"
       >
         Registrar novo ciclo
@@ -170,7 +170,7 @@ export function CycleTracker() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() = className="rounded-xl"> remove(c.id)}
+                    onClick={() => remove(c.id)}
                     className="text-xs text-gray-500 hover:text-red-600"
                   >
                     Excluir

@@ -90,7 +90,7 @@ export function BabyProfileCard({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() = className="rounded-xl"> setOpen(true)}
+                onClick={() => setOpen(true)}
                 className="text-[#FD46A1]"
               >
                 Editar
@@ -99,7 +99,7 @@ export function BabyProfileCard({
           ) : (
             <div className="text-center space-y-3">
               <p className="text-base text-gray-800">Configure o perfil do bebê</p>
-              <Button onClick={() = className="rounded-xl"> setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+              <Button onClick={() => setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
                 Adicionar bebê
               </Button>
             </div>

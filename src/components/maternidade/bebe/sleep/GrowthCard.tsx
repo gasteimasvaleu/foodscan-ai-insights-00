@@ -55,7 +55,7 @@ export function GrowthCard() {
     <Card className="border-none bg-[#FFD1E7] rounded-3xl">
       <CardHeader className="flex-row items-center justify-between pb-2">
         <CardTitle className="text-base text-gray-800 font-semibold">Crescimento</CardTitle>
-        <Button size="sm" onClick={() = className="rounded-xl"> setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+        <Button size="sm" onClick={() => setOpen(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
           Registrar
         </Button>
       </CardHeader>
