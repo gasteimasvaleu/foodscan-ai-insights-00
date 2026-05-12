@@ -584,6 +584,48 @@ export type Database = {
         }
         Relationships: []
       }
+      menstrual_cycles: {
+        Row: {
+          created_at: string
+          cycle_length_days: number
+          cycle_start_date: string
+          flow: string | null
+          id: string
+          mood: string | null
+          notes: string | null
+          period_length_days: number
+          symptoms: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cycle_length_days?: number
+          cycle_start_date: string
+          flow?: string | null
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          period_length_days?: number
+          symptoms?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cycle_length_days?: number
+          cycle_start_date?: string
+          flow?: string | null
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          period_length_days?: number
+          symptoms?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications_sent: {
         Row: {
           created_at: string | null
@@ -799,6 +841,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      preconception_checklist: {
+        Row: {
+          checked_at: string
+          id: string
+          item_key: string
+          user_id: string
+        }
+        Insert: {
+          checked_at?: string
+          id?: string
+          item_key: string
+          user_id: string
+        }
+        Update: {
+          checked_at?: string
+          id?: string
+          item_key?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
