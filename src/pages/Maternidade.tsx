@@ -1,0 +1,66 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MaternidadeHeader } from '@/components/maternidade/MaternidadeHeader';
+import { GestacaoPanel } from '@/components/maternidade/gestacao/GestacaoPanel';
+
+const ComingSoon = ({ label }: { label: string }) => (
+  <div className="bg-[#FFD1E7] rounded-3xl p-8 text-center">
+    <h3 className="text-base text-gray-800 mb-1">{label}</h3>
+    <p className="text-sm text-gray-600">Em breve nesta seção.</p>
+  </div>
+);
+
+const Maternidade = () => {
+  const { user, authReady } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authReady && !user) navigate('/auth');
+  }, [authReady, user, navigate]);
+
+  if (!authReady || !user) return null;
+
+  return (
+    <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+0rem)] pb-28">
+      <MaternidadeHeader />
+
+      <main className="px-4 py-4 max-w-3xl mx-auto">
+        <Tabs defaultValue="gestacao" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 h-auto bg-white/70 backdrop-blur-md p-1 rounded-2xl mb-4">
+            {[
+              ['tentantes', 'Tentantes'],
+              ['gestacao', 'Gestação'],
+              ['posparto', 'Pós-parto'],
+              ['bebe', 'Bebê'],
+            ].map(([v, label]) => (
+              <TabsTrigger
+                key={v}
+                value={v}
+                className="text-xs py-2 rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <TabsContent value="tentantes">
+            <ComingSoon label="Tentantes" />
+          </TabsContent>
+          <TabsContent value="gestacao">
+            <GestacaoPanel />
+          </TabsContent>
+          <TabsContent value="posparto">
+            <ComingSoon label="Pós-parto" />
+          </TabsContent>
+          <TabsContent value="bebe">
+            <ComingSoon label="Bebê & Sono" />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
+};
+
+export default Maternidade;
