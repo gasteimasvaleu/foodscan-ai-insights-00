@@ -139,6 +139,7 @@ const App = () => (
             <Route path="/admin/banners" element={<AdminBanners />} />
             <Route path="/admin/treinos" element={<AdminTreinos />} />
             <Route path="/admin/loja" element={<AdminLoja />} />
+            <Route path="/admin/alimentos-comunidade" element={<AdminAlimentosComunidade />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
