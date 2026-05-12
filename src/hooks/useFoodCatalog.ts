@@ -11,6 +11,7 @@ export interface CatalogFood {
   fats_per_100g: number;
   common_portion_g: number;
   common_portion_label: string;
+  source?: "official" | "community";
 }
 
 export function useFoodCatalogSearch(query: string, category?: string) {
@@ -19,7 +20,7 @@ export function useFoodCatalogSearch(query: string, category?: string) {
     queryFn: async () => {
       let q = supabase
         .from("food_catalog")
-        .select("*")
+        .select("id,name,category,calories_per_100g,proteins_per_100g,carbs_per_100g,fats_per_100g,common_portion_g,common_portion_label,source")
         .eq("is_active", true);
 
       if (query.trim()) {
