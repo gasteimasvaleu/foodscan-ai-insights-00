@@ -1,5 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+
+const PAGE_SIZE = 60;
 
 export interface CatalogFood {
   id: string;
