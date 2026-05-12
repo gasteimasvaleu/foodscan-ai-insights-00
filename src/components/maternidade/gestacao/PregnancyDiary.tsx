@@ -92,7 +92,7 @@ export const PregnancyDiary = () => {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="bg-white/70 backdrop-blur-md border-white/60 max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-[#FD46A1]">Nova Entrada</DialogTitle>
           </DialogHeader>
