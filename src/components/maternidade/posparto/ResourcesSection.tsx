@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Phone, MapPin, ExternalLink, Smartphone, BookOpen, Users, Heart } from 'lucide-react';
+import { Phone, ExternalLink } from 'lucide-react';
 
 interface ResourcesSectionProps {
   content: {
@@ -32,12 +32,9 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
           <div className="space-y-2">
             {content.emergency.items.map((it, i) => (
               <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-white border border-red-100">
-                <div className="flex items-start gap-3 min-w-0">
-                  {it.type === 'phone' ? <Phone className="h-5 w-5 text-red-600 mt-0.5 shrink-0" /> : <MapPin className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />}
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-medium truncate">{it.name}</h4>
-                    <p className="text-xs text-gray-600">{it.description}</p>
-                  </div>
+                <div className="min-w-0">
+                  <h4 className="text-sm font-medium truncate">{it.name}</h4>
+                  <p className="text-xs text-gray-600">{it.description}</p>
                 </div>
                 {it.type === 'phone' && (
                   <Button size="sm" asChild className="bg-red-600 hover:bg-red-700 shrink-0">
@@ -80,9 +77,6 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
           <div className="grid sm:grid-cols-3 gap-3">
             {content.apps.items.map((a, i) => (
               <div key={i} className="p-3 rounded-2xl bg-white border text-center">
-                <div className="w-10 h-10 rounded-xl bg-[#FFD1E7] flex items-center justify-center mx-auto mb-2">
-                  <Smartphone className="h-5 w-5 text-[#FD46A1]" />
-                </div>
                 <h4 className="text-sm font-medium">{a.name}</h4>
                 <p className="text-xs text-gray-600 mt-1">{a.description}</p>
               </div>
@@ -113,10 +107,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
           <CardTitle className="text-base text-[#FD46A1]">{content.forPartners.title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-start gap-3">
-            <Heart className="h-5 w-5 text-[#FD46A1] mt-0.5 shrink-0" />
-            <p className="text-sm text-gray-700 leading-relaxed">{content.forPartners.content}</p>
-          </div>
+          <p className="text-sm text-gray-700 leading-relaxed">{content.forPartners.content}</p>
         </CardContent>
       </Card>
     </div>
