@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -190,11 +191,9 @@ export function CycleTracker() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">1º dia da menstruação</Label>
-              <Input
-                type="date"
+              <MatDatePicker
                 value={form.cycle_start_date}
-                onChange={(e) => setForm({ ...form, cycle_start_date: e.target.value })}
-                className="text-base h-12 rounded-xl"
+                onChange={(v) => setForm({ ...form, cycle_start_date: v })}
               />
             </div>
             <div className="space-y-2">

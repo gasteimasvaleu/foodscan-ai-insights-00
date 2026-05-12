@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MatDateTimePicker } from '@/components/maternidade/MatDatePicker';
 import { Star, Trash2, Play, Square } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -188,11 +189,11 @@ export function SleepDiaryAdvanced() {
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Início</Label>
-              <Input type="datetime-local" value={form.started_at} onChange={(e) => setForm({ ...form, started_at: e.target.value })} className="text-base h-12 rounded-xl appearance-none text-left" />
+              <MatDateTimePicker value={form.started_at} onChange={(v) => setForm({ ...form, started_at: v })} />
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Fim</Label>
-              <Input type="datetime-local" value={form.ended_at} onChange={(e) => setForm({ ...form, ended_at: e.target.value })} className="text-base h-12 rounded-xl appearance-none text-left" />
+              <MatDateTimePicker value={form.ended_at} onChange={(v) => setForm({ ...form, ended_at: v })} />
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Qualidade</Label>

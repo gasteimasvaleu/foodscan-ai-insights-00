@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -52,12 +53,7 @@ export function FertilityCalculator() {
         <CardContent className="pt-6 space-y-4">
           <div className="space-y-2">
             <Label className="text-sm text-gray-700">1º dia da última menstruação</Label>
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="text-base h-12 rounded-xl bg-white w-full"
-            />
+            <MatDatePicker value={startDate} onChange={setStartDate} />
           </div>
           <div className="space-y-2">
             <Label className="text-sm text-gray-700">Duração média do ciclo</Label>

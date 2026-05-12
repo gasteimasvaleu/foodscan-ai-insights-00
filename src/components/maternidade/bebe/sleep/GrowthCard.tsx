@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -89,7 +90,7 @@ export function GrowthCard() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Data</Label>
-              <Input type="date" value={form.recorded_at} onChange={(e) => setForm({ ...form, recorded_at: e.target.value })} className="text-base h-12 rounded-xl" />
+              <MatDatePicker value={form.recorded_at} onChange={(v) => setForm({ ...form, recorded_at: v })} />
             </div>
             <Field label="Peso" suffix="kg" value={form.weight_kg} onChange={(v) => setForm({ ...form, weight_kg: v })} step="0.01" />
             <Field label="Altura" suffix="cm" value={form.height_cm} onChange={(v) => setForm({ ...form, height_cm: v })} step="0.1" />

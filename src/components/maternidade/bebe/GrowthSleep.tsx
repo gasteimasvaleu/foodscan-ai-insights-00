@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import { MatDatePicker, MatDateTimePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -164,7 +165,7 @@ export function GrowthSleep() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Data</Label>
-              <Input type="date" value={gForm.recorded_at} onChange={(e) => setGForm({ ...gForm, recorded_at: e.target.value })} className="text-base h-12 rounded-xl" />
+              <MatDatePicker value={gForm.recorded_at} onChange={(v) => setGForm({ ...gForm, recorded_at: v })} />
             </div>
             <SuffixField label="Peso" suffix="kg" value={gForm.weight_kg} onChange={(v) => setGForm({ ...gForm, weight_kg: v })} step="0.01" />
             <SuffixField label="Altura" suffix="cm" value={gForm.height_cm} onChange={(v) => setGForm({ ...gForm, height_cm: v })} step="0.1" />
@@ -194,11 +195,11 @@ export function GrowthSleep() {
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Início</Label>
-              <Input type="datetime-local" value={sForm.started_at} onChange={(e) => setSForm({ ...sForm, started_at: e.target.value })} className="text-base h-12 rounded-xl" />
+              <MatDateTimePicker value={sForm.started_at} onChange={(v) => setSForm({ ...sForm, started_at: v })} />
             </div>
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Fim</Label>
-              <Input type="datetime-local" value={sForm.ended_at} onChange={(e) => setSForm({ ...sForm, ended_at: e.target.value })} className="text-base h-12 rounded-xl" />
+              <MatDateTimePicker value={sForm.ended_at} onChange={(v) => setSForm({ ...sForm, ended_at: v })} />
             </div>
           </div>
           <DialogFooter>
