@@ -639,12 +639,14 @@ export type Database = {
           category: string
           common_portion_g: number
           common_portion_label: string
+          community_suggestion_id: string | null
           created_at: string
           fats_per_100g: number
           id: string
           is_active: boolean
           name: string
           proteins_per_100g: number
+          source: string
           updated_at: string
         }
         Insert: {
@@ -653,12 +655,14 @@ export type Database = {
           category: string
           common_portion_g?: number
           common_portion_label?: string
+          community_suggestion_id?: string | null
           created_at?: string
           fats_per_100g?: number
           id?: string
           is_active?: boolean
           name: string
           proteins_per_100g?: number
+          source?: string
           updated_at?: string
         }
         Update: {
@@ -667,12 +671,97 @@ export type Database = {
           category?: string
           common_portion_g?: number
           common_portion_label?: string
+          community_suggestion_id?: string | null
           created_at?: string
           fats_per_100g?: number
           id?: string
           is_active?: boolean
           name?: string
           proteins_per_100g?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      food_catalog_suggestion_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          suggestion_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          suggestion_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          suggestion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_catalog_suggestion_submissions_suggestion_id_fkey"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "food_catalog_suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      food_catalog_suggestions: {
+        Row: {
+          calories_per_100g: number
+          carbs_per_100g: number
+          category: string
+          created_at: string
+          display_name: string
+          distinct_users_count: number
+          fats_per_100g: number
+          id: string
+          last_seen_at: string
+          name_normalized: string
+          promoted_food_id: string | null
+          proteins_per_100g: number
+          status: string
+          submissions_count: number
+          updated_at: string
+        }
+        Insert: {
+          calories_per_100g?: number
+          carbs_per_100g?: number
+          category?: string
+          created_at?: string
+          display_name: string
+          distinct_users_count?: number
+          fats_per_100g?: number
+          id?: string
+          last_seen_at?: string
+          name_normalized: string
+          promoted_food_id?: string | null
+          proteins_per_100g?: number
+          status?: string
+          submissions_count?: number
+          updated_at?: string
+        }
+        Update: {
+          calories_per_100g?: number
+          carbs_per_100g?: number
+          category?: string
+          created_at?: string
+          display_name?: string
+          distinct_users_count?: number
+          fats_per_100g?: number
+          id?: string
+          last_seen_at?: string
+          name_normalized?: string
+          promoted_food_id?: string | null
+          proteins_per_100g?: number
+          status?: string
+          submissions_count?: number
           updated_at?: string
         }
         Relationships: []
@@ -1853,8 +1942,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      normalize_food_name: { Args: { _name: string }; Returns: string }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
