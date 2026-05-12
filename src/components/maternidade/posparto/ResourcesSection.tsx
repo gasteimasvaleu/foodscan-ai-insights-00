@@ -26,10 +26,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="border-2 border-red-200 bg-red-50">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2 text-red-700">
-            <Phone className="h-5 w-5" />
-            {content.emergency.title}
-          </CardTitle>
+          <CardTitle className="text-base text-red-700">{content.emergency.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -55,10 +52,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <ExternalLink className="h-5 w-5 text-[#FD46A1]" />
-            {content.online.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.online.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -80,10 +74,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Smartphone className="h-5 w-5 text-[#FD46A1]" />
-            {content.apps.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.apps.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-3 gap-3">
@@ -102,10 +93,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[#FD46A1]" />
-            {content.books.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.books.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -122,10 +110,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2 text-[#FD46A1]">
-            <Users className="h-5 w-5" />
-            {content.forPartners.title}
-          </CardTitle>
+          <CardTitle className="text-base text-[#FD46A1]">{content.forPartners.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-start gap-3">

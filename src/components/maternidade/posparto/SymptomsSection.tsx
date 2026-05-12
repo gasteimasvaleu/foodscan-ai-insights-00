@@ -121,10 +121,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-[#FD46A1]" />
-              Como você está hoje?
-            </span>
+            <span>Como você está hoje?</span>
             <Badge className="bg-[#FFD1E7] text-[#FD46A1] border-0">
               {totalCount(todayEntry)} marcados
             </Badge>
@@ -171,10 +168,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
             <Card key={key} className="bg-white/70 backdrop-blur-md border-white/40">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center justify-between text-base">
-                  <span className="flex items-center gap-2">
-                    <Icon className="h-5 w-5 text-[#FD46A1]" />
-                    {cat.title}
-                  </span>
+                  <span>{cat.title}</span>
                   {selected.length > 0 && (
                     <Badge className="bg-[#FFD1E7] text-[#FD46A1] border-0 text-xs">{selected.length}</Badge>
                   )}
@@ -211,10 +205,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Sinais de alerta (chips separados) */}
       <Card className="border-2 border-red-200 bg-red-50/60">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2 text-red-700">
-            <AlertTriangle className="h-5 w-5" />
-            {content.redFlags.title}
-          </CardTitle>
+          <CardTitle className="text-base text-red-700">{content.redFlags.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 justify-start">
@@ -255,10 +246,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Histórico 7 dias */}
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <History className="h-5 w-5 text-[#FD46A1]" />
-            Últimos 7 dias
-          </CardTitle>
+          <CardTitle className="text-base">Últimos 7 dias</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -296,10 +284,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Timeline informativa */}
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Clock className="h-5 w-5 text-[#FD46A1]" />
-            {content.timeline.title}
-          </CardTitle>
+          <CardTitle className="text-base">{content.timeline.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
