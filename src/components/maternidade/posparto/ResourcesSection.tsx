@@ -26,7 +26,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="border-2 border-red-200 bg-red-50">
         <CardHeader>
-          <CardTitle className="text-base text-red-700">{content.emergency.title}</CardTitle>
+          <CardTitle className="text-base text-red-700 font-semibold">{content.emergency.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -37,7 +37,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
                   <p className="text-xs text-gray-600">{it.description}</p>
                 </div>
                 {it.type === 'phone' && (
-                  <Button size="sm" asChild className="bg-red-600 hover:bg-red-700 shrink-0">
+                  <Button size="sm" asChild className="bg-red-600 hover:bg-red-700 shrink-0 rounded-xl">
                     <a href={`tel:${it.contact}`}><Phone className="h-4 w-4 mr-1" />{it.contact}</a>
                   </Button>
                 )}
@@ -49,7 +49,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.online.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.online.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -71,7 +71,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.apps.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.apps.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-3 gap-3">
@@ -87,7 +87,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.books.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.books.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -104,7 +104,7 @@ export function ResourcesSection({ content }: ResourcesSectionProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base text-[#FD46A1]">{content.forPartners.title}</CardTitle>
+          <CardTitle className="text-base text-[#FD46A1] font-semibold">{content.forPartners.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-700 leading-relaxed">{content.forPartners.content}</p>

@@ -120,7 +120,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Checklist resumo do dia */}
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center justify-between">
+          <CardTitle className="text-base flex items-center justify-between font-semibold">
             <span>Como você está hoje?</span>
             <Badge className="bg-[#FFD1E7] text-[#FD46A1] border-0">
               {totalCount(todayEntry)} marcados
@@ -147,11 +147,11 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
             </div>
             <div className="flex gap-2">
               {onGoToEpds && (
-                <Button onClick={onGoToEpds} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90" size="sm">
+                <Button onClick={onGoToEpds} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-xl" size="sm">
                   Fazer auto-avaliação
                 </Button>
               )}
-              <Button asChild variant="outline" size="sm" className="flex-1 border-red-300 text-red-700 hover:bg-red-100">
+              <Button asChild variant="outline" size="sm" className="flex-1 border-red-300 text-red-700 hover:bg-red-100 rounded-xl">
                 <a href="tel:188"><Phone className="h-4 w-4 mr-1" />Ligar 188</a>
               </Button>
             </div>
@@ -167,7 +167,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
           return (
             <Card key={key} className="bg-white/70 backdrop-blur-md border-white/40">
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center justify-between text-base">
+                <CardTitle className="flex items-center justify-between text-base font-semibold">
                   <span>{cat.title}</span>
                   {selected.length > 0 && (
                     <Badge className="bg-[#FFD1E7] text-[#FD46A1] border-0 text-xs">{selected.length}</Badge>
@@ -205,7 +205,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Sinais de alerta (chips separados) */}
       <Card className="border-2 border-red-200 bg-red-50/60">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-red-700">{content.redFlags.title}</CardTitle>
+          <CardTitle className="text-base text-red-700 font-semibold">{content.redFlags.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 justify-start">
@@ -234,11 +234,11 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
 
       {/* Ações */}
       <div className="flex gap-2">
-        <Button onClick={saveToday} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90">
+        <Button onClick={saveToday} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-xl">
           <Check className="h-4 w-4 mr-2" />
           Salvar registro de hoje
         </Button>
-        <Button onClick={clearToday} variant="outline" className="border-pink-200">
+        <Button onClick={clearToday} variant="outline" className="border-pink-200 rounded-xl">
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
@@ -246,7 +246,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Histórico 7 dias */}
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Últimos 7 dias</CardTitle>
+          <CardTitle className="text-base font-semibold">Últimos 7 dias</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -284,7 +284,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       {/* Timeline informativa */}
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.timeline.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.timeline.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

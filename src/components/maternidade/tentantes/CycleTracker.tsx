@@ -128,7 +128,7 @@ export function CycleTracker() {
       )}
 
       <Button
-        onClick={() => setOpen(true)}
+        onClick={() = className="rounded-xl"> setOpen(true)}
         className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-2xl"
       >
         Registrar novo ciclo
@@ -136,7 +136,7 @@ export function CycleTracker() {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">Histórico</CardTitle>
+          <CardTitle className="text-base font-semibold">Histórico</CardTitle>
         </CardHeader>
         <CardContent>
           {cycles.length === 0 ? (
@@ -170,7 +170,7 @@ export function CycleTracker() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => remove(c.id)}
+                    onClick={() = className="rounded-xl"> remove(c.id)}
                     className="text-xs text-gray-500 hover:text-red-600"
                   >
                     Excluir
@@ -277,7 +277,7 @@ export function CycleTracker() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={save} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Salvar ciclo'}
             </Button>
           </DialogFooter>

@@ -58,7 +58,7 @@ export function BabyGenerator() {
   return (
     <div className="space-y-4">
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="pb-2"><CardTitle className="text-base">Como será o bebê?</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Como será o bebê?</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-gray-700">
             Envie uma foto da mãe e do pai e veja uma simulação criativa do bebê.
@@ -80,7 +80,7 @@ export function BabyGenerator() {
 
       {result && (
         <Card className="border-none bg-[#FFD1E7] rounded-3xl">
-          <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800">Resultado</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base text-gray-800 font-semibold">Resultado</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <img src={result} alt="Bebê gerado" className="w-full rounded-2xl" />
             <Button onClick={download} variant="outline" className="w-full rounded-xl">

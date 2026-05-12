@@ -103,8 +103,8 @@ export function GrowthSleep() {
     <div className="space-y-4">
       <Card className="border-none bg-[#FFD1E7] rounded-3xl">
         <CardHeader className="flex-row items-center justify-between pb-2">
-          <CardTitle className="text-base text-gray-800">Crescimento</CardTitle>
-          <Button size="sm" onClick={() => setOpenG(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+          <CardTitle className="text-base text-gray-800 font-semibold">Crescimento</CardTitle>
+          <Button size="sm" onClick={() = className="rounded-xl"> setOpenG(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
             Registrar
           </Button>
         </CardHeader>
@@ -135,8 +135,8 @@ export function GrowthSleep() {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader className="flex-row items-center justify-between pb-2">
-          <CardTitle className="text-base">Sono</CardTitle>
-          <Button size="sm" onClick={() => setOpenS(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+          <CardTitle className="text-base font-semibold">Sono</CardTitle>
+          <Button size="sm" onClick={() = className="rounded-xl"> setOpenS(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
             Registrar
           </Button>
         </CardHeader>
@@ -171,7 +171,7 @@ export function GrowthSleep() {
             <SuffixField label="Perímetro cefálico" suffix="cm" value={gForm.head_cm} onChange={(v) => setGForm({ ...gForm, head_cm: v })} step="0.1" />
           </div>
           <DialogFooter>
-            <Button onClick={saveGrowth} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={saveGrowth} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>
@@ -202,7 +202,7 @@ export function GrowthSleep() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={saveSleep} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
+            <Button onClick={saveSleep} disabled={saving} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl">
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>

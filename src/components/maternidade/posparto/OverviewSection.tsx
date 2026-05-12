@@ -46,7 +46,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.whatIs.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.whatIs.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-700 leading-relaxed">{content.whatIs.content}</p>
@@ -55,7 +55,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.babyBlues.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.babyBlues.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -91,7 +91,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.riskFactors.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.riskFactors.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -105,7 +105,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
       {content.spectrum && (
         <Card className="bg-white/70 backdrop-blur-md border-white/40">
           <CardHeader>
-            <CardTitle className="text-base">{content.spectrum.title}</CardTitle>
+            <CardTitle className="text-base font-semibold">{content.spectrum.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-700 mb-3">{content.spectrum.intro}</p>
@@ -153,7 +153,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">{content.myths.title}</CardTitle>
+          <CardTitle className="text-base font-semibold">{content.myths.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible>
@@ -179,7 +179,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
 
       <Card className="border-2 border-pink-200 bg-[#FFD1E7]">
         <CardHeader>
-          <CardTitle className="text-base text-[#FD46A1]">{content.message.title}</CardTitle>
+          <CardTitle className="text-base text-[#FD46A1] font-semibold">{content.message.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-700 italic leading-relaxed">"{content.message.content}"</p>

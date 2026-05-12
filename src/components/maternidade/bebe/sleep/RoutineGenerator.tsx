@@ -62,7 +62,7 @@ export function RoutineGenerator() {
 
   return (
     <Card className="bg-white/70 backdrop-blur-md border-white/40">
-      <CardHeader className="pb-2"><CardTitle className="text-base">Gerador de rotina</CardTitle></CardHeader>
+      <CardHeader className="pb-2"><CardTitle className="text-base font-semibold">Gerador de rotina</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label className="text-sm text-gray-700">Idade</Label>

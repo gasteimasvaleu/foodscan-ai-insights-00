@@ -101,7 +101,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
       <div className="space-y-4">
         <Card className="border-none bg-[#FFD1E7]">
           <CardHeader>
-            <CardTitle className="text-base">{content.title}</CardTitle>
+            <CardTitle className="text-base font-semibold">{content.title}</CardTitle>
             <CardDescription className="text-sm text-gray-700">{content.intro}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -110,7 +110,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
                 <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />{content.disclaimer}
               </p>
             </div>
-            <Button onClick={handleStart} className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90" size="lg">
+            <Button onClick={handleStart} className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-xl" size="lg">
               {content.buttons.start}
             </Button>
           </CardContent>
@@ -119,7 +119,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
         {history.length > 0 && (
           <Card className="bg-white/70 backdrop-blur-md border-white/40">
             <CardHeader>
-              <CardTitle className="text-base">Histórico</CardTitle>
+              <CardTitle className="text-base font-semibold">Histórico</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -160,7 +160,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
               <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="h-2" />
-            <CardTitle className="text-base leading-relaxed">{q.question}</CardTitle>
+            <CardTitle className="text-base leading-relaxed font-semibold">{q.question}</CardTitle>
           </CardHeader>
           <CardContent>
             <RadioGroup
@@ -181,10 +181,10 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
             </RadioGroup>
           </CardContent>
           <CardFooter className="flex gap-2">
-            <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0} className="flex-1">
+            <Button variant="outline" onClick={handlePrevious} disabled={currentQuestion === 0} className="flex-1 rounded-xl">
               {content.buttons.previous}
             </Button>
-            <Button onClick={handleNext} disabled={currentAnswer === null} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90">
+            <Button onClick={handleNext} disabled={currentAnswer === null} className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-xl">
               {currentQuestion === content.questions.length - 1 ? content.buttons.finish : content.buttons.next}
             </Button>
           </CardFooter>
@@ -232,12 +232,12 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
       )}
 
       <div className="flex gap-2">
-        <Button variant="outline" onClick={handleRestart} className="flex-1">
+        <Button variant="outline" onClick={handleRestart} className="flex-1 rounded-xl">
           <RotateCcw className="h-4 w-4 mr-2" />{content.buttons.restart}
         </Button>
         <Button
           variant="outline"
-          className="flex-1"
+          className="flex-1 rounded-xl"
           onClick={() => {
             const text = `${r.title}\nPontuação: ${score}/30\n${r.recommendation}`;
             if (navigator.share) navigator.share({ title: content.title, text }).catch(() => {});

@@ -72,7 +72,7 @@ export function PreconceptionChecklist({ content }: Props) {
       {content.groups.map((g) => (
         <Card key={g.title} className="border-none bg-[#FFD1E7]">
           <CardHeader>
-            <CardTitle className="text-base">{g.title}</CardTitle>
+            <CardTitle className="text-base font-semibold">{g.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">

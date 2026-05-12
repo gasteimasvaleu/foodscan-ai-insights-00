@@ -78,7 +78,7 @@ export function FertilityCalculator() {
 
       <Card className="bg-white/70 backdrop-blur-md border-white/40">
         <CardHeader>
-          <CardTitle className="text-base">Sua janela estimada</CardTitle>
+          <CardTitle className="text-base font-semibold">Sua janela estimada</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <Row label="Menstruação" value={fmt(result.start)} color="bg-red-100 text-red-700" />

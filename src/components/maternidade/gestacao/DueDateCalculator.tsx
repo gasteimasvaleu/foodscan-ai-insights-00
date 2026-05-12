@@ -54,7 +54,7 @@ export const DueDateCalculator = () => {
       <Button
         onClick={calculate}
         disabled={!lastPeriod}
-        className="w-full bg-[#FD46A1] hover:bg-[#E24989] text-white"
+        className="w-full bg-[#FD46A1] hover:bg-[#E24989] text-white rounded-xl"
       >
         Calcular
       </Button>
