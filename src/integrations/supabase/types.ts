@@ -110,6 +110,36 @@ export type Database = {
         }
         Relationships: []
       }
+      baby_favorite_names: {
+        Row: {
+          created_at: string
+          gender: string | null
+          id: string
+          meaning: string | null
+          name: string
+          origin: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gender?: string | null
+          id?: string
+          meaning?: string | null
+          name: string
+          origin?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          gender?: string | null
+          id?: string
+          meaning?: string | null
+          name?: string
+          origin?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       baby_feedings: {
         Row: {
           amount_ml: number | null
@@ -209,7 +239,9 @@ export type Database = {
           ended_at: string
           id: string
           kind: string
+          log_date: string
           notes: string | null
+          quality: number | null
           started_at: string
           user_id: string
         }
@@ -218,7 +250,9 @@ export type Database = {
           ended_at: string
           id?: string
           kind?: string
+          log_date?: string
           notes?: string | null
+          quality?: number | null
           started_at: string
           user_id: string
         }
@@ -227,7 +261,9 @@ export type Database = {
           ended_at?: string
           id?: string
           kind?: string
+          log_date?: string
           notes?: string | null
+          quality?: number | null
           started_at?: string
           user_id?: string
         }

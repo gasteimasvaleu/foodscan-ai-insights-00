@@ -47,3 +47,9 @@ verify_jwt = false
 
 [functions.generate-home-recipe]
 verify_jwt = false
+
+[functions.suggest-baby-names]
+verify_jwt = true
+
+[functions.generate-baby]
+verify_jwt = true

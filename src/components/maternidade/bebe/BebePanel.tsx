@@ -1,16 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { BabyProfileCard, type BabyProfile } from './BabyProfileCard';
-import { GrowthSleep } from './GrowthSleep';
+import { SleepGrowthPanel } from './SleepGrowthPanel';
 import { FeedingDiapers } from './FeedingDiapers';
 import { VaccinesMilestones } from './VaccinesMilestones';
 import { EducationalContent } from './EducationalContent';
+import { BabyNames } from './BabyNames';
+import { BabyGenerator } from './BabyGenerator';
+
+const TABS = [
+  { id: 'sono', label: 'Sono & Cresc.' },
+  { id: 'aliment', label: 'Aliment.' },
+  { id: 'vacinas', label: 'Vacinas' },
+  { id: 'educativo', label: 'Conteúdo' },
+  { id: 'nomes', label: 'Nomes' },
+  { id: 'gerador', label: 'Bebê IA' },
+] as const;
 
 export function BebePanel() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<BabyProfile | null>(null);
+  const [active, setActive] = useState<typeof TABS[number]['id']>('sono');
 
   useEffect(() => {
     if (!user) return;
@@ -28,29 +39,30 @@ export function BebePanel() {
     <div className="space-y-4">
       <BabyProfileCard profile={profile} onChange={setProfile} />
 
-      <Tabs defaultValue="crescimento" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto bg-white/70 backdrop-blur-md p-1 rounded-2xl">
-          {[
-            ['crescimento', 'Crescimento'],
-            ['alimentacao', 'Alimentação'],
-            ['vacinas', 'Vacinas'],
-            ['educativo', 'Conteúdo'],
-          ].map(([v, label]) => (
-            <TabsTrigger
-              key={v}
-              value={v}
-              className="text-xs py-2 rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white"
+      <div className="bg-white/70 backdrop-blur-md p-1 rounded-2xl overflow-x-auto">
+        <div className="flex gap-1 min-w-max">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActive(t.id)}
+              className={`text-xs py-2 px-3 rounded-xl whitespace-nowrap transition-colors ${
+                active === t.id ? 'bg-[#FD46A1] text-white' : 'text-gray-700'
+              }`}
             >
-              {label}
-            </TabsTrigger>
+              {t.label}
+            </button>
           ))}
-        </TabsList>
+        </div>
+      </div>
 
-        <TabsContent value="crescimento" className="mt-4"><GrowthSleep /></TabsContent>
-        <TabsContent value="alimentacao" className="mt-4"><FeedingDiapers /></TabsContent>
-        <TabsContent value="vacinas" className="mt-4"><VaccinesMilestones profile={profile} /></TabsContent>
-        <TabsContent value="educativo" className="mt-4"><EducationalContent /></TabsContent>
-      </Tabs>
+      <div>
+        {active === 'sono' && <SleepGrowthPanel />}
+        {active === 'aliment' && <FeedingDiapers />}
+        {active === 'vacinas' && <VaccinesMilestones profile={profile} />}
+        {active === 'educativo' && <EducationalContent />}
+        {active === 'nomes' && <BabyNames />}
+        {active === 'gerador' && <BabyGenerator />}
+      </div>
     </div>
   );
 }
