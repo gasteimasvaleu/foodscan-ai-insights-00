@@ -25,7 +25,27 @@ const Alimentos = () => {
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [logging, setLogging] = useState(false);
 
-  const { data: foods, isLoading } = useFoodCatalogSearch(query, category || undefined);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFoodCatalogSearch(query, category || undefined);
+  const foods = useMemo(() => data?.pages.flat() ?? [], [data]);
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, { rootMargin: "200px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, foods.length]);
 
   const macros = useMemo(() => {
     if (!selected) return { kcal: 0, p: 0, c: 0, f: 0 };
