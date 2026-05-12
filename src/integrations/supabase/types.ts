@@ -62,6 +62,177 @@ export type Database = {
         }
         Relationships: []
       }
+      baby_checklist: {
+        Row: {
+          checked_at: string
+          id: string
+          item_key: string
+          user_id: string
+        }
+        Insert: {
+          checked_at?: string
+          id?: string
+          item_key: string
+          user_id: string
+        }
+        Update: {
+          checked_at?: string
+          id?: string
+          item_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      baby_diapers: {
+        Row: {
+          changed_at: string
+          created_at: string
+          id: string
+          kind: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          created_at?: string
+          id?: string
+          kind: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      baby_feedings: {
+        Row: {
+          amount_ml: number | null
+          created_at: string
+          duration_min: number | null
+          fed_at: string
+          id: string
+          kind: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_ml?: number | null
+          created_at?: string
+          duration_min?: number | null
+          fed_at?: string
+          id?: string
+          kind: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number | null
+          created_at?: string
+          duration_min?: number | null
+          fed_at?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      baby_growth: {
+        Row: {
+          created_at: string
+          head_cm: number | null
+          height_cm: number | null
+          id: string
+          notes: string | null
+          recorded_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          head_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          recorded_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          head_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          recorded_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      baby_profile: {
+        Row: {
+          birth_date: string
+          created_at: string
+          name: string
+          sex: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string
+          name: string
+          sex?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string
+          name?: string
+          sex?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      baby_sleep: {
+        Row: {
+          created_at: string
+          ended_at: string
+          id: string
+          kind: string
+          notes: string | null
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          started_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calorie_adjustments: {
         Row: {
           adjustment_amount: number
