@@ -93,8 +93,8 @@ export function BabyNames() {
         <CardContent>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="grid grid-cols-2 w-full bg-white/50 rounded-xl">
-              <TabsTrigger value="generate" className="rounded-lg data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Sugerir</TabsTrigger>
-              <TabsTrigger value="search" className="rounded-lg data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Buscar</TabsTrigger>
+              <TabsTrigger value="generate" className="rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Sugerir</TabsTrigger>
+              <TabsTrigger value="search" className="rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white">Buscar</TabsTrigger>
             </TabsList>
 
             <TabsContent value="generate" className="space-y-3 mt-4">
