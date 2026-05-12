@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Phone } from 'lucide-react';
 import postpartumData from '@/data/maternidade/postpartum-pt.json';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { OverviewSection } from './OverviewSection';
 import { SymptomsSection } from './SymptomsSection';
 import { SelfAssessment } from './SelfAssessment';
@@ -11,6 +11,14 @@ import { ResourcesSection } from './ResourcesSection';
 export const PospartoPanel = () => {
   const c = (postpartumData as any).pt;
   const [tab, setTab] = useState('overview');
+
+  const options = [
+    { id: 'overview', label: c.navigation.overview },
+    { id: 'symptoms', label: c.navigation.symptoms },
+    { id: 'epds', label: c.navigation.selfAssessment },
+    { id: 'help', label: c.navigation.support },
+    { id: 'resources', label: c.navigation.resources },
+  ];
 
   return (
     <div className="space-y-3">
@@ -30,41 +38,15 @@ export const PospartoPanel = () => {
         <span className="text-sm font-semibold text-red-700">Ligar 188</span>
       </a>
 
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 h-auto bg-white/70 backdrop-blur-md p-1 rounded-2xl">
-          {[
-            ['overview', c.navigation.overview],
-            ['symptoms', c.navigation.symptoms],
-            ['epds', c.navigation.selfAssessment],
-            ['help', c.navigation.support],
-            ['resources', c.navigation.resources],
-          ].map(([v, label]) => (
-            <TabsTrigger
-              key={v}
-              value={v}
-              className="text-[10px] py-2 rounded-xl data-[state=active]:bg-[#FD46A1] data-[state=active]:text-white"
-            >
-              {label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <SectionPicker options={options} value={tab} onChange={setTab} />
 
-        <TabsContent value="overview" className="mt-4">
-          <OverviewSection content={c.overview} />
-        </TabsContent>
-        <TabsContent value="symptoms" className="mt-4">
-          <SymptomsSection content={c.symptoms} onGoToEpds={() => setTab('epds')} />
-        </TabsContent>
-        <TabsContent value="epds" className="mt-4">
-          <SelfAssessment content={c.selfAssessment} emergencyContent={c.emergency} />
-        </TabsContent>
-        <TabsContent value="help" className="mt-4">
-          <WhenToSeekHelp content={c.whenToSeekHelp} />
-        </TabsContent>
-        <TabsContent value="resources" className="mt-4">
-          <ResourcesSection content={c.resources} />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-4">
+        {tab === 'overview' && <OverviewSection content={c.overview} />}
+        {tab === 'symptoms' && <SymptomsSection content={c.symptoms} onGoToEpds={() => setTab('epds')} />}
+        {tab === 'epds' && <SelfAssessment content={c.selfAssessment} emergencyContent={c.emergency} />}
+        {tab === 'help' && <WhenToSeekHelp content={c.whenToSeekHelp} />}
+        {tab === 'resources' && <ResourcesSection content={c.resources} />}
+      </div>
     </div>
   );
 };
