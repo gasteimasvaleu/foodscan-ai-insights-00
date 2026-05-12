@@ -1,25 +1,18 @@
-## Problema
+## Atualização de versão para envio à App Store
 
-A mensagem é gravada no banco corretamente (verifiquei: registro existe em `chat_messages` com `is_deleted=false`), mas não aparece para quem enviou. Hoje o `ChatGlobal.tsx` confia 100% no evento realtime `postgres_changes INSERT` para adicionar qualquer mensagem nova (própria ou de outros) ao state. Se esse evento demorar, falhar ou o canal ainda não estiver `SUBSCRIBED`, a mensagem fica invisível mesmo já estando no banco.
+Versão atual: `MARKETING_VERSION = 1.0.6` / `CURRENT_PROJECT_VERSION = 20`.
 
-## Solução
+### Mudança proposta
 
-Atualização otimista local no momento do envio, mantendo o realtime como reforço para mensagens de outros usuários (com deduplicação por `id`, que já existe).
+Em `ios/App/App.xcodeproj/project.pbxproj` (configs Debug e Release, app + widget):
 
-### Mudanças em `src/pages/ChatGlobal.tsx`
+- `MARKETING_VERSION`: `1.0.6` → `1.0.7`
+- `CURRENT_PROJECT_VERSION`: `20` → `21`
 
-1. Na função `send()`:
-   - Trocar o insert por `.insert(...).select("id, user_id, content, created_at, is_deleted").single()`
-   - Em caso de sucesso, adicionar a mensagem retornada ao state imediatamente (com `ensureProfile` do próprio usuário) e fazer scroll
-   - O handler realtime já ignora duplicados (`prev.some(m => m.id === msg.id)`), então não vai duplicar quando o evento chegar
+Aplica-se aos 4 blocos: App Debug, App Release, WeDietWidget Debug, WeDietWidget Release (app e widget devem ter a mesma versão para o Appflow gerar o IPA corretamente).
 
-2. Pequeno hardening adicional:
-   - Garantir que o profile do usuário logado seja pré-carregado no cache assim que o componente monta (hoje só é carregado quando o canal entra em `SUBSCRIBED`), para a mensagem otimista já mostrar nome/avatar
+### Próximos passos (Appflow)
 
-Nada mais muda — RLS, trigger de moderação, presence e realtime continuam iguais.
+Depois do bump, é só rodar um novo build no Appflow (branch `main`) usando o perfil de Release. O IPA gerado já vai sair com a versão `1.0.7 (21)` pronta para upload no App Store Connect.
 
-### Por que isso resolve
-
-- Quem envia vê a própria mensagem imediatamente, sem depender de roundtrip realtime
-- Outros usuários continuam recebendo via `postgres_changes`
-- Sem duplicação graças ao guard por `id` já existente
+Confirma o bump para `1.0.7 (21)`? Se quiser outro número (ex.: pular para `1.1.0`), me diga.
