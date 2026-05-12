@@ -302,7 +302,7 @@
         ]
       },
       "redFlags": {
-        "title": "⚠️ Sinais de Alerta — Busque Ajuda IMEDIATAMENTE",
+        "title": "Sinais de Alerta — Busque Ajuda IMEDIATAMENTE",
         "items": [
           "Pensamentos de se machucar ou de suicídio",
           "Vontade real de machucar o bebê (diferente de pensamentos intrusivos)",
@@ -562,7 +562,7 @@
         ]
       },
       "online": {
-        "title": "🌐 Recursos Online",
+        "title": "Recursos Online",
         "items": [
           {
             "name": "CVV - Chat Online",
@@ -582,7 +582,7 @@
         ]
       },
       "apps": {
-        "title": "📱 Aplicativos de Apoio",
+        "title": "Aplicativos de Apoio",
         "items": [
           {
             "name": "Cingulo",
@@ -599,7 +599,7 @@
         ]
       },
       "books": {
-        "title": "📚 Livros Recomendados",
+        "title": "Livros Recomendados",
         "items": [
           {
             "title": "Mãe Fora da Caixa",
@@ -624,7 +624,7 @@
         ]
       },
       "forPartners": {
-        "title": "💑 Para Parceiros e Família",
+        "title": "Para Parceiros e Família",
         "content": "Se você está aqui porque alguém que ama pode estar com DPP, seu papel é fundamental. Seu apoio pode acelerar a recuperação e fazer toda a diferença. Informe-se sobre DPP, ofereça ajuda prática sem esperar ser pedido, evite dar conselhos e simplesmente ouça. Não minimize os sentimentos dela, incentive gentilmente a busca por ajuda profissional, e cuide do bebê para ela poder descansar. Lembre-a de que isso não é culpa dela. E não se esqueça de cuidar de você também — você não pode ajudar se estiver esgotado."
       }
     }
@@ -932,7 +932,7 @@
         ]
       },
       "redFlags": {
-        "title": "⚠️ Warning Signs — Seek Help IMMEDIATELY",
+        "title": "Warning Signs — Seek Help IMMEDIATELY",
         "items": [
           "Thoughts of harming yourself or suicide",
           "Actual desire to harm the baby (different from intrusive thoughts)",
@@ -1192,7 +1192,7 @@
         ]
       },
       "online": {
-        "title": "🌐 Online Resources",
+        "title": "Online Resources",
         "items": [
           {
             "name": "Postpartum Support International",
@@ -1212,7 +1212,7 @@
         ]
       },
       "apps": {
-        "title": "📱 Support Apps",
+        "title": "Support Apps",
         "items": [
           {
             "name": "Headspace",
@@ -1229,7 +1229,7 @@
         ]
       },
       "books": {
-        "title": "📚 Recommended Books",
+        "title": "Recommended Books",
         "items": [
           {
             "title": "This Isn't What I Expected",
@@ -1254,7 +1254,7 @@
         ]
       },
       "forPartners": {
-        "title": "💑 For Partners and Family",
+        "title": "For Partners and Family",
         "content": "If you're here because someone you love may have PPD, your role is fundamental. Your support can accelerate recovery and make all the difference. Learn about PPD, offer practical help without waiting to be asked, avoid giving advice and just listen. Don't minimize her feelings, gently encourage seeking professional help, and take care of the baby so she can rest. Remind her this is not her fault. And don't forget to take care of yourself too — you can't help if you're exhausted."
       }
     }
@@ -1562,7 +1562,7 @@
         ]
       },
       "redFlags": {
-        "title": "⚠️ Señales de Alerta — Busca Ayuda INMEDIATAMENTE",
+        "title": "Señales de Alerta — Busca Ayuda INMEDIATAMENTE",
         "items": [
           "Pensamientos de hacerte daño o de suicidio",
           "Deseo real de lastimar al bebé (diferente de pensamientos intrusivos)",
@@ -1822,7 +1822,7 @@
         ]
       },
       "online": {
-        "title": "🌐 Recursos Online",
+        "title": "Recursos Online",
         "items": [
           {
             "name": "Postpartum Support International",
@@ -1842,7 +1842,7 @@
         ]
       },
       "apps": {
-        "title": "📱 Aplicaciones de Apoyo",
+        "title": "Aplicaciones de Apoyo",
         "items": [
           {
             "name": "Headspace",
@@ -1859,7 +1859,7 @@
         ]
       },
       "books": {
-        "title": "📚 Libros Recomendados",
+        "title": "Libros Recomendados",
         "items": [
           {
             "title": "Mamá desobediente",
@@ -1884,7 +1884,7 @@
         ]
       },
       "forPartners": {
-        "title": "💑 Para Parejas y Familia",
+        "title": "Para Parejas y Familia",
         "content": "Si estás aquí porque alguien que amas puede tener DPP, tu papel es fundamental. Tu apoyo puede acelerar la recuperación y hacer toda la diferencia. Infórmate sobre DPP, ofrece ayuda práctica sin esperar que te la pidan, evita dar consejos y simplemente escucha. No minimices sus sentimientos, incentiva gentilmente la búsqueda de ayuda profesional, y cuida del bebé para que ella pueda descansar. Recuérdale que esto no es su culpa. Y no olvides cuidar de ti también — no puedes ayudar si estás agotado/a."
       }
     }
