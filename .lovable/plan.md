@@ -1,22 +1,16 @@
-## Trocar tabs horizontais por seletor estilo Drawer
+## Objetivo
 
-No `BebePanel.tsx`, substituir a tira horizontal de 6 botões por um seletor único no padrão drawer já usado no app (ex.: `AIGoalsWizard`, `ExerciseForm`).
+Reverter o layout do card "Diário de sono" (`src/components/maternidade/bebe/sleep/SleepDiaryAdvanced.tsx`) para manter os botões de ação ao lado direito do título, mas deixá-los menos espremidos.
 
-### Comportamento
-- Botão único de largura total mostrando a seção ativa (ex.: "Sono & Cresc.") + chevron à direita.
-- Ao tocar, abre um `Drawer` (de baixo) com as 6 opções em lista vertical.
-- Tocar em uma opção define `active`, fecha o drawer.
-- Item ativo destacado com `bg-[#FD46A1] text-white`; demais com hover sutil.
+## Alterações
 
-### Estilo (consistente com o app)
-- Botão trigger: `h-12 rounded-xl bg-white/70 backdrop-blur-md` com texto à esquerda e ícone chevron à direita, cor primária `#FD46A1` no label.
-- `DrawerContent`: `w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl`.
-- `DrawerTitle`: "Selecionar seção".
-- Itens: botões `h-12 rounded-xl text-base` em `flex flex-col gap-2 p-4`.
+1. **`SleepDiaryAdvanced.tsx`**
+   - Voltar a usar `CardHeader` com layout `flex items-center justify-between`, com o título à esquerda e os botões à direita.
+   - Remover a grid `grid-cols-2` que ocupava a largura total abaixo do título.
+   - **Botão Iniciar/Parar**: manter apenas o ícone (`Play` quando parado, `Square` quando rodando), sem texto. Tamanho icon-only (`h-9 w-9 rounded-xl`), mantendo a cor `#FD46A1` ativa.
+   - **Botão Registrar**: manter com texto + ícone, em tamanho compacto (`h-9 px-3 rounded-xl`).
+   - Quando o timer estiver rodando, exibir o tempo decorrido logo abaixo do header (como já existia), em vez de dentro do botão.
 
-### Arquivos
-- Editar: `src/components/maternidade/bebe/BebePanel.tsx` (substituir bloco linhas 42-56 e adicionar estado `pickerOpen`, imports do `Drawer` e ícone `ChevronDown`).
+## Fora do escopo
 
-### Fora de escopo
-- Não alterar conteúdo das sub-abas nem `BabyProfileCard`.
-- Não mudar a ordem das seções.
+- Lógica de timer, persistência no Supabase e qualquer outra funcionalidade permanecem inalteradas (mudança puramente visual).
