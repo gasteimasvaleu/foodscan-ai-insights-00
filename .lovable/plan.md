@@ -1,32 +1,22 @@
-## Mudanças
+## Mudança
 
-### 1. Adicionar Maternidade no menu "+" (`src/components/ui/tubelight-navbar.tsx`)
-Acrescentar no array `moreSheetItems` uma entrada nova:
-```ts
-{ name: 'Maternidade', description: 'Tentantes, gestação, pós-parto e bebê', url: '/maternidade', icon: Baby }
-```
-Importar `Baby` de `lucide-react`. Posicionar logo após "Sono" para agrupar com saúde/bem-estar.
+Adicionar um card de novidade entre `<AuthCard />` e `<HeroDeckRow />` em `src/pages/Index.tsx`.
 
-### 2. Renderizar a Navbar superior em `/maternidade` (`src/pages/Maternidade.tsx`)
-- Importar e renderizar `<Navbar />` no topo do retorno (mesmo padrão de Profile/WidgetGuide).
-- Trocar o padding do container para `pt-[calc(env(safe-area-inset-top)+4rem)]` (padrão das páginas internas) para não esconder atrás da Navbar fixa.
-- Remover o `<MaternidadeHeader />` antigo (sticky com botão voltar) — ele duplicava header e cobria a Navbar global.
+### Novo componente: `src/components/NoveltyCard.tsx`
+- Link clicável (`<Link to="/maternidade">`) com `aspect-[21/9] w-full rounded-3xl overflow-hidden relative shadow-lg`.
+- Imagem de fundo: `https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1778616139478_559b027e.png` (`absolute inset-0 w-full h-full object-cover`).
+- Faixa preta translúcida na parte inferior: `absolute bottom-0 left-0 right-0 bg-black/55 backdrop-blur-sm px-4 py-3`.
+- Conteúdo da faixa:
+  - Badge/título "Novidade" — `text-[#FFD1E7] text-xs font-bold uppercase tracking-wider`.
+  - Descrição — `text-white text-sm leading-snug`: "Tentantes, gestação, pós-parto e bebê em um só lugar."
+- `alt` descritivo na imagem para SEO/acessibilidade.
 
-### 3. Padronizar o card de título (substituir `MaternidadeHeader.tsx`)
-Refatorar `MaternidadeHeader` para usar o padrão global de page header:
+### Integração em `src/pages/Index.tsx`
 ```tsx
-<div className="mb-4 animate-fade-in">
-  <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
-    <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
-      <Baby className="w-6 h-6 text-white" />
-    </div>
-    <h1 className="text-lg font-bold text-[#FD46A1]">Maternidade</h1>
-  </div>
-</div>
+<AuthCard />
+<NoveltyCard />
+<HeroDeckRow />
 ```
-- Remove botão "voltar" (Navbar global cobre navegação).
-- Mantém ícone `Baby` consistente com a entrada do menu.
 
 ## Fora do escopo
-- Lógica das abas (Tentantes/Gestação/Pós-parto/Bebê) e dos sub-painéis.
-- Outras páginas.
+Outras páginas, alterações no AuthCard ou nos decks.
