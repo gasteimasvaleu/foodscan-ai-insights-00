@@ -181,8 +181,8 @@ export default function AdminQuiz() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-lg font-medium">{editing.id ? "Editar quiz" : "Novo quiz"}</h1>
-            <Button size="sm" variant="outline" onClick={() => setGenOpen(true)}>
-              <Sparkles className="h-4 w-4 mr-1" /> IA
+            <Button size="sm" variant="outline" disabled={generating} onClick={generate}>
+              <Sparkles className="h-4 w-4 mr-1" /> {generating ? "Gerando…" : "IA"}
             </Button>
           </div>
 
