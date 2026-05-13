@@ -147,21 +147,74 @@ export default function Quiz() {
             )}
             {quizzes.map(q => {
               const done = doneIds.has(q.id);
+              const nQuestions = questionCounts[q.id] ?? 0;
+              const baseXp = (nQuestions || 5) * 10;
+              const xp = isPro ? Math.round(baseXp * 1.25) : baseXp;
               return (
-                <Card key={q.id} className="bg-[#FFD1E7] rounded-3xl border-0 cursor-pointer" onClick={() => play(q.id)}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-base">{q.title}</div>
-                        {q.description && <div className="text-sm text-muted-foreground mt-1">{q.description}</div>}
-                        <div className="text-xs text-muted-foreground mt-2">
-                          {q.theme} · {q.difficulty} · {questionCounts[q.id] ?? 0} perguntas · {q.time_per_question_seconds}s/pergunta
-                        </div>
+                <div
+                  key={q.id}
+                  role="button"
+                  aria-label={`Jogar quiz ${q.title}`}
+                  onClick={() => play(q.id)}
+                  className="w-full bg-[#FFD1E7] rounded-[32px] p-1 shadow-[0_20px_50px_rgba(253,70,161,0.15)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                >
+                  <div className="bg-white/40 rounded-[28px] p-5 flex flex-col gap-4 border border-white/50 backdrop-blur-sm">
+                    {/* Top: theme chip + XP */}
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="px-3 py-1 bg-white/90 text-[#FD46A1] text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm truncate max-w-[60%]">
+                        {q.theme}
+                      </span>
+                      <div className="flex items-center gap-1.5 bg-[#FD46A1] px-3 py-1 rounded-full shadow-sm shadow-pink-300">
+                        <Zap className="w-3 h-3 text-white" fill="white" />
+                        <span className="text-white text-[10px] font-bold">+{xp} XP</span>
                       </div>
-                      {done && <span className="text-xs bg-white px-2 py-1 rounded-full">✓ feito</span>}
                     </div>
-                  </CardContent>
-                </Card>
+
+                    {/* Title + description */}
+                    <div className="space-y-1.5">
+                      <h3 className="text-xl font-bold text-[#FD46A1] leading-tight">{q.title}</h3>
+                      {q.description && (
+                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{q.description}</p>
+                      )}
+                    </div>
+
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-white/60 rounded-2xl p-2 flex flex-col items-center justify-center">
+                        <span className="text-xs font-bold text-[#FD46A1]">{formatDifficulty(q.difficulty)}</span>
+                        <span className="text-[10px] text-[#FD46A1]/60 font-medium uppercase">Nível</span>
+                      </div>
+                      <div className="bg-white/60 rounded-2xl p-2 flex flex-col items-center justify-center border-x border-white/40">
+                        <span className="text-xs font-bold text-[#FD46A1]">{nQuestions}</span>
+                        <span className="text-[10px] text-[#FD46A1]/60 font-medium uppercase">Perg.</span>
+                      </div>
+                      <div className="bg-white/60 rounded-2xl p-2 flex flex-col items-center justify-center">
+                        <span className="text-xs font-bold text-[#FD46A1]">{q.time_per_question_seconds}s</span>
+                        <span className="text-[10px] text-[#FD46A1]/60 font-medium uppercase">Tempo</span>
+                      </div>
+                    </div>
+
+                    {/* Footer: status + CTA */}
+                    <div className="flex items-center justify-between">
+                      {done ? (
+                        <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-2xl">
+                          <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                          </div>
+                          <span className="text-xs font-semibold text-green-700">Concluído</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-2xl">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                          <span className="text-xs font-semibold text-[#FD46A1]">Disponível</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-center w-12 h-12 bg-[#FD46A1] rounded-2xl shadow-lg shadow-[#FD46A1]/30">
+                        <ArrowRight className="w-5 h-5 text-white" strokeWidth={2.5} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </TabsContent>
