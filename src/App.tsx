@@ -62,6 +62,8 @@ import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
+import { useStreakMilestones } from "@/hooks/useStreakMilestones";
+import { CelebrationProvider } from "@/contexts/CelebrationContext";
 import { ProRoute } from "@/components/ProRoute";
 import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
@@ -85,6 +87,7 @@ const AuthAwareNavbar = () => {
   // Global widget sync on launch (iOS only)
   useWidgetSyncOnLaunch(user?.id);
   useBadgeNotifications(user?.id);
+  useStreakMilestones(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
   if (location.pathname === '/auth' || location.pathname === '/comunidade/chat') return null;
@@ -104,6 +107,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <CelebrationProvider>
         <BrowserRouter>
           <AuthAwareNavbar />
           <Routes>
@@ -163,6 +167,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </CelebrationProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
