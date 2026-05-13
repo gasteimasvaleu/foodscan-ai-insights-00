@@ -23,12 +23,20 @@ Deno.serve(async (req) => {
     const theme = String(body.theme ?? 'geral');
     const difficulty = String(body.difficulty ?? 'medio');
     const numQuestions = Math.min(20, Math.max(3, Number(body.num_questions ?? 5)));
+    const title = body.title ? String(body.title).slice(0, 200) : '';
+    const description = body.description ? String(body.description).slice(0, 1000) : '';
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) return json({ error: 'missing LOVABLE_API_KEY' }, 500);
 
     const systemPrompt = `Você é um criador de quizzes em português brasileiro sobre saúde, nutrição, hidratação, treinos, gestação e bem-estar feminino. Cada pergunta deve ser clara, com 4 alternativas plausíveis, exatamente uma correta, e uma explicação curta da resposta. Sem ambiguidade, sem "todas as alternativas".`;
-    const userPrompt = `Gere ${numQuestions} perguntas de quiz sobre o tema: "${theme}". Dificuldade: ${difficulty}. Sugira também um título curto e uma descrição de 1 frase para o quiz.`;
+    const contextLines = [
+      title && `Título do quiz: "${title}"`,
+      description && `Descrição/contexto fornecida pelo admin: "${description}"`,
+      `Tema: "${theme}"`,
+      `Dificuldade: ${difficulty}`,
+    ].filter(Boolean).join('\n');
+    const userPrompt = `${contextLines}\n\nGere ${numQuestions} perguntas de quiz coerentes com o título e a descrição acima. Se o título e a descrição forem específicos, foque nesse subtema; caso estejam vazios, use o tema geral. Sugira também um título curto e uma descrição de 1 frase para o quiz (eles podem ser usados como sugestão se o admin não tiver preenchido).`;
 
     const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
