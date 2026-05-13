@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useCelebration } from "@/contexts/CelebrationContext";
 
 export function useBadgeNotifications(userId: string | undefined) {
+  const { triggerCelebration } = useCelebration();
+
   useEffect(() => {
     if (!userId) return;
     const channel = supabase
@@ -19,9 +21,11 @@ export function useBadgeNotifications(userId: string | undefined) {
             .eq("id", badgeId)
             .maybeSingle();
           if (data) {
-            toast.success(`${data.icon} Conquista desbloqueada!`, {
-              description: `${data.name} — ${data.description}`,
-              duration: 6000,
+            triggerCelebration({
+              type: "badge",
+              icon: data.icon || "🏆",
+              title: data.name,
+              description: data.description ?? "",
             });
           }
         }
@@ -30,5 +34,5 @@ export function useBadgeNotifications(userId: string | undefined) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, triggerCelebration]);
 }
