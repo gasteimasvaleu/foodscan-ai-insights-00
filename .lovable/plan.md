@@ -1,108 +1,64 @@
-# Streaks & Badges (Gamificação) — WeDiet
+# Tela Fullscreen de Celebração
 
-Vou adaptar a sugestão à nossa stack (React + Supabase) e às convenções já em uso no app (Quiz, Pro bonus, RLS, edge functions).
+Adicionar uma tela cheia animada que aparece automaticamente quando o usuário:
+1. **Desbloqueia uma conquista** (badge nova inserida em `user_badges`)
+2. **Atinge um marco de streak** (3, 7, 14, 30, 60, 100 dias)
 
-## Visão geral
-- **Streak diário**: incrementa quando o usuário tem "atividade válida" no dia.
-- **Badges**: catálogo de conquistas desbloqueadas automaticamente por triggers/edge function.
-- **Localização na UI**: novo card de "Sequência" no Dashboard (apenas visualização compacta) + página `/conquistas` acessível via Menu **Mais** (mesmo padrão do Quiz). Sem entrada nos Quick Actions.
+Hoje só mostramos um `toast` discreto — vamos transformar em um momento "wow" fullscreen.
 
-## Definição de "atividade válida"
-Para o app WeDiet, registrar **pelo menos 1 refeição em `meal_records` no dia** (timezone America/Sao_Paulo). Simples, evita penalizar usuários que não atingem meta exata e já é o evento mais comum.
+## Componentes novos
 
-Bônus futuro (não nesta entrega): bater meta de calorias/proteína = badge específico.
+### 1. `src/components/celebration/CelebrationOverlay.tsx`
+Overlay fullscreen (`fixed inset-0 z-[100]`) com:
+- Fundo glassmorphism escurecido (`bg-black/60 backdrop-blur-md`)
+- Confetes animados (chuva de partículas usando `canvas-confetti` ou divs animadas com keyframes Tailwind)
+- Card central rounded-3xl com:
+  - Ícone grande (emoji do badge OR 🔥 para streak) com animação `scale-in` + `pulse`
+  - Título grande em `text-primary` (#FD46A1): "Conquista Desbloqueada!" / "Sequência de X dias!"
+  - Nome + descrição da conquista
+  - Botão "Continuar" (#FD46A1) que fecha o overlay
+- Anel de luz/glow gradiente girando atrás do ícone
+- Auto-dismiss opcional após 6s
+- Som leve opcional (deixar fora desta primeira versão)
 
-## Modelagem de dados
+Animações via classes existentes (`animate-fade-in`, `animate-scale-in`) + keyframes novos para confete (`confetti-fall`) e glow rotativo (`spin-slow`).
 
-### `user_streaks` (1 linha por usuário)
-- `user_id uuid PK` → `profiles(id)`
-- `current_streak int default 0`
-- `longest_streak int default 0`
-- `last_activity_date date` (em BRT)
-- `streak_freezes int default 0` (Pro: ganha 1/mês até máx 3)
-- `updated_at timestamptz`
+### 2. `src/contexts/CelebrationContext.tsx`
+Context global para enfileirar celebrações (caso 2 disparem juntas):
+- `triggerCelebration({ type: 'badge' | 'streak', icon, title, description })`
+- Renderiza `<CelebrationOverlay />` no topo da árvore
+- Fila FIFO — mostra uma de cada vez
 
-### `badges` (catálogo, seed inicial)
-- `id uuid PK`
-- `code text unique` (ex: `streak_7`, `streak_30`, `meals_100`, `quiz_perfect_5`, `hydration_7`)
-- `name text`, `description text`, `icon text` (emoji ou nome lucide), `tier text` (bronze/prata/ouro)
-- `condition_type text` (`streak_days`, `total_meals`, `quiz_perfect_count`, `hydration_streak`)
-- `condition_value int`
-- `is_active bool default true`
+Provider envolvido em `App.tsx` dentro do `AuthProvider`.
 
-### `user_badges`
-- `user_id uuid`, `badge_id uuid`, `unlocked_at timestamptz`
-- PK composto `(user_id, badge_id)`
+## Mudanças em arquivos existentes
 
-### Seed de badges iniciais
-- Streak: 3, 7, 14, 30, 60, 100 dias
-- Refeições registradas: 10, 50, 100, 365
-- Quiz perfeito: 1, 5, 25 (integra com sistema atual)
-- Hidratação 7 dias seguidos batendo meta
+### `src/hooks/useBadgeNotifications.ts`
+- Trocar `toast.success(...)` por `triggerCelebration({ type: 'badge', icon, title, description })` do contexto.
+- Manter o toast como fallback caso o overlay esteja desabilitado (não, vamos só usar o overlay).
 
-## Lógica (backend)
+### Novo hook: `src/hooks/useStreakMilestones.ts`
+- Subscreve `postgres_changes` em `user_streaks` (UPDATE) para o `userId` atual.
+- Quando `current_streak` cruza um marco (3, 7, 14, 30, 60, 100), dispara `triggerCelebration({ type: 'streak', icon: '🔥', title: 'Sequência de X dias!', description: 'Você está pegando fogo!' })`.
+- Comparar com valor anterior (guarda em ref) para evitar disparar repetido.
 
-### Trigger Postgres em `meal_records` (after insert)
-Função `update_user_streak(_user_id)` SECURITY DEFINER:
-1. Calcula `today` em America/Sao_Paulo.
-2. Lê `user_streaks`. Se não existe, cria com `current_streak=1`.
-3. Se `last_activity_date = today` → no-op.
-4. Se `last_activity_date = today - 1` → `current_streak += 1`.
-5. Se gap > 1 dia:
-   - Se `streak_freezes > 0` e gap = 2 → consome 1 freeze, mantém streak.
-   - Caso contrário, reseta para 1.
-6. Atualiza `longest_streak = greatest(longest_streak, current_streak)`.
-7. Chama `check_and_unlock_badges(_user_id)`.
+### `src/App.tsx`
+- Envolver árvore com `<CelebrationProvider>`.
+- Chamar `useStreakMilestones(user?.id)` no mesmo lugar onde já chamamos `useBadgeNotifications`.
 
-`check_and_unlock_badges` faz INSERT ... ON CONFLICT DO NOTHING para cada badge cuja condição foi atingida (streak/refeições/quiz). Retorna lista de novos badges desbloqueados (consultada pelo frontend via realtime ou refetch).
+## Detalhes técnicos
 
-### Pg_cron diário (03:00 BRT) — opcional fase 2
-- Quebra streaks de quem não registrou ontem (apenas para refletir no UI imediatamente; não estritamente necessário pois o cálculo é lazy na próxima atividade).
-- Concede 1 streak_freeze/mês para assinantes Pro (consulta `subscribers.subscribed`).
+- Sem dependências novas: confete feito com 30-50 `<div>` posicionados aleatoriamente + keyframe CSS (`translateY` + `rotate` + opacity). Definido em `index.css` ou `tailwind.config.ts`.
+- Cores dos confetes: paleta da marca (#FD46A1, #FFD1E7, #F7FAFB, branco).
+- Respeitar safe area (`pt-[env(safe-area-inset-top)]`, `pb-[env(safe-area-inset-bottom)]`) para iOS.
+- Z-index acima da Navbar e modais (z-[100]).
+- Acessibilidade: botão "Continuar" com foco automático, fecha no ESC e no clique fora.
+- Se `prefers-reduced-motion`, simplificar (sem confete, só fade).
 
-### Realtime
-Habilitar realtime em `user_badges` para mostrar toast "🏅 Conquista desbloqueada: …" quando um novo registro chega ao usuário logado.
+## Fluxo de teste
 
-## RLS
-- `user_streaks`: SELECT/UPDATE somente `auth.uid() = user_id`. INSERT pelo trigger (SECURITY DEFINER bypassa).
-- `badges`: SELECT público (catálogo). INSERT/UPDATE/DELETE apenas admin.
-- `user_badges`: SELECT somente próprio. INSERT pelo trigger.
+1. Registrar refeições por 3 dias seguidos → trigger atualiza streak para 3 → overlay 🔥 aparece.
+2. Registrar 10 refeições no total → badge inserido → overlay com ícone do badge aparece.
+3. Caso ambos disparem ao mesmo tempo, mostrar em sequência via fila do contexto.
 
-## Frontend
-
-### Página `/conquistas` (nova)
-- Header padrão (gradiente, título #FD46A1 — segue `mem://style/page-headers`).
-- Card "Sequência atual" (#FFD1E7, rounded-3xl, sem ícone decorativo no título — segue `mem://style/ui-cards`):
-  - Número grande, "🔥 X dias", "Recorde: Y dias", freezes disponíveis.
-- Grid de badges: desbloqueados (coloridos) e bloqueados (grayscale + progresso).
-- Filtro por categoria (tabs).
-
-### Entrada
-- Adicionar item "Conquistas" no Menu **Mais** (`tubelight-navbar.tsx`), abaixo do Quiz.
-- **Não** adicionar em Quick Actions (conforme padrão definido para Quiz).
-
-### Toast realtime
-- Hook global em `AuthProvider` (ou novo `useBadgeNotifications`) escuta INSERT em `user_badges` filtrado por `user_id` e dispara toast com ícone do badge.
-
-### Card opcional no Dashboard
-- Pequeno "🔥 X dias" ao lado do nome — discreto, não polui. (A confirmar com você.)
-
-## Integração com Pro (assinantes)
-- Streak freezes: assinantes Pro recebem 1 freeze/mês automaticamente (cron).
-- Badge exclusivo "Membro Pro" desbloqueado ao virar assinante (trigger em `subscribers` quando `subscribed = true`).
-- Multiplicador: novos badges contam **dobrado** para um futuro ranking de "Nível" (fora do escopo desta entrega).
-
-## Entregáveis desta fase
-1. Migração: tabelas + RLS + funções + trigger + seed de ~15 badges.
-2. Página `/conquistas` com sequência + grid de badges.
-3. Item no Menu Mais.
-4. Hook de notificação realtime de novo badge.
-5. Atualizar `mem://features/gamification/streaks-badges` e `mem://index.md`.
-
-## Fora do escopo (fase 2)
-- Pg_cron de manutenção e concessão de freezes mensais Pro.
-- Card no Dashboard.
-- Sistema de níveis/XP.
-- Compartilhamento de conquista no WhatsApp.
-
-Confirma se posso seguir? Se quiser, ajusto a definição de "atividade válida" (ex: exigir bater meta de calorias em vez de só registrar refeição).
+Quer que eu inclua som, ou mantemos apenas visual nesta primeira versão?
