@@ -6,7 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Trophy, HelpCircle } from "lucide-react";
+import { Crown, Trophy, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 interface Quiz {
@@ -100,16 +100,33 @@ export default function Quiz() {
         </div>
 
         {!isPro && (
-          <Card className="bg-[#FFD1E7] rounded-3xl border-0">
-            <CardContent className="p-4 flex items-center justify-between gap-3">
-              <div className="text-sm">
-                <span className="font-medium">Pro: +25% de pontos</span> em todos os quizzes
+          <div className="relative overflow-hidden rounded-3xl bg-white border border-[#FD46A1]/40 shadow-xl shadow-pink-100 p-4">
+            {/* Background glows */}
+            <div className="pointer-events-none absolute -top-10 -right-10 w-28 h-28 bg-[#FFD1E7] rounded-full blur-3xl opacity-60" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 w-28 h-28 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
+
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] flex items-center justify-center shadow-md shadow-pink-200 shrink-0">
+                <Sparkles className="w-6 h-6 text-white" fill="white" />
               </div>
-              <Button size="sm" className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full" onClick={() => navigate("/assinar")}>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#FD46A1] mb-0.5">
+                  Exclusivo Pro
+                </p>
+                <p className="text-sm font-semibold text-foreground leading-tight">
+                  +25% de pontos <span className="text-muted-foreground font-medium">em todo quiz</span>
+                </p>
+              </div>
+              <Button
+                size="sm"
+                className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full shadow-md shadow-pink-200 shrink-0 gap-1"
+                onClick={() => navigate("/assinar")}
+              >
                 Assinar
+                <ArrowRight className="w-3.5 h-3.5" />
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         <Tabs defaultValue="disponiveis">
