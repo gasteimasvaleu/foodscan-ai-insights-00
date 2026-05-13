@@ -60,6 +60,8 @@ import Quiz from "./pages/Quiz";
 import QuizPlay from "./pages/QuizPlay";
 import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
+import Conquistas from "./pages/Conquistas";
+import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { ProRoute } from "@/components/ProRoute";
 import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
