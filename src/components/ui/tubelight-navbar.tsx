@@ -132,6 +132,12 @@ const moreSheetItems = [
     icon: HelpCircle,
   },
   {
+    name: "Conquistas",
+    description: "Sequência diária e medalhas desbloqueadas",
+    url: "/conquistas",
+    icon: Trophy,
+  },
+  {
     name: "Gerar Cardápio",
     description: "Cardápios personalizados com IA (MasterCheFIT)",
     url: "/masterchef",
