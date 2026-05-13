@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple } from 'lucide-react';
+import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
@@ -83,6 +83,12 @@ const AdminDashboard = () => {
       description: 'Aprovar sugestões geradas pelas refeições dos usuários',
       icon: Apple,
       path: '/admin/alimentos-comunidade',
+    },
+    {
+      title: 'Quizzes',
+      description: 'Criar quizzes com IA, editar e publicar',
+      icon: HelpCircle,
+      path: '/admin/quiz',
     },
     {
       title: 'Assinaturas Promocionais',

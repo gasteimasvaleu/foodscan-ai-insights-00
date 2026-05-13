@@ -1255,6 +1255,194 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempt_answers: {
+        Row: {
+          attempt_id: string
+          chosen_index: number
+          created_at: string
+          id: string
+          is_correct: boolean
+          points_awarded: number
+          question_id: string
+          time_ms: number
+        }
+        Insert: {
+          attempt_id: string
+          chosen_index: number
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          points_awarded?: number
+          question_id: string
+          time_ms?: number
+        }
+        Update: {
+          attempt_id?: string
+          chosen_index?: number
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          points_awarded?: number
+          question_id?: string
+          time_ms?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempt_answers_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempt_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempt_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_attempts: {
+        Row: {
+          correct_count: number
+          finished_at: string | null
+          id: string
+          is_perfect: boolean
+          pro_bonus_applied: boolean
+          quiz_id: string
+          score: number
+          started_at: string
+          total_questions: number
+          total_time_ms: number
+          user_id: string
+        }
+        Insert: {
+          correct_count?: number
+          finished_at?: string | null
+          id?: string
+          is_perfect?: boolean
+          pro_bonus_applied?: boolean
+          quiz_id: string
+          score?: number
+          started_at?: string
+          total_questions?: number
+          total_time_ms?: number
+          user_id: string
+        }
+        Update: {
+          correct_count?: number
+          finished_at?: string | null
+          id?: string
+          is_perfect?: boolean
+          pro_bonus_applied?: boolean
+          quiz_id?: string
+          score?: number
+          started_at?: string
+          total_questions?: number
+          total_time_ms?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          explanation: string | null
+          id: string
+          options: Json
+          position: number
+          prompt: string
+          quiz_id: string
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options: Json
+          position?: number
+          prompt: string
+          quiz_id: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          position?: number
+          prompt?: string
+          quiz_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulty: string
+          id: string
+          published_at: string | null
+          status: string
+          theme: string
+          time_per_question_seconds: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          theme?: string
+          time_per_question_seconds?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          id?: string
+          published_at?: string | null
+          status?: string
+          theme?: string
+          time_per_question_seconds?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           created_at: string
@@ -1931,10 +2119,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      quiz_questions_public: {
+        Row: {
+          id: string | null
+          options: Json | null
+          position: number | null
+          prompt: string | null
+          quiz_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       expire_overdue_subscriptions: { Args: never; Returns: undefined }
+      get_quiz_ranking: {
+        Args: { period?: string }
+        Returns: {
+          attempts_count: number
+          avatar_url: string
+          is_pro: boolean
+          name: string
+          total_score: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
