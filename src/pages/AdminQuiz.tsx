@@ -30,11 +30,7 @@ export default function AdminQuiz() {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
   const [questions, setQuestions] = useState<Q[]>([]);
-  const [genOpen, setGenOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [genTheme, setGenTheme] = useState("geral");
-  const [genDiff, setGenDiff] = useState("medio");
-  const [genCount, setGenCount] = useState(5);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
