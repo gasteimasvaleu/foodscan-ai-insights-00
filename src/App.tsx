@@ -62,6 +62,8 @@ import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
+import { useStreakMilestones } from "@/hooks/useStreakMilestones";
+import { CelebrationProvider } from "@/contexts/CelebrationContext";
 import { ProRoute } from "@/components/ProRoute";
 import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
