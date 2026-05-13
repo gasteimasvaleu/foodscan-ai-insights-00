@@ -6,7 +6,12 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Trophy, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
+import { Crown, Trophy, HelpCircle, Sparkles, ArrowRight, Check, Zap } from "lucide-react";
+
+const formatDifficulty = (d: string) => {
+  const map: Record<string, string> = { facil: "Fácil", easy: "Fácil", medio: "Médio", médio: "Médio", medium: "Médio", dificil: "Difícil", difícil: "Difícil", hard: "Difícil" };
+  return map[d?.toLowerCase()] ?? (d ? d.charAt(0).toUpperCase() + d.slice(1) : "—");
+};
 import { toast } from "sonner";
 
 interface Quiz {
