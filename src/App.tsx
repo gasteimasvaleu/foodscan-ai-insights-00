@@ -60,6 +60,8 @@ import Quiz from "./pages/Quiz";
 import QuizPlay from "./pages/QuizPlay";
 import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
+import Conquistas from "./pages/Conquistas";
+import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { ProRoute } from "@/components/ProRoute";
 import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
@@ -82,6 +84,7 @@ const AuthAwareNavbar = () => {
 
   // Global widget sync on launch (iOS only)
   useWidgetSyncOnLaunch(user?.id);
+  useBadgeNotifications(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
   if (location.pathname === '/auth' || location.pathname === '/comunidade/chat') return null;
@@ -148,6 +151,7 @@ const App = () => (
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz/:id" element={<QuizPlay />} />
             <Route path="/quiz/:id/resultado" element={<QuizResult />} />
+            <Route path="/conquistas" element={<Conquistas />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
