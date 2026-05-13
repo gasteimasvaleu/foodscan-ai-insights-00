@@ -107,6 +107,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
+        <CelebrationProvider>
         <BrowserRouter>
           <AuthAwareNavbar />
           <Routes>
