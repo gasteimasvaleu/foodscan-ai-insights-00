@@ -269,6 +269,48 @@ export type Database = {
         }
         Relationships: []
       }
+      badges: {
+        Row: {
+          category: string
+          code: string
+          condition_type: string
+          condition_value: number
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          tier: string
+        }
+        Insert: {
+          category?: string
+          code: string
+          condition_type: string
+          condition_value: number
+          created_at?: string
+          description: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          tier?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          condition_type?: string
+          condition_value?: number
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       calorie_adjustments: {
         Row: {
           adjustment_amount: number
@@ -1715,6 +1757,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_custom_diets: {
         Row: {
           created_at: string | null
@@ -1931,6 +2006,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_streaks: {
+        Row: {
+          current_streak: number
+          last_activity_date: string | null
+          longest_streak: number
+          streak_freezes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_streak?: number
+          last_activity_date?: string | null
+          longest_streak?: number
+          streak_freezes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_streak?: number
+          last_activity_date?: string | null
+          longest_streak?: number
+          streak_freezes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_streaks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_summaries: {
         Row: {
           calories: number
@@ -2139,6 +2249,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_unlock_badges: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
       expire_overdue_subscriptions: { Args: never; Returns: undefined }
       get_quiz_play_questions: {
         Args: { _quiz_id: string }
