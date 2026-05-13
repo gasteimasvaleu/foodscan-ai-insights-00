@@ -1,99 +1,108 @@
-# Quizzes com IA — Plano de Implementação
+# Streaks & Badges (Gamificação) — WeDiet
+
+Vou adaptar a sugestão à nossa stack (React + Supabase) e às convenções já em uso no app (Quiz, Pro bonus, RLS, edge functions).
 
 ## Visão geral
-Nova feature de quizzes interativos para todos os usuários logados. Admin gera quizzes via IA (Lovable AI Gateway), revisa, edita e publica. Usuários respondem 1 vez por quiz, ganham pontos (acerto + velocidade + bônus de quiz perfeito + multiplicador Pro) e disputam rankings semanal, mensal e all-time. Estrutura preparada para evoluir com streaks e badges depois.
+- **Streak diário**: incrementa quando o usuário tem "atividade válida" no dia.
+- **Badges**: catálogo de conquistas desbloqueadas automaticamente por triggers/edge function.
+- **Localização na UI**: novo card de "Sequência" no Dashboard (apenas visualização compacta) + página `/conquistas` acessível via Menu **Mais** (mesmo padrão do Quiz). Sem entrada nos Quick Actions.
 
-## Rotas e navegação
+## Definição de "atividade válida"
+Para o app WeDiet, registrar **pelo menos 1 refeição em `meal_records` no dia** (timezone America/Sao_Paulo). Simples, evita penalizar usuários que não atingem meta exata e já é o evento mais comum.
 
-- `/quiz` — lista de quizzes ativos + ranking (acesso: usuário logado, sem ProRoute)
-- `/quiz/:id` — execução do quiz (uma pergunta por vez, timer)
-- `/quiz/:id/resultado` — resultado da tentativa + posição no ranking
-- `/admin/quiz` — listagem admin (rascunhos / publicados / arquivados)
-- `/admin/quiz/novo` — gerador IA + editor manual
-- `/admin/quiz/:id` — editar quiz existente
+Bônus futuro (não nesta entrega): bater meta de calorias/proteína = badge específico.
 
-Adicionar card "Quizzes" no `/admin` (AdminDashboard). **Entrada apenas no Menu Mais** (não entra em Quick Actions).
+## Modelagem de dados
 
-## Banco de dados (migration)
+### `user_streaks` (1 linha por usuário)
+- `user_id uuid PK` → `profiles(id)`
+- `current_streak int default 0`
+- `longest_streak int default 0`
+- `last_activity_date date` (em BRT)
+- `streak_freezes int default 0` (Pro: ganha 1/mês até máx 3)
+- `updated_at timestamptz`
 
-Tabelas em `public`:
+### `badges` (catálogo, seed inicial)
+- `id uuid PK`
+- `code text unique` (ex: `streak_7`, `streak_30`, `meals_100`, `quiz_perfect_5`, `hydration_7`)
+- `name text`, `description text`, `icon text` (emoji ou nome lucide), `tier text` (bronze/prata/ouro)
+- `condition_type text` (`streak_days`, `total_meals`, `quiz_perfect_count`, `hydration_streak`)
+- `condition_value int`
+- `is_active bool default true`
 
-- **quizzes** — `id`, `title`, `description`, `theme` (nutrição/hidratação/treino/maternidade/geral), `difficulty` (fácil/médio/difícil), `time_per_question_seconds` (default 20), `status` (draft/published/archived), `published_at`, `created_by` (uuid → profiles), `created_at`, `updated_at`
-- **quiz_questions** — `id`, `quiz_id`, `position`, `prompt`, `options` (jsonb array de 4 strings), `correct_index` (0-3), `explanation` (opcional)
-- **quiz_attempts** — `id`, `quiz_id`, `user_id`, `started_at`, `finished_at`, `score`, `correct_count`, `total_questions`, `total_time_ms`, `is_perfect`, `pro_bonus_applied` (bool). Unique (`quiz_id`, `user_id`).
-- **quiz_attempt_answers** — `id`, `attempt_id`, `question_id`, `chosen_index`, `is_correct`, `time_ms`, `points_awarded`
+### `user_badges`
+- `user_id uuid`, `badge_id uuid`, `unlocked_at timestamptz`
+- PK composto `(user_id, badge_id)`
 
-RLS:
-- `quizzes` / `quiz_questions`: select público quando `status='published'`; admin (has_role) full.
-- `quiz_attempts` / `quiz_attempt_answers`: usuário lê/cria/atualiza só os próprios; admin lê tudo.
-- `correct_index` e `explanation` **não** podem vazar antes da resposta → criar **view** `quiz_questions_public` (sem `correct_index`/`explanation`); validação acontece em edge function.
+### Seed de badges iniciais
+- Streak: 3, 7, 14, 30, 60, 100 dias
+- Refeições registradas: 10, 50, 100, 365
+- Quiz perfeito: 1, 5, 25 (integra com sistema atual)
+- Hidratação 7 dias seguidos batendo meta
 
-Índices: `quiz_attempts(user_id)`, `quiz_attempts(quiz_id, score desc)`, `quiz_questions(quiz_id, position)`.
+## Lógica (backend)
 
-Função SQL `get_quiz_ranking(period text)` — retorna top 50 por janela: `weekly` / `monthly` / `all_time`. Join com `profiles` (nome/avatar) e `subscribers` para flag `is_pro` no ranking (ícone de coroa).
+### Trigger Postgres em `meal_records` (after insert)
+Função `update_user_streak(_user_id)` SECURITY DEFINER:
+1. Calcula `today` em America/Sao_Paulo.
+2. Lê `user_streaks`. Se não existe, cria com `current_streak=1`.
+3. Se `last_activity_date = today` → no-op.
+4. Se `last_activity_date = today - 1` → `current_streak += 1`.
+5. Se gap > 1 dia:
+   - Se `streak_freezes > 0` e gap = 2 → consome 1 freeze, mantém streak.
+   - Caso contrário, reseta para 1.
+6. Atualiza `longest_streak = greatest(longest_streak, current_streak)`.
+7. Chama `check_and_unlock_badges(_user_id)`.
 
-## Edge functions
+`check_and_unlock_badges` faz INSERT ... ON CONFLICT DO NOTHING para cada badge cuja condição foi atingida (streak/refeições/quiz). Retorna lista de novos badges desbloqueados (consultada pelo frontend via realtime ou refetch).
 
-- **`quiz-generate`** (admin) — `{ theme, difficulty, num_questions }` → Lovable AI Gateway (`google/gemini-2.5-flash`, json_schema). Não persiste — admin edita e salva.
-- **`quiz-start-attempt`** — cria `quiz_attempts` (rejeita se já existe). No insert, consulta `subscribers` para definir `pro_bonus_applied = subscribed`.
-- **`quiz-submit-answer`** — `{ attempt_id, question_id, chosen_index, time_ms }`. Valida JWT, busca `correct_index` server-side, calcula:
-  - acerto base = 100
-  - bônus velocidade = `round(100 * max(0, (limite_ms - time_ms) / limite_ms))`
-  - **multiplicador Pro = ×1.25** se `attempt.pro_bonus_applied` (consultado do attempt, não confiando no client)
-  - retorna `{ is_correct, correct_index, explanation, points_awarded }`
-- **`quiz-finish-attempt`** — calcula totais, `is_perfect` se 100% acertos → +500 pts (também ×1.25 se Pro). Atualiza `quiz_attempts.score`.
+### Pg_cron diário (03:00 BRT) — opcional fase 2
+- Quebra streaks de quem não registrou ontem (apenas para refletir no UI imediatamente; não estritamente necessário pois o cálculo é lazy na próxima atividade).
+- Concede 1 streak_freeze/mês para assinantes Pro (consulta `subscribers.subscribed`).
 
-JWT verificado em todas; `quiz-generate` checa `has_role(admin)`.
+### Realtime
+Habilitar realtime em `user_badges` para mostrar toast "🏅 Conquista desbloqueada: …" quando um novo registro chega ao usuário logado.
 
-## Pontuação (resumo)
-- Acerto base: 100 pts
-- Bônus velocidade: até +100 pts (linear pelo tempo restante)
-- Quiz perfeito: +500 pts
-- **Bônus Pro (assinantes em `subscribers.subscribed=true`): ×1.25 sobre o total final**
-- Score do quiz = soma; ranking soma scores no período.
-
-UI deixa explícito: cards/banner "Assinantes Pro ganham 25% a mais de pontos" para incentivar conversão. Ranking exibe ícone de coroa ao lado de Pros.
+## RLS
+- `user_streaks`: SELECT/UPDATE somente `auth.uid() = user_id`. INSERT pelo trigger (SECURITY DEFINER bypassa).
+- `badges`: SELECT público (catálogo). INSERT/UPDATE/DELETE apenas admin.
+- `user_badges`: SELECT somente próprio. INSERT pelo trigger.
 
 ## Frontend
 
-### Usuário (`/quiz`)
-- Header padrão (gradient + título "Quiz" #FD46A1).
-- Banner discreto: "Pro: +25% pontos · [Assinar]" (esconde se já Pro).
-- Tabs: "Disponíveis" / "Respondidos" / "Ranking".
-- Cards rosa (`#FFD1E7`, `rounded-3xl`, `text-base`, sem ícones decorativos) com tema, dificuldade, nº perguntas, tempo, status (✓ se respondido).
-- Ranking: sub-tabs Semanal / Mensal / Geral; pódio top 3 + lista; coroa em Pros; destaca posição do usuário.
+### Página `/conquistas` (nova)
+- Header padrão (gradiente, título #FD46A1 — segue `mem://style/page-headers`).
+- Card "Sequência atual" (#FFD1E7, rounded-3xl, sem ícone decorativo no título — segue `mem://style/ui-cards`):
+  - Número grande, "🔥 X dias", "Recorde: Y dias", freezes disponíveis.
+- Grid de badges: desbloqueados (coloridos) e bloqueados (grayscale + progresso).
+- Filtro por categoria (tabs).
 
-### Execução (`/quiz/:id`)
-- Tela cheia, barra de progresso, timer circular, 4 botões grandes.
-- Submit por pergunta → feedback verde/vermelho + explicação → próximo automático em 2s.
-- Final: chama finish → redireciona para resultado.
+### Entrada
+- Adicionar item "Conquistas" no Menu **Mais** (`tubelight-navbar.tsx`), abaixo do Quiz.
+- **Não** adicionar em Quick Actions (conforme padrão definido para Quiz).
 
-### Resultado
-- Score grande, breakdown (acertos, tempo, bônus perfeito, multiplicador Pro). CTA "Ver ranking" / "Compartilhar no WhatsApp". Para não-Pro: "Você teria X pts a mais com Pro · Assinar".
+### Toast realtime
+- Hook global em `AuthProvider` (ou novo `useBadgeNotifications`) escuta INSERT em `user_badges` filtrado por `user_id` e dispara toast com ícone do badge.
 
-### Admin (`/admin/quiz`, `/admin/quiz/novo`)
-- Lista com filtros draft/published/archived; ações editar/publicar/arquivar/duplicar.
-- Editor: título, descrição, tema (Select), dificuldade (Select), tempo por pergunta. Botão "Gerar com IA" → modal (tema/dificuldade/qtd) → preenche perguntas. Cada pergunta editável (texto, 4 opções, marca correta, explicação opcional), drag para reordenar. Salvar rascunho / Publicar.
-- Card "Quizzes" no array `adminPages` de `AdminDashboard.tsx`.
+### Card opcional no Dashboard
+- Pequeno "🔥 X dias" ao lado do nome — discreto, não polui. (A confirmar com você.)
 
-### Menu Mais
-- Adicionar item "Quizzes" no Menu Mais (bottom plus). **Não** adicionar em Quick Actions.
+## Integração com Pro (assinantes)
+- Streak freezes: assinantes Pro recebem 1 freeze/mês automaticamente (cron).
+- Badge exclusivo "Membro Pro" desbloqueado ao virar assinante (trigger em `subscribers` quando `subscribed = true`).
+- Multiplicador: novos badges contam **dobrado** para um futuro ranking de "Nível" (fora do escopo desta entrega).
 
-## Preparação para futuro (streaks e badges)
-- Tabelas com timestamps suficientes para calcular streaks depois. Sem novas tabelas agora.
+## Entregáveis desta fase
+1. Migração: tabelas + RLS + funções + trigger + seed de ~15 badges.
+2. Página `/conquistas` com sequência + grid de badges.
+3. Item no Menu Mais.
+4. Hook de notificação realtime de novo badge.
+5. Atualizar `mem://features/gamification/streaks-badges` e `mem://index.md`.
 
-## Convenções técnicas
-- Lovable AI Gateway via `LOVABLE_API_KEY` (já existente), `google/gemini-2.5-flash` com `response_format: json_schema`.
-- Tokens semânticos do design system; cores HSL.
-- Cards: `bg-[#FFD1E7]`, `rounded-3xl`, `text-base`, sem ícones decorativos no título.
-- Páginas internas: `pt-[calc(env(safe-area-inset-top)+4rem)]`, `pb-28`.
-- Modais glassmorphism (`bg-white/70`, `backdrop-blur-md`), botão X `#FD46A1`.
-- Inputs `text-base` (anti-zoom iOS); sem Drawers em Dialogs.
+## Fora do escopo (fase 2)
+- Pg_cron de manutenção e concessão de freezes mensais Pro.
+- Card no Dashboard.
+- Sistema de níveis/XP.
+- Compartilhamento de conquista no WhatsApp.
 
-## Escopo desta entrega
-1. Migration (tabelas, RLS, view pública, função de ranking).
-2. 4 edge functions (com lógica de bônus Pro server-side).
-3. Páginas admin (lista + editor com gerador IA).
-4. Páginas usuário (lista + execução + resultado + ranking).
-5. Card no AdminDashboard + entrada no Menu Mais.
-6. Sem streaks/badges ainda.
+Confirma se posso seguir? Se quiser, ajusto a definição de "atividade válida" (ex: exigir bater meta de calorias em vez de só registrar refeição).
