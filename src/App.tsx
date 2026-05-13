@@ -151,6 +151,7 @@ const App = () => (
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz/:id" element={<QuizPlay />} />
             <Route path="/quiz/:id/resultado" element={<QuizResult />} />
+            <Route path="/conquistas" element={<Conquistas />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
