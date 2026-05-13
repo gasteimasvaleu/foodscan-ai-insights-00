@@ -87,6 +87,7 @@ const AuthAwareNavbar = () => {
   // Global widget sync on launch (iOS only)
   useWidgetSyncOnLaunch(user?.id);
   useBadgeNotifications(user?.id);
+  useStreakMilestones(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
   if (location.pathname === '/auth' || location.pathname === '/comunidade/chat') return null;
