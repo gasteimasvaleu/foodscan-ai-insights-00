@@ -193,31 +193,55 @@ export default function Conquistas() {
                 const cur = progressFor(b);
                 const pct = Math.min(100, Math.round((cur / b.condition_value) * 100));
                 return (
-                  <Card
+                  <div
                     key={b.id}
-                    className={`rounded-3xl border-0 ${isUnlocked ? tierBg[b.tier] ?? "bg-[#FFD1E7]" : "bg-white"}`}
+                    className={`relative overflow-hidden rounded-3xl border p-4 text-center transition-all ${
+                      isUnlocked
+                        ? "bg-white border-[#FD46A1]/40 shadow-lg shadow-pink-100"
+                        : "bg-white border-[#FFD1E7] shadow-sm"
+                    }`}
                   >
-                    <CardContent className="p-4 text-center">
-                      <div className={`text-4xl mb-2 ${isUnlocked ? "" : "grayscale opacity-40"}`}>
-                        {b.icon}
+                    {isUnlocked && (
+                      <>
+                        <div className="pointer-events-none absolute -top-8 -right-8 w-20 h-20 bg-[#FFD1E7] rounded-full blur-2xl opacity-60" />
+                        <div className="pointer-events-none absolute -bottom-8 -left-8 w-20 h-20 bg-[#FD46A1] rounded-full blur-2xl opacity-10" />
+                      </>
+                    )}
+                    <div className="relative z-10">
+                      <div
+                        className={`mx-auto mb-2 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl ${
+                          isUnlocked
+                            ? "bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] shadow-md shadow-pink-200"
+                            : "bg-gray-100"
+                        }`}
+                      >
+                        <span className={isUnlocked ? "" : "grayscale opacity-40"}>{b.icon}</span>
                       </div>
-                      <div className="text-sm">{b.name}</div>
-                      <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{b.description}</div>
-                      {!isUnlocked && (
-                        <div className="mt-2">
-                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-[#FD46A1]" style={{ width: `${pct}%` }} />
+                      <div className="text-sm font-semibold text-foreground line-clamp-1">{b.name}</div>
+                      <div className="text-xs text-muted-foreground mt-1 line-clamp-2 min-h-[2rem]">
+                        {b.description}
+                      </div>
+                      {!isUnlocked ? (
+                        <div className="mt-3">
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-[#FD46A1] to-[#ff8cb8] rounded-full transition-all duration-700"
+                              style={{ width: `${pct}%` }}
+                            />
                           </div>
-                          <div className="text-[10px] text-muted-foreground mt-1">
+                          <div className="text-[10px] font-bold text-muted-foreground mt-1">
                             {cur}/{b.condition_value}
                           </div>
                         </div>
+                      ) : (
+                        <div className="mt-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFD1E7]/50 border border-[#FFD1E7]">
+                          <span className="text-[10px] font-bold text-[#FD46A1] uppercase tracking-wider">
+                            Desbloqueada
+                          </span>
+                        </div>
                       )}
-                      {isUnlocked && (
-                        <div className="text-[10px] text-[#FD46A1] mt-2">Desbloqueada</div>
-                      )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 );
               })}
             </div>
