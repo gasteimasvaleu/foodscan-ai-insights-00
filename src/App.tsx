@@ -56,6 +56,10 @@ import AdicionarRefeicao from "./pages/AdicionarRefeicao";
 import Maternidade from "./pages/Maternidade";
 import Alimentos from "./pages/Alimentos";
 import Paywall from "./pages/Paywall";
+import Quiz from "./pages/Quiz";
+import QuizPlay from "./pages/QuizPlay";
+import QuizResult from "./pages/QuizResult";
+import AdminQuiz from "./pages/AdminQuiz";
 import { ProRoute } from "@/components/ProRoute";
 import { FREEMIUM_ENABLED } from "@/config/freemium";
 // QueryClient instance
@@ -140,6 +144,10 @@ const App = () => (
             <Route path="/admin/treinos" element={<AdminTreinos />} />
             <Route path="/admin/loja" element={<AdminLoja />} />
             <Route path="/admin/alimentos-comunidade" element={<AdminAlimentosComunidade />} />
+            <Route path="/admin/quiz" element={<AdminQuiz />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/quiz/:id" element={<QuizPlay />} />
+            <Route path="/quiz/:id/resultado" element={<QuizResult />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
