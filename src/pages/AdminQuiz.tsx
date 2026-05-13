@@ -65,6 +65,7 @@ export default function AdminQuiz() {
         theme: "geral",
         difficulty: "medio",
         time_per_question_seconds: 20,
+        num_questions: 5,
         status: "draft",
       });
       setQuestions([]);
