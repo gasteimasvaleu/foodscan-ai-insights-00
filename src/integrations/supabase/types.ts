@@ -2140,6 +2140,16 @@ export type Database = {
     }
     Functions: {
       expire_overdue_subscriptions: { Args: never; Returns: undefined }
+      get_quiz_play_questions: {
+        Args: { _quiz_id: string }
+        Returns: {
+          options: Json
+          prompt: string
+          question_id: string
+          question_position: number
+          quiz_id: string
+        }[]
+      }
       get_quiz_ranking: {
         Args: { period?: string }
         Returns: {
