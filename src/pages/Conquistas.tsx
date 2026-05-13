@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { Navbar } from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeft, Flame, Snowflake } from "lucide-react";
+import { Flame, Snowflake, Trophy } from "lucide-react";
 
 interface Badge {
   id: string;
@@ -74,13 +75,16 @@ export default function Conquistas() {
   const filtered = badges.filter(b => tab === "todos" || b.category === tab);
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]">
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl text-[#FD46A1] font-medium">Conquistas</h1>
+    <div className="min-h-screen bg-background pb-32">
+      <Navbar />
+      <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-4">
+        <div className="mb-2">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <Trophy className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-primary">Conquistas</h1>
+          </div>
         </div>
 
         <Card className="bg-[#FFD1E7] rounded-3xl border-0">
