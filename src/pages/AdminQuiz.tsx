@@ -254,35 +254,6 @@ export default function AdminQuiz() {
           </div>
         </div>
 
-        <Dialog open={genOpen} onOpenChange={setGenOpen}>
-          <DialogContent className="bg-white/70 backdrop-blur-md max-w-sm">
-            <DialogHeader><DialogTitle>Gerar com IA</DialogTitle></DialogHeader>
-            <div className="space-y-3">
-              <div>
-                <Label>Tema</Label>
-                <Select value={genTheme} onValueChange={setGenTheme}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Dificuldade</Label>
-                <Select value={genDiff} onValueChange={setGenDiff}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{DIFFS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Quantidade</Label>
-                <Input type="number" min={3} max={20} className="text-base" value={genCount}
-                  onChange={e => setGenCount(parseInt(e.target.value) || 5)} />
-              </div>
-              <Button className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white" disabled={generating} onClick={generate}>
-                {generating ? "Gerando…" : "Gerar"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     );
   }
