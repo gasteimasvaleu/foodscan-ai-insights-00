@@ -2,8 +2,15 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, x-app-platform, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+type GeneratedQuestion = {
+  prompt?: unknown;
+  options?: unknown;
+  correct_index?: unknown;
+  explanation?: unknown;
 };
 
 Deno.serve(async (req) => {
@@ -94,14 +101,66 @@ Deno.serve(async (req) => {
 
     const data = await aiRes.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) return json({ error: 'no_tool_call' }, 500);
-    const args = JSON.parse(toolCall.function.arguments);
-    return json({ quiz: args });
+    if (!toolCall?.function?.arguments) return json({ error: 'no_tool_call' }, 500);
+
+    let args: unknown;
+    try {
+      args = JSON.parse(toolCall.function.arguments);
+    } catch (parseError) {
+      console.error('Invalid AI JSON', parseError, toolCall.function.arguments);
+      return json({ error: 'invalid_ai_json' }, 500);
+    }
+
+    const quiz = normalizeQuiz(args, numQuestions);
+    if (!quiz) return json({ error: 'invalid_ai_response' }, 500);
+    return json({ quiz });
   } catch (e) {
     console.error(e);
     return json({ error: String(e?.message ?? e) }, 500);
   }
 });
+
+function normalizeQuiz(value: unknown, expectedCount: number) {
+  if (!value || typeof value !== 'object') return null;
+  const raw = value as { title?: unknown; description?: unknown; questions?: unknown };
+  if (!Array.isArray(raw.questions) || raw.questions.length < 1) return null;
+
+  const questions = raw.questions
+    .slice(0, expectedCount)
+    .map((question: GeneratedQuestion) => {
+      const options = Array.isArray(question.options)
+        ? question.options.map((option) => String(option ?? '').trim()).slice(0, 4)
+        : [];
+      const correctIndex = Number(question.correct_index);
+
+      if (
+        typeof question !== 'object' ||
+        !String(question.prompt ?? '').trim() ||
+        options.length !== 4 ||
+        options.some((option) => !option) ||
+        !Number.isInteger(correctIndex) ||
+        correctIndex < 0 ||
+        correctIndex > 3
+      ) {
+        return null;
+      }
+
+      return {
+        prompt: String(question.prompt).trim(),
+        options,
+        correct_index: correctIndex,
+        explanation: String(question.explanation ?? '').trim(),
+      };
+    })
+    .filter(Boolean);
+
+  if (questions.length < 1) return null;
+  return {
+    title: String(raw.title ?? 'Quiz gerado por IA').trim() || 'Quiz gerado por IA',
+    description: String(raw.description ?? '').trim(),
+    questions,
+  };
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
