@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { Navbar } from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Clock } from "lucide-react";
 import { toast } from "sonner";
 
 interface Question {
@@ -21,11 +23,17 @@ interface Feedback {
   points_awarded: number;
 }
 
+interface QuizMeta {
+  title: string;
+  theme: string;
+}
+
 export default function QuizPlay() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [quizMeta, setQuizMeta] = useState<QuizMeta | null>(null);
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [timePerQ, setTimePerQ] = useState(20);
   const [idx, setIdx] = useState(0);
@@ -45,7 +53,7 @@ export default function QuizPlay() {
     setLoading(true);
     try {
       const [{ data: quiz }, { data: qs }, { data: startRes, error: startErr }] = await Promise.all([
-        supabase.from("quizzes").select("time_per_question_seconds, status").eq("id", id!).maybeSingle(),
+        supabase.from("quizzes").select("title, theme, time_per_question_seconds, status").eq("id", id!).maybeSingle(),
         supabase.rpc("get_quiz_play_questions", { _quiz_id: id }),
         supabase.functions.invoke("quiz-start-attempt", { body: { quiz_id: id } }),
       ]);
@@ -67,6 +75,7 @@ export default function QuizPlay() {
         return;
       }
       setQuestions((qs ?? []) as any);
+      setQuizMeta({ title: quiz.title, theme: quiz.theme });
       setAttemptId((startRes as any).attempt.id);
       setTimePerQ(quiz.time_per_question_seconds);
       setTimeLeft(quiz.time_per_question_seconds);
@@ -123,32 +132,76 @@ export default function QuizPlay() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#F7FAFB]">Carregando…</div>;
+    return (
+      <div className="min-h-screen bg-background pb-32">
+        <Navbar />
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] flex items-center justify-center text-muted-foreground">
+          Carregando…
+        </div>
+      </div>
+    );
   }
   if (!questions.length) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#F7FAFB]">Quiz vazio.</div>;
+    return (
+      <div className="min-h-screen bg-background pb-32">
+        <Navbar />
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] text-center text-muted-foreground">
+          Quiz vazio.
+        </div>
+      </div>
+    );
   }
 
   const q = questions[idx];
   const progress = ((idx + (feedback ? 1 : 0)) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+1rem)] pb-10">
-      <div className="max-w-xl mx-auto px-4 space-y-4">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Pergunta {idx + 1} de {questions.length}</span>
-          <span>{Math.ceil(timeLeft)}s</span>
-        </div>
-        <Progress value={progress} className="h-2" />
-        <Progress value={(timeLeft / timePerQ) * 100} className="h-1" />
+    <div className="min-h-screen bg-background pb-32">
+      <Navbar />
+      <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-4">
+        {/* Header card */}
+        <div className="w-full bg-[#FFD1E7] rounded-[32px] p-1 shadow-[0_20px_50px_rgba(253,70,161,0.15)]">
+          <div className="bg-white/40 rounded-[28px] p-5 flex flex-col gap-3 border border-white/50 backdrop-blur-sm">
+            <div className="flex justify-between items-start gap-2">
+              {quizMeta?.theme && (
+                <span className="px-3 py-1 bg-white/90 text-[#FD46A1] text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm truncate max-w-[60%]">
+                  {quizMeta.theme}
+                </span>
+              )}
+              <div className="flex items-center gap-1.5 bg-[#FD46A1] px-3 py-1 rounded-full shadow-sm shadow-pink-300">
+                <span className="text-white text-[10px] font-bold">
+                  Pergunta {idx + 1} / {questions.length}
+                </span>
+              </div>
+            </div>
 
-        <Card className="bg-white rounded-3xl border-0">
+            {quizMeta?.title && (
+              <h1 className="text-xl font-bold text-[#FD46A1] leading-tight">{quizMeta.title}</h1>
+            )}
+
+            <div className="space-y-2">
+              <Progress value={progress} className="h-2 bg-white/60 [&>div]:bg-[#FD46A1]" />
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-[#FD46A1] font-semibold">
+                  <Clock className="w-3.5 h-3.5" />
+                  {Math.ceil(timeLeft)}s restantes
+                </span>
+                <span className="text-[#FD46A1]/60 font-medium">{Math.round(progress)}%</span>
+              </div>
+              <Progress value={(timeLeft / timePerQ) * 100} className="h-1 bg-white/60 [&>div]:bg-[#FD46A1]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Question card */}
+        <Card className="bg-white rounded-[28px] border-0 shadow-sm">
           <CardContent className="p-5">
             <div className="text-base mb-4">{q.prompt}</div>
             <div className="space-y-2">
               {q.options.map((opt, i) => {
                 const isCorrect = feedback && i === feedback.correct_index;
                 const isWrongChoice = feedback && i === chosen && !feedback.is_correct;
+                const isPicked = !feedback && chosen === i;
                 return (
                   <Button
                     key={i}
@@ -158,7 +211,7 @@ export default function QuizPlay() {
                     className={`w-full justify-start text-left h-auto py-3 text-base whitespace-normal rounded-2xl ${
                       isCorrect ? "bg-green-100 border-green-400" :
                       isWrongChoice ? "bg-red-100 border-red-400" :
-                      chosen === i ? "bg-[#FFD1E7]" : ""
+                      isPicked ? "bg-[#FD46A1] text-white border-[#FD46A1] hover:bg-[#FD46A1]" : ""
                     }`}
                   >
                     {opt}
