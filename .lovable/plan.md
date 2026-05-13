@@ -1,25 +1,36 @@
-## Diagnóstico
+## Objetivo
 
-O erro continua porque, nos logs do Supabase, a chamada para `quiz-generate` está parando no `OPTIONS 200`: o `POST` não chega a aparecer. Isso indica bloqueio antes da chamada real do navegador, ainda na etapa de preflight/CORS.
+Substituir o card simples de cada quiz na aba "Disponíveis" (`/quiz`) pela direção **Gamified Quest Card**, mantendo todos os dados e comportamento atuais.
 
-Além disso, o frontend hoje mostra apenas “Erro ao gerar quiz”, sem expor o motivo real retornado pela Edge Function, o que dificulta confirmar se o próximo erro é CORS, autenticação/admin, secret ausente ou falha do AI Gateway.
+## Onde
 
-## Plano de correção
+- `src/pages/Quiz.tsx`, dentro do `quizzes.map(...)` (atual `<Card>` em ~linha 146).
 
-1. **Tornar o CORS da `quiz-generate` mais robusto**
-   - Ajustar `Access-Control-Allow-Headers` para aceitar também cabeçalhos adicionais enviados pelo Supabase/browser, como `x-app-platform` e `x-client-info`.
-   - Manter CORS em todas as respostas, inclusive erros.
+## O que muda visualmente
 
-2. **Melhorar o diagnóstico no frontend**
-   - Em `AdminQuiz.tsx`, registrar no console e mostrar no toast uma mensagem mais específica quando a geração falhar.
-   - Diferenciar erros como: sem login, sem permissão admin, AI Gateway indisponível, limite/crédito, resposta inválida.
+- Wrapper externo `bg-[#FFD1E7] rounded-[32px] p-1` com sombra rosa suave; interior `bg-white/40 rounded-[28px] p-5 backdrop-blur-sm border border-white/50` (efeito glass dentro do card rosa).
+- **Topo**: chip branco com o `theme` (uppercase, tracking) à esquerda; chip rosa `#FD46A1` "+XP" à direita com pontinho pulsando. O valor de XP será derivado do nº de perguntas (`questionCounts[q.id] * 10`, fallback 50). Usuários Pro ganham `×1,25` (texto "+50 XP" → "+62 XP" automaticamente).
+- **Conteúdo**: título em `text-xl font-bold text-[#FD46A1]` + descrição `text-sm text-muted-foreground line-clamp-2`.
+- **Stats grid (3 colunas)**: Nível (dificuldade traduzida: facil/medio/dificil → Fácil/Médio/Difícil), Total (`N Perg.`), Tempo (`Xs`). Cada cell `bg-white/60 rounded-2xl p-2`, com bordas verticais brancas na do meio.
+- **Footer**: à esquerda, badge `Concluído` (verde com check) somente quando `done === true`; quando não feito, badge branca com pontinho verde pulsando + "Disponível". À direita, botão circular‑quadrado `w-12 h-12 bg-[#FD46A1] rounded-2xl` com seta → (CTA visual; o card inteiro continua clicável chamando `play(q.id)`).
+- Animação: `transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`.
 
-3. **Endurecer a resposta da Edge Function**
-   - Validar melhor o JSON retornado pela IA antes de enviar ao frontend.
-   - Garantir que o retorno sempre contenha `quiz.questions` com array válido.
-   - Retornar erros claros (`invalid_ai_response`, `missing_lovable_api_key`, `forbidden`, etc.).
+## O que NÃO muda
 
-4. **Deploy e validação**
-   - Fazer deploy imediato da Edge Function `quiz-generate`.
-   - Testar a função novamente via ferramenta de Edge Function.
-   - Conferir logs para confirmar que o `POST` passou a chegar; se aparecer outro erro real depois disso, corrigir esse segundo ponto.
+- Comportamento: o card inteiro continua chamando `play(q.id)` no clique (o botão de seta não tem `onClick` próprio, herda o do card via `pointer-events`).
+- Dados exibidos: `q.title`, `q.description`, `q.theme`, `q.difficulty`, `questionCounts[q.id]`, `q.time_per_question_seconds`, estado `done`.
+- Estrutura da página, abas, ranking, header, etc.
+- Sem alterações em backend, edge functions ou banco.
+- Sem novas dependências; usa apenas Tailwind + ícones já em uso (`lucide-react`: `Check`, `ArrowRight` ou `Zap`).
+
+## Notas técnicas
+
+- Capitalização da dificuldade via pequeno helper local `formatDifficulty(d)`.
+- Nada de ícone decorativo no título principal? A regra "títulos de cards SEM ícones" se aplica a cards genéricos; aqui o título permanece sem ícone — os ícones aparecem só nos chips do topo/footer (gamificação), respeitando a regra.
+- Manter `text-base` mínimo onde houver risco de zoom iOS (não há inputs neste card).
+- Acessibilidade: adicionar `role="button"` e `aria-label={`Jogar quiz ${q.title}`}` no wrapper.
+
+## Verificação
+
+- Build automático do Lovable.
+- Visual no preview mobile (390px) confirmando layout, contraste e estado `done` vs `disponível`.
