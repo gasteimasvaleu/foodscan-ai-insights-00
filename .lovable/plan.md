@@ -1,32 +1,25 @@
-## Problema
+## Diagnóstico
 
-Ao clicar em "IA" em `/admin/quiz`, o frontend mostra "Erro ao gerar quiz". Nos logs da edge function `quiz-generate` só aparecem requisições `OPTIONS` (preflight) — nenhum `POST` chega a ser registrado. O console do cliente mostra o mesmo padrão de "Failed to fetch" que já ocorre com outras functions.
+O erro continua porque, nos logs do Supabase, a chamada para `quiz-generate` está parando no `OPTIONS 200`: o `POST` não chega a aparecer. Isso indica bloqueio antes da chamada real do navegador, ainda na etapa de preflight/CORS.
 
-A causa é o import:
+Além disso, o frontend hoje mostra apenas “Erro ao gerar quiz”, sem expor o motivo real retornado pela Edge Function, o que dificulta confirmar se o próximo erro é CORS, autenticação/admin, secret ausente ou falha do AI Gateway.
 
-```ts
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
-```
+## Plano de correção
 
-Esse subpath `/cors` não existe no pacote `@supabase/supabase-js`. O símbolo `corsHeaders` chega como `undefined`, então as respostas saem sem cabeçalhos CORS e o navegador bloqueia o resultado.
+1. **Tornar o CORS da `quiz-generate` mais robusto**
+   - Ajustar `Access-Control-Allow-Headers` para aceitar também cabeçalhos adicionais enviados pelo Supabase/browser, como `x-app-platform` e `x-client-info`.
+   - Manter CORS em todas as respostas, inclusive erros.
 
-## Correção
+2. **Melhorar o diagnóstico no frontend**
+   - Em `AdminQuiz.tsx`, registrar no console e mostrar no toast uma mensagem mais específica quando a geração falhar.
+   - Diferenciar erros como: sem login, sem permissão admin, AI Gateway indisponível, limite/crédito, resposta inválida.
 
-Em `supabase/functions/quiz-generate/index.ts`:
+3. **Endurecer a resposta da Edge Function**
+   - Validar melhor o JSON retornado pela IA antes de enviar ao frontend.
+   - Garantir que o retorno sempre contenha `quiz.questions` com array válido.
+   - Retornar erros claros (`invalid_ai_response`, `missing_lovable_api_key`, `forbidden`, etc.).
 
-- Remover o import `from 'npm:@supabase/supabase-js@2/cors'`.
-- Declarar `corsHeaders` localmente no topo do arquivo:
-  ```ts
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  };
-  ```
-- Manter o restante do fluxo (validação de admin, chamada ao Lovable AI Gateway com `tool_choice`, retorno do quiz).
-
-## Verificação
-
-1. Após o deploy automático, abrir `/admin/quiz`, criar um novo quiz, preencher título/descrição/tema/dificuldade/nº de perguntas e clicar em "IA".
-2. Confirmar nos logs da edge function que aparece um `POST 200`.
-3. Confirmar no preview que as perguntas aparecem no editor sem o toast de erro.
+4. **Deploy e validação**
+   - Fazer deploy imediato da Edge Function `quiz-generate`.
+   - Testar a função novamente via ferramenta de Edge Function.
+   - Conferir logs para confirmar que o `POST` passou a chegar; se aparecer outro erro real depois disso, corrigir esse segundo ponto.
