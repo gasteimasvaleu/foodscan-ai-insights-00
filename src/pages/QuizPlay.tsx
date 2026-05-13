@@ -8,8 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 interface Question {
-  id: string;
-  position: number;
+  question_id: string;
+  question_position: number;
   prompt: string;
   options: string[];
 }
@@ -46,7 +46,7 @@ export default function QuizPlay() {
     try {
       const [{ data: quiz }, { data: qs }, { data: startRes, error: startErr }] = await Promise.all([
         supabase.from("quizzes").select("time_per_question_seconds, status").eq("id", id!).maybeSingle(),
-        supabase.from("quiz_questions_public").select("*").eq("quiz_id", id!).order("position"),
+        supabase.rpc("get_quiz_play_questions", { _quiz_id: id }),
         supabase.functions.invoke("quiz-start-attempt", { body: { quiz_id: id } }),
       ]);
 
@@ -98,7 +98,7 @@ export default function QuizPlay() {
     const q = questions[idx];
     const time_ms = Math.min(timePerQ * 1000, Date.now() - startedAtRef.current);
     const { data, error } = await supabase.functions.invoke("quiz-submit-answer", {
-      body: { attempt_id: attemptId, question_id: q.id, chosen_index: choice, time_ms },
+      body: { attempt_id: attemptId, question_id: q.question_id, chosen_index: choice, time_ms },
     });
     setSubmitting(false);
     if (error || (data as any)?.error) {
