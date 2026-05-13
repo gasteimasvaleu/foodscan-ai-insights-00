@@ -89,10 +89,28 @@ export default function AdminQuiz() {
     });
     setGenerating(false);
     if (error || (data as any)?.error) {
-      toast.error("Erro ao gerar quiz");
+      const reason = (data as any)?.error || error?.message || "erro_desconhecido";
+      console.error("[AdminQuiz] Erro ao gerar quiz", { error, data });
+      const messages: Record<string, string> = {
+        unauthorized: "Faça login novamente para gerar o quiz.",
+        forbidden: "Seu usuário não tem permissão admin para gerar quiz.",
+        missing_lovable_api_key: "A chave da IA não está configurada.",
+        rate_limited: "A IA está com limite de uso. Tente novamente em instantes.",
+        payment_required: "Créditos da IA indisponíveis no momento.",
+        ai_failed: "A IA não conseguiu gerar agora. Tente novamente.",
+        no_tool_call: "A IA respondeu fora do formato esperado. Tente novamente.",
+        invalid_ai_json: "A IA retornou um formato inválido. Tente novamente.",
+        invalid_ai_response: "A IA retornou perguntas incompletas. Tente novamente.",
+      };
+      toast.error(messages[reason] ?? `Erro ao gerar quiz: ${reason}`);
       return;
     }
     const quiz = (data as any).quiz;
+    if (!quiz?.questions?.length) {
+      console.error("[AdminQuiz] Quiz gerado sem perguntas", data);
+      toast.error("A IA não retornou perguntas. Tente novamente.");
+      return;
+    }
     setEditing((e: any) => ({
       ...(e ?? {}),
       title: e?.title?.trim() ? e.title : quiz.title,
