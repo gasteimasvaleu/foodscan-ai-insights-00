@@ -87,31 +87,96 @@ export default function Conquistas() {
           </div>
         </div>
 
-        <Card className="bg-[#FFD1E7] rounded-3xl border-0">
-          <CardContent className="p-5">
-            <div className="text-base mb-2">Sua sequência</div>
-            <div className="flex items-end gap-3">
-              <Flame className="h-10 w-10 text-[#FD46A1]" />
-              <div>
-                <div className="text-4xl font-semibold leading-none">{streak?.current_streak ?? 0}</div>
-                <div className="text-xs text-muted-foreground mt-1">dias seguidos</div>
-              </div>
-              <div className="ml-auto text-right">
-                <div className="text-xs text-muted-foreground">Recorde</div>
-                <div className="text-lg">{streak?.longest_streak ?? 0} dias</div>
+        {(() => {
+          const current = streak?.current_streak ?? 0;
+          const longest = streak?.longest_streak ?? 0;
+          const freezes = streak?.streak_freezes ?? 0;
+          const milestones = [3, 7, 14, 30, 60, 100];
+          const nextMilestone = milestones.find((m) => m > current) ?? null;
+          const prevMilestone = [...milestones].reverse().find((m) => m <= current) ?? 0;
+          const progress = nextMilestone
+            ? Math.min(100, Math.round(((current - prevMilestone) / (nextMilestone - prevMilestone)) * 100))
+            : 100;
+          const remaining = nextMilestone ? nextMilestone - current : 0;
+          return (
+            <div className="relative overflow-hidden rounded-[32px] bg-white border border-[#FFD1E7] shadow-xl shadow-pink-100 p-6">
+              {/* Background glows */}
+              <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#FFD1E7] rounded-full blur-3xl opacity-50" />
+              <div className="pointer-events-none absolute -bottom-12 -left-12 w-32 h-32 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
+
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-6 gap-3">
+                  <div className="min-w-0">
+                    <h3 className="text-foreground text-lg font-bold leading-none mb-1">Sua sequência</h3>
+                    <p className="text-[#FD46A1] text-xs font-semibold uppercase tracking-wider">
+                      {current === 0 ? "Comece hoje" : nextMilestone ? `Rumo a ${nextMilestone} dias` : "Lendário"}
+                    </p>
+                  </div>
+                  {freezes > 0 && (
+                    <div className="flex items-center bg-[#FFD1E7]/40 px-3 py-1.5 rounded-full border border-[#FFD1E7] shrink-0">
+                      <Snowflake className="h-3.5 w-3.5 mr-1.5 text-[#FD46A1]" />
+                      <span className="text-[#FD46A1] text-[10px] font-bold">
+                        {freezes} {freezes === 1 ? "CONGELAMENTO" : "CONGELAMENTOS"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Streak visual */}
+                <div className="flex items-center gap-5 mb-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] flex items-center justify-center shadow-lg shadow-pink-200 animate-pulse">
+                      <Flame className="h-12 w-12 text-white" fill="white" />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
+                        Recorde: {longest}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-5xl font-extrabold text-foreground tracking-tight leading-none">
+                      {current}
+                    </span>
+                    <span className="text-sm font-medium text-muted-foreground mt-1">dias seguidos</span>
+                  </div>
+                </div>
+
+                {/* Progress */}
+                {nextMilestone && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-end">
+                      <p className="text-xs font-semibold text-foreground/80">
+                        Próximo marco: <span className="text-[#FD46A1]">{nextMilestone} dias</span>
+                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground">
+                        {current} / {nextMilestone}
+                      </p>
+                    </div>
+                    <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#FD46A1] to-[#ff8cb8] rounded-full shadow-[0_0_8px_rgba(253,70,161,0.4)] transition-all duration-700"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Motivational footer */}
+                <div className="pt-4 mt-4 border-t border-gray-100">
+                  <p className="text-[13px] leading-relaxed text-muted-foreground font-medium">
+                    {current === 0
+                      ? <>Registre uma refeição hoje para começar sua sequência!</>
+                      : nextMilestone
+                        ? <>Mantenha o ritmo! Você está a apenas <span className="text-[#FD46A1] font-bold">{remaining} {remaining === 1 ? "dia" : "dias"}</span> de desbloquear o emblema de {nextMilestone} dias.</>
+                        : <>Você atingiu o marco máximo. Continue mantendo sua sequência lendária!</>}
+                  </p>
+                </div>
               </div>
             </div>
-            {(streak?.streak_freezes ?? 0) > 0 && (
-              <div className="mt-3 flex items-center gap-2 text-sm">
-                <Snowflake className="h-4 w-4 text-blue-500" />
-                <span>{streak?.streak_freezes} congelamento(s) disponível(eis)</span>
-              </div>
-            )}
-            <div className="text-xs text-muted-foreground mt-3">
-              Registre pelo menos 1 refeição por dia para manter sua sequência.
-            </div>
-          </CardContent>
-        </Card>
+          );
+        })()}
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="grid grid-cols-4 w-full">
