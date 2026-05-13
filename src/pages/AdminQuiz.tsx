@@ -73,9 +73,19 @@ export default function AdminQuiz() {
   }
 
   async function generate() {
+    if (!editing) return;
+    const theme = editing.theme || "geral";
+    const difficulty = editing.difficulty || "medio";
+    const num_questions = Math.min(20, Math.max(3, Number(editing.num_questions) || 5));
     setGenerating(true);
     const { data, error } = await supabase.functions.invoke("quiz-generate", {
-      body: { theme: genTheme, difficulty: genDiff, num_questions: genCount },
+      body: {
+        theme,
+        difficulty,
+        num_questions,
+        title: editing.title ?? "",
+        description: editing.description ?? "",
+      },
     });
     setGenerating(false);
     if (error || (data as any)?.error) {
@@ -85,15 +95,15 @@ export default function AdminQuiz() {
     const quiz = (data as any).quiz;
     setEditing((e: any) => ({
       ...(e ?? {}),
-      title: e?.title || quiz.title,
-      description: e?.description || quiz.description,
-      theme: e?.theme || genTheme,
-      difficulty: e?.difficulty || genDiff,
+      title: e?.title?.trim() ? e.title : quiz.title,
+      description: e?.description?.trim() ? e.description : quiz.description,
+      theme: e?.theme || theme,
+      difficulty: e?.difficulty || difficulty,
       time_per_question_seconds: e?.time_per_question_seconds || 20,
+      num_questions,
       status: e?.status || "draft",
     }));
     setQuestions(quiz.questions);
-    setGenOpen(false);
     toast.success("Quiz gerado, revise e salve");
   }
 
