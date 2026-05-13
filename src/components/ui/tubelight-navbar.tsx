@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 
@@ -124,6 +124,12 @@ const moreSheetItems = [
     description: "Vídeos de treino e dicas em casa",
     url: "/treinos",
     icon: Dumbbell,
+  },
+  {
+    name: "Quiz",
+    description: "Responda quizzes, ganhe pontos e dispute o ranking",
+    url: "/quiz",
+    icon: HelpCircle,
   },
   {
     name: "Gerar Cardápio",
