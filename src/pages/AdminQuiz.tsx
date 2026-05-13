@@ -195,7 +195,7 @@ export default function AdminQuiz() {
               <Label>Descrição</Label>
               <Textarea className="text-base" value={editing.description ?? ""} onChange={e => setEditing({ ...editing, description: e.target.value })} />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label>Tema</Label>
                 <Select value={editing.theme} onValueChange={v => setEditing({ ...editing, theme: v })}>
@@ -214,6 +214,11 @@ export default function AdminQuiz() {
                 <Label>Seg/Pergunta</Label>
                 <Input type="number" className="text-base" value={editing.time_per_question_seconds}
                   onChange={e => setEditing({ ...editing, time_per_question_seconds: parseInt(e.target.value) || 20 })} />
+              </div>
+              <div>
+                <Label>Nº de perguntas (IA)</Label>
+                <Input type="number" min={3} max={20} className="text-base" value={editing.num_questions ?? 5}
+                  onChange={e => setEditing({ ...editing, num_questions: parseInt(e.target.value) || 5 })} />
               </div>
             </div>
           </CardContent></Card>
