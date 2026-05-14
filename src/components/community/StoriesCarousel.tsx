@@ -117,12 +117,13 @@ export function StoriesCarousel({
       <div className="flex items-stretch">
         {/* Fixed: me */}
         <div className="flex-shrink-0 px-3 py-3 border-r border-border/40">
-          <button
-            onClick={handleMyAvatarClick}
-            className="flex flex-col items-center gap-1.5 w-16"
-            aria-label="Seu story"
-          >
-            <div className="relative">
+          <div className="flex flex-col items-center gap-1.5 w-16">
+            <button
+              type="button"
+              onClick={handleMyAvatarClick}
+              className="relative"
+              aria-label="Seu story"
+            >
               <div
                 className={cn(
                   "p-[2px] rounded-full",
