@@ -1,20 +1,46 @@
-Plano para corrigir o problema real dos comentários:
+# Corrigir estouro de layout ao abrir teclado nos comentários (iOS)
 
-1. Ajustar a lógica do card de postagem
-- Garantir que o botão do balão de fala sempre abra a área de comentários para qualquer usuário logado, independente de ser autor ou não.
-- Separar claramente a ação de comentar da ação de DM, para nenhum botão/menu interferir no clique do balão.
-- Se houver erro ao carregar comentários, manter a área aberta e mostrar mensagem de erro em vez de parecer que “não abriu”.
+## Problema
+Quando o usuário toca no input de comentário dentro de `CommentSection` (renderizado dentro do `PostCard` na página `/comunidade`), o teclado nativo do iOS sobe e o layout "estoura": o input fica escondido atrás do teclado e a página perde o scroll, dando sensação de crash.
 
-2. Ajustar a política do banco para comentários
-- Atualizar a regra de `post_comments` para permitir que qualquer usuário autenticado comente em qualquer postagem existente da comunidade.
-- Manter segurança: o comentário só poderá ser criado com `user_id` igual ao usuário logado.
-- Manter que usuários só possam editar/apagar os próprios comentários.
+Causas prováveis:
+1. O `Input` de comentário está dentro de um card no meio do feed, sem rolagem para colocá-lo acima do teclado.
+2. O container `Comunidade` usa `pb-44` mas não reage à altura do teclado.
+3. Falta `scrollIntoView` no foco do input para reposicioná-lo.
+4. O Capacitor Keyboard plugin não está configurado para ajustar a viewport (`resize: 'native'` / `KeyboardResize.Body`).
 
-3. Melhorar feedback e contagem
-- Após comentar, recarregar os comentários e atualizar a lista visualmente.
-- Se a criação falhar por permissão, exibir um aviso claro: “Você precisa estar logado para comentar” ou a mensagem real do banco.
+## Mudanças
 
-Detalhes técnicos:
-- Revisar `src/components/community/PostCard.tsx` e `src/components/community/CommentSection.tsx`.
-- Criar/ajustar uma migration de RLS para `public.post_comments` com uma regra de criação baseada em `auth.uid() = user_id` e existência do `post_id` em `community_posts`.
-- Não alterar o fluxo de DM nem stories.
+### 1. `src/components/community/CommentSection.tsx` (UI)
+- Adicionar `ref` no `Input` de comentário.
+- No `onFocus`, chamar `inputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })` após pequeno delay (300ms) para garantir que o input fique visível acima do teclado.
+
+### 2. `src/components/community/PostCard.tsx` (UI)
+- Garantir que o bloco de comentários tenha margem inferior suficiente (`pb-4`) e que o card não trave overflow.
+
+### 3. `capacitor.config.ts` (config nativa)
+- Adicionar plugin Keyboard:
+  ```ts
+  plugins: {
+    Keyboard: {
+      resize: 'native',
+      style: 'light',
+      resizeOnFullScreen: true,
+    }
+  }
+  ```
+- Isso faz o WebView nativo redimensionar quando o teclado abre, evitando o "estouro".
+
+### 4. `src/index.css` (CSS global)
+- Adicionar suporte a `--keyboard-inset-height` via classe utilitária e garantir `min-height: 100dvh` (dinâmico) em vez de `100vh` em containers principais para reagir corretamente ao teclado no iOS.
+
+### 5. (Opcional) `src/pages/Comunidade.tsx`
+- Trocar `min-h-screen` por `min-h-dvh` para usar a altura dinâmica da viewport, que encolhe quando o teclado abre.
+
+## Detalhes técnicos
+- `KeyboardResize.Native` redimensiona o WebView; `Body` redimensiona apenas o `<body>`. `Native` é o mais seguro para inputs no meio do feed.
+- `100dvh` (dynamic viewport height) já é suportado no iOS Safari/WKWebView 15.4+.
+- Após mudar `capacitor.config.ts`, o usuário precisa rodar `npx cap sync ios` localmente para aplicar (não afeta o preview web).
+
+## Fora do escopo
+- Não mexer em RLS, lógica de negócio ou outros componentes.
