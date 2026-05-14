@@ -55,6 +55,11 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const [moreSheetOpen, setMoreSheetOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { subscriptionStatus } = useAuthContext()
+  const isPro = !!subscriptionStatus?.subscribed
+
+  const freeItems = moreSheetItems.filter((i) => !i.isPro)
+  const proItems = moreSheetItems.filter((i) => i.isPro)
 
   useEffect(() => {
     const handleResize = () => {
