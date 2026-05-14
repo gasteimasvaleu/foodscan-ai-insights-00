@@ -261,7 +261,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-40">
           <DayView
             day={selectedDay}
             userId={user!.id}
@@ -511,21 +511,28 @@ function DayView({
     }
   }
 
+  const checkedCount = [checks.followed_menu, checks.drank_water, checks.walked, checks.slept_well].filter(Boolean).length;
+  const dayIcons = [Sparkles, Flame, Sparkles, Flame, Trophy, Sparkles, Trophy, Sparkles, Flame, Sparkles, Flame, Sparkles, Flame, Trophy];
+  const DayIcon = dayIcons[day - 1] ?? Sparkles;
+
   return (
+    <>
     <div className="bg-white/70 backdrop-blur-md rounded-3xl border-0 overflow-hidden">
-      <div className="p-5 pb-0 flex flex-row items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[#FD46A1]">Dia {day}</p>
-          <h2 className="text-xl font-bold mt-1">{data.title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
-        </div>
+      {/* Header com gradiente + pill do dia + botão fechar circular */}
+      <div className="relative bg-gradient-to-br from-[#FFD1E7] via-[#FFE4F1] to-white p-5 pt-6">
         <button
           onClick={onClose}
-          className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[#FD46A1] px-2 py-1 rounded-xl hover:bg-[#FFD1E7]/60 transition"
+          aria-label="Voltar aos 14 dias"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#FD46A1] shadow-sm hover:bg-white transition"
         >
-          <ArrowLeft size={16} />
-          <span>Voltar aos 14 dias</span>
+          <X size={18} />
         </button>
+        <div className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-[#FD46A1]">
+          <DayIcon size={14} />
+          <span>Dia {day} de 14</span>
+        </div>
+        <h2 className="text-2xl font-bold mt-2 leading-tight pr-10">{data.title}</h2>
+        <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
       </div>
 
       <div className="p-5 space-y-4">
@@ -553,20 +560,32 @@ function DayView({
             </p>
           </Card>
 
-          {/* Checklist */}
-          <Card className="bg-white rounded-2xl p-4 border shadow-none space-y-3">
-            <p className="text-base font-medium">Checklist do dia</p>
-            {(Object.keys(CHECK_LABELS) as Array<keyof typeof CHECK_LABELS>).map((k) => (
-              <label key={k} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={checks[k]}
-                  onChange={(e) => setChecks({ ...checks, [k]: e.target.checked })}
-                  className="w-5 h-5 accent-[#FD46A1]"
-                />
-                <span className="text-sm">{CHECK_LABELS[k]}</span>
-              </label>
-            ))}
+          {/* Checklist em pills */}
+          <Card className="bg-white rounded-2xl p-4 border shadow-none">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-base font-medium">Checklist do dia</p>
+              <span className="text-xs font-semibold text-[#FD46A1]">{checkedCount}/4</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(Object.keys(CHECK_LABELS) as Array<keyof typeof CHECK_LABELS>).map((k) => {
+                const active = checks[k];
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setChecks({ ...checks, [k]: !active })}
+                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition active:scale-95 ${
+                      active
+                        ? "bg-[#FD46A1] text-white shadow-sm"
+                        : "bg-[#FFD1E7]/50 text-[#FD46A1] border border-[#FFD1E7]"
+                    }`}
+                  >
+                    {active && <CheckCircle2 size={14} />}
+                    {CHECK_LABELS[k]}
+                  </button>
+                );
+              })}
+            </div>
           </Card>
 
           {/* Humor */}
@@ -577,7 +596,7 @@ function DayView({
                 <button
                   key={m}
                   onClick={() => setChecks({ ...checks, mood: m })}
-                  className={`text-3xl p-2 rounded-2xl transition ${checks.mood === m ? "bg-[#FFD1E7] scale-110" : ""}`}
+                  className={`text-3xl p-2 rounded-2xl transition ${checks.mood === m ? "bg-[#FFD1E7] scale-110 shadow-sm" : "opacity-60 hover:opacity-100"}`}
                 >
                   {m}
                 </button>
@@ -585,19 +604,27 @@ function DayView({
             </div>
           </Card>
 
-          {/* Peso */}
-          <Card className="bg-white rounded-2xl p-4 border shadow-none">
-            <p className="text-base font-medium mb-2">Peso de hoje (opcional)</p>
-            <Input
-              type="number"
-              inputMode="decimal"
-              step="0.1"
-              placeholder="kg"
-              value={weightInput}
-              onChange={(e) => setWeightInput(e.target.value)}
-              className="text-base h-12 rounded-2xl"
-            />
-          </Card>
+          {/* Peso + Notas em grid 2 colunas */}
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="bg-white rounded-2xl p-4 border shadow-none">
+              <p className="text-sm font-medium mb-2">Peso de hoje</p>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                placeholder="kg"
+                value={weightInput}
+                onChange={(e) => setWeightInput(e.target.value)}
+                className="text-base h-11 rounded-xl"
+              />
+            </Card>
+            <Card className="bg-white rounded-2xl p-4 border shadow-none">
+              <p className="text-sm font-medium mb-2">Humor (opcional)</p>
+              <p className="text-xs text-muted-foreground">
+                {checks.mood ? `Você marcou ${checks.mood}` : "Marque acima"}
+              </p>
+            </Card>
+          </div>
 
           {/* Notas */}
           <Card className="bg-white rounded-2xl p-4 border shadow-none">
@@ -650,39 +677,52 @@ function DayView({
             )}
           </Card>
 
-          <div className="flex flex-col gap-2 pt-2">
+          {/* Salvar rascunho (concluir vai para o sticky bar) */}
+          {!isCompleted && !allChecked && (
             <Button
-              onClick={() => save(true)}
-              disabled={saving || !allChecked || isCompleted}
-              className="w-full h-12 rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold"
+              onClick={() => save(false)}
+              disabled={saving}
+              variant="outline"
+              className="w-full h-12 rounded-2xl"
             >
-              {isCompleted ? (
-                <>
-                  <Trophy className="mr-2" size={18} /> Dia já concluído
-                </>
-              ) : allChecked ? (
-                "Concluir dia e desbloquear o próximo"
-              ) : (
-                "Marque os 4 itens para concluir"
-              )}
+              Salvar rascunho e voltar depois
             </Button>
-            {!isCompleted && !allChecked && (
-              <>
-                <Button
-                  onClick={() => save(false)}
-                  disabled={saving}
-                  variant="outline"
-                  className="w-full h-12 rounded-2xl"
-                >
-                  Salvar rascunho e voltar depois
-                </Button>
-                <p className="text-xs text-muted-foreground text-center px-2">
-                  Salva o que você já marcou sem concluir o dia. Você pode voltar e completar mais tarde.
-                </p>
-              </>
-            )}
-          </div>
+          )}
         </div>
     </div>
+
+    {/* Sticky action bar */}
+    <div className="fixed left-0 right-0 bottom-20 z-30 px-4 pointer-events-none">
+      <div className="container max-w-lg mx-auto pointer-events-auto">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-[#FFD1E7] shadow-lg p-3 flex items-center gap-3">
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-semibold text-[#FD46A1]">Dia {day}</span>
+              <span className="text-xs text-muted-foreground">{checkedCount}/4 itens</span>
+            </div>
+            <div className="h-1.5 bg-[#FFD1E7]/60 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#FD46A1] transition-all duration-300"
+                style={{ width: `${(checkedCount / 4) * 100}%` }}
+              />
+            </div>
+          </div>
+          <Button
+            onClick={() => save(true)}
+            disabled={saving || !allChecked || isCompleted}
+            className="h-11 px-4 rounded-xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold shrink-0"
+          >
+            {isCompleted ? (
+              <><Trophy className="mr-1.5" size={16} /> Concluído</>
+            ) : allChecked ? (
+              "Concluir dia"
+            ) : (
+              "Marque os 4"
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+    </>
   );
 }
