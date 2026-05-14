@@ -263,9 +263,30 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         </Card>
         <Card className="bg-[#FFD1E7] backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl">
           <CardContent className="p-4">
-            <h3 className="font-semibold text-foreground text-sm truncate text-center">
-              Boas-vindas, {userName}!
-            </h3>
+            {(() => {
+              const hour = new Date().getHours();
+              const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+              const rawName = profileName || user.email || '';
+              const firstName = rawName.split(/[\s@]/)[0] || 'Você';
+              const initial = firstName.charAt(0).toUpperCase();
+              const dateLabel = new Date()
+                .toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })
+                .replace('.', '');
+              return (
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-full bg-white/60 flex items-center justify-center text-primary font-bold shrink-0">
+                    {initial}
+                  </div>
+                  <div className="flex-1 min-w-0 leading-tight">
+                    <p className="text-[11px] text-foreground/60 leading-none mb-0.5">{greeting},</p>
+                    <h3 className="font-semibold text-foreground text-sm truncate">{firstName}!</h3>
+                  </div>
+                  <span className="text-[10px] text-foreground/70 bg-white/50 rounded-full px-2 py-1 shrink-0 capitalize">
+                    {dateLabel}
+                  </span>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
       </>
