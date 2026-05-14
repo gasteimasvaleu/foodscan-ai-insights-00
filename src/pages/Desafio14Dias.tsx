@@ -10,8 +10,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { challengeData, achievements } from "@/lib/desafio14/challengeData";
 import { toast } from "sonner";
-import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera } from "lucide-react";
+import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 type Profile = {
   initial_weight: number | null;
@@ -134,12 +135,85 @@ export default function Desafio14Dias() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
-          <Card className="bg-[#FFD1E7] rounded-3xl p-6 border-0 shadow-none">
-            <h1 className="text-2xl font-bold text-[#FD46A1] mb-2">Desafio 14 dias</h1>
-            <p className="text-foreground/80 text-base">
-              Uma jornada de 14 dias com cardápio, vídeos e checklist diário para você se transformar.
-            </p>
-          </Card>
+          <div className="relative">
+            <motion.div
+              aria-hidden
+              className="absolute -inset-3 rounded-[40px] bg-[#FD46A1]/30 blur-2xl -z-10"
+              animate={{ opacity: [0.25, 0.5, 0.25] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, #FD46A1 0%, #FF7AB8 55%, #FFB3D5 100%)",
+              }}
+            >
+              {/* Decorative blobs */}
+              <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
+              <div aria-hidden className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
+
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 mb-4"
+              >
+                <motion.span
+                  animate={{ rotate: [0, 15, -10, 0] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                  className="inline-flex"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                </motion.span>
+                <span className="text-[10px] font-bold tracking-[0.18em] uppercase">
+                  Desafio Exclusivo
+                </span>
+              </motion.div>
+
+              {/* Eyebrow */}
+              <p className="text-xs text-white/85 mb-1">
+                14 dias para uma nova versão
+              </p>
+
+              {/* Title */}
+              <h1 className="font-black leading-[1] mb-3">
+                <span className="block text-[28px]">Seu desafio de</span>
+                <span className="flex items-end gap-2">
+                  <span className="text-[64px] leading-[0.9] drop-shadow-sm">14</span>
+                  <span className="text-[28px] pb-2">dias</span>
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-sm text-white/95 leading-relaxed mb-5">
+                Cardápio guiado, vídeos diários e checklist.
+                <br />
+                Comece hoje, transforme em 2 semanas.
+              </p>
+
+              {/* Mini stats */}
+              <div className="flex items-stretch gap-2 rounded-2xl bg-white/15 backdrop-blur-sm p-3">
+                {[
+                  { icon: UtensilsCrossed, num: "14", label: "cardápios" },
+                  { icon: Play, num: "14", label: "vídeos" },
+                  { icon: ListChecks, num: "4", label: "metas/dia" },
+                ].map((s, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center text-center">
+                    <s.icon className="h-4 w-4 mb-1 opacity-90" />
+                    <span className="text-base font-bold leading-none">{s.num}</span>
+                    <span className="text-[10px] uppercase tracking-wider opacity-85 mt-0.5">
+                      {s.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
 
           <Card className="bg-white rounded-3xl p-5 border-0 shadow-sm space-y-4">
             <div>
