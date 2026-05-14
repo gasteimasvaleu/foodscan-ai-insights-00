@@ -40,6 +40,8 @@ export default function Comunidade() {
   const [storyOpen, setStoryOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
   const [storiesRefresh, setStoriesRefresh] = useState(0);
+  const [view, setView] = useState<"feed" | "grid">("feed");
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
