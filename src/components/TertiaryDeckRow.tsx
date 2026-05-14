@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 
 export const TertiaryDeckRow: React.FC = () => {
   const navigate = useNavigate();
