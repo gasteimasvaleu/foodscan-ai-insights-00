@@ -10,7 +10,7 @@ export const TertiaryDeckRow: React.FC = () => {
       {/* Card esquerdo: Desafio 14 Dias (16:9) */}
       <button
         onClick={() => navigate('/desafio-14-dias')}
-        className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all"
+        className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all text-left"
         aria-label="Desafio 14 Dias"
       >
         <img
