@@ -1,89 +1,44 @@
-# Card de Avaliação Física — UX repaginada
+# Ajuste de layout do card de Avaliação Física
 
-Reescrever `src/components/DailyAssessmentSummaryCard.tsx` com visual premium, peso herói, IMC classificado, sparkline, empty state e quick-action de registrar peso. Sem mudanças de schema.
+Corrigir a distribuição: título/badge colados na borda, coluna do peso com espaço vazio quando não há sparkline, e ring/IMC pouco respiráveis.
 
-## Layout
+## Alterações em `DailyAssessmentSummaryCard.tsx`
 
-```text
-┌──────────────────────────────────────────────────────┐
-│  AVALIAÇÃO FÍSICA                          [há 3d]   │
-│                                                      │
-│   65,0 kg          ╭──╮  ┌─ Normal ─┐                │
-│   ↓ 0,8 kg         │12│  │  22,5    │   ╱╲╱─╲       │
-│   vs. anterior     │% │  │   IMC    │  ╱      ╲     │
-│                    ╰──╯  └──────────┘                │
-│                                                      │
-│            [ + Registrar peso ]                      │
-└──────────────────────────────────────────────────────┘
-```
+1. **Padding externo**
+   - Wrapper: `px-3` → `px-4` (mais respiro lateral pro título e pro chip "há Xd").
 
-- Wrapper: `bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-3 pt-2.5 pb-6 relative` (mesmo padrão de hidratação/jejum para escapar dos dots).
-- Header centralizado: título `text-[10px] uppercase tracking-wider text-white/80` + chip "há Xd" à direita (recência da última medição).
+2. **Header**
+   - Manter título centralizado, mas reduzir o tamanho do chip para `text-[9px] px-1.5 py-0.5` para não dominar.
+   - Adicionar `mb-2` consistente.
 
-## Hero (peso em destaque)
+3. **Hero — redistribuir em 3 zonas com `justify-between`**
+   ```text
+   ┌─────────────────────────────────────────────┐
+   │ 65,0 kg            ╭──╮      ┌──────────┐  │
+   │ ↓ 0,8 kg / sem cmp │12│  +   │  Normal  │  │
+   │ (sparkline)        │BG│      │   22,5   │  │
+   │                    ╰──╯      └──────────┘  │
+   └─────────────────────────────────────────────┘
+   ```
+   - Trocar `flex items-center gap-3 flex-1` por `flex items-center justify-between gap-2 flex-1`.
+   - Coluna peso: `flex-1 min-w-0` (sem encolher exagerado).
+   - Ring + Chip IMC: `flex items-center gap-2 shrink-0`.
 
-- Coluna principal:
-  - Peso atual `text-4xl font-black text-white leading-none` + "kg" `text-sm text-white/70`.
-  - Linha delta: seta + valor + "vs. anterior" (`text-[11px]`). Cor verde se diminuiu, vermelho se aumentou, neutra se estável.
-- Ring lateral (BodyFat): 64×64, stroke 6 branco. Centro mostra `{bodyFat}%` + label "%BG" minúsculo.
-- Chip de IMC com cor semântica:
+4. **Sparkline sempre ocupando linha (placeholder)**
+   - Quando `sparkValues.length < 2`: renderizar um placeholder `<div className="h-[28px] flex items-center"><span className="text-white/40 text-[10px]">Sem histórico ainda</span></div>` para evitar que a coluna do peso "encurte" e crie o vazio.
+   - Quando há sparkline, segue como está mas com `text-white/50 text-[9px] mt-0.5` indicando "últimos {n} dias" abaixo.
 
-| BMI | Faixa | Cor chip |
-|---|---|---|
-| <18.5 | Abaixo | `bg-sky-400/20 text-sky-200` |
-| 18.5–24.9 | Normal | `bg-emerald-400/20 text-emerald-200` |
-| 25–29.9 | Sobrepeso | `bg-amber-400/20 text-amber-200` |
-| ≥30 | Obesidade | `bg-rose-400/20 text-rose-200` |
+5. **Ring %BG**
+   - Aumentar levemente: 62×62 → 64×64, `radius` 26 → 28. Mantém peso visual.
 
-  Chip mostra label da faixa + valor IMC abaixo.
+6. **Chip IMC**
+   - `px-2 py-1.5` → `px-2.5 py-2`, `rounded-2xl`. Centralizar com `min-w-[56px]`.
+   - Hierarquia: label em cima `text-[9px]` / número grande `text-lg` / "IMC" `text-[9px]`.
 
-## Sparkline
-
-- 7 últimos pesos (até 7 registros mais recentes em `physical_assessments`).
-- SVG inline 60×28 no canto direito do hero, stroke `#a5b4fc`, sem eixos. Ponto final destacado.
-- Se houver <2 registros, oculta o sparkline.
-
-## Quick-action: Registrar peso
-
-- Botão único `w-full bg-white/15 hover:bg-white/25 rounded-full py-2 text-white text-xs font-bold relative z-10 mt-2`, ícone `Plus` + "Registrar peso".
-- Abre um Dialog (glassmorphism `bg-white/70 backdrop-blur-md`) com:
-  - Input numérico de peso (kg) — `text-base` (anti-zoom iOS), step 0.1.
-  - Botões "Cancelar" / "Salvar" (pink #FD46A1 no Salvar).
-- Ao salvar: `insert` em `physical_assessments` com `user_id`, `weight`, `assessment_date = today`, herdando `height` e `body_fat_percentage` da última avaliação (para manter histórico contínuo).
-- Após sucesso: toast "+ Peso registrado", recarrega dados do card.
-- `e.stopPropagation()` no botão e dentro do dialog para não disparar navegação do card.
-
-## Empty state
-
-- Quando `latest === null`:
-  - Ícone `Scale` grande centralizado, label "Comece sua jornada" `text-white text-lg font-bold`.
-  - Subtexto `text-[12px] text-white/70`: "Registre sua 1ª avaliação para acompanhar evolução".
-  - Botão "Registrar agora" abrindo o mesmo Dialog.
-
-## Remoções
-
-- Botão "Ver Avaliações" (card já navega ao toque na área não-botão).
-- Cores `text-red-500` agressivas — vira `text-white` / `text-white/80`.
-
-## Cálculos
-
-- `daysAgo = Math.floor((today - assessment_date) / 86400000)`; chip mostra "hoje", "ontem", "há Xd".
-- `bmiClass(bmi)` retorna `{ label, classes }`.
-- `delta = latest.weight - previous.weight`, casas decimais 1.
-
-## Dados / backend
-
-- `physical_assessments` sem migração. Carregar `limit(7)` em vez de 2 para alimentar sparkline + delta.
-- RLS de insert já existe (usuário só insere para si).
-
-## Animações
-
-- Ring: `transition-all duration-700`.
-- Sparkline: `stroke-dasharray` + `stroke-dashoffset` animado uma vez ao montar (~600ms).
-- Botão: `active:scale-95 transition-all`.
+7. **Sem comparativo / delta**
+   - Quando não há `delta`, manter "sem comparativo" mas em `text-white/40` para ficar mais discreto.
 
 ## Fora de escopo
 
-- Edição/exclusão de avaliações (segue em /profile/assessment).
-- Campos extras (massa magra, medidas) — modal só captura peso por enquanto.
-- Gráfico expandido — usa `PhysicalEvolutionChart` que já existe na página.
+- Não muda dados nem fluxo do botão "Registrar peso".
+- Não toca no estado vazio nem no Dialog.
