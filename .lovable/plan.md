@@ -1,29 +1,15 @@
-## Ajustes de layout no card de Avaliação Física
+## Aumentar e reposicionar a badge "18:6"
 
-Editar somente `src/components/DailyAssessmentSummaryCard.tsx`, sem mexer em lógica de dados.
+Editar somente `src/components/DailyFastingSummaryCard.tsx`.
 
-### 1. Header com mais respiro
-- Aumentar o padding superior do wrapper: `pt-2.5` → `pt-4` (afasta título e badge "hoje" da borda de cima).
-- Aumentar margem inferior do header: `mb-2` → `mb-4`.
+### Mudanças
 
-### 2. Remover sparkline do bloco do peso
-- Excluir o bloco `<div className="mt-1.5 h-[28px] flex items-center">…Sparkline…</div>` (linhas 225-231).
-- Remover também o componente `Sparkline` e seu import de ícones não usados.
-- A coluna de peso fica só com: número grande + linha "↑ X kg vs. anterior".
+1. **Remover a badge do header** (linhas 155-159): tirar o `<span>` absolute com `{protocol}` que fica colado no topo direito.
 
-### 3. Três colunas com mesma altura, todas centralizadas verticalmente
-- Container hero: trocar `flex items-center justify-between gap-2 flex-1` por `grid grid-cols-3 items-center gap-2 flex-1`.
-- Cada coluna ocupa 1/3 com `flex flex-col items-center justify-center h-full`:
-  - Col 1 (peso): centralizar texto (`items-center text-center`), número + delta empilhados.
-  - Col 2 (anel BG): já centralizado, só envolver em `flex items-center justify-center h-full` para alinhar com as outras.
-  - Col 3 (chip IMC): igual, `flex items-center justify-center h-full`; chip mantém `rounded-2xl` e tamanhos.
-- Se `bodyFat` for null, col 2 renderiza placeholder vazio para preservar o grid.
+2. **Adicionar a badge maior na coluna de texto**, alinhada com o "17h39":
+   - Dentro do bloco `isFasting`, ao lado do número grande `formatTime(remainingHours)`, envolver os dois em um `flex items-baseline gap-2`.
+   - Badge maior: `text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none` para ficar visível na altura do hero time.
+   
+   Resultado: `[17h39] [18:6]` lado a lado, com a badge bem alinhada à baseline do tempo principal.
 
-### 4. Resultado visual
-- Título "AVALIAÇÃO FÍSICA" e badge "hoje" descem ~6px.
-- Peso fica centralizado em sua coluna, sem espaço vazio embaixo (sparkline removido).
-- Anel BG centralizado na coluna do meio.
-- Chip IMC alinhado às outras duas colunas, mesma altura.
-- Botão "Registrar peso" permanece igual.
-
-Nenhuma mudança em backend, RLS, queries ou estado.
+Sem mudanças em lógica, dados ou outros componentes.
