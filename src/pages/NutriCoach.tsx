@@ -213,7 +213,7 @@ const NutriCoach = () => {
         </div>
 
         {/* Chat inline */}
-        <div className="mt-4 flex-1 flex flex-col min-h-0 rounded-2xl bg-white border border-primary/20 shadow-sm overflow-hidden">
+        <div className="mt-4 mb-4 flex-1 flex flex-col min-h-0 rounded-2xl bg-white border border-primary/20 shadow-sm overflow-hidden">
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 space-y-4 min-w-0">
             {messages.map((msg, i) => (
