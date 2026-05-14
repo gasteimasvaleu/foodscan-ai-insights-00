@@ -153,7 +153,7 @@ export const DailyHydrationSummaryCard = () => {
       <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
 
       {/* Top row: bottle | text stack | weekly chart */}
-      <div className="flex items-center gap-4 flex-1 min-h-0 relative">
+      <div className="flex items-center gap-6 flex-1 min-h-0 relative">
         {/* Bottle (left, big) */}
         <div className="flex items-center justify-center shrink-0 relative">
           <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
