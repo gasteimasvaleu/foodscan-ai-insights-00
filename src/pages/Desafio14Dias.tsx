@@ -258,6 +258,15 @@ export default function Desafio14Dias() {
 
   // Inline day view (página dentro da página)
   if (selectedDay !== null) {
+    // streak: dias consecutivos concluídos a partir do dia 1
+    let streak = 0;
+    for (let i = 1; i <= 14; i++) {
+      if (completedDays.has(i)) streak++;
+      else break;
+    }
+    const lastWeight = weights.length ? weights[weights.length - 1].weight : null;
+    const weightDelta = lastWeight && profile?.initial_weight ? lastWeight - profile.initial_weight : null;
+
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -268,6 +277,8 @@ export default function Desafio14Dias() {
             progress={progressByDay[selectedDay]}
             weight={weights.find((w) => w.day_number === selectedDay)?.weight}
             isCompleted={completedDays.has(selectedDay)}
+            streak={streak}
+            weightDelta={weightDelta}
             onClose={() => setSelectedDay(null)}
             onSaved={async () => {
               await loadAll();
