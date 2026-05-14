@@ -10,8 +10,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { challengeData, achievements } from "@/lib/desafio14/challengeData";
 import { toast } from "sonner";
-import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera } from "lucide-react";
+import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 type Profile = {
   initial_weight: number | null;
