@@ -26,6 +26,13 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFocus = () => {
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 300);
+  };
 
   const fetchComments = async () => {
     setLoadError(null);
