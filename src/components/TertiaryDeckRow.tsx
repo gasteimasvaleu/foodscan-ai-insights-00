@@ -20,14 +20,16 @@ export const TertiaryDeckRow: React.FC = () => {
           loading="lazy"
         />
         <div className="invisible aspect-[5/4]" />
-        {/* Faixa inferior estilo Netflix */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-3 pb-3 pt-8">
-          <p className="text-white text-sm font-semibold leading-tight">
-            Desafio 14 Dias
-          </p>
-          <p className="text-white/80 text-xs mt-0.5">
-            Participe agora →
-          </p>
+        <div className="absolute bottom-0 inset-x-0 bg-black/55 backdrop-blur-sm px-3 py-2.5 flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-wide text-white/70">
+              Novidade
+            </p>
+            <p className="text-base text-white truncate">
+              Desafio 14 Dias
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
         </div>
       </button>
 
