@@ -195,7 +195,7 @@ export const DailyHydrationSummaryCard = () => {
         </div>
 
         {/* Middle column: title + percent + ml */}
-        <div className="flex-1 flex flex-col justify-center min-w-0 mr-1">
+        <div className="flex-1 flex flex-col justify-center min-w-0 mr-3">
           <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">
             Hidratação do Dia
           </p>
