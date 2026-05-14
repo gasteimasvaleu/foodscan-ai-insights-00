@@ -195,25 +195,25 @@ export default function WorkoutPlan() {
 
             {DAYS.map((day) => (
               <TabsContent key={day.value} value={day.value}>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-                  <CardHeader>
+                <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+                  <CardHeader className="pl-5">
                     <CardTitle>{day.label.toUpperCase()}</CardTitle>
                     <CardDescription>
                       {currentWorkout ? currentWorkout.name : "Nenhum treino configurado"}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 pl-5">
                     {currentWorkout?.exercises.map((exercise, index) => (
                       <div
                         key={index}
-                        className="rounded-xl bg-muted/50 border border-border/30 p-4 space-y-3"
+                        className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-4 space-y-3"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-semibold text-sm">{exercise.name}</span>
                               {exercise.muscleGroup && (
-                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                                <Badge className="text-[10px] px-1.5 py-0 bg-[#FFD1E7]/60 text-[#FD46A1] border border-[#FD46A1]/20 hover:bg-[#FFD1E7]/60">
                                   {exercise.muscleGroup}
                                 </Badge>
                               )}
@@ -228,7 +228,7 @@ export default function WorkoutPlan() {
                             variant="ghost"
                             size="icon"
                             onClick={() => deleteExercise(index)}
-                            className="shrink-0 h-8 w-8 text-destructive/70 hover:text-destructive"
+                            className="shrink-0 h-8 w-8 text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
