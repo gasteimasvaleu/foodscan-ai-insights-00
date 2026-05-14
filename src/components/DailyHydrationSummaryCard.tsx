@@ -80,9 +80,13 @@ export const DailyHydrationSummaryCard = () => {
     );
   }
 
-  // Bottle fill height in pixels (visual, max ~64px)
-  const BOTTLE_H = 64;
-  const fillHeight = (percentage / 100) * BOTTLE_H;
+  // Bottle fill height (visual)
+  const BOTTLE_W = 56;
+  const BOTTLE_H = 110;
+  const BODY_TOP = 22; // y where body starts (after cap/neck)
+  const BODY_BOTTOM = 108;
+  const BODY_RANGE = BODY_BOTTOM - BODY_TOP;
+  const fillY = BODY_BOTTOM - (percentage / 100) * BODY_RANGE;
 
   const bgClass = goalReached
     ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-500'
@@ -90,99 +94,95 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex flex-col items-center justify-center px-3 py-3 cursor-pointer relative overflow-hidden transition-colors duration-500`}
+      className={`w-full h-full ${bgClass} flex items-stretch px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500 gap-3`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
-      <div aria-hidden className="pointer-events-none absolute -top-8 -right-6 h-20 w-20 rounded-full bg-white/15 blur-2xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-20 w-20 rounded-full bg-white/10 blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute -top-8 -right-6 h-24 w-24 rounded-full bg-white/15 blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
 
-      <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider mb-1.5 relative">
-        Hidratação do Dia
-      </p>
-
-      <div className="flex items-center justify-center gap-3 w-full relative">
-        {/* Bottle */}
-        <div className="relative shrink-0" style={{ width: 36, height: BOTTLE_H + 8 }}>
-          {/* Bottle outline */}
-          <svg width="36" height={BOTTLE_H + 8} viewBox="0 0 36 72" className="absolute inset-0">
-            {/* Cap */}
-            <rect x="13" y="0" width="10" height="5" rx="1.5" fill="white" opacity="0.9" />
-            {/* Neck */}
-            <rect x="14" y="5" width="8" height="6" fill="white" opacity="0.9" />
-            {/* Body outline */}
-            <path
-              d="M9 14 Q9 11 14 11 L22 11 Q27 11 27 14 L27 66 Q27 70 23 70 L13 70 Q9 70 9 66 Z"
-              fill="rgba(255,255,255,0.18)"
-              stroke="white"
-              strokeWidth="1.5"
-            />
-            {/* Water fill (clipped) */}
-            <defs>
-              <clipPath id="bottleClip">
-                <path d="M9 14 Q9 11 14 11 L22 11 Q27 11 27 14 L27 66 Q27 70 23 70 L13 70 Q9 70 9 66 Z" />
-              </clipPath>
-            </defs>
-            <rect
-              x="9"
-              y={70 - fillHeight}
-              width="18"
-              height={fillHeight}
+      {/* Bottle (left, big) */}
+      <div className="flex items-center justify-center shrink-0 relative">
+        <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
+          <defs>
+            <clipPath id="bottleClip">
+              <path d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z" />
+            </clipPath>
+          </defs>
+          {/* Cap */}
+          <rect x="20" y="0" width="16" height="8" rx="2" fill="white" opacity="0.95" />
+          {/* Neck */}
+          <rect x="22" y="8" width="12" height="9" fill="white" opacity="0.95" />
+          {/* Body outline */}
+          <path
+            d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z"
+            fill="rgba(255,255,255,0.18)"
+            stroke="white"
+            strokeWidth="2"
+          />
+          {/* Water fill */}
+          <rect
+            x="12"
+            y={fillY}
+            width="32"
+            height={BODY_BOTTOM - fillY}
+            fill="white"
+            clipPath="url(#bottleClip)"
+            className="transition-all duration-700 ease-out"
+          />
+          {/* Wave on top of fill */}
+          {percentage > 0 && (
+            <ellipse
+              cx="28"
+              cy={fillY}
+              rx="16"
+              ry="2.5"
               fill="white"
+              opacity="0.7"
               clipPath="url(#bottleClip)"
               className="transition-all duration-700 ease-out"
             />
-            {/* Wave on top of fill */}
-            {fillHeight > 0 && (
-              <ellipse
-                cx="18"
-                cy={70 - fillHeight}
-                rx="9"
-                ry="1.5"
-                fill="white"
-                opacity="0.7"
-                clipPath="url(#bottleClip)"
-                className="transition-all duration-700 ease-out"
-              />
-            )}
-          </svg>
-        </div>
-
-        {/* Big number */}
-        <div className="flex flex-col items-start">
-          {goalReached ? (
-            <div className="flex items-center gap-1">
-              <Trophy className="w-5 h-5 text-white" />
-              <span className="text-white text-base font-bold">Meta batida!</span>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-baseline gap-1">
-                <span className="text-white text-2xl font-black leading-none">{percentage}</span>
-                <span className="text-white/80 text-sm font-semibold">%</span>
-              </div>
-              <span className="text-white/80 text-[10px] mt-0.5">
-                {consumedMl} / {goalMl} ml
-              </span>
-            </>
           )}
-        </div>
+        </svg>
       </div>
 
-      {/* Quick add row */}
-      <div className="flex items-center gap-1.5 mt-2 relative">
-        {QUICK_ADDS.map((ml) => (
-          <button
-            key={ml}
-            onClick={(e) => quickAdd(e, ml)}
-            disabled={adding !== null}
-            className="flex items-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full pl-2 pr-2.5 py-1 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
-            aria-label={`Adicionar ${ml}ml`}
-          >
-            <Plus className="w-3 h-3" strokeWidth={3} />
-            {ml}ml
-          </button>
-        ))}
+      {/* Right column: title + stats + quick adds */}
+      <div className="flex-1 flex flex-col justify-center min-w-0 relative">
+        <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
+          Hidratação do Dia
+        </p>
+
+        {goalReached ? (
+          <div className="flex items-center gap-1.5 mt-1">
+            <Trophy className="w-5 h-5 text-white" />
+            <span className="text-white text-base font-bold">Meta batida!</span>
+          </div>
+        ) : (
+          <div className="flex items-baseline gap-1 mt-0.5">
+            <span className="text-white text-3xl font-black leading-none">{percentage}</span>
+            <span className="text-white/80 text-base font-semibold">%</span>
+          </div>
+        )}
+
+        <span className="text-white/85 text-[11px] mt-0.5 truncate">
+          {consumedMl} / {goalMl} ml
+        </span>
+
+        {/* Quick add row */}
+        <div className="flex items-center gap-1.5 mt-2">
+          {QUICK_ADDS.map((ml) => (
+            <button
+              key={ml}
+              onClick={(e) => quickAdd(e, ml)}
+              disabled={adding !== null}
+              className="flex-1 flex items-center justify-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full px-1.5 py-1 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
+              aria-label={`Adicionar ${ml}ml`}
+            >
+              <Plus className="w-3 h-3" strokeWidth={3} />
+              {ml}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
