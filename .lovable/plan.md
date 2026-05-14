@@ -1,9 +1,20 @@
-## Reduzir altura vertical do card do chat
+## Causa
 
-**Arquivo:** `src/pages/NutriCoach.tsx`
+A função `generate-home-recipe` falha no preflight CORS porque o cliente envia o header `x-app-platform` (configurado em `src/integrations/supabase/client.ts`), mas a função só permite:
 
-Diminuir levemente a altura do card do chat para que a borda inferior rosa não fique escondida atrás do Navbar tubelight no app nativo.
+```
+"authorization, x-client-info, apikey, content-type"
+```
 
-- No container do card do chat (`bg-white border border-primary/20 ...`), trocar `flex-1` por `flex-1 mb-4` (ou aumentar a margem inferior em ~16px) para encurtar a altura visível do card sem mexer no `pb-28` do wrapper externo.
+A `identify-dish` já inclui `x-app-platform` e por isso a primeira etapa funciona. Quando você toca uma das opções (pizza), a segunda chamada quebra com "Failed to send a request to the Edge Function".
 
-Sem outras mudanças visuais ou de comportamento.
+## Correção
+
+Em `supabase/functions/generate-home-recipe/index.ts`, adicionar `x-app-platform` ao `Access-Control-Allow-Headers`:
+
+```ts
+"Access-Control-Allow-Headers":
+  "authorization, x-client-info, apikey, content-type, x-app-platform",
+```
+
+Sem outras mudanças.
