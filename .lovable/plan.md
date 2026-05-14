@@ -1,28 +1,14 @@
-## Plan: Nova linha de cards na home (abaixo de Loja/Balanço)
+## Ajuste da faixa inferior do card Desafio 14 Dias
 
-### Goal
-Adicionar uma nova fileira de cards em `Index.tsx`, posicionada entre `SecondaryDeckRow` e `QuickActions`, com layout espelhado/invertido em relação à fileira de cima.
+**Objetivo:** Tornar o overlay inferior do card "Desafio 14 Dias" (em `TertiaryDeckRow.tsx`) visualmente idêntico ao padrão usado no card de "Último treino" (em `HeroDeckRow.tsx`).
 
-### Layout
-```text
-┌─────────────────────┬──────────┐
-│ Desafio 14 Dias     │ Conquistas│
-│ (imagem 16:9)       │ (imagem)  │
-│ → /desafio-14-dias  │ → /conquistas│
-└─────────────────────┴──────────┘
-```
+**Alterações:**
+1. Substituir o `bg-gradient-to-t` atual por `bg-black/55 backdrop-blur-sm`.
+2. Mudar o layout para `flex items-center justify-between gap-2` com padding `px-3 py-2.5`.
+3. Adicionar o ícone `ChevronRight` à direita da faixa.
+4. Ajustar a tipografia:
+   - Label superior: `text-[10px] uppercase tracking-wide text-white/70`
+   - Título: `text-base text-white truncate`
+5. Adicionar o import de `ChevronRight` do `lucide-react`.
 
-- **Esquerda (maior, ~1.6fr):** card com a imagem `image_1778753915971_2cb0be9a.png` (formato 16:9), navega para `/desafio-14-dias`.
-- **Direita (menor, ~1fr):** card com a imagem `image_1778753342779_756d33ee.png`, navega para `/conquistas`.
-
-### Implementation
-1. **Create `src/components/TertiaryDeckRow.tsx`**
-   - Grid `grid-cols-[1.6fr_1fr] gap-3 items-stretch` (invertido em relação ao `SecondaryDeckRow`).
-   - Dois `<button>` com `rounded-3xl overflow-hidden shadow-lg`.
-   - Card esquerdo: `aspect-[16/9]` com `object-cover`.
-   - Card direito: `aspect-[4/5]` com `object-cover`.
-   - Cada um com um pequeno overlay de texto na parte inferior (título da rota).
-
-2. **Update `src/pages/Index.tsx`**
-   - Importar `TertiaryDeckRow`.
-   - Inserir `<TertiaryDeckRow />` entre `<SecondaryDeckRow />` e `<QuickActions />`.
+**Referência visual:** Card esquerdo de `HeroDeckRow.tsx` (linhas 61-71).
