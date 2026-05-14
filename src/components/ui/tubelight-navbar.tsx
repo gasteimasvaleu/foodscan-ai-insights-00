@@ -132,6 +132,12 @@ const moreSheetItems = [
     icon: HelpCircle,
   },
   {
+    name: "Desafio 14 dias",
+    description: "Cardápio, vídeos e checklist para 14 dias de transformação",
+    url: "/desafio-14-dias",
+    icon: CalendarCheck,
+  },
+  {
     name: "Conquistas",
     description: "Sequência diária e medalhas desbloqueadas",
     url: "/conquistas",
