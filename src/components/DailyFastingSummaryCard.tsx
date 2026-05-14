@@ -182,9 +182,14 @@ export const DailyFastingSummaryCard = () => {
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           {isFasting ? (
             <>
-              <span className="text-white text-3xl font-black leading-none tracking-tight">
-                {goalReached ? formatTime(elapsedHours) : formatTime(remainingHours)}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-white text-3xl font-black leading-none tracking-tight">
+                  {goalReached ? formatTime(elapsedHours) : formatTime(remainingHours)}
+                </span>
+                <span className="text-white text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none">
+                  {protocol}
+                </span>
+              </div>
               <span className="text-white/80 text-[11px] mt-0.5">
                 {goalReached ? 'meta atingida!' : 'restantes'}
               </span>
