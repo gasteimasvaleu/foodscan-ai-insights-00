@@ -8,7 +8,9 @@ import { StoriesCarousel } from "@/components/community/StoriesCarousel";
 import { StoryViewer, UserGroup } from "@/components/community/StoryViewer";
 import { CreateStoryModal } from "@/components/community/CreateStoryModal";
 import { CreatePostModal } from "@/components/community/CreatePostModal";
-import { Loader2, Send, Plus, Users } from "lucide-react";
+import { MyPostsGrid } from "@/components/community/MyPostsGrid";
+import { PostDetailModal } from "@/components/community/PostDetailModal";
+import { Loader2, Send, Plus, Users, LayoutGrid } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Post {
