@@ -10,7 +10,8 @@ import { CreateStoryModal } from "@/components/community/CreateStoryModal";
 import { CreatePostModal } from "@/components/community/CreatePostModal";
 import { MyPostsGrid } from "@/components/community/MyPostsGrid";
 import { PostDetailModal } from "@/components/community/PostDetailModal";
-import { Loader2, Send, Plus, Users, LayoutGrid } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { CommunityHeaderCard } from "@/components/community/CommunityHeaderCard";
 import { toast } from "@/hooks/use-toast";
 
 interface Post {
