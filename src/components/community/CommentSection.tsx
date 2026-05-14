@@ -25,8 +25,10 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const fetchComments = async () => {
+    setLoadError(null);
     const { data, error } = await supabase
       .from("post_comments")
       .select("*, profiles:user_id(name, avatar_url)")
@@ -34,7 +36,7 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
       .order("created_at", { ascending: true });
     if (error) {
       console.error("fetchComments error:", error);
-      toast({ title: "Erro ao carregar comentários", description: error.message, variant: "destructive" });
+      setLoadError(error.message);
     }
     setComments((data as unknown as Comment[]) || []);
     setLoading(false);
@@ -61,10 +63,18 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
     }
   };
 
-  if (loading) return <div className="py-2 text-center text-muted-foreground text-sm">Carregando...</div>;
+  if (loading) return <div className="py-2 text-center text-muted-foreground text-sm">Carregando comentários...</div>;
 
   return (
     <div className="space-y-3 pt-2">
+      {loadError && (
+        <div className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+          Não foi possível carregar os comentários: {loadError}
+        </div>
+      )}
+      {!loadError && comments.length === 0 && (
+        <p className="text-xs text-muted-foreground text-center py-1">Seja o primeiro a comentar.</p>
+      )}
       {comments.map((c) => (
         <div key={c.id} className="flex gap-2">
           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0 overflow-hidden">

@@ -185,7 +185,11 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
           />
         </button>
         <button
-          onClick={() => setShowComments((v) => !v)}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments((v) => !v);
+          }}
           aria-label="Comentar"
           className="p-1.5"
         >
