@@ -1550,33 +1550,54 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
           basal_metabolic_rate: number | null
+          bio: string | null
+          city: string | null
+          cover_url: string | null
           created_at: string
+          email_public: string | null
           hydration_goal_ml: number
           id: string
           motivational_category: string | null
           name: string
+          phone: string | null
+          state: string | null
           updated_at: string
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           basal_metabolic_rate?: number | null
+          bio?: string | null
+          city?: string | null
+          cover_url?: string | null
           created_at?: string
+          email_public?: string | null
           hydration_goal_ml?: number
           id: string
           motivational_category?: string | null
           name: string
+          phone?: string | null
+          state?: string | null
           updated_at?: string
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           basal_metabolic_rate?: number | null
+          bio?: string | null
+          city?: string | null
+          cover_url?: string | null
           created_at?: string
+          email_public?: string | null
           hydration_goal_ml?: number
           id?: string
           motivational_category?: string | null
           name?: string
+          phone?: string | null
+          state?: string | null
           updated_at?: string
         }
         Relationships: []
