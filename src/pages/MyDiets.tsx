@@ -184,8 +184,8 @@ export default function MyDiets() {
             <TabsContent key={day.value} value={day.value}>
               <div className="space-y-4">
                 {groupedByMealType.map((group) => (
-                  <Card key={group.value} className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-                    <CardHeader>
+                  <Card key={group.value} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+                    <CardHeader className="pl-5">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg">{group.label}</CardTitle>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
