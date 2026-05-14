@@ -4,13 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { challengeData, achievements } from "@/lib/desafio14/challengeData";
 import { toast } from "sonner";
-import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks } from "lucide-react";
+import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -256,6 +256,36 @@ export default function Desafio14Dias() {
   const lastWeight = weights.length ? weights[weights.length - 1].weight : profile.initial_weight;
   const delta = lastWeight && profile.initial_weight ? lastWeight - profile.initial_weight : 0;
 
+  // Inline day view (página dentro da página)
+  if (selectedDay !== null) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
+          <button
+            onClick={() => setSelectedDay(null)}
+            className="inline-flex items-center gap-2 text-[#FD46A1] font-semibold mb-3 -ml-1 px-2 py-1 rounded-xl hover:bg-[#FFD1E7]/60 transition"
+          >
+            <ArrowLeft size={18} />
+            <span className="text-sm">Voltar aos 14 dias</span>
+          </button>
+
+          <DayView
+            day={selectedDay}
+            userId={user!.id}
+            progress={progressByDay[selectedDay]}
+            weight={weights.find((w) => w.day_number === selectedDay)?.weight}
+            isCompleted={completedDays.has(selectedDay)}
+            onClose={() => setSelectedDay(null)}
+            onSaved={async () => {
+              await loadAll();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -350,25 +380,11 @@ export default function Desafio14Dias() {
           </div>
         </Card>
       </div>
-
-      {selectedDay !== null && (
-        <DayViewDialog
-          day={selectedDay}
-          userId={user!.id}
-          progress={progressByDay[selectedDay]}
-          weight={weights.find((w) => w.day_number === selectedDay)?.weight}
-          isCompleted={completedDays.has(selectedDay)}
-          onClose={() => setSelectedDay(null)}
-          onSaved={async () => {
-            await loadAll();
-          }}
-        />
-      )}
     </div>
   );
 }
 
-function DayViewDialog({
+function DayView({
   day,
   userId,
   progress,
@@ -462,23 +478,16 @@ function DayViewDialog({
   }
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="bg-white/70 backdrop-blur-md max-w-lg rounded-3xl p-0 max-h-[90vh] overflow-y-auto border-0">
-        <DialogHeader className="p-5 pb-0 flex-row items-start justify-between space-y-0">
-          <div>
-            <p className="text-xs font-semibold text-[#FD46A1]">Dia {day}</p>
-            <DialogTitle className="text-xl font-bold mt-1">{data.title}</DialogTitle>
-            <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#FD46A1] text-white flex items-center justify-center flex-shrink-0"
-          >
-            <X size={18} />
-          </button>
-        </DialogHeader>
+    <div className="bg-white/70 backdrop-blur-md rounded-3xl border-0 overflow-hidden">
+      <div className="p-5 pb-0 flex flex-row items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-[#FD46A1]">Dia {day}</p>
+          <h2 className="text-xl font-bold mt-1">{data.title}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
+        </div>
+      </div>
 
-        <div className="p-5 space-y-4">
+      <div className="p-5 space-y-4">
           {/* Vídeo */}
           {data.videoUrl && (
             <video src={data.videoUrl} controls playsInline className="w-full rounded-2xl bg-black aspect-video" />
@@ -596,7 +605,6 @@ function DayViewDialog({
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }
