@@ -530,60 +530,84 @@ function DayView({
   const dayIcons = [Sparkles, Flame, Sparkles, Flame, Trophy, Sparkles, Trophy, Sparkles, Flame, Sparkles, Flame, Sparkles, Flame, Trophy];
   const DayIcon = dayIcons[day - 1] ?? Sparkles;
 
+  const dayProgress = Math.round((day / 14) * 100);
+
   return (
     <>
-    <div className="bg-white/70 backdrop-blur-md rounded-3xl border-0 overflow-hidden">
-      {/* Header com gradiente + pill do dia + botão fechar circular */}
-      <div className="relative bg-gradient-to-br from-[#FFD1E7] via-[#FFE4F1] to-white p-5 pt-6">
+    <div className="space-y-4">
+      {/* Header inspirado no card de Conquistas */}
+      <div className="relative overflow-hidden rounded-[32px] bg-white border border-[#FFD1E7] shadow-xl shadow-pink-100 p-6">
+        <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#FFD1E7] rounded-full blur-3xl opacity-50" />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 w-32 h-32 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
+
         <button
           onClick={onClose}
           aria-label="Voltar aos 14 dias"
-          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#FD46A1] shadow-sm hover:bg-white transition"
+          className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#FD46A1] shadow-sm hover:bg-white transition border border-[#FFD1E7]"
         >
           <X size={18} />
         </button>
-        <div className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-[#FD46A1]">
-          <DayIcon size={14} />
-          <span>Dia {day} de 14</span>
-        </div>
-        <h2 className="text-2xl font-bold mt-2 leading-tight pr-10">{data.title}</h2>
-        <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
 
-        {/* Stats vivos do desafio */}
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
-              <Flame size={16} className="text-[#FD46A1]" />
+        <div className="relative z-10">
+          {/* Header texto */}
+          <div className="mb-6 pr-10">
+            <h3 className="text-foreground text-lg font-bold leading-none mb-1">{data.title}</h3>
+            <p className="text-[#FD46A1] text-xs font-semibold uppercase tracking-wider">
+              Dia {day} de 14
+            </p>
+          </div>
+
+          {/* Visual principal: ícone + número */}
+          <div className="flex items-center gap-5 mb-6">
+            <div className="relative shrink-0">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] flex items-center justify-center shadow-lg shadow-pink-200">
+                <DayIcon className="h-12 w-12 text-white" fill="white" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100 whitespace-nowrap">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
+                  Streak: {streak}
+                </span>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-base font-bold text-[#FD46A1] leading-none">{streak}</p>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">dias seguidos</p>
+            <div className="flex flex-col min-w-0">
+              <span className="text-5xl font-extrabold text-foreground tracking-tight leading-none">
+                {checkedCount}<span className="text-2xl text-muted-foreground font-bold">/4</span>
+              </span>
+              <span className="text-sm font-medium text-muted-foreground mt-1">itens hoje</span>
             </div>
           </div>
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
-              <Sparkles size={16} className="text-[#FD46A1]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-base font-bold text-[#FD46A1] leading-none">
-                {weightDelta === null ? "—" : `${weightDelta > 0 ? "+" : ""}${weightDelta.toFixed(1)}`}
+
+          {/* Progresso da jornada */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-end">
+              <p className="text-xs font-semibold text-foreground/80">
+                Jornada: <span className="text-[#FD46A1]">14 dias</span>
               </p>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">kg desde dia 1</p>
+              <p className="text-[10px] font-bold text-muted-foreground">
+                {day} / 14
+              </p>
+            </div>
+            <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
+              <div
+                className="h-full bg-gradient-to-r from-[#FD46A1] to-[#ff8cb8] rounded-full shadow-[0_0_8px_rgba(253,70,161,0.4)] transition-all duration-700"
+                style={{ width: `${dayProgress}%` }}
+              />
             </div>
           </div>
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
-              <CheckCircle2 size={16} className="text-[#FD46A1]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-base font-bold text-[#FD46A1] leading-none">{checkedCount}/4</p>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">hoje</p>
-            </div>
+
+          {/* Resumo / motivação */}
+          <div className="pt-4 mt-4 border-t border-gray-100">
+            <p className="text-[13px] leading-relaxed text-muted-foreground font-medium">
+              {data.summary}
+              {weightDelta !== null && (
+                <> · <span className="text-[#FD46A1] font-bold">{weightDelta > 0 ? "+" : ""}{weightDelta.toFixed(1)} kg</span> desde o dia 1</>
+              )}
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="space-y-4">
           {/* Vídeo */}
           {data.videoUrl && (
             <video src={data.videoUrl} controls playsInline className="w-full rounded-2xl bg-black aspect-video" />
