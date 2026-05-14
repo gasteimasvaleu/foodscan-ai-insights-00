@@ -548,6 +548,39 @@ function DayView({
         </div>
         <h2 className="text-2xl font-bold mt-2 leading-tight pr-10">{data.title}</h2>
         <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
+
+        {/* Stats vivos do desafio */}
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
+              <Flame size={16} className="text-[#FD46A1]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-bold text-[#FD46A1] leading-none">{streak}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">dias seguidos</p>
+            </div>
+          </div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
+              <Sparkles size={16} className="text-[#FD46A1]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-bold text-[#FD46A1] leading-none">
+                {weightDelta === null ? "—" : `${weightDelta > 0 ? "+" : ""}${weightDelta.toFixed(1)}`}
+              </p>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">kg desde dia 1</p>
+            </div>
+          </div>
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-2.5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center shrink-0">
+              <CheckCircle2 size={16} className="text-[#FD46A1]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-bold text-[#FD46A1] leading-none">{checkedCount}/4</p>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">hoje</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="p-5 space-y-4">
