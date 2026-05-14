@@ -607,7 +607,7 @@ function DayView({
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="space-y-4">
           {/* Vídeo */}
           {data.videoUrl && (
             <video src={data.videoUrl} controls playsInline className="w-full rounded-2xl bg-black aspect-video" />
