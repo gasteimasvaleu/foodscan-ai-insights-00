@@ -104,11 +104,13 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
       ))}
       <div className="flex gap-2">
         <Input
+          ref={inputRef}
           placeholder="Escreva um comentário..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
+          onFocus={handleFocus}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          className="text-sm h-9"
+          className="text-base h-10"
         />
         <Button size="sm" onClick={handleSubmit} disabled={submitting || !newComment.trim()} className="h-9 px-3">
           {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
