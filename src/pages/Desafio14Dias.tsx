@@ -262,14 +262,6 @@ export default function Desafio14Dias() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
-          <button
-            onClick={() => setSelectedDay(null)}
-            className="inline-flex items-center gap-2 text-[#FD46A1] font-semibold mb-3 -ml-1 px-2 py-1 rounded-xl hover:bg-[#FFD1E7]/60 transition"
-          >
-            <ArrowLeft size={18} />
-            <span className="text-sm">Voltar aos 14 dias</span>
-          </button>
-
           <DayView
             day={selectedDay}
             userId={user!.id}
