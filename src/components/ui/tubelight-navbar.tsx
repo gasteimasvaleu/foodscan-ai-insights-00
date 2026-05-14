@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck, Lock, Crown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { useAuthContext } from "@/contexts/AuthProvider"
 
 interface NavItem {
   name: string
@@ -16,139 +17,36 @@ interface NavBarProps {
   className?: string
 }
 
-const moreSheetItems = [
-  {
-    name: "Registrar refeição",
-    description: "Repetir refeição de ontem ou favoritos em 1 toque",
-    url: "/adicionar-refeicao",
-    icon: Repeat,
-  },
-  {
-    name: "Alimentos brasileiros",
-    description: "Busca em catálogo de arroz, feijão, açaí e mais",
-    url: "/alimentos",
-    icon: Apple,
-  },
-  {
-    name: "NutriCoach",
-    description: "Chat com IA de nutrição e treinos",
-    url: "/nutri-coach",
-    icon: MessageCircle,
-  },
-  {
-    name: "Gráficos e Progresso",
-    description: "Acompanhe sua evolução",
-    url: "/graficos-progresso",
-    icon: BarChart3,
-  },
-  {
-    name: "Comunidade",
-    description: "Compartilhe sua jornada fitness",
-    url: "/comunidade",
-    icon: Users,
-  },
-  {
-    name: "Receitas",
-    description: "Buscar receitas e gerenciar suas próprias",
-    url: "/receitas",
-    icon: UtensilsCrossed,
-  },
-  {
-    name: "Faça em Casa",
-    description: "Identifique pratos por foto e gere receitas caseiras",
-    url: "/faca-em-casa",
-    icon: ChefHat,
-  },
-  {
-    name: "Provador Virtual",
-    description: "Experimente looks com IA em fundo de estúdio",
-    url: "/provador",
-    icon: Shirt,
-  },
-  {
-    name: "Loja",
-    description: "Produtos selecionados de parceiros",
-    url: "/loja",
-    icon: ShoppingBag,
-  },
-  {
-    name: "Lista de Compras",
-    description: "Organize suas compras de mercado por categoria",
-    url: "/lista-de-compras",
-    icon: ShoppingCart,
-  },
-  {
-    name: "ServiNUTRI",
-    description: "Rede de nutricionistas",
-    url: "/servinutri",
-    icon: Apple,
-  },
-  {
-    name: "Apple Health",
-    description: "Dados detalhados de saúde e atividade",
-    url: "/apple-health",
-    icon: Heart,
-  },
-  {
-    name: "Hidratação",
-    description: "Registre bebidas e acompanhe seu progresso",
-    url: "/hidratacao",
-    icon: Droplets,
-  },
-  {
-    name: "Jejum Intermitente",
-    description: "Controle seus ciclos de jejum",
-    url: "/jejum",
-    icon: Timer,
-  },
-  {
-    name: "Objetivos",
-    description: "Monitore suas metas semanais",
-    url: "/objetivos",
-    icon: Target,
-  },
-  {
-    name: "Sono",
-    description: "Registre e acompanhe a qualidade do sono",
-    url: "/sono",
-    icon: Moon,
-  },
-  {
-    name: "Maternidade",
-    description: "Tentantes, gestação, pós-parto e bebê",
-    url: "/maternidade",
-    icon: Baby,
-  },
-  {
-    name: "Treinos",
-    description: "Vídeos de treino e dicas em casa",
-    url: "/treinos",
-    icon: Dumbbell,
-  },
-  {
-    name: "Quiz",
-    description: "Responda quizzes, ganhe pontos e dispute o ranking",
-    url: "/quiz",
-    icon: HelpCircle,
-  },
-  {
-    name: "Desafio 14 dias",
-    description: "Cardápio, vídeos e checklist para 14 dias de transformação",
-    url: "/desafio-14-dias",
-    icon: CalendarCheck,
-  },
-  {
-    name: "Conquistas",
-    description: "Sequência diária e medalhas desbloqueadas",
-    url: "/conquistas",
-    icon: Trophy,
-  },
-  {
-    name: "Gerar Cardápio",
-    description: "Cardápios personalizados com IA (MasterCheFIT)",
-    url: "/masterchef",
-    icon: UtensilsCrossed,
-  },
+const moreSheetItems: Array<{
+  name: string
+  description: string
+  url: string
+  icon: LucideIcon
+  isPro: boolean
+}> = [
+  { name: "Registrar refeição", description: "Repetir refeição de ontem ou favoritos em 1 toque", url: "/adicionar-refeicao", icon: Repeat, isPro: false },
+  { name: "Alimentos brasileiros", description: "Busca em catálogo de arroz, feijão, açaí e mais", url: "/alimentos", icon: Apple, isPro: false },
+  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false },
+  { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
+  { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
+  { name: "ServiNUTRI", description: "Rede de nutricionistas", url: "/servinutri", icon: Apple, isPro: false },
+  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false },
+  { name: "Quiz", description: "Responda quizzes, ganhe pontos e dispute o ranking", url: "/quiz", icon: HelpCircle, isPro: false },
+  { name: "Desafio 14 dias", description: "Cardápio, vídeos e checklist para 14 dias de transformação", url: "/desafio-14-dias", icon: CalendarCheck, isPro: false },
+  { name: "Conquistas", description: "Sequência diária e medalhas desbloqueadas", url: "/conquistas", icon: Trophy, isPro: false },
+
+  { name: "NutriCoach", description: "Chat com IA de nutrição e treinos", url: "/nutri-coach", icon: MessageCircle, isPro: true },
+  { name: "Gerar Cardápio", description: "Cardápios personalizados com IA (MasterCheFIT)", url: "/masterchef", icon: UtensilsCrossed, isPro: true },
+  { name: "Receitas", description: "Buscar receitas e gerenciar suas próprias", url: "/receitas", icon: UtensilsCrossed, isPro: true },
+  { name: "Faça em Casa", description: "Identifique pratos por foto e gere receitas caseiras", url: "/faca-em-casa", icon: ChefHat, isPro: true },
+  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true },
+  { name: "Gráficos e Progresso", description: "Acompanhe sua evolução", url: "/graficos-progresso", icon: BarChart3, isPro: true },
+  { name: "Apple Health", description: "Dados detalhados de saúde e atividade", url: "/apple-health", icon: Heart, isPro: true },
+  { name: "Hidratação", description: "Registre bebidas e acompanhe seu progresso", url: "/hidratacao", icon: Droplets, isPro: true },
+  { name: "Jejum Intermitente", description: "Controle seus ciclos de jejum", url: "/jejum", icon: Timer, isPro: true },
+  { name: "Objetivos", description: "Monitore suas metas semanais", url: "/objetivos", icon: Target, isPro: true },
+  { name: "Sono", description: "Registre e acompanhe a qualidade do sono", url: "/sono", icon: Moon, isPro: true },
+  { name: "Treinos", description: "Vídeos de treino e dicas em casa", url: "/treinos", icon: Dumbbell, isPro: true },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
@@ -157,6 +55,11 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const [moreSheetOpen, setMoreSheetOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { subscriptionStatus } = useAuthContext()
+  const isPro = !!subscriptionStatus?.subscribed
+
+  const freeItems = moreSheetItems.filter((i) => !i.isPro)
+  const proItems = moreSheetItems.filter((i) => i.isPro)
 
   useEffect(() => {
     const handleResize = () => {
@@ -265,28 +168,82 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
             <div className="w-10 h-1 rounded-full bg-gray-300" />
           </div>
 
-          <div className="px-4 pb-6 pt-2 space-y-3">
-            <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
+          <div className="px-4 pb-6 pt-2 space-y-4">
+            {/* Free section */}
+            <section className="space-y-3">
+              <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
+              {freeItems.map((sheetItem) => {
+                const SheetIcon = sheetItem.icon
+                return (
+                  <button
+                    key={sheetItem.url}
+                    onClick={() => handleSheetNavigate(sheetItem.url)}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FFD1E7]/40 border border-[#FA1690]/10 hover:bg-[#FFD1E7]/60 transition-colors text-left"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center flex-shrink-0">
+                      <SheetIcon size={24} className="text-[#FD46A1]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-foreground">{sheetItem.name}</p>
+                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                    </div>
+                    <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
+                  </button>
+                )
+              })}
+            </section>
 
-            {moreSheetItems.map((sheetItem) => {
-              const SheetIcon = sheetItem.icon
-              return (
-                <button
-                  key={sheetItem.url}
-                  onClick={() => handleSheetNavigate(sheetItem.url)}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FFD1E7]/40 border border-[#FA1690]/10 hover:bg-[#FFD1E7]/60 transition-colors text-left"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center flex-shrink-0">
-                    <SheetIcon size={24} className="text-[#FD46A1]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-foreground">{sheetItem.name}</p>
-                    <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
-                  </div>
-                  <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
-                </button>
-              )
-            })}
+            {/* Premium section */}
+            <section className="space-y-3 pt-2">
+              <div className="flex items-center gap-2 px-1">
+                <Crown size={18} className="text-[#FD46A1]" />
+                <h3 className="text-lg font-bold text-foreground">Premium</h3>
+                {!isPro && (
+                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-[#FD46A1] bg-[#FD46A1]/10 px-2 py-0.5 rounded-full">
+                    Bloqueado
+                  </span>
+                )}
+              </div>
+              {proItems.map((sheetItem) => {
+                const SheetIcon = sheetItem.icon
+                const locked = !isPro
+                return (
+                  <button
+                    key={sheetItem.url}
+                    onClick={() => handleSheetNavigate(sheetItem.url)}
+                    className={cn(
+                      "w-full flex items-center gap-4 p-4 rounded-2xl border transition-colors text-left",
+                      locked
+                        ? "bg-white/60 border-[#FD46A1]/25 hover:bg-white/80"
+                        : "bg-[#FFD1E7]/40 border-[#FA1690]/10 hover:bg-[#FFD1E7]/60"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative",
+                      locked ? "bg-[#FD46A1]/10" : "bg-[#FD46A1]/15"
+                    )}>
+                      <SheetIcon size={24} className={cn(locked ? "text-[#FD46A1]/70" : "text-[#FD46A1]")} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className={cn("font-bold", locked ? "text-foreground/80" : "text-foreground")}>
+                          {sheetItem.name}
+                        </p>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">
+                          Pro
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                    </div>
+                    {locked ? (
+                      <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
+                    ) : (
+                      <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
+                    )}
+                  </button>
+                )
+              })}
+            </section>
           </div>
         </SheetContent>
       </Sheet>
