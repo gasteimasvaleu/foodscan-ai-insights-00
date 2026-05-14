@@ -154,6 +154,12 @@ export const DailyFastingSummaryCard = () => {
         </p>
       </div>
 
+      {isFasting && (
+        <span className="absolute right-3 top-9 text-white text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none z-10">
+          {protocol}
+        </span>
+      )}
+
       {/* Hero: ring + text */}
       <div className="flex items-center gap-3 flex-1">
         {/* Ring */}
