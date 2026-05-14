@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Heart, MessageCircle, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Send, Trash2, MoreHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
@@ -17,6 +18,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PostCardProps {
   post: {
@@ -37,10 +44,13 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted }: PostCardProps) {
+  const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [liked, setLiked] = useState(userLiked);
   const [toggling, setToggling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const isOwner = post.user_id === userId;
 
   const handleLike = async () => {
     if (toggling) return;
@@ -60,29 +70,40 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
     }
   };
 
-  const [deleting, setDeleting] = useState(false);
-  const isOwner = post.user_id === userId;
-
   const handleDelete = async () => {
     setDeleting(true);
     const { error } = await supabase.from("community_posts").delete().eq("id", post.id);
     setDeleting(false);
     if (error) {
-      toast({ title: "Erro ao deletar post", description: error.message, variant: "destructive" });
+      toast({ title: "Erro ao deletar", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Post deletado com sucesso" });
+      toast({ title: "Post deletado" });
       onPostDeleted?.();
+    }
+  };
+
+  const handleSendDM = async () => {
+    if (isOwner) return;
+    try {
+      const { data: convId, error } = await supabase.rpc("get_or_create_dm_conversation", {
+        _other_user: post.user_id,
+      });
+      if (error) throw error;
+      navigate(`/comunidade/dm/${convId}`);
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message, variant: "destructive" });
     }
   };
 
   const authorName = post.profiles?.name || "Usuário";
   const avatarUrl = post.profiles?.avatar_url;
+  const hasDescription = post.description && post.description.trim() && post.description.trim() !== ".";
 
   return (
     <div className="bg-card rounded-2xl border overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 pb-2">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary overflow-hidden flex-shrink-0">
+      <div className="flex items-center gap-3 p-3">
+        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary overflow-hidden flex-shrink-0">
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -91,72 +112,118 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-foreground text-sm truncate">{authorName}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground">
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
           </p>
         </div>
-        {isOwner && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" disabled={deleting}>
-                <Trash2 size={16} />
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
-              <AlertDialogHeader>
-                <AlertDialogTitle>Deletar publicação?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. O post e todos os comentários e curtidas serão removidos.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-primary hover:bg-primary/90 text-white rounded-xl">
-                  Deletar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1.5 text-muted-foreground" aria-label="Mais opções">
+              <MoreHorizontal size={20} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="rounded-xl">
+            {!isOwner && (
+              <DropdownMenuItem onClick={handleSendDM}>
+                <Send size={14} className="mr-2" /> Enviar mensagem
+              </DropdownMenuItem>
+            )}
+            {isOwner && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
+                    <Trash2 size={14} className="mr-2" /> Apagar publicação
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Deletar publicação?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-primary hover:bg-primary/90 text-white rounded-xl"
+                      disabled={deleting}
+                    >
+                      Deletar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Description */}
-      <p className="px-4 pb-3 text-sm text-foreground whitespace-pre-wrap">{post.description}</p>
-
-      {/* Image */}
+      {/* Image (Instagram-like square area) */}
       {post.before_photo_url && (
-        <img src={post.before_photo_url} alt="Post" className="w-full max-h-96 object-cover" />
+        <button
+          onDoubleClick={() => !liked && handleLike()}
+          className="block w-full bg-black"
+        >
+          <img
+            src={post.before_photo_url}
+            alt={hasDescription ? post.description : "Publicação"}
+            className="w-full max-h-[600px] object-cover"
+          />
+        </button>
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-4 px-4 py-3 border-t">
-        <button onClick={handleLike} className="flex items-center gap-1.5 text-sm transition-colors">
+      <div className="flex items-center gap-3 px-3 pt-2.5">
+        <button onClick={handleLike} aria-label="Curtir">
           <Heart
-            size={20}
+            size={26}
             className={cn(
               "transition-colors",
-              liked ? "fill-destructive text-destructive" : "text-muted-foreground"
+              liked ? "fill-destructive text-destructive" : "text-foreground"
             )}
           />
-          <span className={cn("font-medium", liked ? "text-destructive" : "text-muted-foreground")}>
-            {likesCount}
-          </span>
         </button>
-        <button
-          onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
-        >
-          <MessageCircle size={20} />
-          <span className="font-medium">{post.comments_count}</span>
+        <button onClick={() => setShowComments(!showComments)} aria-label="Comentar">
+          <MessageCircle size={26} className="text-foreground" />
         </button>
+        {!isOwner && (
+          <button onClick={handleSendDM} aria-label="Enviar mensagem">
+            <Send size={24} className="text-foreground" />
+          </button>
+        )}
       </div>
 
-      {/* Comments */}
+      {/* Likes count */}
+      <p className="px-3 pt-1.5 text-sm font-semibold text-foreground">
+        {likesCount} {likesCount === 1 ? "curtida" : "curtidas"}
+      </p>
+
+      {/* Caption */}
+      {hasDescription && (
+        <p className="px-3 pt-1 text-sm text-foreground whitespace-pre-wrap">
+          <span className="font-semibold mr-1.5">{authorName}</span>
+          {post.description}
+        </p>
+      )}
+
+      {/* Comments toggle */}
+      {post.comments_count > 0 && !showComments && (
+        <button
+          onClick={() => setShowComments(true)}
+          className="px-3 pt-1 text-sm text-muted-foreground"
+        >
+          Ver todos os {post.comments_count} comentários
+        </button>
+      )}
+
       {showComments && (
-        <div className="px-4 pb-4 border-t">
+        <div className="px-3 pt-2 pb-3">
           <CommentSection postId={post.id} userId={userId} />
         </div>
       )}
+
+      {!showComments && <div className="pb-3" />}
     </div>
   );
 }
