@@ -662,19 +662,26 @@ function DayView({
                   <Trophy className="mr-2" size={18} /> Dia já concluído
                 </>
               ) : allChecked ? (
-                "Concluir dia"
+                "Concluir dia e desbloquear o próximo"
               ) : (
-                "Marque tudo para concluir"
+                "Marque os 4 itens para concluir"
               )}
             </Button>
-            <Button
-              onClick={() => save(false)}
-              disabled={saving}
-              variant="outline"
-              className="w-full h-12 rounded-2xl"
-            >
-              Salvar progresso
-            </Button>
+            {!isCompleted && !allChecked && (
+              <>
+                <Button
+                  onClick={() => save(false)}
+                  disabled={saving}
+                  variant="outline"
+                  className="w-full h-12 rounded-2xl"
+                >
+                  Salvar rascunho e voltar depois
+                </Button>
+                <p className="text-xs text-muted-foreground text-center px-2">
+                  Salva o que você já marcou sem concluir o dia. Você pode voltar e completar mais tarde.
+                </p>
+              </>
+            )}
           </div>
         </div>
     </div>
