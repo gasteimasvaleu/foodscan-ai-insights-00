@@ -393,6 +393,8 @@ function DayView({
   progress,
   weight,
   isCompleted,
+  streak,
+  weightDelta,
   onClose,
   onSaved,
 }: {
@@ -401,6 +403,8 @@ function DayView({
   progress?: DayProgress;
   weight?: number;
   isCompleted: boolean;
+  streak: number;
+  weightDelta: number | null;
   onClose: () => void;
   onSaved: () => Promise<void>;
 }) {
