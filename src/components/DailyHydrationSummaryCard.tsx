@@ -268,7 +268,7 @@ export const DailyHydrationSummaryCard = () => {
       </div>
 
       {/* Bottom row: quick add buttons spanning full width */}
-      <div className="flex items-center gap-1.5 mt-1.5 relative">
+      <div className="flex items-center gap-1.5 mt-1.5 relative z-10">
         {QUICK_ADDS.map((ml) => (
           <button
             key={ml}
