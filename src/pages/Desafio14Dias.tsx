@@ -434,7 +434,7 @@ export default function Desafio14Dias() {
               Resetar desafio e começar de novo
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/40">
+          <AlertDialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-3xl border-2 border-[#FD46A1]/30 bg-white/80 backdrop-blur-md shadow-xl">
             <AlertDialogHeader>
               <AlertDialogTitle>Resetar desafio?</AlertDialogTitle>
               <AlertDialogDescription>
