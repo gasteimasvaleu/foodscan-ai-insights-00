@@ -175,85 +175,78 @@ export default function Desafio14Dias() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
-          <div className="relative">
-            <motion.div
-              aria-hidden
-              className="absolute -inset-3 rounded-[40px] bg-[#FD46A1]/30 blur-2xl -z-10"
-              animate={{ opacity: [0.25, 0.5, 0.25] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative overflow-hidden rounded-[32px] p-6 text-white shadow-xl"
-              style={{
-                backgroundImage:
-                  "linear-gradient(135deg, #FD46A1 0%, #FF7AB8 55%, #FFB3D5 100%)",
-              }}
-            >
-              {/* Decorative blobs */}
-              <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
-              <div aria-hidden className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="relative rounded-3xl bg-white border-2 border-[#FD46A1]/20 shadow-[0_8px_30px_-10px_rgba(253,70,161,0.25)] p-6 overflow-hidden"
+          >
+            {/* Soft decorative blob */}
+            <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-[#FD46A1]/10 blur-3xl" />
 
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 mb-4"
-              >
-                <motion.span
-                  animate={{ rotate: [0, 15, -10, 0] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                  className="inline-flex"
+            {/* Title */}
+            <h1 className="text-2xl font-extrabold text-foreground leading-tight">
+              Seu desafio
+            </h1>
+            <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#FD46A1] mt-1">
+              Comece hoje
+            </p>
+
+            {/* Hero block */}
+            <div className="mt-5 flex items-center gap-5 relative">
+              {/* Icon block with overlapping badge */}
+              <div className="relative shrink-0">
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
+                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#FD46A1] to-[#FF8FC4] flex items-center justify-center shadow-lg shadow-[#FD46A1]/30"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
-                </motion.span>
-                <span className="text-[10px] font-bold tracking-[0.18em] uppercase">
-                  Desafio Exclusivo
+                  <motion.span
+                    animate={{ rotate: [0, 8, -6, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Flame className="h-11 w-11 text-white drop-shadow-md" strokeWidth={2.4} />
+                  </motion.span>
+                </motion.div>
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white text-foreground text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow-md whitespace-nowrap">
+                  Exclusivo
                 </span>
-              </motion.div>
-
-              {/* Eyebrow */}
-              <p className="text-xs text-white/85 mb-1">
-                14 dias para uma nova versão
-              </p>
-
-              {/* Title */}
-              <h1 className="font-black leading-[1] mb-3">
-                <span className="block text-[28px]">Seu desafio de</span>
-                <span className="flex items-end gap-2">
-                  <span className="text-[64px] leading-[0.9] drop-shadow-sm">14</span>
-                  <span className="text-[28px] pb-2">dias</span>
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-sm text-white/95 leading-relaxed mb-5">
-                Cardápio guiado, vídeos diários e checklist.
-                <br />
-                Comece hoje, transforme em 2 semanas.
-              </p>
-
-              {/* Mini stats */}
-              <div className="flex items-stretch gap-2 rounded-2xl bg-white/15 backdrop-blur-sm p-3">
-                {[
-                  { icon: UtensilsCrossed, num: "14", label: "cardápios" },
-                  { icon: Play, num: "14", label: "vídeos" },
-                  { icon: ListChecks, num: "4", label: "metas/dia" },
-                ].map((s, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center text-center">
-                    <s.icon className="h-4 w-4 mb-1 opacity-90" />
-                    <span className="text-base font-bold leading-none">{s.num}</span>
-                    <span className="text-[10px] uppercase tracking-wider opacity-85 mt-0.5">
-                      {s.label}
-                    </span>
-                  </div>
-                ))}
               </div>
-            </motion.div>
-          </div>
+
+              {/* Big number */}
+              <div className="flex-1">
+                <div className="text-5xl font-black text-foreground leading-none">14</div>
+                <p className="text-sm text-muted-foreground mt-1.5">dias para uma<br />nova versão</p>
+              </div>
+            </div>
+
+            {/* Progress section */}
+            <div className="mt-6 relative">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm">
+                  <span className="font-semibold text-foreground">Próximo marco:</span>{" "}
+                  <span className="text-[#FD46A1] font-bold">Dia 1</span>
+                </p>
+                <span className="text-xs font-semibold text-muted-foreground">0 / 14</span>
+              </div>
+              <div className="h-2 bg-[#FFD1E7]/50 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "0%" }}
+                  className="h-full bg-gradient-to-r from-[#FD46A1] to-[#FF8FC4]"
+                />
+              </div>
+            </div>
+
+            {/* Footer hint */}
+            <div className="mt-5 pt-4 border-t border-[#FFD1E7]/60 flex items-start gap-2 relative">
+              <Sparkles className="h-4 w-4 text-[#FD46A1] mt-0.5 shrink-0" />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Informe seu peso inicial abaixo para começar sua jornada de transformação!
+              </p>
+            </div>
+          </motion.div>
 
           <Card className="bg-white rounded-3xl p-5 border-0 shadow-sm space-y-4">
             <div>
