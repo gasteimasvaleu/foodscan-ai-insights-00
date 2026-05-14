@@ -1,52 +1,70 @@
 ## Diagnóstico
-
-A `src/pages/QuizResult.tsx` está fora do padrão visual do app:
-- Background `bg-[#F7FAFB]` plano (sem gradiente / sem hero), enquanto Quiz.tsx e QuizPlay.tsx têm `<Navbar />` (perfil) no topo — aqui ele não é renderizado.
-- Card de resultado é estático: número grande sem animação, sem progresso visual, sem hierarquia, sem celebração.
-- Botões "Ver ranking" / "Início" genéricos.
+O hero atual da `QuizResult.tsx` usa gradiente magenta sólido com texto branco. O usuário quer seguir o padrão visual do card "Sua sequência" de `/conquistas` (referência no screenshot): card branco, borda `#FFD1E7`, blobs decorativos, ícone em quadrado arredondado com gradiente rosa, número grande em preto ao lado, barra de progresso fina com gradiente rosa e rodapé motivacional separado por linha.
 
 ## Mudanças em `src/pages/QuizResult.tsx`
 
-### 1. Adicionar Navbar de perfil (consistência com Quiz/QuizPlay)
-- Importar `Navbar` de `@/components/Navbar` e renderizar `<Navbar />` no topo do retorno, igual Quiz.tsx faz. A `TubelightNavbar` global (bottom) já aparece automaticamente.
+Substituir o hero card (atualmente gradient magenta) por uma estrutura espelhando o card de `Conquistas.tsx` (linhas 102-177), mantendo a animação de count-up e o conteúdo do quiz:
 
-### 2. Hero card de pontuação animado
-Substituir o card atual por um card "wow" com:
-- Background gradient da marca: `bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB]`, `rounded-3xl`, `shadow-xl`, `text-white`, `overflow-hidden relative`.
-- Glow decorativo: 2 blobs absolutos `bg-white/20 blur-3xl` para profundidade.
-- Ícone Trophy em chip circular `bg-white/20 backdrop-blur-md` com `animate-scale-in`.
-- **Pontuação animada com `useCountUp`** (já existe em `src/hooks/useCountUp.ts`): número grande (`text-7xl font-bold tabular-nums`) contando de 0 até `attempt.score` em ~1500ms.
-- Linha "X de Y corretas" como chip branco translúcido (`bg-white/20 rounded-full px-3 py-1 text-sm`).
-- **Barra de progresso de acertos** (`correct_count / total_questions`): track `bg-white/20`, fill `bg-white` com `transition-all duration-1000` animando a largura ao montar (state que vai de 0 a %).
-- Badge "Quiz perfeito! 🎉" com `animate-fade-in` se `is_perfect`.
-- Badge "Bônus Pro ×1,25 aplicado" com ícone Crown se `isPro`.
+### Estrutura do novo card
+```
+<div className="relative overflow-hidden rounded-[32px] bg-white border border-[#FFD1E7] shadow-xl shadow-pink-100 p-6">
+  {/* Blobs */}
+  <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#FFD1E7] rounded-full blur-3xl opacity-50" />
+  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
 
-### 3. Card de upsell Pro (quando não é Pro)
-Manter mas refinar:
-- `bg-white rounded-3xl border-0 shadow-sm`, ícone Crown `text-[#FD46A1]`, mensagem mais clara, botão pill `#FD46A1`.
+  <div className="relative z-10">
+    {/* Header */}
+    <h3>Seu resultado</h3>
+    <p className="text-[#FD46A1] uppercase">Quiz concluído</p>
+    {is_perfect && <chip "QUIZ PERFEITO" com Sparkles>}
 
-### 4. Card "compartilhar / próximos passos"
-Trocar a row de 2 botões por:
-- Botão primário grande "Jogar outro quiz" → `/quiz` (`bg-[#FD46A1] text-white rounded-full h-12 w-full`).
-- Botão secundário texto "Ver ranking completo" → `/quiz` aba ranking (link sutil, `text-[#FD46A1] underline-offset-4`).
-- Botão ghost "Voltar para o início" → `/`.
+    {/* Score visual — espelha Streak visual */}
+    <div className="flex items-center gap-5 mb-6">
+      <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] shadow-lg shadow-pink-200 flex items-center justify-center">
+        <Trophy className="h-12 w-12 text-white" fill="white" />
+      </div>
+      {isPro && <chip "BÔNUS PRO" abaixo do ícone>}
+      <div className="flex flex-col">
+        <span className="text-5xl font-extrabold text-foreground tabular-nums">
+          {Math.round(animatedScore)}
+        </span>
+        <span className="text-sm text-muted-foreground">pontos</span>
+      </div>
+    </div>
 
-### 5. Container / padrão visual
-- Manter `min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]`.
-- `max-w-md mx-auto px-4 space-y-4` mantido.
-- Wrapper interno com `animate-fade-in`.
+    {/* Progresso de acertos */}
+    <div className="space-y-3">
+      <div className="flex justify-between items-end">
+        <p className="text-xs font-semibold">Acertos: <span className="text-[#FD46A1]">{correct} de {total}</span></p>
+        <p className="text-[10px] font-bold text-muted-foreground">{Math.round(progress)}%</p>
+      </div>
+      <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
+        <div className="h-full bg-gradient-to-r from-[#FD46A1] to-[#ff8cb8] rounded-full shadow-[0_0_8px_rgba(253,70,161,0.4)] transition-all duration-700"
+             style={{ width: `${progress}%` }} />
+      </div>
+    </div>
 
-### 6. Loading / empty
-- Trocar texto cru por mesmo padrão Pink do app (spinner simples ou skeleton com `bg-[#FFD1E7]`).
+    {/* Footer motivacional */}
+    <div className="pt-4 mt-4 border-t border-gray-100">
+      <p className="text-[13px] text-muted-foreground font-medium">
+        {is_perfect
+          ? "Pontuação perfeita! Você dominou o tema 🏆"
+          : pct >= 70
+            ? "Ótimo desempenho — continue jogando para subir no ranking!"
+            : "Bom começo! Tente outro quiz para somar mais pontos."}
+      </p>
+    </div>
+  </div>
+</div>
+```
 
-## Detalhes técnicos
+### Cards seguintes (manter)
+- Upsell Pro card (sem mudança).
+- Botões de próximos passos (sem mudança).
 
-- `useCountUp(end, duration)` retorna `number` (float). Usar `Math.round(count)` no JSX.
-- Barra de progresso: `useEffect` que após mount seta `setProgress((correct/total)*100)` para disparar a transição CSS.
-- Sem mudança em rotas, edge functions, schema ou lógica de cálculo de score / bônus Pro — só apresentação.
-- Mantém props/queries existentes (`quiz_attempts` por `quiz_id` + `user_id`).
+### Imports
+- Remover `Target` (não é mais usado), manter `Trophy`, `Crown`, `Sparkles`, `ArrowRight`.
 
 ## Fora do escopo
-
-- Lógica de ranking, cálculo de bônus, edge functions de quiz.
-- QuizPlay e Quiz (lista/ranking).
+- Lógica de cálculo, queries, ranking, edge functions.
+- Demais páginas do quiz.
