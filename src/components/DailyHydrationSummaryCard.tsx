@@ -145,7 +145,7 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex flex-col px-3 pt-2.5 pb-1 cursor-pointer relative overflow-hidden transition-colors duration-500`}
+      className={`w-full h-full ${bgClass} flex flex-col px-3 pt-2.5 pb-6 cursor-pointer relative overflow-hidden transition-colors duration-500`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
@@ -153,7 +153,7 @@ export const DailyHydrationSummaryCard = () => {
       <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
 
       {/* Top row: bottle | text stack | weekly chart */}
-      <div className="flex items-center gap-4 flex-1 min-h-0 relative">
+      <div className="flex items-center gap-6 flex-1 min-h-0 relative">
         {/* Bottle (left, big) */}
         <div className="flex items-center justify-center shrink-0 relative">
           <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
@@ -195,7 +195,7 @@ export const DailyHydrationSummaryCard = () => {
         </div>
 
         {/* Middle column: title + percent + ml */}
-        <div className="flex-1 flex flex-col justify-center min-w-0 mr-1">
+        <div className="flex-1 flex flex-col justify-center min-w-0 mr-3">
           <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">
             Hidratação do Dia
           </p>
@@ -219,7 +219,7 @@ export const DailyHydrationSummaryCard = () => {
 
         {/* Right column: weekly mini chart */}
         <div
-          className="flex flex-col items-center justify-center shrink-0"
+          className="flex flex-col items-center justify-center shrink-0 mr-2"
           aria-label="Constância semanal de hidratação"
         >
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider mb-1">
@@ -268,7 +268,7 @@ export const DailyHydrationSummaryCard = () => {
       </div>
 
       {/* Bottom row: quick add buttons spanning full width */}
-      <div className="flex items-center gap-1.5 mt-1.5 relative">
+      <div className="flex items-center gap-1.5 mt-1.5 relative z-10">
         {QUICK_ADDS.map((ml) => (
           <button
             key={ml}
