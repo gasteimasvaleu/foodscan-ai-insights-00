@@ -17,139 +17,36 @@ interface NavBarProps {
   className?: string
 }
 
-const moreSheetItems = [
-  {
-    name: "Registrar refeição",
-    description: "Repetir refeição de ontem ou favoritos em 1 toque",
-    url: "/adicionar-refeicao",
-    icon: Repeat,
-  },
-  {
-    name: "Alimentos brasileiros",
-    description: "Busca em catálogo de arroz, feijão, açaí e mais",
-    url: "/alimentos",
-    icon: Apple,
-  },
-  {
-    name: "NutriCoach",
-    description: "Chat com IA de nutrição e treinos",
-    url: "/nutri-coach",
-    icon: MessageCircle,
-  },
-  {
-    name: "Gráficos e Progresso",
-    description: "Acompanhe sua evolução",
-    url: "/graficos-progresso",
-    icon: BarChart3,
-  },
-  {
-    name: "Comunidade",
-    description: "Compartilhe sua jornada fitness",
-    url: "/comunidade",
-    icon: Users,
-  },
-  {
-    name: "Receitas",
-    description: "Buscar receitas e gerenciar suas próprias",
-    url: "/receitas",
-    icon: UtensilsCrossed,
-  },
-  {
-    name: "Faça em Casa",
-    description: "Identifique pratos por foto e gere receitas caseiras",
-    url: "/faca-em-casa",
-    icon: ChefHat,
-  },
-  {
-    name: "Provador Virtual",
-    description: "Experimente looks com IA em fundo de estúdio",
-    url: "/provador",
-    icon: Shirt,
-  },
-  {
-    name: "Loja",
-    description: "Produtos selecionados de parceiros",
-    url: "/loja",
-    icon: ShoppingBag,
-  },
-  {
-    name: "Lista de Compras",
-    description: "Organize suas compras de mercado por categoria",
-    url: "/lista-de-compras",
-    icon: ShoppingCart,
-  },
-  {
-    name: "ServiNUTRI",
-    description: "Rede de nutricionistas",
-    url: "/servinutri",
-    icon: Apple,
-  },
-  {
-    name: "Apple Health",
-    description: "Dados detalhados de saúde e atividade",
-    url: "/apple-health",
-    icon: Heart,
-  },
-  {
-    name: "Hidratação",
-    description: "Registre bebidas e acompanhe seu progresso",
-    url: "/hidratacao",
-    icon: Droplets,
-  },
-  {
-    name: "Jejum Intermitente",
-    description: "Controle seus ciclos de jejum",
-    url: "/jejum",
-    icon: Timer,
-  },
-  {
-    name: "Objetivos",
-    description: "Monitore suas metas semanais",
-    url: "/objetivos",
-    icon: Target,
-  },
-  {
-    name: "Sono",
-    description: "Registre e acompanhe a qualidade do sono",
-    url: "/sono",
-    icon: Moon,
-  },
-  {
-    name: "Maternidade",
-    description: "Tentantes, gestação, pós-parto e bebê",
-    url: "/maternidade",
-    icon: Baby,
-  },
-  {
-    name: "Treinos",
-    description: "Vídeos de treino e dicas em casa",
-    url: "/treinos",
-    icon: Dumbbell,
-  },
-  {
-    name: "Quiz",
-    description: "Responda quizzes, ganhe pontos e dispute o ranking",
-    url: "/quiz",
-    icon: HelpCircle,
-  },
-  {
-    name: "Desafio 14 dias",
-    description: "Cardápio, vídeos e checklist para 14 dias de transformação",
-    url: "/desafio-14-dias",
-    icon: CalendarCheck,
-  },
-  {
-    name: "Conquistas",
-    description: "Sequência diária e medalhas desbloqueadas",
-    url: "/conquistas",
-    icon: Trophy,
-  },
-  {
-    name: "Gerar Cardápio",
-    description: "Cardápios personalizados com IA (MasterCheFIT)",
-    url: "/masterchef",
-    icon: UtensilsCrossed,
-  },
+const moreSheetItems: Array<{
+  name: string
+  description: string
+  url: string
+  icon: LucideIcon
+  isPro: boolean
+}> = [
+  { name: "Registrar refeição", description: "Repetir refeição de ontem ou favoritos em 1 toque", url: "/adicionar-refeicao", icon: Repeat, isPro: false },
+  { name: "Alimentos brasileiros", description: "Busca em catálogo de arroz, feijão, açaí e mais", url: "/alimentos", icon: Apple, isPro: false },
+  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false },
+  { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
+  { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
+  { name: "ServiNUTRI", description: "Rede de nutricionistas", url: "/servinutri", icon: Apple, isPro: false },
+  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false },
+  { name: "Quiz", description: "Responda quizzes, ganhe pontos e dispute o ranking", url: "/quiz", icon: HelpCircle, isPro: false },
+  { name: "Desafio 14 dias", description: "Cardápio, vídeos e checklist para 14 dias de transformação", url: "/desafio-14-dias", icon: CalendarCheck, isPro: false },
+  { name: "Conquistas", description: "Sequência diária e medalhas desbloqueadas", url: "/conquistas", icon: Trophy, isPro: false },
+
+  { name: "NutriCoach", description: "Chat com IA de nutrição e treinos", url: "/nutri-coach", icon: MessageCircle, isPro: true },
+  { name: "Gerar Cardápio", description: "Cardápios personalizados com IA (MasterCheFIT)", url: "/masterchef", icon: UtensilsCrossed, isPro: true },
+  { name: "Receitas", description: "Buscar receitas e gerenciar suas próprias", url: "/receitas", icon: UtensilsCrossed, isPro: true },
+  { name: "Faça em Casa", description: "Identifique pratos por foto e gere receitas caseiras", url: "/faca-em-casa", icon: ChefHat, isPro: true },
+  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true },
+  { name: "Gráficos e Progresso", description: "Acompanhe sua evolução", url: "/graficos-progresso", icon: BarChart3, isPro: true },
+  { name: "Apple Health", description: "Dados detalhados de saúde e atividade", url: "/apple-health", icon: Heart, isPro: true },
+  { name: "Hidratação", description: "Registre bebidas e acompanhe seu progresso", url: "/hidratacao", icon: Droplets, isPro: true },
+  { name: "Jejum Intermitente", description: "Controle seus ciclos de jejum", url: "/jejum", icon: Timer, isPro: true },
+  { name: "Objetivos", description: "Monitore suas metas semanais", url: "/objetivos", icon: Target, isPro: true },
+  { name: "Sono", description: "Registre e acompanhe a qualidade do sono", url: "/sono", icon: Moon, isPro: true },
+  { name: "Treinos", description: "Vídeos de treino e dicas em casa", url: "/treinos", icon: Dumbbell, isPro: true },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
