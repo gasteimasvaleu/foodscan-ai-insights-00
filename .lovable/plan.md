@@ -1,74 +1,41 @@
 ## Objetivo
-Transformar o card de cabeçalho do `/profile` em uma experiência mais rica (estilo Instagram/Strava), com banner de capa, avatar grande sobreposto, mais dados pessoais editáveis e estatísticas em destaque.
+Substituir o pequeno header "Comunidade" por um card moderno no estilo do `ProfileHeaderCard` (cover + avatar sobreposto + stats), adaptado ao contexto social.
 
-## 1. Banco de dados (migration em `public.profiles`)
-Adicionar colunas opcionais:
-- `bio` text
-- `phone` text
-- `address` text
-- `city` text
-- `state` text
-- `email_public` text (email de exibição editável; o email de login continua em `auth.users`)
-- `cover_url` text (imagem de capa)
+## Layout do novo `CommunityHeaderCard`
 
-RLS já existente em `profiles` permanece. Sem alterações de policies.
-
-Storage: reutilizar bucket `avatars` para covers (pasta `{userId}/cover-*.jpg`) — não precisa migration adicional.
-
-## 2. Novo card `ProfileHeaderCard` (`src/components/profile/ProfileHeaderCard.tsx`)
-
-Layout (mobile-first):
 ```
-┌──────────────────────────────────┐
-│  [cover image — 160px h]        │  ← editável (ícone câmera no canto)
-│       ╭──────╮                   │
-│       │AVATAR│ ← sobreposto -50% │
-│       ╰──────╯  + badge Pro 👑   │
-├──────────────────────────────────┤
-│  Nome do Usuário      [Editar]  │
-│  📍 Cidade, Estado               │
-│  Bio em até 2 linhas...          │
-│  ─────── stats chips ───────     │
-│  🔥 12  │  🏅 5  │  📅 mar/26    │
-│  streak   badges    membro       │
-└──────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ [cover gradiente magenta]   🔲  ✈️ │ ← botões grade + DM (com badge)
+│      ╭──────╮                        │
+│      │AVATAR│                        │
+│      ╰──────╯                        │
+├──────────────────────────────────────┤
+│  Olá, {nome}                         │
+│  Comunidade We Diet                  │
+│  ─────── stats ───────              │
+│  📷 12     ❤️ 87     👥 1.2k        │
+│  PUBLIQUEI CURTIDAS  MEMBROS         │
+└──────────────────────────────────────┘
 ```
 
-Visual:
+Visual coerente com o card do perfil:
 - Container: `rounded-3xl overflow-hidden bg-white/70 backdrop-blur-md border border-white/40 shadow-xl`
-- Cover: gradiente fallback `from-[#FD46A1] to-[#FF8FC4]`, `aspect-[3/1]`, botão câmera no canto
-- Avatar: `w-28 h-28 border-4 border-white -mt-14 ml-5`
-- Badge Pro (Crown) absoluto no avatar quando `subscriptionStatus.subscribed`
-- Stats: 3 chips em `bg-[#FFD1E7]/60 rounded-2xl`, ícones #FD46A1, valores `text-base`
+- Cover: `aspect-[3/1]`, `bg-gradient-to-br from-[#FD46A1] to-[#FF8FC4]`
+- Avatar: `w-24 h-24 -mt-12 ml-5 border-4 border-white`
+- Botões Grade e DM no canto superior direito do cover (`bg-black/40 backdrop-blur` quando inativo, `bg-[#FD46A1]` quando ativo). Badge de DM não lidos mantém vermelho/rosa atual.
+- Stats: 3 chips `bg-[#FFD1E7]/60 rounded-2xl`, ícones `#FD46A1`
 
-## 3. Modal "Editar Perfil" expandido
-Substituir o Dialog atual por formulário com tabs/seções (`bg-white/70 backdrop-blur-md`):
-- **Identidade**: nome, bio (textarea, max 160), email público
-- **Contato**: telefone, endereço, cidade, estado
-- **Imagens**: upload de avatar e de capa
+## Stats (consultas)
+- **Minhas publicações**: `community_posts` count where `user_id = me`
+- **Curtidas recebidas**: soma de `likes_count` em `community_posts` minhas
+- **Membros**: count distinct de `user_id` em `community_posts` (proxy de comunidade ativa). Formatar com `1.2k` se ≥ 1000.
 
-Validação com `zod`: nome 2-50, bio max 160, telefone regex, etc. Inputs `text-base` (anti-zoom iOS).
+Carregar em paralelo (`Promise.all`) no `useEffect` do componente.
 
-## 4. Stats reais
-- **Streak**: ler de `user_streaks` (já existe via gamification)
-- **Badges**: `count` em `user_badges` do usuário
-- **Membro desde**: `profile.created_at` (mantém)
-
-Carregar em paralelo no `useEffect`.
-
-## 5. Arquivos
-- **Novo**: migration adicionando colunas
-- **Novo**: `src/components/profile/ProfileHeaderCard.tsx`
-- **Novo**: `src/components/profile/EditProfileDialog.tsx`
-- **Editar**: `src/pages/Profile.tsx` — substituir o Card de header atual pelo novo componente; remover o Dialog inline
-- Usar `@/integrations/supabase/client` e `useAuth`
-
-## 6. Detalhes técnicos
-- Upload de cover: igual ao avatar (Supabase Storage `avatars` bucket, `upsert`)
-- Subscription Pro badge: usa `subscriptionStatus.subscribed` do `useAuth`
-- Sem mudanças em outros cards da página (Pro, Ações Rápidas, etc.)
-- Sem mexer em `types.ts` manualmente — será regenerado após migration
+## Arquivos
+- **Novo**: `src/components/community/CommunityHeaderCard.tsx` — recebe props `userId`, `userName`, `userAvatar`, `view`, `onToggleView`, `unreadDM`, `onOpenDM`
+- **Editar**: `src/pages/Comunidade.tsx` — substituir o bloco `<div className="bg-gradient-to-r ...">` (linhas ~112-139) por `<CommunityHeaderCard ... />`. Remover import `Users` se não usado em outro lugar do arquivo.
 
 ## Fora de escopo
-- Não alterar página de comunidade nem outros perfis públicos
-- Não tocar nos outros cards do `/profile`
+- Não mexer no feed, stories, modais ou no botão flutuante "+"
+- Não criar nova tabela; nenhuma migration
