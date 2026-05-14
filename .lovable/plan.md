@@ -1,43 +1,41 @@
-## Objetivo
-Reposicionar a badge `18:6` para a direita do card, alinhada com a borda direita do botão "Encerrar jejum", mantendo a mesma altura vertical (mesma linha do número grande do tempo).
+## Diagnóstico
+O card `DailyAssessmentSummaryCard` usa gradiente `from-slate-900 via-slate-800 to-indigo-900` (azul escuro/preto) — destoa completamente do padrão dos outros cards do dashboard, que usam gradientes coloridos vibrantes alinhados ao branding (rosa nas calorias, azul nas águas, roxo no jejum).
 
-## Mudança em `src/components/DailyFastingSummaryCard.tsx`
+Como o brand primary é `#FD46A1` e o card de calorias já usa rosa claro (`pink-100 → pink-200`), o card de avaliação física pode adotar um gradiente magenta/rosa mais saturado, na mesma família mas distinto, mantendo coesão visual.
 
-### Remover a badge de dentro do flex inline (linhas 185-192)
-A badge hoje fica colada ao número do tempo dentro de um `flex items-center gap-2`. Vou tirá-la do flex e renderizar separadamente.
+## Mudanças em `src/components/DailyAssessmentSummaryCard.tsx`
 
+### 1. Substituir o gradiente de fundo (3 ocorrências — linhas 95, 119, 157)
 De:
-```tsx
-<div className="flex items-center gap-2">
-  <span className="text-white text-3xl font-black leading-none tracking-tight">
-    {goalReached ? formatTime(elapsedHours) : formatTime(remainingHours)}
-  </span>
-  <span className="text-white text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none">
-    {protocol}
-  </span>
-</div>
+```
+bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900
+```
+Para:
+```
+bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB]
+```
+(Magenta brand → rosa médio → rosa claro — coerente com `#FD46A1`.)
+
+### 2. Ajustar as cores de delta de peso (linhas 184-195)
+As cores `emerald-300` e `rose-300` ficam ok no novo fundo rosa, mas para reforçar legibilidade vou trocar `text-white/70` (estável) por `text-white/85` e manter o resto. Sem alteração estrutural.
+
+### 3. Ajustar o `bmiClass` (linhas 18-23) para chips legíveis em fundo rosa
+Os chips atuais usam tons translúcidos pastéis (sky/emerald/amber/rose 400 com 20% opacidade) que ficavam bem em fundo escuro mas perdem contraste em rosa. Trocar para chips com fundo branco translúcido + texto colorido sólido:
+```
+Abaixo:    bg-white/85 text-sky-600
+Normal:    bg-white/85 text-emerald-600
+Sobrepeso: bg-white/85 text-amber-600
+Obesidade: bg-white/85 text-rose-600
 ```
 
-Para (sem a badge inline):
-```tsx
-<span className="text-white text-3xl font-black leading-none tracking-tight">
-  {goalReached ? formatTime(elapsedHours) : formatTime(remainingHours)}
-</span>
-```
-
-### Adicionar a badge absoluta no canto superior direito do card
-Inserir logo após o header (após linha 155), dentro do container raiz do card (que já é `relative`):
-```tsx
-{isFasting && (
-  <span className="absolute right-3 top-9 text-white text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none z-10">
-    {protocol}
-  </span>
-)}
-```
-
-- `right-3` casa com o `px-3` do card → fica alinhada exatamente onde termina o botão "Encerrar jejum" (que é `w-full` dentro do mesmo padding).
-- `top-9` posiciona verticalmente na mesma altura do número grande de horas (header de ~22px + mb-1.5 + meio do bloco hero).
+### 4. Ajustar elementos auxiliares para o novo fundo
+- Anel BG (linha 209): `stroke="rgba(255,255,255,0.15)"` → manter (fica bom em rosa também).
+- Texto "BG" (linha 220): `text-white/60` → manter.
+- Botão de ação (linhas 134, 245): `bg-white/15 hover:bg-white/25` → trocar para `bg-white/25 hover:bg-white/40` para garantir contraste no rosa mais claro.
+- Badge "hoje/ontem" (linha 165): `bg-white/10` → `bg-white/20`.
+- Empty state ícone (linha 126): `text-white/70` → manter.
 
 ## Fora do escopo
-- Sem alteração no botão, no anel, na fase ou no texto secundário.
-- Sem alteração de fonte, cor ou conteúdo da badge.
+- Sem mudança de layout, hierarquia ou tipografia.
+- Sem mudança no Dialog de registrar peso (já está padrão glass branco).
+- Sem mudança nos outros cards do dashboard.

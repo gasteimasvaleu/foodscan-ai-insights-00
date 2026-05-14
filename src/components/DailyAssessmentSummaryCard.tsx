@@ -16,10 +16,10 @@ interface Assessment {
 }
 
 const bmiClass = (bmi: number) => {
-  if (bmi < 18.5) return { label: 'Abaixo', chip: 'bg-sky-400/20 text-sky-200' };
-  if (bmi < 25) return { label: 'Normal', chip: 'bg-emerald-400/20 text-emerald-200' };
-  if (bmi < 30) return { label: 'Sobrepeso', chip: 'bg-amber-400/20 text-amber-200' };
-  return { label: 'Obesidade', chip: 'bg-rose-400/20 text-rose-200' };
+  if (bmi < 18.5) return { label: 'Abaixo', chip: 'bg-white/85 text-sky-600' };
+  if (bmi < 25) return { label: 'Normal', chip: 'bg-white/85 text-emerald-600' };
+  if (bmi < 30) return { label: 'Sobrepeso', chip: 'bg-white/85 text-amber-600' };
+  return { label: 'Obesidade', chip: 'bg-white/85 text-rose-600' };
 };
 
 const daysAgoLabel = (date: string) => {
@@ -92,7 +92,7 @@ export const DailyAssessmentSummaryCard = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center">
+      <div className="w-full h-full bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB] flex items-center justify-center">
         <div className="animate-pulse text-white/80 text-sm">Carregando...</div>
       </div>
     );
@@ -116,7 +116,7 @@ export const DailyAssessmentSummaryCard = () => {
     return (
       <>
         <div
-          className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
+          className="w-full h-full bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB] flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
           onClick={() => navigate('/profile/assessment')}
         >
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider text-center mb-2">
@@ -131,7 +131,7 @@ export const DailyAssessmentSummaryCard = () => {
           </div>
           <button
             onClick={handleOpen}
-            className="relative z-10 mt-2 w-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all rounded-full py-2 text-white text-xs font-bold flex items-center justify-center gap-1"
+            className="relative z-10 mt-2 w-full bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full py-2 text-white text-xs font-bold flex items-center justify-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" /> Registrar agora
           </button>
@@ -154,7 +154,7 @@ export const DailyAssessmentSummaryCard = () => {
   return (
     <>
       <div
-        className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
+        className="w-full h-full bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB] flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
         onClick={() => navigate('/profile/assessment')}
       >
         {/* Header */}
@@ -162,7 +162,7 @@ export const DailyAssessmentSummaryCard = () => {
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider">
             Avaliação Física
           </p>
-          <span className="absolute right-0 text-white/70 text-[9px] font-medium bg-white/10 rounded-full px-1.5 py-0.5">
+          <span className="absolute right-0 text-white/70 text-[9px] font-medium bg-white/20 rounded-full px-1.5 py-0.5">
             {daysAgoLabel(latest.assessment_date)}
           </span>
         </div>
@@ -242,7 +242,7 @@ export const DailyAssessmentSummaryCard = () => {
         {/* Quick-action */}
         <button
           onClick={handleOpen}
-          className="relative z-10 mt-2 w-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all rounded-full py-2 text-white text-xs font-bold flex items-center justify-center gap-1"
+          className="relative z-10 mt-2 w-full bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full py-2 text-white text-xs font-bold flex items-center justify-center gap-1"
         >
           <Plus className="w-3.5 h-3.5" /> Registrar peso
         </button>
