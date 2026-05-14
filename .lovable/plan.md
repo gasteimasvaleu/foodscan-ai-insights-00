@@ -1,11 +1,6 @@
-Vou ajustar apenas o botão flutuante `+` da página `/comunidade`.
+Ajustar `src/pages/Comunidade.tsx`:
 
-Plano:
-1. Alterar a posição do botão de `right-4 bottom-28` para uma posição fixa no canto inferior direito que fique acima do Tubelight, mas mais afastada da área do campo/comentário.
-2. Usar um deslocamento horizontal maior para a direita quando necessário, evitando que o círculo fique em cima do botão/campo de envio de comentário.
-3. Manter o tamanho, cor e comportamento atuais do botão, sem alterar feed, comentários ou menu Tubelight.
+1. Voltar o botão `+` para o canto direito (`right-4`).
+2. Aumentar o padding inferior do container da página de `pb-28` para `pb-44`, criando uma "zona morta" abaixo do último card. Assim, mesmo rolando o feed até o fim, o botão flutuante (que fica sobre essa zona) não cobre nenhum card/input de comentário, e continua acima do Tubelight.
 
-Detalhe técnico:
-- Arquivo alvo: `src/pages/Comunidade.tsx`
-- Classe atual: `fixed right-4 bottom-28 ...`
-- Ajuste provável: aumentar `right-*` e calibrar `bottom-*` para preservar espaço com o menu inferior e com o input de comentário.
+Sem alterações em outros componentes.

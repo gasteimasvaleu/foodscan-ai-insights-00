@@ -102,7 +102,7 @@ export default function Comunidade() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
+      <div className="min-h-screen bg-background pb-44 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
         <div className="max-w-lg mx-auto px-3 pt-4 space-y-3">
           {/* Header */}
           <div className="flex items-center justify-between px-1">
@@ -164,7 +164,7 @@ export default function Comunidade() {
       {/* Floating + button */}
       <button
         onClick={() => setPostOpen(true)}
-        className="fixed left-4 bottom-28 z-40 bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full p-4 shadow-lg shadow-[#FD46A1]/30"
+        className="fixed right-4 bottom-28 z-40 bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full p-4 shadow-lg shadow-[#FD46A1]/30"
         aria-label="Nova publicação"
       >
         <Plus size={24} strokeWidth={2.5} />
