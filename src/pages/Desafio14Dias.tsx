@@ -408,6 +408,28 @@ function DayView({
   const [weightInput, setWeightInput] = useState(weight ? String(weight) : "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("challenge_progress_photos")
+        .select("photo_url")
+        .eq("user_id", userId)
+        .eq("day_number", day)
+        .eq("photo_type", "body")
+        .maybeSingle();
+      if (active) {
+        setPhotoUrl(data?.photo_url ?? null);
+        setPhotoLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [userId, day]);
 
   const allChecked = checks.followed_menu && checks.drank_water && checks.walked && checks.slept_well;
 
@@ -469,11 +491,31 @@ function DayView({
         { user_id: userId, day_number: day, photo_type: "body", photo_url: pub.publicUrl },
         { onConflict: "user_id,day_number,photo_type" },
       );
+      setPhotoUrl(pub.publicUrl);
       toast.success("Foto enviada");
     } catch {
       toast.error("Erro ao enviar foto");
     } finally {
       setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  async function removePhoto() {
+    if (!photoUrl) return;
+    const ok = window.confirm("Remover esta foto do progresso?");
+    if (!ok) return;
+    try {
+      await supabase
+        .from("challenge_progress_photos")
+        .delete()
+        .eq("user_id", userId)
+        .eq("day_number", day)
+        .eq("photo_type", "body");
+      setPhotoUrl(null);
+      toast.success("Foto removida");
+    } catch {
+      toast.error("Erro ao remover foto");
     }
   }
 
@@ -570,13 +612,43 @@ function DayView({
           </Card>
 
           {/* Foto */}
-          <Card className="bg-white rounded-2xl p-4 border shadow-none">
-            <p className="text-base font-medium mb-2">Foto do progresso</p>
-            <label className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] font-medium cursor-pointer">
-              <Camera size={18} />
-              {uploading ? "Enviando..." : "Tirar / enviar foto"}
-              <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
-            </label>
+          <Card className="bg-white rounded-2xl p-4 border shadow-none space-y-3">
+            <div>
+              <p className="text-base font-medium">Foto do progresso</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Salva no seu perfil. Só você consegue ver.
+              </p>
+            </div>
+
+            {photoLoading ? (
+              <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+            ) : photoUrl ? (
+              <div className="space-y-2">
+                <div className="relative rounded-2xl overflow-hidden bg-muted">
+                  <img src={photoUrl} alt={`Progresso dia ${day}`} className="w-full max-h-72 object-cover" />
+                </div>
+                <div className="flex gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] text-sm font-medium cursor-pointer">
+                    <Camera size={16} />
+                    {uploading ? "Enviando..." : "Substituir"}
+                    <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={removePhoto}
+                    className="px-4 h-11 rounded-2xl border border-destructive/30 text-destructive text-sm font-medium"
+                  >
+                    Remover
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] font-medium cursor-pointer">
+                <Camera size={18} />
+                {uploading ? "Enviando..." : "Tirar / enviar foto"}
+                <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
+              </label>
+            )}
           </Card>
 
           <div className="flex flex-col gap-2 pt-2">
@@ -590,19 +662,26 @@ function DayView({
                   <Trophy className="mr-2" size={18} /> Dia já concluído
                 </>
               ) : allChecked ? (
-                "Concluir dia"
+                "Concluir dia e desbloquear o próximo"
               ) : (
-                "Marque tudo para concluir"
+                "Marque os 4 itens para concluir"
               )}
             </Button>
-            <Button
-              onClick={() => save(false)}
-              disabled={saving}
-              variant="outline"
-              className="w-full h-12 rounded-2xl"
-            >
-              Salvar progresso
-            </Button>
+            {!isCompleted && !allChecked && (
+              <>
+                <Button
+                  onClick={() => save(false)}
+                  disabled={saving}
+                  variant="outline"
+                  className="w-full h-12 rounded-2xl"
+                >
+                  Salvar rascunho e voltar depois
+                </Button>
+                <p className="text-xs text-muted-foreground text-center px-2">
+                  Salva o que você já marcou sem concluir o dia. Você pode voltar e completar mais tarde.
+                </p>
+              </>
+            )}
           </div>
         </div>
     </div>
