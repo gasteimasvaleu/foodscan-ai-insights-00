@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { challengeData, achievements } from "@/lib/desafio14/challengeData";
 import { toast } from "sonner";
-import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks, ArrowLeft, RotateCcw } from "lucide-react";
+import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks, ArrowLeft, RotateCcw, TrendingDown, TrendingUp, Scale, Minus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -350,21 +350,55 @@ export default function Desafio14Dias() {
 
         {/* Peso */}
         {profile.initial_weight != null && (
-          <Card className="bg-white rounded-3xl p-5 border-0 shadow-sm">
-            <p className="text-base mb-1">Peso</p>
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-2xl font-bold text-[#FD46A1]">{lastWeight?.toFixed(1)} kg</p>
-                <p className="text-xs text-muted-foreground">inicial: {profile.initial_weight.toFixed(1)} kg</p>
+          <div className="relative rounded-3xl p-[1.5px] bg-gradient-to-br from-[#FD46A1] via-[#FF8FC4] to-[#FFD1E7] shadow-lg shadow-[#FD46A1]/10">
+            <div className="rounded-[22px] bg-white/90 backdrop-blur-md p-5 overflow-hidden relative">
+              {/* Decorative blob */}
+              <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-[#FD46A1]/10 blur-2xl" />
+
+              <div className="flex items-center justify-between mb-4 relative">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center">
+                    <Scale size={16} className="text-[#FD46A1]" />
+                  </div>
+                  <p className="text-base text-foreground/80">Peso atual</p>
+                </div>
+                {(() => {
+                  const Icon = delta < 0 ? TrendingDown : delta > 0 ? TrendingUp : Minus;
+                  const color =
+                    delta < 0
+                      ? "bg-green-100 text-green-700"
+                      : delta > 0
+                      ? "bg-orange-100 text-orange-600"
+                      : "bg-muted text-muted-foreground";
+                  return (
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${color}`}>
+                      <Icon size={12} />
+                      {delta > 0 ? "+" : ""}
+                      {delta.toFixed(1)} kg
+                    </span>
+                  );
+                })()}
               </div>
-              {delta !== 0 && (
-                <span className={`text-base font-semibold ${delta < 0 ? "text-green-600" : "text-orange-500"}`}>
-                  {delta > 0 ? "+" : ""}
-                  {delta.toFixed(1)} kg
+
+              <div className="flex items-baseline gap-1.5 relative">
+                <span className="text-4xl font-black text-[#FD46A1] leading-none tracking-tight">
+                  {lastWeight?.toFixed(1)}
                 </span>
-              )}
+                <span className="text-base font-semibold text-[#FD46A1]/70">kg</span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-xs relative">
+                <span className="text-muted-foreground">
+                  Inicial <span className="font-medium text-foreground/70">{profile.initial_weight.toFixed(1)} kg</span>
+                </span>
+                {weights.length > 0 && (
+                  <span className="text-muted-foreground">
+                    {weights.length} {weights.length === 1 ? "registro" : "registros"}
+                  </span>
+                )}
+              </div>
             </div>
-          </Card>
+          </div>
         )}
 
         {/* Conquistas */}
