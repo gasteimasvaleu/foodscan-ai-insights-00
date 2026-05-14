@@ -422,6 +422,37 @@ export default function Desafio14Dias() {
             })}
           </div>
         </Card>
+
+        {/* Resetar desafio */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full h-12 rounded-2xl border-[#FD46A1]/30 text-[#FD46A1] hover:bg-[#FFD1E7]/40 hover:text-[#FD46A1] font-semibold"
+            >
+              <RotateCcw size={16} className="mr-2" />
+              Resetar desafio e começar de novo
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/40">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Resetar desafio?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Isso apaga peso inicial, checklist, fotos e todo o progresso dos 14 dias. Você voltará à tela inicial para começar do zero.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-2xl">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={resetting}
+                onClick={resetChallenge}
+                className="rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white"
+              >
+                {resetting ? "Resetando..." : "Sim, resetar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
