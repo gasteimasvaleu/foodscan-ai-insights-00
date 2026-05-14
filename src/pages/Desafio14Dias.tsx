@@ -612,13 +612,43 @@ function DayView({
           </Card>
 
           {/* Foto */}
-          <Card className="bg-white rounded-2xl p-4 border shadow-none">
-            <p className="text-base font-medium mb-2">Foto do progresso</p>
-            <label className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] font-medium cursor-pointer">
-              <Camera size={18} />
-              {uploading ? "Enviando..." : "Tirar / enviar foto"}
-              <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
-            </label>
+          <Card className="bg-white rounded-2xl p-4 border shadow-none space-y-3">
+            <div>
+              <p className="text-base font-medium">Foto do progresso</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Salva no seu perfil. Só você consegue ver.
+              </p>
+            </div>
+
+            {photoLoading ? (
+              <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+            ) : photoUrl ? (
+              <div className="space-y-2">
+                <div className="relative rounded-2xl overflow-hidden bg-muted">
+                  <img src={photoUrl} alt={`Progresso dia ${day}`} className="w-full max-h-72 object-cover" />
+                </div>
+                <div className="flex gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] text-sm font-medium cursor-pointer">
+                    <Camera size={16} />
+                    {uploading ? "Enviando..." : "Substituir"}
+                    <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={removePhoto}
+                    className="px-4 h-11 rounded-2xl border border-destructive/30 text-destructive text-sm font-medium"
+                  >
+                    Remover
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center gap-2 h-12 rounded-2xl bg-[#FFD1E7] text-[#FD46A1] font-medium cursor-pointer">
+                <Camera size={18} />
+                {uploading ? "Enviando..." : "Tirar / enviar foto"}
+                <input type="file" accept="image/*" onChange={uploadPhoto} className="hidden" />
+              </label>
+            )}
           </Card>
 
           <div className="flex flex-col gap-2 pt-2">
