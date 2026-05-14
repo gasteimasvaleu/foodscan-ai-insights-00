@@ -764,7 +764,7 @@ function DayView({
     </div>
 
     {/* Sticky action bar */}
-    <div className="fixed left-0 right-0 bottom-24 z-30 px-4 pointer-events-none" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)' }}>
+    <div className="fixed left-0 right-0 z-30 px-4 pointer-events-none" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 7rem)' }}>
       <div className="container max-w-lg mx-auto pointer-events-auto">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-[#FFD1E7] shadow-lg p-3 flex items-center gap-3">
           <div className="flex-1">
