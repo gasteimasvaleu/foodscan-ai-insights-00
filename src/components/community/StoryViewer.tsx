@@ -241,55 +241,12 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
           <X size={22} />
         </button>
       </div>
-
-      {/* Media */}
-      <div
-        className="flex-1 relative flex items-center justify-center select-none"
-        onPointerDown={() => setPaused(true)}
-        onPointerUp={() => setPaused(false)}
-        onPointerCancel={() => setPaused(false)}
-      >
-        {isVideo ? (
-          <video
-            ref={videoRef}
-            key={story.id}
-            src={story.video_url || undefined}
-            poster={story.video_poster_url || story.image_url}
-            autoPlay
-            playsInline
-            muted={false}
-            preload="auto"
-            className="max-h-full max-w-full object-contain"
-            onTimeUpdate={(e) => {
-              const v = e.currentTarget;
-              if (v.duration > 0) setProgress(Math.min(1, v.currentTime / v.duration));
-            }}
-            onEnded={next}
-          />
-        ) : (
-          <img src={story.image_url} alt="" className="max-h-full max-w-full object-contain" />
-        )}
-
-        {/* Tap zones */}
-        <button
-          onClick={prev}
-          className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-2 text-white/0 hover:text-white/40 transition"
-          aria-label="Anterior"
-        >
-          <ChevronLeft size={32} />
-        </button>
-        <button
-          onClick={next}
-          className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-2 text-white/0 hover:text-white/40 transition"
-          aria-label="Próximo"
-        >
-          <ChevronRight size={32} />
-        </button>
+        </div>
       </div>
 
       {/* Reply (only for others) */}
       {!isMine && (
-        <div className="p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] flex gap-2 items-center bg-black">
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] flex gap-2 items-center bg-gradient-to-t from-black/70 via-black/40 to-transparent">
           <input
             value={reply}
             onChange={(e) => setReply(e.target.value)}
