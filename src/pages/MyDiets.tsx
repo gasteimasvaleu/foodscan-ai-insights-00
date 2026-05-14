@@ -262,7 +262,7 @@ export default function MyDiets() {
                         {group.meals.map((meal) => (
                           <div
                             key={meal.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                            className="flex items-center justify-between p-3 rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15"
                           >
                             <div className="flex-1">
                               <p className="font-medium">{meal.meal_name}</p>
@@ -287,6 +287,7 @@ export default function MyDiets() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
                               onClick={() => deleteDiet(meal.id)}
                             >
                               <Trash2 className="h-4 w-4" />
