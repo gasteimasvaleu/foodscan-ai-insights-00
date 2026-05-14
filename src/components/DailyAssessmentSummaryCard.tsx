@@ -129,7 +129,7 @@ export const DailyAssessmentSummaryCard = () => {
   const delta = weight && prevWeight ? +(weight - prevWeight).toFixed(1) : null;
   const sparkValues = [...history].reverse().map(h => Number(h.weight)).filter(v => !isNaN(v) && v > 0);
   const bfPct = bodyFat ? Math.min(Math.max(bodyFat, 0), 100) : 0;
-  const radius = 26;
+  const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (bfPct / 100) * circumference;
 
