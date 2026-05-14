@@ -13,12 +13,21 @@ export const TertiaryDeckRow: React.FC = () => {
         aria-label="Desafio 14 Dias"
       >
         <img
-          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1778753915971_2cb0be9a.png"
+          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1778754615806_99ffb4e5.png"
           alt="Desafio 14 Dias"
           className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
         <div className="invisible aspect-[5/4]" />
+        {/* Faixa inferior estilo Netflix */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-3 pb-3 pt-8">
+          <p className="text-white text-sm font-semibold leading-tight">
+            Desafio 14 Dias
+          </p>
+          <p className="text-white/80 text-xs mt-0.5">
+            Participe agora →
+          </p>
+        </div>
       </button>
 
       {/* Card direito: Conquistas */}
