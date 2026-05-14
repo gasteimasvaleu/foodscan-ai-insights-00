@@ -22,6 +22,11 @@ const config: CapacitorConfig = {
       autoUpdateMethod: 'background',
       maxVersions: 3,
     },
+    Keyboard: {
+      resize: 'native',
+      style: 'light',
+      resizeOnFullScreen: true,
+    },
   },
 };
 
