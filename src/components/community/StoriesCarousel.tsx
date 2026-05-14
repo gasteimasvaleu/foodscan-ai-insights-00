@@ -117,12 +117,15 @@ export function StoriesCarousel({
       <div className="flex items-stretch">
         {/* Fixed: me */}
         <div className="flex-shrink-0 px-3 py-3 border-r border-border/40">
-          <button
-            onClick={handleMyAvatarClick}
-            className="flex flex-col items-center gap-1.5 w-16"
-            aria-label="Seu story"
-          >
-            <div className="relative">
+          <div className="flex flex-col items-center gap-1.5 w-16">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={handleMyAvatarClick}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleMyAvatarClick(); }}
+              className="relative cursor-pointer"
+              aria-label="Seu story"
+            >
               <div
                 className={cn(
                   "p-[2px] rounded-full",
@@ -141,12 +144,20 @@ export function StoriesCarousel({
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 bg-[#FD46A1] rounded-full p-1 border-2 border-background">
-                <Plus size={10} className="text-white" strokeWidth={3} />
-              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddStory();
+                }}
+                aria-label="Adicionar story"
+                className="absolute -bottom-1 -right-1 bg-[#FD46A1] rounded-full p-1.5 border-2 border-background hover:bg-[#FD46A1]/90"
+              >
+                <Plus size={12} className="text-white" strokeWidth={3} />
+              </button>
             </div>
             <span className="text-[11px] text-foreground truncate w-full text-center">Seu story</span>
-          </button>
+            </div>
         </div>
 
         {/* Scrollable list */}
