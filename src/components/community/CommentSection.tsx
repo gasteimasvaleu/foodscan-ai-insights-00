@@ -63,11 +63,18 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
     }
   };
 
-  if (loading) return <div className="py-2 text-center text-muted-foreground text-sm">Carregando...</div>;
+  if (loading) return <div className="py-2 text-center text-muted-foreground text-sm">Carregando comentários...</div>;
 
   return (
     <div className="space-y-3 pt-2">
-      {comments.map((c) => (
+      {loadError && (
+        <div className="text-xs text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+          Não foi possível carregar os comentários: {loadError}
+        </div>
+      )}
+      {!loadError && comments.length === 0 && (
+        <p className="text-xs text-muted-foreground text-center py-1">Seja o primeiro a comentar.</p>
+      )}
         <div key={c.id} className="flex gap-2">
           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0 overflow-hidden">
             {c.profiles?.avatar_url ? (
