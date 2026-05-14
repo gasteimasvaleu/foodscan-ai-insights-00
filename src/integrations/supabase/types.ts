@@ -346,6 +346,195 @@ export type Database = {
           },
         ]
       }
+      challenge_completed_days: {
+        Row: {
+          completed_at: string
+          day_number: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          day_number: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          day_number?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_daily_checklist: {
+        Row: {
+          created_at: string
+          day_number: number
+          drank_water: boolean
+          followed_menu: boolean
+          id: string
+          mood: string | null
+          notes: string | null
+          slept_well: boolean
+          symptoms: string[]
+          updated_at: string
+          user_id: string
+          walked: boolean
+        }
+        Insert: {
+          created_at?: string
+          day_number: number
+          drank_water?: boolean
+          followed_menu?: boolean
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          slept_well?: boolean
+          symptoms?: string[]
+          updated_at?: string
+          user_id: string
+          walked?: boolean
+        }
+        Update: {
+          created_at?: string
+          day_number?: number
+          drank_water?: boolean
+          followed_menu?: boolean
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          slept_well?: boolean
+          symptoms?: string[]
+          updated_at?: string
+          user_id?: string
+          walked?: boolean
+        }
+        Relationships: []
+      }
+      challenge_progress: {
+        Row: {
+          created_at: string
+          current_day: number
+          id: string
+          is_completed: boolean
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_day?: number
+          id?: string
+          is_completed?: boolean
+          start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_day?: number
+          id?: string
+          is_completed?: boolean
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_progress_photos: {
+        Row: {
+          created_at: string
+          day_number: number
+          id: string
+          notes: string | null
+          photo_type: string
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_number: number
+          id?: string
+          notes?: string | null
+          photo_type: string
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_number?: number
+          id?: string
+          notes?: string | null
+          photo_type?: string
+          photo_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenge_user_profile: {
+        Row: {
+          age: number | null
+          body_photo_url: string | null
+          created_at: string
+          face_photo_url: string | null
+          gender: string | null
+          id: string
+          initial_weight: number | null
+          motivation: string | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          body_photo_url?: string | null
+          created_at?: string
+          face_photo_url?: string | null
+          gender?: string | null
+          id: string
+          initial_weight?: number | null
+          motivation?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          body_photo_url?: string | null
+          created_at?: string
+          face_photo_url?: string | null
+          gender?: string | null
+          id?: string
+          initial_weight?: number | null
+          motivation?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      challenge_weight_logs: {
+        Row: {
+          created_at: string
+          day_number: number
+          id: string
+          logged_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          day_number: number
+          id?: string
+          logged_at?: string
+          user_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string
+          day_number?: number
+          id?: string
+          logged_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       chat_banned_words: {
         Row: {
           created_at: string
