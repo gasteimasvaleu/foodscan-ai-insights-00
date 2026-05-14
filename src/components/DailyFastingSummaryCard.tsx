@@ -148,12 +148,12 @@ export const DailyFastingSummaryCard = () => {
       onClick={() => navigate('/jejum')}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="relative flex items-center justify-center mb-1.5">
         <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
           Jejum Intermitente
         </p>
         {isFasting && (
-          <span className="text-white text-[10px] font-bold bg-white/20 rounded-full px-2 py-0.5">
+          <span className="absolute right-0 text-white text-[10px] font-bold bg-white/20 rounded-full px-2 py-0.5">
             {protocol}
           </span>
         )}
