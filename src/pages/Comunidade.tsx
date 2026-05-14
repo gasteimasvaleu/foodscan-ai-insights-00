@@ -8,7 +8,7 @@ import { StoriesCarousel } from "@/components/community/StoriesCarousel";
 import { StoryViewer, UserGroup } from "@/components/community/StoryViewer";
 import { CreateStoryModal } from "@/components/community/CreateStoryModal";
 import { CreatePostModal } from "@/components/community/CreatePostModal";
-import { Loader2, Send, Plus } from "lucide-react";
+import { Loader2, Send, Plus, Users } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Post {
@@ -105,20 +105,25 @@ export default function Comunidade() {
       <div className="min-h-screen bg-background pb-44 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
         <div className="max-w-lg mx-auto px-3 pt-4 space-y-3">
           {/* Header */}
-          <div className="flex items-center justify-between px-1">
-            <h1 className="text-2xl font-bold text-[#FD46A1]">Comunidade</h1>
-            <button
-              onClick={() => navigate("/comunidade/dm")}
-              className="relative p-2 text-foreground"
-              aria-label="Mensagens diretas"
-            >
-              <Send size={24} />
-              {unreadDM > 0 && (
-                <span className="absolute top-0 right-0 bg-[#FD46A1] text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1 font-bold">
-                  {unreadDM > 9 ? "9+" : unreadDM}
-                </span>
-              )}
-            </button>
+          <div className="animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-lg font-bold text-primary flex-1">Comunidade</h1>
+              <button
+                onClick={() => navigate("/comunidade/dm")}
+                className="relative p-2 text-foreground"
+                aria-label="Mensagens diretas"
+              >
+                <Send size={22} />
+                {unreadDM > 0 && (
+                  <span className="absolute top-0 right-0 bg-[#FD46A1] text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1 font-bold">
+                    {unreadDM > 9 ? "9+" : unreadDM}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Stories */}
