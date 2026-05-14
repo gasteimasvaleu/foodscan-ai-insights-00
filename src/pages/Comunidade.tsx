@@ -116,6 +116,14 @@ export default function Comunidade() {
               </div>
               <h1 className="text-lg font-bold text-primary flex-1">Comunidade</h1>
               <button
+                onClick={() => setView((v) => (v === "grid" ? "feed" : "grid"))}
+                className={`p-2 rounded-full ${view === "grid" ? "bg-[#FD46A1] text-white" : "text-foreground"}`}
+                aria-label={view === "grid" ? "Ver feed" : "Ver minhas publicações em grade"}
+                aria-pressed={view === "grid"}
+              >
+                <LayoutGrid size={20} />
+              </button>
+              <button
                 onClick={() => navigate("/comunidade/dm")}
                 className="relative p-2 text-foreground"
                 aria-label="Mensagens diretas"
@@ -130,21 +138,27 @@ export default function Comunidade() {
             </div>
           </div>
 
-          {/* Stories */}
-          <StoriesCarousel
-            currentUserId={user.id}
-            currentUserAvatar={profile?.avatar_url || null}
-            currentUserName={profile?.name || "Você"}
-            onAddStory={() => setStoryOpen(true)}
-            onOpenStories={(groups, idx) => {
-              setViewerGroups(groups);
-              setViewerStart(idx);
-            }}
-            refreshKey={storiesRefresh}
-          />
+          {view === "feed" && (
+            <StoriesCarousel
+              currentUserId={user.id}
+              currentUserAvatar={profile?.avatar_url || null}
+              currentUserName={profile?.name || "Você"}
+              onAddStory={() => setStoryOpen(true)}
+              onOpenStories={(groups, idx) => {
+                setViewerGroups(groups);
+                setViewerStart(idx);
+              }}
+              refreshKey={storiesRefresh}
+            />
+          )}
 
-          {/* Feed */}
-          {loading ? (
+          {view === "grid" ? (
+            <MyPostsGrid
+              userId={user.id}
+              onOpenPost={(id) => setSelectedPostId(id)}
+              refreshKey={storiesRefresh}
+            />
+          ) : loading ? (
             <div className="flex justify-center py-12">
               <Loader2 className="animate-spin text-primary" size={28} />
             </div>
