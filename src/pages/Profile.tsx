@@ -238,62 +238,14 @@ export default function Profile() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-28 pt-[calc(env(safe-area-inset-top)+3.5rem)]">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header do Perfil */}
-        <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-          <CardHeader>
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative group">
-                <Avatar className="w-24 h-24 border-4 border-primary/20">
-                  <AvatarImage src={profile?.avatar_url || ""} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
-                    {profile?.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  <Upload className="w-6 h-6 text-white" />
-                </label>
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                  disabled={uploadingAvatar}
-                />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <CardTitle className="text-xl mb-2 truncate">{profile?.name}</CardTitle>
-                <CardDescription className="text-base">{user?.email}</CardDescription>
-                <p className="text-sm text-muted-foreground mt-1">Membro desde {memberSince}</p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="mt-3">
-                      <Edit2 className="w-4 h-4 mr-2" />
-                      Editar Perfil
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
-                    <DialogHeader>
-                      <DialogTitle>Editar Perfil</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nome</Label>
-                        <Input
-                          id="name"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                        />
-                      </div>
-                      <Button onClick={handleUpdateName} className="w-full">
-                        Salvar Alterações
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </CardHeader>
-          </Card>
+        {profile && (
+          <ProfileHeaderCard
+            profile={profile}
+            email={user?.email || ""}
+            isPro={subscriptionStatus.subscribed}
+            onProfileUpdate={(updates) => setProfile((prev) => prev ? { ...prev, ...updates } : prev)}
+          />
+        )}
 
           {/* Card de Assinatura Pro */}
           {subscriptionStatus.subscribed ? (
