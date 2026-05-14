@@ -164,7 +164,7 @@ export default function Comunidade() {
       {/* Floating + button */}
       <button
         onClick={() => setPostOpen(true)}
-        className="fixed right-4 bottom-24 z-40 bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full p-4 shadow-lg shadow-[#FD46A1]/30"
+        className="fixed right-4 bottom-20 z-40 bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-full p-4 shadow-lg shadow-[#FD46A1]/30"
         aria-label="Nova publicação"
       >
         <Plus size={24} strokeWidth={2.5} />
