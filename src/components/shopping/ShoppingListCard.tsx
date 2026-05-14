@@ -27,21 +27,50 @@ export const ShoppingListCard = ({
   onOpen,
   onDelete,
 }: ShoppingListCardProps) => {
+  const total = itemsTotal ?? 0;
+  const purchased = itemsPurchased ?? 0;
+  const percent = total > 0 ? Math.round((purchased / total) * 100) : 0;
+  const isComplete = total > 0 && purchased === total;
+
   return (
-    <div className="bg-[#FFD1E7] rounded-3xl p-4 flex items-center gap-3">
+    <div className="bg-[#FFD1E7] rounded-3xl p-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
       <button
         type="button"
         onClick={onOpen}
-        className="flex-1 flex items-center gap-3 text-left min-w-0"
+        className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99] transition-transform"
       >
+        <div className="w-11 h-11 rounded-2xl bg-white/70 flex items-center justify-center text-[#FD46A1] flex-shrink-0 shadow-inner">
+          {isComplete ? <CheckCircle2 size={22} /> : <ShoppingBasket size={20} />}
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-base text-foreground truncate">{list.name}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-base text-foreground truncate">{list.name}</p>
+            {typeof itemsTotal === "number" && total > 0 && (
+              <span className="text-[10px] font-semibold text-[#FD46A1] bg-white/70 rounded-full px-1.5 py-0.5 shrink-0">
+                {percent}%
+              </span>
+            )}
+          </div>
           {typeof itemsTotal === "number" && (
-            <p className="text-xs text-foreground/60 mt-0.5">
-              {itemsTotal === 0
-                ? "Nenhum item"
-                : `${itemsPurchased ?? 0} de ${itemsTotal} comprados`}
-            </p>
+            <>
+              <p className="text-xs text-foreground/60 mt-0.5">
+                {total === 0
+                  ? "Nenhum item"
+                  : isComplete
+                  ? "Tudo comprado 🎉"
+                  : `${purchased} de ${total} comprados`}
+              </p>
+              {total > 0 && (
+                <div className="h-1 bg-white/50 rounded-full overflow-hidden mt-1.5">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      isComplete ? "bg-green-500" : "bg-[#FD46A1]"
+                    }`}
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
         <ChevronRight size={20} className="text-[#FD46A1] flex-shrink-0" />
