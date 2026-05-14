@@ -176,21 +176,21 @@ export const DailyAssessmentSummaryCard = () => {
   return (
     <>
       <div
-        className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-3 pt-2.5 pb-6 cursor-pointer relative"
+        className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-2.5 pb-6 cursor-pointer relative"
         onClick={() => navigate('/profile/assessment')}
       >
         {/* Header */}
-        <div className="relative flex items-center justify-center mb-1.5">
+        <div className="relative flex items-center justify-center mb-2">
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider">
             Avaliação Física
           </p>
-          <span className="absolute right-0 text-white/80 text-[10px] font-medium bg-white/10 rounded-full px-2 py-0.5">
+          <span className="absolute right-0 text-white/70 text-[9px] font-medium bg-white/10 rounded-full px-1.5 py-0.5">
             {daysAgoLabel(latest.assessment_date)}
           </span>
         </div>
 
         {/* Hero */}
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center justify-between gap-2 flex-1">
           {/* Weight column */}
           <div className="flex flex-col min-w-0 flex-1">
             <div className="flex items-baseline gap-1">
@@ -220,43 +220,46 @@ export const DailyAssessmentSummaryCard = () => {
                 <span className="text-white/50 font-normal">vs. anterior</span>
               </div>
             ) : (
-              <span className="text-white/50 text-[11px] mt-1">sem comparativo</span>
+              <span className="text-white/40 text-[11px] mt-1">sem comparativo</span>
             )}
-            {sparkValues.length >= 2 && (
-              <div className="mt-1.5">
+            <div className="mt-1.5 h-[28px] flex items-center">
+              {sparkValues.length >= 2 ? (
                 <Sparkline values={sparkValues} />
+              ) : (
+                <span className="text-white/40 text-[10px]">Sem histórico ainda</span>
+              )}
+            </div>
+          </div>
+
+          {/* Right cluster: ring + IMC chip */}
+          <div className="flex items-center gap-2 shrink-0">
+            {bodyFat !== null && (
+              <div className="relative w-[64px] h-[64px] flex items-center justify-center shrink-0">
+                <svg width="64" height="64" className="rotate-[-90deg]">
+                  <circle cx="32" cy="32" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
+                  <circle
+                    cx="32" cy="32" r={radius} fill="none"
+                    stroke="white" strokeWidth="5" strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    className="transition-all duration-700"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-white text-sm font-black leading-none">{bodyFat.toFixed(0)}%</span>
+                  <span className="text-white/60 text-[8px] uppercase tracking-wider">BG</span>
+                </div>
+              </div>
+            )}
+
+            {bmi && bmiInfo && (
+              <div className={`flex flex-col items-center justify-center rounded-2xl px-2.5 py-2 shrink-0 min-w-[56px] ${bmiInfo.chip}`}>
+                <span className="text-[9px] font-bold uppercase tracking-wider leading-none">{bmiInfo.label}</span>
+                <span className="text-lg font-black leading-none mt-1">{bmi.toFixed(1)}</span>
+                <span className="text-[9px] opacity-80 mt-0.5 leading-none">IMC</span>
               </div>
             )}
           </div>
-
-          {/* Body fat ring */}
-          {bodyFat !== null && (
-            <div className="relative w-[62px] h-[62px] flex items-center justify-center shrink-0">
-              <svg width="62" height="62" className="rotate-[-90deg]">
-                <circle cx="31" cy="31" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
-                <circle
-                  cx="31" cy="31" r={radius} fill="none"
-                  stroke="white" strokeWidth="5" strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  className="transition-all duration-700"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-white text-sm font-black leading-none">{bodyFat.toFixed(0)}%</span>
-                <span className="text-white/60 text-[8px] uppercase tracking-wider">BG</span>
-              </div>
-            </div>
-          )}
-
-          {/* BMI chip */}
-          {bmi && bmiInfo && (
-            <div className={`flex flex-col items-center rounded-xl px-2 py-1.5 shrink-0 ${bmiInfo.chip}`}>
-              <span className="text-[9px] font-bold uppercase tracking-wider">{bmiInfo.label}</span>
-              <span className="text-base font-black leading-none mt-0.5">{bmi.toFixed(1)}</span>
-              <span className="text-[8px] opacity-80 mt-0.5">IMC</span>
-            </div>
-          )}
         </div>
 
         {/* Quick-action */}
