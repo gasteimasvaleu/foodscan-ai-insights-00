@@ -16,10 +16,10 @@ interface Assessment {
 }
 
 const bmiClass = (bmi: number) => {
-  if (bmi < 18.5) return { label: 'Abaixo', chip: 'bg-sky-400/20 text-sky-200' };
-  if (bmi < 25) return { label: 'Normal', chip: 'bg-emerald-400/20 text-emerald-200' };
-  if (bmi < 30) return { label: 'Sobrepeso', chip: 'bg-amber-400/20 text-amber-200' };
-  return { label: 'Obesidade', chip: 'bg-rose-400/20 text-rose-200' };
+  if (bmi < 18.5) return { label: 'Abaixo', chip: 'bg-white/85 text-sky-600' };
+  if (bmi < 25) return { label: 'Normal', chip: 'bg-white/85 text-emerald-600' };
+  if (bmi < 30) return { label: 'Sobrepeso', chip: 'bg-white/85 text-amber-600' };
+  return { label: 'Obesidade', chip: 'bg-white/85 text-rose-600' };
 };
 
 const daysAgoLabel = (date: string) => {
