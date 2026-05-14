@@ -32,27 +32,6 @@ const daysAgoLabel = (date: string) => {
   return `há ${Math.floor(d / 30)}m`;
 };
 
-const Sparkline = ({ values }: { values: number[] }) => {
-  if (values.length < 2) return null;
-  const w = 64, h = 28, p = 2;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  const points = values.map((v, i) => {
-    const x = p + (i * (w - p * 2)) / (values.length - 1);
-    const y = h - p - ((v - min) / range) * (h - p * 2);
-    return [x, y] as const;
-  });
-  const d = points.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt[0].toFixed(1)} ${pt[1].toFixed(1)}`).join(' ');
-  const last = points[points.length - 1];
-  return (
-    <svg width={w} height={h} className="shrink-0">
-      <path d={d} fill="none" stroke="#a5b4fc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={last[0]} cy={last[1]} r="2" fill="#fff" />
-    </svg>
-  );
-};
-
 export const DailyAssessmentSummaryCard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -127,7 +106,6 @@ export const DailyAssessmentSummaryCard = () => {
   const bmi = weight && height ? weight / Math.pow(height / 100, 2) : null;
   const prevWeight = previous?.weight ? Number(previous.weight) : null;
   const delta = weight && prevWeight ? +(weight - prevWeight).toFixed(1) : null;
-  const sparkValues = [...history].reverse().map(h => Number(h.weight)).filter(v => !isNaN(v) && v > 0);
   const bfPct = bodyFat ? Math.min(Math.max(bodyFat, 0), 100) : 0;
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
@@ -138,7 +116,7 @@ export const DailyAssessmentSummaryCard = () => {
     return (
       <>
         <div
-          className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-2.5 pb-6 cursor-pointer relative"
+          className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
           onClick={() => navigate('/profile/assessment')}
         >
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider text-center mb-2">
@@ -176,11 +154,11 @@ export const DailyAssessmentSummaryCard = () => {
   return (
     <>
       <div
-        className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-2.5 pb-6 cursor-pointer relative"
+        className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex flex-col px-4 pt-4 pb-6 cursor-pointer relative"
         onClick={() => navigate('/profile/assessment')}
       >
         {/* Header */}
-        <div className="relative flex items-center justify-center mb-2">
+        <div className="relative flex items-center justify-center mb-4">
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider">
             Avaliação Física
           </p>
@@ -189,10 +167,10 @@ export const DailyAssessmentSummaryCard = () => {
           </span>
         </div>
 
-        {/* Hero */}
-        <div className="flex items-center justify-between gap-2 flex-1">
-          {/* Weight column */}
-          <div className="flex flex-col min-w-0 flex-1">
+        {/* Hero: 3 equal columns, all vertically centered */}
+        <div className="grid grid-cols-3 items-center gap-2 flex-1">
+          {/* Col 1: weight */}
+          <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="flex items-baseline gap-1">
               <span className="text-white text-4xl font-black leading-none tracking-tight">
                 {weight ? weight.toFixed(1).replace('.', ',') : '—'}
@@ -200,7 +178,7 @@ export const DailyAssessmentSummaryCard = () => {
               <span className="text-white/70 text-sm font-semibold">kg</span>
             </div>
             {delta !== null ? (
-              <div className="flex items-center gap-1 mt-1 text-[11px] font-semibold">
+              <div className="flex items-center gap-1 mt-1.5 text-[11px] font-semibold">
                 {delta < 0 ? (
                   <>
                     <ArrowDown className="w-3 h-3 text-emerald-300" />
@@ -217,24 +195,16 @@ export const DailyAssessmentSummaryCard = () => {
                     <span className="text-white/70">estável</span>
                   </>
                 )}
-                <span className="text-white/50 font-normal">vs. anterior</span>
               </div>
             ) : (
-              <span className="text-white/40 text-[11px] mt-1">sem comparativo</span>
+              <span className="text-white/40 text-[10px] mt-1.5">sem comparativo</span>
             )}
-            <div className="mt-1.5 h-[28px] flex items-center">
-              {sparkValues.length >= 2 ? (
-                <Sparkline values={sparkValues} />
-              ) : (
-                <span className="text-white/40 text-[10px]">Sem histórico ainda</span>
-              )}
-            </div>
           </div>
 
-          {/* Right cluster: ring + IMC chip */}
-          <div className="flex items-center gap-2 shrink-0">
-            {bodyFat !== null && (
-              <div className="relative w-[64px] h-[64px] flex items-center justify-center shrink-0">
+          {/* Col 2: BG ring */}
+          <div className="flex items-center justify-center h-full">
+            {bodyFat !== null ? (
+              <div className="relative w-[64px] h-[64px] flex items-center justify-center">
                 <svg width="64" height="64" className="rotate-[-90deg]">
                   <circle cx="32" cy="32" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
                   <circle
@@ -250,14 +220,21 @@ export const DailyAssessmentSummaryCard = () => {
                   <span className="text-white/60 text-[8px] uppercase tracking-wider">BG</span>
                 </div>
               </div>
+            ) : (
+              <span className="text-white/30 text-[10px]">—</span>
             )}
+          </div>
 
-            {bmi && bmiInfo && (
-              <div className={`flex flex-col items-center justify-center rounded-2xl px-2.5 py-2 shrink-0 min-w-[56px] ${bmiInfo.chip}`}>
+          {/* Col 3: BMI chip */}
+          <div className="flex items-center justify-center h-full">
+            {bmi && bmiInfo ? (
+              <div className={`flex flex-col items-center justify-center rounded-2xl px-2.5 py-2 min-w-[64px] ${bmiInfo.chip}`}>
                 <span className="text-[9px] font-bold uppercase tracking-wider leading-none">{bmiInfo.label}</span>
                 <span className="text-lg font-black leading-none mt-1">{bmi.toFixed(1)}</span>
                 <span className="text-[9px] opacity-80 mt-0.5 leading-none">IMC</span>
               </div>
+            ) : (
+              <span className="text-white/30 text-[10px]">—</span>
             )}
           </div>
         </div>
