@@ -16,12 +16,20 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { RemindersCard } from "@/components/RemindersCard";
 import { WhatsAppNotice } from "@/components/WhatsAppNotice";
+import { ProfileHeaderCard } from "@/components/profile/ProfileHeaderCard";
 
 
 interface ProfileData {
   id: string;
   name: string;
   avatar_url: string | null;
+  cover_url: string | null;
+  bio: string | null;
+  email_public: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
   created_at: string;
   basal_metabolic_rate: number;
 }
