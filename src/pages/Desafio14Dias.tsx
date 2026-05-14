@@ -270,7 +270,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-56">
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
           <DayView
             day={selectedDay}
             userId={user!.id}
@@ -749,7 +749,7 @@ function DayView({
             )}
           </Card>
 
-          {/* Salvar rascunho (concluir vai para o sticky bar) */}
+          {/* Salvar rascunho (concluir vai para o card abaixo) */}
           {!isCompleted && !allChecked && (
             <Button
               onClick={() => save(false)}
@@ -760,40 +760,36 @@ function DayView({
               Salvar rascunho e voltar depois
             </Button>
           )}
-        </div>
-    </div>
 
-    {/* Sticky action bar */}
-    <div className="fixed left-0 right-0 z-30 px-4 pointer-events-none" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}>
-      <div className="container max-w-lg mx-auto pointer-events-auto">
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-[#FFD1E7] shadow-lg p-3 flex items-center gap-3">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-[#FD46A1]">Dia {day}</span>
-              <span className="text-xs text-muted-foreground">{checkedCount}/4 itens</span>
+          {/* Card de progresso + ação principal */}
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-[#FFD1E7] shadow-lg p-3 flex items-center gap-3">
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-[#FD46A1]">Dia {day}</span>
+                <span className="text-xs text-muted-foreground">{checkedCount}/4 itens</span>
+              </div>
+              <div className="h-1.5 bg-[#FFD1E7]/60 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#FD46A1] transition-all duration-300"
+                  style={{ width: `${(checkedCount / 4) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="h-1.5 bg-[#FFD1E7]/60 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#FD46A1] transition-all duration-300"
-                style={{ width: `${(checkedCount / 4) * 100}%` }}
-              />
-            </div>
+            <Button
+              onClick={() => save(true)}
+              disabled={saving || !allChecked || isCompleted}
+              className="h-11 px-4 rounded-xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold shrink-0"
+            >
+              {isCompleted ? (
+                <><Trophy className="mr-1.5" size={16} /> Concluído</>
+              ) : allChecked ? (
+                "Concluir dia"
+              ) : (
+                "Marque os 4"
+              )}
+            </Button>
           </div>
-          <Button
-            onClick={() => save(true)}
-            disabled={saving || !allChecked || isCompleted}
-            className="h-11 px-4 rounded-xl bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white font-semibold shrink-0"
-          >
-            {isCompleted ? (
-              <><Trophy className="mr-1.5" size={16} /> Concluído</>
-            ) : allChecked ? (
-              "Concluir dia"
-            ) : (
-              "Marque os 4"
-            )}
-          </Button>
         </div>
-      </div>
     </div>
     </>
   );
