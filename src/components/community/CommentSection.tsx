@@ -75,6 +75,7 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
       {!loadError && comments.length === 0 && (
         <p className="text-xs text-muted-foreground text-center py-1">Seja o primeiro a comentar.</p>
       )}
+      {comments.map((c) => (
         <div key={c.id} className="flex gap-2">
           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0 overflow-hidden">
             {c.profiles?.avatar_url ? (
