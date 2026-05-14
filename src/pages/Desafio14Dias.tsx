@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { challengeData, achievements } from "@/lib/desafio14/challengeData";
 import { toast } from "sonner";
-import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks, ArrowLeft, RotateCcw } from "lucide-react";
+import { Lock, CheckCircle2, Trophy, Flame, Play, X, Camera, Sparkles, UtensilsCrossed, ListChecks, ArrowLeft, RotateCcw, TrendingDown, TrendingUp, Scale, Minus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
