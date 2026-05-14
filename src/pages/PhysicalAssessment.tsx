@@ -459,7 +459,8 @@ export default function PhysicalAssessment() {
                   </CardContent>
                 )}
               </Card>
-            ))
+              );
+            })
           )}
         </div>
         </div>
