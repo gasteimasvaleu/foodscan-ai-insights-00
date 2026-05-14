@@ -341,7 +341,7 @@ export default function PhysicalAssessment() {
 
         <div className="space-y-4">
           {assessments.length === 0 ? (
-            <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
+            <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
               <CardContent className="py-12 text-center text-muted-foreground">
                 Nenhuma avaliação registrada ainda
               </CardContent>
@@ -361,9 +361,9 @@ export default function PhysicalAssessment() {
                     : 'text-rose-600';
               const deltaArrow = delta == null || Math.abs(delta) < 0.05 ? '·' : delta < 0 ? '↓' : '↑';
               return (
-              <Card key={assessment.id} className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
+              <Card key={assessment.id} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+                <CardHeader className="pb-3 pl-5">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <CardTitle className="text-base">
                         {format(new Date(assessment.assessment_date), "dd MMM yyyy", { locale: ptBR })}
@@ -374,31 +374,12 @@ export default function PhysicalAssessment() {
                           {' '}desde {format(new Date(previous.assessment_date), "dd MMM", { locale: ptBR })}
                         </p>
                       )}
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {assessment.weight != null && (
-                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
-                            <span className="text-muted-foreground">Peso</span>{' '}
-                            <span className="font-medium text-foreground">{assessment.weight} kg</span>
-                          </span>
-                        )}
-                        {assessment.body_fat_percentage != null && (
-                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
-                            <span className="text-muted-foreground">Gordura</span>{' '}
-                            <span className="font-medium text-foreground">{Math.round(assessment.body_fat_percentage)}%</span>
-                          </span>
-                        )}
-                        {assessment.lean_mass != null && (
-                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
-                            <span className="text-muted-foreground">Magra</span>{' '}
-                            <span className="font-medium text-foreground">{assessment.lean_mass} kg</span>
-                          </span>
-                        )}
-                      </div>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
                         onClick={() => {
                           setFormData({
                             assessment_date: assessment.assessment_date,
@@ -422,10 +403,37 @@ export default function PhysicalAssessment() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
                         onClick={() => deleteAssessment(assessment.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-3">
+                    <div className="bg-[#FFD1E7]/40 rounded-xl px-2 py-2 text-center">
+                      <p className="text-sm font-semibold text-foreground tabular-nums leading-tight">
+                        {assessment.weight != null ? `${assessment.weight} kg` : '—'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide leading-tight mt-0.5">
+                        Peso
+                      </p>
+                    </div>
+                    <div className="bg-[#FFD1E7]/40 rounded-xl px-2 py-2 text-center">
+                      <p className="text-sm font-semibold text-foreground tabular-nums leading-tight">
+                        {assessment.body_fat_percentage != null ? `${Math.round(assessment.body_fat_percentage)}%` : '—'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide leading-tight mt-0.5">
+                        Gordura
+                      </p>
+                    </div>
+                    <div className="bg-[#FFD1E7]/40 rounded-xl px-2 py-2 text-center">
+                      <p className="text-sm font-semibold text-foreground tabular-nums leading-tight">
+                        {assessment.lean_mass != null ? `${assessment.lean_mass} kg` : '—'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wide leading-tight mt-0.5">
+                        Magra
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
