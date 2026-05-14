@@ -150,7 +150,7 @@ export function StoriesCarousel({
         </div>
 
         {/* Scrollable list */}
-        <div className="flex-1 overflow-x-auto scrollbar-hide">
+        <div className="flex-1 overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <div className="flex gap-3 px-3 py-3">
             {groups.length === 0 && (
               <div className="flex items-center text-xs text-muted-foreground px-2">
