@@ -1,26 +1,44 @@
-# Reposicionar mini-chart semanal
+# Harmonizar proporções do card de hidratação
 
-Reestruturar o `DailyHydrationSummaryCard.tsx` em duas linhas:
+## Mudanças em `src/components/DailyHydrationSummaryCard.tsx`
+
+### 1. Coluna central — texto na altura da garrafa
+Aumentar tipografia para que o bloco "Hidratação do Dia / 17% / 500 / 3000 ml" ocupe verticalmente uma altura próxima à da garrafinha (~110px):
+- Título: `text-[10px]` → `text-xs` (12px), mantém uppercase tracking.
+- Número grande: `text-3xl` → `text-5xl` (`leading-none`).
+- "%": `text-base` → `text-xl`.
+- "X / Y ml": `text-[11px]` → `text-sm`, `mt-1`.
+- "Meta batida!": `text-base` → `text-lg`; ícone Trophy `w-5` → `w-6`.
+- Espaçamento vertical entre elementos: `mt-0.5` → `mt-1` para respirar.
+
+### 2. Mini-chart semanal — maior e mais à esquerda
+- Largura das barras: `w-[5px]` → `w-[7px]`; gap `gap-[3px]` → `gap-[4px]`.
+- Altura das barras: `h-12` (48px) → `h-20` (80px) para acompanhar a altura do bloco de texto.
+- Label "Semana": `text-[9px]` → `text-[10px]`.
+- Iniciais dos dias: `text-[8px]` → `text-[10px]`, largura ajustada para `w-[7px]`.
+- Empurrar para a esquerda: aumentar o gap da linha superior do card (`gap-2.5` → `gap-4`) e remover o padding direito implícito da coluna do chart, usando `mr-1` na coluna do meio para puxar o chart levemente para dentro. Resultado: o chart fica mais próximo do bloco de texto e mais distante da borda direita.
+- Dot dourado de meta: `w-[4px] h-[4px]` → `w-[5px] h-[5px]`, posição `-top-1.5`.
+
+### 3. Botões "+200 / +300 / +500" subindo (saindo dos dots do carrossel)
+O card vive dentro de um deck (`Quick Actions`) que sobrepõe dots indicadores na base. Solução:
+- Reduzir o padding inferior do wrapper externo: `py-2.5` → `pt-2.5 pb-1`.
+- Reduzir margem superior dos botões: `mt-2` → `mt-1.5`.
+- Diminuir levemente o padding vertical dos botões: `py-1.5` → `py-1` mantendo aparência clicável.
+
+Resultado: a fileira de botões sobe ~12–14px, ficando claramente acima dos dots do carrossel.
+
+### Resumo visual
 
 ```text
-┌─────────────────────────────────────────────────────────┐
-│  [Garrafa]   Título                       [7 barrinhas] │
-│              30%                          S T Q Q S S D │
-│              500 / 3000 ml                              │
-│                                                         │
-│         [ +200 ]  [ +300 ]  [ +500 ]                    │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│           Hidratação do Dia                          │
+│ [Garrafa] 17%                  ▮▮▮▮▮▮▮ ←mini chart   │
+│           500 / 3000 ml        S T Q Q S S D         │
+│                                                      │
+│       [ +200 ]  [ +300 ]  [ +500 ]                   │
+│                                                      │
+│   ● ● ● ●  ← dots do deck (não cobre mais)           │
+└──────────────────────────────────────────────────────┘
 ```
 
-## Mudanças
-
-1. Wrapper externo passa de `flex items-stretch` para `flex flex-col` mantendo `px-3 py-2.5`.
-2. Linha superior: `flex items-center gap-2.5 flex-1`
-   - Coluna 1: garrafa (inalterada).
-   - Coluna 2 (`flex-1 min-w-0`): título + percentual/Meta batida + "X / Y ml" (sem os botões).
-   - Coluna 3: mini-chart semanal (7 barras + iniciais), `shrink-0`, alinhado verticalmente ao centro da coluna de texto.
-3. Linha inferior: `flex items-center gap-1.5 mt-2` com os 3 botões `+200/+300/+500` ocupando toda a largura do card (`flex-1` cada).
-4. Padding lateral simétrico: a margem direita do mini-chart até a borda passa a ser igual ao `px-3` que a garrafa já usa do lado esquerdo (basta confiar no `px-3` do wrapper — sem padding extra na coluna do chart).
-5. Mini-chart preserva: barras `h-12`, destaque do dia atual, dot dourado para 100%, label "Semana" no topo e iniciais embaixo.
-
-Sem mudanças de dados, schema ou estilos globais.
+Sem mudanças de dados, lógica ou backend.

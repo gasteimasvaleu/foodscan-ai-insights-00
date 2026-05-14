@@ -145,7 +145,7 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex flex-col px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500`}
+      className={`w-full h-full ${bgClass} flex flex-col px-3 pt-2.5 pb-1 cursor-pointer relative overflow-hidden transition-colors duration-500`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
@@ -153,7 +153,7 @@ export const DailyHydrationSummaryCard = () => {
       <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
 
       {/* Top row: bottle | text stack | weekly chart */}
-      <div className="flex items-center gap-2.5 flex-1 min-h-0 relative">
+      <div className="flex items-center gap-4 flex-1 min-h-0 relative">
         {/* Bottle (left, big) */}
         <div className="flex items-center justify-center shrink-0 relative">
           <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
@@ -195,24 +195,24 @@ export const DailyHydrationSummaryCard = () => {
         </div>
 
         {/* Middle column: title + percent + ml */}
-        <div className="flex-1 flex flex-col justify-center min-w-0">
-          <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
+        <div className="flex-1 flex flex-col justify-center min-w-0 mr-1">
+          <p className="text-white/90 text-xs font-semibold uppercase tracking-wider">
             Hidratação do Dia
           </p>
 
           {goalReached ? (
             <div className="flex items-center gap-1.5 mt-1">
-              <Trophy className="w-5 h-5 text-white" />
-              <span className="text-white text-base font-bold">Meta batida!</span>
+              <Trophy className="w-6 h-6 text-white" />
+              <span className="text-white text-lg font-bold">Meta batida!</span>
             </div>
           ) : (
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-white text-3xl font-black leading-none">{percentage}</span>
-              <span className="text-white/80 text-base font-semibold">%</span>
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-white text-5xl font-black leading-none">{percentage}</span>
+              <span className="text-white/80 text-xl font-semibold">%</span>
             </div>
           )}
 
-          <span className="text-white/85 text-[11px] mt-0.5 truncate">
+          <span className="text-white/85 text-sm mt-1 truncate">
             {consumedMl} / {goalMl} ml
           </span>
         </div>
@@ -222,10 +222,10 @@ export const DailyHydrationSummaryCard = () => {
           className="flex flex-col items-center justify-center shrink-0"
           aria-label="Constância semanal de hidratação"
         >
-          <p className="text-white/80 text-[9px] font-semibold uppercase tracking-wider mb-1">
+          <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider mb-1">
             Semana
           </p>
-          <div className="flex items-end gap-[3px] h-12">
+          <div className="flex items-end gap-[4px] h-20">
             {weekly.map((ml, i) => {
               const rawPct = goalMl > 0 ? (ml / goalMl) * 100 : 0;
               const clamped = Math.min(100, rawPct);
@@ -233,7 +233,7 @@ export const DailyHydrationSummaryCard = () => {
               const reached = rawPct >= 100;
               const heightPct = ml > 0 ? Math.max(8, clamped) : 4;
               return (
-                <div key={i} className="relative flex items-end w-[5px] h-full">
+                <div key={i} className="relative flex items-end w-[7px] h-full">
                   <div className="absolute inset-0 rounded-sm bg-white/15" />
                   <div
                     className={`relative w-full rounded-sm transition-[height] duration-500 ease-out ${
@@ -244,7 +244,7 @@ export const DailyHydrationSummaryCard = () => {
                     {reached && (
                       <span
                         aria-hidden
-                        className="absolute -top-1 left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-yellow-300 shadow"
+                        className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-yellow-300 shadow"
                       />
                     )}
                   </div>
@@ -252,11 +252,11 @@ export const DailyHydrationSummaryCard = () => {
               );
             })}
           </div>
-          <div className="flex items-end gap-[3px] mt-1">
+          <div className="flex items-end gap-[4px] mt-1">
             {DAY_LABELS.map((lbl, i) => (
               <span
                 key={i}
-                className={`w-[5px] text-center text-[8px] leading-none ${
+                className={`w-[7px] text-center text-[10px] leading-none ${
                   i === todayIdx ? 'text-white font-bold' : 'text-white/70'
                 }`}
               >
@@ -268,13 +268,13 @@ export const DailyHydrationSummaryCard = () => {
       </div>
 
       {/* Bottom row: quick add buttons spanning full width */}
-      <div className="flex items-center gap-1.5 mt-2 relative">
+      <div className="flex items-center gap-1.5 mt-1.5 relative">
         {QUICK_ADDS.map((ml) => (
           <button
             key={ml}
             onClick={(e) => quickAdd(e, ml)}
             disabled={adding !== null}
-            className="flex-1 flex items-center justify-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full px-1.5 py-1.5 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full px-1.5 py-1 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
             aria-label={`Adicionar ${ml}ml`}
           >
             <Plus className="w-3 h-3" strokeWidth={3} />
