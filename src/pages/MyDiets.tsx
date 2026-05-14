@@ -258,7 +258,7 @@ export default function MyDiets() {
                       </div>
                     </CardHeader>
                     {group.meals.length > 0 && (
-                      <CardContent className="space-y-2">
+                      <CardContent className="space-y-2 pl-5">
                         {group.meals.map((meal) => (
                           <div
                             key={meal.id}
