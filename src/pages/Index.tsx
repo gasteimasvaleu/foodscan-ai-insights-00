@@ -5,6 +5,7 @@ import { NoveltyCard } from '@/components/NoveltyCard';
 import { QuickActions } from '@/components/QuickActions';
 import { HeroDeckRow } from '@/components/HeroDeckRow';
 import { SecondaryDeckRow } from '@/components/SecondaryDeckRow';
+import { TertiaryDeckRow } from '@/components/TertiaryDeckRow';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 
@@ -111,6 +112,7 @@ const Index = () => {
             <NoveltyCard />
             <HeroDeckRow />
             <SecondaryDeckRow />
+            <TertiaryDeckRow />
             <QuickActions />
           </div>
         </div>

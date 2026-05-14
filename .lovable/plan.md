@@ -1,23 +1,28 @@
-Reorganizar o sheet "Mais opções" do `TubelightNavbar` em `src/components/ui/tubelight-navbar.tsx` para listar primeiro as rotas free e depois as Pro, com indicação visual de cadeado nas Pro quando o usuário não for assinante.
+## Plan: Nova linha de cards na home (abaixo de Loja/Balanço)
 
-Mudanças:
+### Goal
+Adicionar uma nova fileira de cards em `Index.tsx`, posicionada entre `SecondaryDeckRow` e `QuickActions`, com layout espelhado/invertido em relação à fileira de cima.
 
-1. Adicionar campo `isPro: boolean` em cada item de `moreSheetItems`. Marcar como Pro (com base nas rotas atualmente envoltas em `<ProRoute>` em `App.tsx`):
-   - Pro: `/graficos-progresso`, `/masterchef`, `/receitas`, `/nutri-coach`, `/apple-health`, `/hidratacao`, `/jejum`, `/objetivos`, `/sono`, `/faca-em-casa`, `/provador`, `/treinos`.
-   - Free: o restante (`/adicionar-refeicao`, `/alimentos`, `/comunidade`, `/loja`, `/lista-de-compras`, `/servinutri`, `/maternidade`, `/quiz`, `/desafio-14-dias`, `/conquistas`).
+### Layout
+```text
+┌─────────────────────┬──────────┐
+│ Desafio 14 Dias     │ Conquistas│
+│ (imagem 16:9)       │ (imagem)  │
+│ → /desafio-14-dias  │ → /conquistas│
+└─────────────────────┴──────────┘
+```
 
-2. Importar `useAuthContext` de `@/contexts/AuthProvider` e ler `subscriptionStatus.subscribed` para saber se é Pro ativo. Importar `Lock` e `Crown` de `lucide-react`.
+- **Esquerda (maior, ~1.6fr):** card com a imagem `image_1778753915971_2cb0be9a.png` (formato 16:9), navega para `/desafio-14-dias`.
+- **Direita (menor, ~1fr):** card com a imagem `image_1778753342779_756d33ee.png`, navega para `/conquistas`.
 
-3. Dentro do sheet, dividir em duas seções renderizadas em ordem:
-   - "Grátis" (rotas free, ordem atual mantida).
-   - "Premium" com pequeno selo "PRO" no cabeçalho (rotas Pro, ordem atual mantida).
+### Implementation
+1. **Create `src/components/TertiaryDeckRow.tsx`**
+   - Grid `grid-cols-[1.6fr_1fr] gap-3 items-stretch` (invertido em relação ao `SecondaryDeckRow`).
+   - Dois `<button>` com `rounded-3xl overflow-hidden shadow-lg`.
+   - Card esquerdo: `aspect-[16/9]` com `object-cover`.
+   - Card direito: `aspect-[4/5]` com `object-cover`.
+   - Cada um com um pequeno overlay de texto na parte inferior (título da rota).
 
-4. Para itens Pro, quando `!subscribed`:
-   - Mostrar um ícone `Lock` no canto direito (substituindo o `ChevronRight`).
-   - Adicionar badge "PRO" pequeno com `bg-[#FD46A1] text-white` ao lado do nome.
-   - Adicionar leve opacidade no card (`opacity-80`) e uma borda dourada/rosa diferenciada.
-   - Manter o clique funcional — a navegação leva à rota e o `ProRoute` existente já redireciona para o paywall.
-
-5. Quando `subscribed` (usuário Pro), os itens Pro aparecem normais (sem cadeado) mas mantêm o badge "PRO" sutil para identificar.
-
-Sem mudanças em `App.tsx` ou em rotas. Apenas reorganização visual no sheet.
+2. **Update `src/pages/Index.tsx`**
+   - Importar `TertiaryDeckRow`.
+   - Inserir `<TertiaryDeckRow />` entre `<SecondaryDeckRow />` e `<QuickActions />`.
