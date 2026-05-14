@@ -408,6 +408,28 @@ function DayView({
   const [weightInput, setWeightInput] = useState(weight ? String(weight) : "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("challenge_progress_photos")
+        .select("photo_url")
+        .eq("user_id", userId)
+        .eq("day_number", day)
+        .eq("photo_type", "body")
+        .maybeSingle();
+      if (active) {
+        setPhotoUrl(data?.photo_url ?? null);
+        setPhotoLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [userId, day]);
 
   const allChecked = checks.followed_menu && checks.drank_water && checks.walked && checks.slept_well;
 
