@@ -1,44 +1,29 @@
-# Ajuste de layout do card de Avaliação Física
+## Ajustes de layout no card de Avaliação Física
 
-Corrigir a distribuição: título/badge colados na borda, coluna do peso com espaço vazio quando não há sparkline, e ring/IMC pouco respiráveis.
+Editar somente `src/components/DailyAssessmentSummaryCard.tsx`, sem mexer em lógica de dados.
 
-## Alterações em `DailyAssessmentSummaryCard.tsx`
+### 1. Header com mais respiro
+- Aumentar o padding superior do wrapper: `pt-2.5` → `pt-4` (afasta título e badge "hoje" da borda de cima).
+- Aumentar margem inferior do header: `mb-2` → `mb-4`.
 
-1. **Padding externo**
-   - Wrapper: `px-3` → `px-4` (mais respiro lateral pro título e pro chip "há Xd").
+### 2. Remover sparkline do bloco do peso
+- Excluir o bloco `<div className="mt-1.5 h-[28px] flex items-center">…Sparkline…</div>` (linhas 225-231).
+- Remover também o componente `Sparkline` e seu import de ícones não usados.
+- A coluna de peso fica só com: número grande + linha "↑ X kg vs. anterior".
 
-2. **Header**
-   - Manter título centralizado, mas reduzir o tamanho do chip para `text-[9px] px-1.5 py-0.5` para não dominar.
-   - Adicionar `mb-2` consistente.
+### 3. Três colunas com mesma altura, todas centralizadas verticalmente
+- Container hero: trocar `flex items-center justify-between gap-2 flex-1` por `grid grid-cols-3 items-center gap-2 flex-1`.
+- Cada coluna ocupa 1/3 com `flex flex-col items-center justify-center h-full`:
+  - Col 1 (peso): centralizar texto (`items-center text-center`), número + delta empilhados.
+  - Col 2 (anel BG): já centralizado, só envolver em `flex items-center justify-center h-full` para alinhar com as outras.
+  - Col 3 (chip IMC): igual, `flex items-center justify-center h-full`; chip mantém `rounded-2xl` e tamanhos.
+- Se `bodyFat` for null, col 2 renderiza placeholder vazio para preservar o grid.
 
-3. **Hero — redistribuir em 3 zonas com `justify-between`**
-   ```text
-   ┌─────────────────────────────────────────────┐
-   │ 65,0 kg            ╭──╮      ┌──────────┐  │
-   │ ↓ 0,8 kg / sem cmp │12│  +   │  Normal  │  │
-   │ (sparkline)        │BG│      │   22,5   │  │
-   │                    ╰──╯      └──────────┘  │
-   └─────────────────────────────────────────────┘
-   ```
-   - Trocar `flex items-center gap-3 flex-1` por `flex items-center justify-between gap-2 flex-1`.
-   - Coluna peso: `flex-1 min-w-0` (sem encolher exagerado).
-   - Ring + Chip IMC: `flex items-center gap-2 shrink-0`.
+### 4. Resultado visual
+- Título "AVALIAÇÃO FÍSICA" e badge "hoje" descem ~6px.
+- Peso fica centralizado em sua coluna, sem espaço vazio embaixo (sparkline removido).
+- Anel BG centralizado na coluna do meio.
+- Chip IMC alinhado às outras duas colunas, mesma altura.
+- Botão "Registrar peso" permanece igual.
 
-4. **Sparkline sempre ocupando linha (placeholder)**
-   - Quando `sparkValues.length < 2`: renderizar um placeholder `<div className="h-[28px] flex items-center"><span className="text-white/40 text-[10px]">Sem histórico ainda</span></div>` para evitar que a coluna do peso "encurte" e crie o vazio.
-   - Quando há sparkline, segue como está mas com `text-white/50 text-[9px] mt-0.5` indicando "últimos {n} dias" abaixo.
-
-5. **Ring %BG**
-   - Aumentar levemente: 62×62 → 64×64, `radius` 26 → 28. Mantém peso visual.
-
-6. **Chip IMC**
-   - `px-2 py-1.5` → `px-2.5 py-2`, `rounded-2xl`. Centralizar com `min-w-[56px]`.
-   - Hierarquia: label em cima `text-[9px]` / número grande `text-lg` / "IMC" `text-[9px]`.
-
-7. **Sem comparativo / delta**
-   - Quando não há `delta`, manter "sem comparativo" mas em `text-white/40` para ficar mais discreto.
-
-## Fora de escopo
-
-- Não muda dados nem fluxo do botão "Registrar peso".
-- Não toca no estado vazio nem no Dialog.
+Nenhuma mudança em backend, RLS, queries ou estado.
