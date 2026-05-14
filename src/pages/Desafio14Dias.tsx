@@ -478,23 +478,16 @@ function DayView({
   }
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="bg-white/70 backdrop-blur-md max-w-lg rounded-3xl p-0 max-h-[90vh] overflow-y-auto border-0">
-        <DialogHeader className="p-5 pb-0 flex-row items-start justify-between space-y-0">
-          <div>
-            <p className="text-xs font-semibold text-[#FD46A1]">Dia {day}</p>
-            <DialogTitle className="text-xl font-bold mt-1">{data.title}</DialogTitle>
-            <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#FD46A1] text-white flex items-center justify-center flex-shrink-0"
-          >
-            <X size={18} />
-          </button>
-        </DialogHeader>
+    <div className="bg-white/70 backdrop-blur-md rounded-3xl border-0 overflow-hidden">
+      <div className="p-5 pb-0 flex flex-row items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-[#FD46A1]">Dia {day}</p>
+          <h2 className="text-xl font-bold mt-1">{data.title}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
+        </div>
+      </div>
 
-        <div className="p-5 space-y-4">
+      <div className="p-5 space-y-4">
           {/* Vídeo */}
           {data.videoUrl && (
             <video src={data.videoUrl} controls playsInline className="w-full rounded-2xl bg-black aspect-video" />
