@@ -118,10 +118,12 @@ export function StoriesCarousel({
         {/* Fixed: me */}
         <div className="flex-shrink-0 px-3 py-3 border-r border-border/40">
           <div className="flex flex-col items-center gap-1.5 w-16">
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={handleMyAvatarClick}
-              className="relative"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleMyAvatarClick(); }}
+              className="relative cursor-pointer"
               aria-label="Seu story"
             >
               <div
@@ -155,7 +157,7 @@ export function StoriesCarousel({
               </button>
             </div>
             <span className="text-[11px] text-foreground truncate w-full text-center">Seu story</span>
-          </button>
+            </div>
         </div>
 
         {/* Scrollable list */}
