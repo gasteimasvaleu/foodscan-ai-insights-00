@@ -491,11 +491,31 @@ function DayView({
         { user_id: userId, day_number: day, photo_type: "body", photo_url: pub.publicUrl },
         { onConflict: "user_id,day_number,photo_type" },
       );
+      setPhotoUrl(pub.publicUrl);
       toast.success("Foto enviada");
     } catch {
       toast.error("Erro ao enviar foto");
     } finally {
       setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  async function removePhoto() {
+    if (!photoUrl) return;
+    const ok = window.confirm("Remover esta foto do progresso?");
+    if (!ok) return;
+    try {
+      await supabase
+        .from("challenge_progress_photos")
+        .delete()
+        .eq("user_id", userId)
+        .eq("day_number", day)
+        .eq("photo_type", "body");
+      setPhotoUrl(null);
+      toast.success("Foto removida");
+    } catch {
+      toast.error("Erro ao remover foto");
     }
   }
 
