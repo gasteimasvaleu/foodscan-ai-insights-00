@@ -11,6 +11,10 @@ export interface StoryItem {
   user_id: string;
   image_url: string;
   created_at: string;
+  media_type?: "image" | "video" | null;
+  video_url?: string | null;
+  video_poster_url?: string | null;
+  video_duration_seconds?: number | null;
 }
 
 export interface UserGroup {
@@ -27,7 +31,7 @@ interface Props {
   onClose: () => void;
 }
 
-const STORY_DURATION = 5000;
+const IMAGE_DURATION = 5000;
 
 export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Props) {
   const navigate = useNavigate();
@@ -37,9 +41,12 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
   const [paused, setPaused] = useState(false);
   const [reply, setReply] = useState("");
   const startedAt = useRef(Date.now());
+  const accumulated = useRef(0); // for pause/resume
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const group = groups[groupIdx];
   const story = group?.stories[storyIdx];
+  const isVideo = story?.media_type === "video" && !!story.video_url;
 
   // Mark as viewed
   useEffect(() => {
@@ -52,14 +59,21 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
     }
   }, [story?.id, currentUserId, story]);
 
-  // Progress timer
+  // Reset progress on story change
   useEffect(() => {
-    if (paused || !story) return;
     setProgress(0);
+    accumulated.current = 0;
+    startedAt.current = Date.now();
+  }, [groupIdx, storyIdx]);
+
+  // Image progress timer (videos use timeupdate)
+  useEffect(() => {
+    if (isVideo || !story) return;
+    if (paused) return;
     startedAt.current = Date.now();
     const id = setInterval(() => {
-      const elapsed = Date.now() - startedAt.current;
-      const p = Math.min(1, elapsed / STORY_DURATION);
+      const elapsed = accumulated.current + (Date.now() - startedAt.current);
+      const p = Math.min(1, elapsed / IMAGE_DURATION);
       setProgress(p);
       if (p >= 1) {
         clearInterval(id);
@@ -68,7 +82,25 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
     }, 50);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupIdx, storyIdx, paused]);
+  }, [groupIdx, storyIdx, paused, isVideo]);
+
+  // Track pause/resume for image timer
+  useEffect(() => {
+    if (isVideo) return;
+    if (paused) {
+      accumulated.current += Date.now() - startedAt.current;
+    } else {
+      startedAt.current = Date.now();
+    }
+  }, [paused, isVideo]);
+
+  // Video pause/play sync
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (paused) v.pause();
+    else v.play().catch(() => {});
+  }, [paused, story?.id]);
 
   const next = () => {
     if (!group) return;
@@ -163,14 +195,33 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
         </button>
       </div>
 
-      {/* Image */}
+      {/* Media */}
       <div
         className="flex-1 relative flex items-center justify-center select-none"
         onPointerDown={() => setPaused(true)}
         onPointerUp={() => setPaused(false)}
         onPointerCancel={() => setPaused(false)}
       >
-        <img src={story.image_url} alt="" className="max-h-full max-w-full object-contain" />
+        {isVideo ? (
+          <video
+            ref={videoRef}
+            key={story.id}
+            src={story.video_url || undefined}
+            poster={story.video_poster_url || story.image_url}
+            autoPlay
+            playsInline
+            muted={false}
+            preload="auto"
+            className="max-h-full max-w-full object-contain"
+            onTimeUpdate={(e) => {
+              const v = e.currentTarget;
+              if (v.duration > 0) setProgress(Math.min(1, v.currentTime / v.duration));
+            }}
+            onEnded={next}
+          />
+        ) : (
+          <img src={story.image_url} alt="" className="max-h-full max-w-full object-contain" />
+        )}
 
         {/* Tap zones */}
         <button

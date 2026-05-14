@@ -642,8 +642,13 @@ export type Database = {
           description: string
           id: string
           likes_count: number
+          media_type: string
           updated_at: string
           user_id: string
+          video_duration_seconds: number | null
+          video_poster_url: string | null
+          video_storage_path: string | null
+          video_url: string | null
         }
         Insert: {
           after_photo_url?: string | null
@@ -653,8 +658,13 @@ export type Database = {
           description: string
           id?: string
           likes_count?: number
+          media_type?: string
           updated_at?: string
           user_id: string
+          video_duration_seconds?: number | null
+          video_poster_url?: string | null
+          video_storage_path?: string | null
+          video_url?: string | null
         }
         Update: {
           after_photo_url?: string | null
@@ -664,8 +674,13 @@ export type Database = {
           description?: string
           id?: string
           likes_count?: number
+          media_type?: string
           updated_at?: string
           user_id?: string
+          video_duration_seconds?: number | null
+          video_poster_url?: string | null
+          video_storage_path?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -683,24 +698,39 @@ export type Database = {
           expires_at: string
           id: string
           image_url: string
+          media_type: string
           storage_path: string | null
           user_id: string
+          video_duration_seconds: number | null
+          video_poster_url: string | null
+          video_storage_path: string | null
+          video_url: string | null
         }
         Insert: {
           created_at?: string
           expires_at?: string
           id?: string
           image_url: string
+          media_type?: string
           storage_path?: string | null
           user_id: string
+          video_duration_seconds?: number | null
+          video_poster_url?: string | null
+          video_storage_path?: string | null
+          video_url?: string | null
         }
         Update: {
           created_at?: string
           expires_at?: string
           id?: string
           image_url?: string
+          media_type?: string
           storage_path?: string | null
           user_id?: string
+          video_duration_seconds?: number | null
+          video_poster_url?: string | null
+          video_storage_path?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {

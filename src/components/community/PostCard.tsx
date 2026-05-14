@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
+import { FeedVideo } from "./FeedVideo";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -35,6 +36,9 @@ interface PostCardProps {
     comments_count: number;
     created_at: string;
     user_id: string;
+    media_type?: "image" | "video" | null;
+    video_url?: string | null;
+    video_poster_url?: string | null;
     profiles: { name: string; avatar_url: string | null } | null;
   };
   userId: string;
@@ -159,18 +163,27 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
         </DropdownMenu>
       </div>
 
-      {/* Image (Instagram-like square area) */}
-      {post.before_photo_url && (
-        <button
+      {/* Media (image or autoplay video, Reels-style) */}
+      {post.media_type === "video" && post.video_url ? (
+        <FeedVideo
+          src={post.video_url}
+          poster={post.video_poster_url || post.before_photo_url}
+          alt={hasDescription ? post.description : "Publicação em vídeo"}
           onDoubleClick={() => !liked && handleLike()}
-          className="block w-full bg-black"
-        >
-          <img
-            src={post.before_photo_url}
-            alt={hasDescription ? post.description : "Publicação"}
-            className="w-full max-h-[420px] object-cover"
-          />
-        </button>
+        />
+      ) : (
+        post.before_photo_url && (
+          <button
+            onDoubleClick={() => !liked && handleLike()}
+            className="block w-full bg-black"
+          >
+            <img
+              src={post.before_photo_url}
+              alt={hasDescription ? post.description : "Publicação"}
+              className="w-full max-h-[420px] object-cover"
+            />
+          </button>
+        )
       )}
 
       {/* Actions */}
