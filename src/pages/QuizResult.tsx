@@ -43,6 +43,34 @@ export default function QuizResult() {
     return () => clearTimeout(t);
   }, [attempt]);
 
+  const confettiFired = useRef(false);
+  useEffect(() => {
+    if (!attempt || confettiFired.current) return;
+    confettiFired.current = true;
+    const colors = ["#FD46A1", "#FF6FB3", "#FFD1E7", "#ffffff"];
+    const isPerfect = !!attempt.is_perfect;
+
+    confetti({
+      particleCount: isPerfect ? 180 : 120,
+      spread: 80,
+      startVelocity: 45,
+      origin: { y: 0.35 },
+      colors,
+      zIndex: 9999,
+    });
+    setTimeout(() => {
+      confetti({ particleCount: 60, angle: 60, spread: 70, origin: { x: 0, y: 0.6 }, colors, zIndex: 9999 });
+    }, 200);
+    setTimeout(() => {
+      confetti({ particleCount: 60, angle: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors, zIndex: 9999 });
+    }, 400);
+    if (isPerfect) {
+      setTimeout(() => {
+        confetti({ particleCount: 100, spread: 120, startVelocity: 35, origin: { y: 0.4 }, colors, zIndex: 9999 });
+      }, 700);
+    }
+  }, [attempt]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)]">
