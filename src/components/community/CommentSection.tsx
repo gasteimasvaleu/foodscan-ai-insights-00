@@ -25,8 +25,10 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const fetchComments = async () => {
+    setLoadError(null);
     const { data, error } = await supabase
       .from("post_comments")
       .select("*, profiles:user_id(name, avatar_url)")
@@ -34,7 +36,7 @@ export function CommentSection({ postId, userId }: CommentSectionProps) {
       .order("created_at", { ascending: true });
     if (error) {
       console.error("fetchComments error:", error);
-      toast({ title: "Erro ao carregar comentários", description: error.message, variant: "destructive" });
+      setLoadError(error.message);
     }
     setComments((data as unknown as Comment[]) || []);
     setLoading(false);
