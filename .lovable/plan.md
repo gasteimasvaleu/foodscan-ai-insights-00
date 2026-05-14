@@ -1,41 +1,53 @@
 ## Diagnóstico
-O card `DailyAssessmentSummaryCard` usa gradiente `from-slate-900 via-slate-800 to-indigo-900` (azul escuro/preto) — destoa completamente do padrão dos outros cards do dashboard, que usam gradientes coloridos vibrantes alinhados ao branding (rosa nas calorias, azul nas águas, roxo no jejum).
+O indicador de delta de peso (seta + valor) está em `text-emerald-300` / `text-rose-300` sobre o novo fundo magenta — baixíssimo contraste, fica praticamente invisível.
 
-Como o brand primary é `#FD46A1` e o card de calorias já usa rosa claro (`pink-100 → pink-200`), o card de avaliação física pode adotar um gradiente magenta/rosa mais saturado, na mesma família mas distinto, mantendo coesão visual.
+## Mudança em `src/components/DailyAssessmentSummaryCard.tsx` (linhas 180-201)
 
-## Mudanças em `src/components/DailyAssessmentSummaryCard.tsx`
+Envolver o delta em um chip branco translúcido com cores sólidas, semelhante ao chip de IMC:
 
-### 1. Substituir o gradiente de fundo (3 ocorrências — linhas 95, 119, 157)
 De:
+```tsx
+{delta !== null ? (
+  <div className="flex items-center gap-1 mt-1.5 text-[11px] font-semibold">
+    {delta < 0 ? (
+      <>
+        <ArrowDown className="w-3 h-3 text-emerald-300" />
+        <span className="text-emerald-300">{Math.abs(delta)} kg</span>
+      </>
+    ) : delta > 0 ? (
+      <>
+        <ArrowUp className="w-3 h-3 text-rose-300" />
+        <span className="text-rose-300">{delta} kg</span>
+      </>
+    ) : (
+      <>
+        <Minus className="w-3 h-3 text-white/70" />
+        <span className="text-white/70">estável</span>
+      </>
+    )}
+  </div>
+) : (
+  <span className="text-white/40 text-[10px] mt-1.5">sem comparativo</span>
+)}
 ```
-bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900
-```
+
 Para:
-```
-bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB]
-```
-(Magenta brand → rosa médio → rosa claro — coerente com `#FD46A1`.)
-
-### 2. Ajustar as cores de delta de peso (linhas 184-195)
-As cores `emerald-300` e `rose-300` ficam ok no novo fundo rosa, mas para reforçar legibilidade vou trocar `text-white/70` (estável) por `text-white/85` e manter o resto. Sem alteração estrutural.
-
-### 3. Ajustar o `bmiClass` (linhas 18-23) para chips legíveis em fundo rosa
-Os chips atuais usam tons translúcidos pastéis (sky/emerald/amber/rose 400 com 20% opacidade) que ficavam bem em fundo escuro mas perdem contraste em rosa. Trocar para chips com fundo branco translúcido + texto colorido sólido:
-```
-Abaixo:    bg-white/85 text-sky-600
-Normal:    bg-white/85 text-emerald-600
-Sobrepeso: bg-white/85 text-amber-600
-Obesidade: bg-white/85 text-rose-600
+```tsx
+{delta !== null ? (
+  <div className={`flex items-center gap-1 mt-1.5 text-[11px] font-bold rounded-full px-2 py-0.5 bg-white/85 ${
+    delta < 0 ? 'text-emerald-600' : delta > 0 ? 'text-rose-600' : 'text-slate-600'
+  }`}>
+    {delta < 0 ? <ArrowDown className="w-3 h-3" /> : delta > 0 ? <ArrowUp className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+    <span>{delta === 0 ? 'estável' : `${Math.abs(delta)} kg`}</span>
+  </div>
+) : (
+  <span className="text-white/70 text-[10px] mt-1.5">sem comparativo</span>
+)}
 ```
 
-### 4. Ajustar elementos auxiliares para o novo fundo
-- Anel BG (linha 209): `stroke="rgba(255,255,255,0.15)"` → manter (fica bom em rosa também).
-- Texto "BG" (linha 220): `text-white/60` → manter.
-- Botão de ação (linhas 134, 245): `bg-white/15 hover:bg-white/25` → trocar para `bg-white/25 hover:bg-white/40` para garantir contraste no rosa mais claro.
-- Badge "hoje/ontem" (linha 165): `bg-white/10` → `bg-white/20`.
-- Empty state ícone (linha 126): `text-white/70` → manter.
+- Chip `bg-white/85` igual ao chip de IMC → coerência visual.
+- Cores `emerald-600` / `rose-600` sólidas → contraste forte sobre branco.
+- "sem comparativo" sobe de `white/40` para `white/70` para também ficar legível.
 
 ## Fora do escopo
-- Sem mudança de layout, hierarquia ou tipografia.
-- Sem mudança no Dialog de registrar peso (já está padrão glass branco).
-- Sem mudança nos outros cards do dashboard.
+- Sem mudança em layout, gradiente ou outros elementos.
