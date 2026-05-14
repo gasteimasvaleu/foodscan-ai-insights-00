@@ -270,7 +270,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-40">
+        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-56">
           <DayView
             day={selectedDay}
             userId={user!.id}
