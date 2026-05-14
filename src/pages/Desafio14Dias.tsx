@@ -514,11 +514,18 @@ function DayView({
   return (
     <div className="bg-white/70 backdrop-blur-md rounded-3xl border-0 overflow-hidden">
       <div className="p-5 pb-0 flex flex-row items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold text-[#FD46A1]">Dia {day}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-[#FD46A1]">Dia {day}</p>
           <h2 className="text-xl font-bold mt-1">{data.title}</h2>
           <p className="text-sm text-muted-foreground mt-1">{data.summary}</p>
         </div>
+        <button
+          onClick={onClose}
+          className="shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-[#FD46A1] px-2 py-1 rounded-xl hover:bg-[#FFD1E7]/60 transition"
+        >
+          <ArrowLeft size={16} />
+          <span>Voltar aos 14 dias</span>
+        </button>
       </div>
 
       <div className="p-5 space-y-4">
