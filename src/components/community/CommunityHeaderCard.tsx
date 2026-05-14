@@ -40,7 +40,7 @@ export function CommunityHeaderCard({
   return (
     <div className="rounded-3xl overflow-hidden bg-white/70 backdrop-blur-md border border-white/40 shadow-xl animate-fade-in">
       {/* Cover */}
-      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-[#FD46A1] to-[#FF8FC4]">
+      <div className="relative h-20 w-full bg-gradient-to-br from-[#FD46A1] to-[#FF8FC4]">
         <div className="absolute top-3 right-3 flex items-center gap-2">
           <button
             onClick={onToggleView}
