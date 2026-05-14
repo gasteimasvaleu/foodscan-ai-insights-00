@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
-import { ArrowLeft, Loader2, MessageCircle } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Mail } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -115,11 +115,20 @@ export default function DMList() {
       <Navbar />
       <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
         <div className="max-w-lg mx-auto px-3 pt-4">
-          <div className="flex items-center gap-2 mb-4 px-1">
-            <button onClick={() => navigate("/comunidade")} className="p-1.5" aria-label="Voltar">
-              <ArrowLeft size={22} className="text-foreground" />
-            </button>
-            <h1 className="text-2xl font-bold text-[#FD46A1]">Mensagens</h1>
+          <div className="mb-4 animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Mail className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-lg font-bold text-primary flex-1">Mensagens</h1>
+              <button
+                onClick={() => navigate("/comunidade")}
+                className="p-2 rounded-xl bg-white/40 hover:bg-white/60 transition text-primary"
+                aria-label="Voltar"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            </div>
           </div>
 
           {loading ? (
