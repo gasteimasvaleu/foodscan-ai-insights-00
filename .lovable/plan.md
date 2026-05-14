@@ -1,19 +1,31 @@
 ## Objetivo
-Remover a faixa preta superior do `StoryViewer` e fazer com que as barras de progresso, avatar, nome, botões (lixeira/X) fiquem **sobrepostos** ao vídeo/imagem em fullscreen, igual ao Instagram Stories.
+Remover o modal/overlay do chat em `/nutri-coach` e renderizar o chat **inline**, abaixo do card header com o título "NutriCoach", ocupando o espaço restante da tela até o Navbar inferior.
 
-## Mudanças em `src/components/community/StoryViewer.tsx`
+## Mudanças em `src/pages/NutriCoach.tsx`
 
-1. **Layout**: trocar o `flex flex-col` que empilha header + mídia por uma estrutura onde a mídia ocupa a tela toda (`absolute inset-0`) e header + barras ficam `absolute top-0` por cima.
-2. **Mídia**: container vira `absolute inset-0` com `object-cover` (ou `object-contain` mantido, mas com `bg-black` atrás) ocupando 100% da viewport.
-3. **Header overlay**:
-   - `absolute top-0 left-0 right-0 z-20`
-   - Mantém o `pt-[calc(env(safe-area-inset-top)+0.5rem)]` para não colidir com notch/Dynamic Island
-   - Adicionar gradiente sutil `bg-gradient-to-b from-black/60 to-transparent` para garantir legibilidade dos textos brancos sobre qualquer cor de vídeo
-   - Inclui as barras de progresso + linha do avatar/nome/botões
-4. **Footer (reply)**: também vira overlay `absolute bottom-0` com gradiente `from-black/60 to-transparent` invertido, mantendo `pb-[calc(env(safe-area-inset-bottom)+0.75rem)]`.
-5. **Tap zones (prev/next)**: continuam funcionando, ajustar `z-index` para ficar abaixo do header/footer mas acima da mídia.
-6. **Container raiz**: `fixed inset-0 z-[100] bg-black overflow-hidden` (sem `flex flex-col`).
+1. **Remover**:
+   - Estado `chatOpen` e `useEffect` que bloqueia `body.overflow`
+   - Card de descrição "Seu Assistente de Nutrição" + botão "Abrir Chat"
+   - Bloco inteiro do overlay (`{chatOpen && (...)}`) com backdrop e painel flutuante
+   - Imports não usados (`X` do lucide-react)
+
+2. **Layout novo**:
+   - Container raiz mantém `min-h-screen flex flex-col` + Navbar topo
+   - Wrapper interno vira `flex-1 flex flex-col` com `pt-[calc(env(safe-area-inset-top)+4rem)] pb-28` (espaço pro Navbar inferior) e `max-w-3xl mx-auto w-full px-4`
+   - Card header (gradient pink com título "NutriCoach") permanece no topo, `shrink-0`
+   - Logo abaixo, novo container `flex-1 flex flex-col min-h-0 rounded-2xl bg-white border border-primary/20 shadow-sm overflow-hidden mt-4`:
+     - **Mensagens**: `flex-1 overflow-y-auto px-4 py-4 space-y-4`
+     - **Input**: `border-t bg-white p-3` com textarea + botão Send (mesma estrutura atual)
+
+3. **Comportamento**:
+   - Chat já carrega automaticamente com `WELCOME_MESSAGE` ao entrar na página
+   - Lógica de `send`, `streamChat`, `userContext`, `handleKeyDown` permanece igual
+   - Auto-scroll do `scrollRef` continua funcionando
+   - Mantém `text-base` no textarea pra evitar zoom no iOS
+
+4. **Espaçamento iOS/teclado**: como o problema do teclado já foi resolvido no Capacitor (resize native), basta `pb-28` ou `pb-32` no container externo pra não cobrir o input com o Navbar inferior — sem precisar de `pb-40` agressivo do modal.
 
 ## Fora do escopo
-- Mudanças em `CreateStoryModal`, `CreatePostModal`, `PostCard` ou `FeedVideo`.
-- Lógica de progresso, mute, reply ou navegação — apenas reorganização visual.
+- Persistência de histórico do chat
+- Mudanças no edge function `nutri-coach-chat`
+- Mudanças visuais no Navbar inferior
