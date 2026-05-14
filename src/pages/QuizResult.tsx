@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Crown, Sparkles, Target, ArrowRight } from "lucide-react";
+import { Trophy, Crown, Sparkles, ArrowRight } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 
 export default function QuizResult() {
