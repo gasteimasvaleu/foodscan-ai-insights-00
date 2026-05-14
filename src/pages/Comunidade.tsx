@@ -23,6 +23,9 @@ interface Post {
   comments_count: number;
   created_at: string;
   user_id: string;
+  media_type?: "image" | "video" | null;
+  video_url?: string | null;
+  video_poster_url?: string | null;
   profiles: { name: string; avatar_url: string | null } | null;
 }
 
