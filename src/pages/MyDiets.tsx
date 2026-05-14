@@ -184,8 +184,8 @@ export default function MyDiets() {
             <TabsContent key={day.value} value={day.value}>
               <div className="space-y-4">
                 {groupedByMealType.map((group) => (
-                  <Card key={group.value} className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
-                    <CardHeader>
+                  <Card key={group.value} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+                    <CardHeader className="pl-5">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg">{group.label}</CardTitle>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -258,11 +258,11 @@ export default function MyDiets() {
                       </div>
                     </CardHeader>
                     {group.meals.length > 0 && (
-                      <CardContent className="space-y-2">
+                      <CardContent className="space-y-2 pl-5">
                         {group.meals.map((meal) => (
                           <div
                             key={meal.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                            className="flex items-center justify-between p-3 rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15"
                           >
                             <div className="flex-1">
                               <p className="font-medium">{meal.meal_name}</p>
@@ -287,6 +287,7 @@ export default function MyDiets() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
                               onClick={() => deleteDiet(meal.id)}
                             >
                               <Trash2 className="h-4 w-4" />
