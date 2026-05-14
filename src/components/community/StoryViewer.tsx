@@ -155,9 +155,56 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
   const isMine = story.user_id === currentUserId;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black flex flex-col">
-      {/* Progress bars */}
-      <div className="flex gap-1 p-2 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
+    <div className="fixed inset-0 z-[100] bg-black overflow-hidden">
+      {/* Media (fullscreen background) */}
+      <div
+        className="absolute inset-0 flex items-center justify-center select-none"
+        onPointerDown={() => setPaused(true)}
+        onPointerUp={() => setPaused(false)}
+        onPointerCancel={() => setPaused(false)}
+      >
+        {isVideo ? (
+          <video
+            ref={videoRef}
+            key={story.id}
+            src={story.video_url || undefined}
+            poster={story.video_poster_url || story.image_url}
+            autoPlay
+            playsInline
+            muted={false}
+            preload="auto"
+            className="max-h-full max-w-full object-contain"
+            onTimeUpdate={(e) => {
+              const v = e.currentTarget;
+              if (v.duration > 0) setProgress(Math.min(1, v.currentTime / v.duration));
+            }}
+            onEnded={next}
+          />
+        ) : (
+          <img src={story.image_url} alt="" className="max-h-full max-w-full object-contain" />
+        )}
+
+        {/* Tap zones */}
+        <button
+          onClick={prev}
+          className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-2 text-white/0 hover:text-white/40 transition"
+          aria-label="Anterior"
+        >
+          <ChevronLeft size={32} />
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-2 text-white/0 hover:text-white/40 transition"
+          aria-label="Próximo"
+        >
+          <ChevronRight size={32} />
+        </button>
+      </div>
+
+      {/* Top overlay: progress + header */}
+      <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/60 via-black/30 to-transparent pointer-events-none">
+        <div className="pointer-events-auto">
+        <div className="flex gap-1 p-2 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
         {group.stories.map((_, i) => (
           <div key={i} className="flex-1 h-0.5 bg-white/30 rounded-full overflow-hidden">
             <div
