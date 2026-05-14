@@ -63,6 +63,35 @@ export default function Desafio14Dias() {
   const [initWeight, setInitWeight] = useState("");
   const [motivation, setMotivation] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  async function resetChallenge() {
+    if (!user) return;
+    setResetting(true);
+    const uid = user.id;
+    try {
+      await Promise.all([
+        supabase.from("challenge_daily_checklist").delete().eq("user_id", uid),
+        supabase.from("challenge_completed_days").delete().eq("user_id", uid),
+        supabase.from("challenge_weight_logs").delete().eq("user_id", uid),
+        supabase.from("challenge_progress_photos").delete().eq("user_id", uid),
+        supabase.from("challenge_progress").delete().eq("user_id", uid),
+        supabase.from("challenge_user_profile").delete().eq("id", uid),
+      ]);
+      setProfile(null);
+      setCompletedDays(new Set());
+      setProgressByDay({});
+      setWeights([]);
+      setSelectedDay(null);
+      setInitWeight("");
+      setMotivation("");
+      toast.success("Desafio resetado! Comece de novo 💪");
+    } catch (e) {
+      toast.error("Erro ao resetar");
+    } finally {
+      setResetting(false);
+    }
+  }
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth", { replace: true });
