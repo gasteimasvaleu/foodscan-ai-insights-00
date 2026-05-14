@@ -347,20 +347,78 @@ export default function PhysicalAssessment() {
               </CardContent>
             </Card>
           ) : (
-            assessments.map((assessment) => (
+            assessments.map((assessment, index) => {
+              const previous = assessments[index + 1];
+              const delta =
+                previous && assessment.weight != null && previous.weight != null
+                  ? assessment.weight - previous.weight
+                  : null;
+              const deltaTone =
+                delta == null || Math.abs(delta) < 0.05
+                  ? 'text-muted-foreground'
+                  : delta < 0
+                    ? 'text-emerald-600'
+                    : 'text-rose-600';
+              const deltaArrow = delta == null || Math.abs(delta) < 0.05 ? '·' : delta < 0 ? '↓' : '↑';
+              return (
               <Card key={assessment.id} className="bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                     <CardTitle className="text-base">
-                        {format(new Date(assessment.assessment_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-base">
+                        {format(new Date(assessment.assessment_date), "dd MMM yyyy", { locale: ptBR })}
                       </CardTitle>
-                      <CardDescription>
-                        Peso: {assessment.weight}kg | Gordura: {assessment.body_fat_percentage}% |
-                        Magra: {assessment.lean_mass}kg
-                      </CardDescription>
+                      {previous && (
+                        <p className={`text-xs mt-0.5 ${deltaTone}`}>
+                          {deltaArrow} {delta != null ? `${Math.abs(delta).toFixed(1).replace('.', ',')} kg` : 'sem variação'}
+                          {' '}desde {format(new Date(previous.assessment_date), "dd MMM", { locale: ptBR })}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {assessment.weight != null && (
+                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
+                            <span className="text-muted-foreground">Peso</span>{' '}
+                            <span className="font-medium text-foreground">{assessment.weight} kg</span>
+                          </span>
+                        )}
+                        {assessment.body_fat_percentage != null && (
+                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
+                            <span className="text-muted-foreground">Gordura</span>{' '}
+                            <span className="font-medium text-foreground">{Math.round(assessment.body_fat_percentage)}%</span>
+                          </span>
+                        )}
+                        {assessment.lean_mass != null && (
+                          <span className="text-sm bg-muted rounded-full px-2.5 py-1">
+                            <span className="text-muted-foreground">Magra</span>{' '}
+                            <span className="font-medium text-foreground">{assessment.lean_mass} kg</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setFormData({
+                            assessment_date: assessment.assessment_date,
+                            weight: assessment.weight?.toString() ?? '',
+                            height: assessment.height?.toString() ?? '',
+                            waist: assessment.waist?.toString() ?? '',
+                            neck: assessment.neck?.toString() ?? '',
+                            body_fat_percentage: assessment.body_fat_percentage?.toString() ?? '',
+                            lean_mass: assessment.lean_mass?.toString() ?? '',
+                            fat_mass: assessment.fat_mass?.toString() ?? '',
+                            notes: assessment.notes ?? '',
+                          });
+                          setBeforePhoto(null);
+                          setAfterPhoto(null);
+                          setEditingId(assessment.id);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -401,7 +459,8 @@ export default function PhysicalAssessment() {
                   </CardContent>
                 )}
               </Card>
-            ))
+              );
+            })
           )}
         </div>
         </div>
