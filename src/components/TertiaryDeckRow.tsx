@@ -40,7 +40,7 @@ export const TertiaryDeckRow: React.FC = () => {
         aria-label="Conquistas"
       >
         <img
-          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1778753342779_756d33ee.png"
+          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/medalha.png"
           alt="Conquistas"
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="lazy"
