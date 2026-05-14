@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck, Lock, Crown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { useAuthContext } from "@/contexts/AuthProvider"
 
 interface NavItem {
   name: string
