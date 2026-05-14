@@ -145,7 +145,7 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex flex-col px-3 pt-2.5 pb-1 cursor-pointer relative overflow-hidden transition-colors duration-500`}
+      className={`w-full h-full ${bgClass} flex flex-col px-3 pt-2.5 pb-6 cursor-pointer relative overflow-hidden transition-colors duration-500`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
