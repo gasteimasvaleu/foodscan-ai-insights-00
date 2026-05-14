@@ -152,11 +152,6 @@ export const DailyFastingSummaryCard = () => {
         <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
           Jejum Intermitente
         </p>
-        {isFasting && (
-          <span className="absolute right-0 text-white text-[10px] font-bold bg-white/20 rounded-full px-2 py-0.5">
-            {protocol}
-          </span>
-        )}
       </div>
 
       {/* Hero: ring + text */}
