@@ -638,7 +638,7 @@ function DayView({
               <p className="text-base font-medium">Checklist do dia</p>
               <span className="text-xs font-semibold text-[#FD46A1]">{checkedCount}/4</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {(Object.keys(CHECK_LABELS) as Array<keyof typeof CHECK_LABELS>).map((k) => {
                 const active = checks[k];
                 return (
@@ -646,7 +646,7 @@ function DayView({
                     key={k}
                     type="button"
                     onClick={() => setChecks({ ...checks, [k]: !active })}
-                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition active:scale-95 ${
+                    className={`w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition active:scale-95 ${
                       active
                         ? "bg-[#FD46A1] text-white shadow-sm"
                         : "bg-[#FFD1E7]/50 text-[#FD46A1] border border-[#FFD1E7]"
