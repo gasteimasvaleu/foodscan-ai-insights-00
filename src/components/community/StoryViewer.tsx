@@ -155,49 +155,10 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
   const isMine = story.user_id === currentUserId;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black flex flex-col">
-      {/* Progress bars */}
-      <div className="flex gap-1 p-2 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
-        {group.stories.map((_, i) => (
-          <div key={i} className="flex-1 h-0.5 bg-white/30 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-white transition-[width] duration-100"
-              style={{
-                width: `${i < storyIdx ? 100 : i === storyIdx ? progress * 100 : 0}%`,
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-2 text-white">
-        <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
-          {group.avatar_url ? (
-            <img src={group.avatar_url} alt="" className="w-full h-full object-cover" />
-          ) : (
-            group.name.charAt(0).toUpperCase()
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{group.name}</p>
-          <p className="text-xs text-white/70">
-            {formatDistanceToNow(new Date(story.created_at), { addSuffix: true, locale: ptBR })}
-          </p>
-        </div>
-        {isMine && (
-          <button onClick={handleDelete} className="p-2 text-white/80 hover:text-white" aria-label="Apagar">
-            <Trash2 size={18} />
-          </button>
-        )}
-        <button onClick={onClose} className="p-2 text-white" aria-label="Fechar">
-          <X size={22} />
-        </button>
-      </div>
-
-      {/* Media */}
+    <div className="fixed inset-0 z-[100] bg-black overflow-hidden">
+      {/* Media (fullscreen background) */}
       <div
-        className="flex-1 relative flex items-center justify-center select-none"
+        className="absolute inset-0 flex items-center justify-center select-none"
         onPointerDown={() => setPaused(true)}
         onPointerUp={() => setPaused(false)}
         onPointerCancel={() => setPaused(false)}
@@ -240,9 +201,52 @@ export function StoryViewer({ groups, startIndex, currentUserId, onClose }: Prop
         </button>
       </div>
 
+      {/* Top overlay: progress + header */}
+      <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/60 via-black/30 to-transparent pointer-events-none">
+        <div className="pointer-events-auto">
+        <div className="flex gap-1 p-2 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
+        {group.stories.map((_, i) => (
+          <div key={i} className="flex-1 h-0.5 bg-white/30 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white transition-[width] duration-100"
+              style={{
+                width: `${i < storyIdx ? 100 : i === storyIdx ? progress * 100 : 0}%`,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 py-2 text-white">
+        <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
+          {group.avatar_url ? (
+            <img src={group.avatar_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            group.name.charAt(0).toUpperCase()
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold truncate">{group.name}</p>
+          <p className="text-xs text-white/70">
+            {formatDistanceToNow(new Date(story.created_at), { addSuffix: true, locale: ptBR })}
+          </p>
+        </div>
+        {isMine && (
+          <button onClick={handleDelete} className="p-2 text-white/80 hover:text-white" aria-label="Apagar">
+            <Trash2 size={18} />
+          </button>
+        )}
+        <button onClick={onClose} className="p-2 text-white" aria-label="Fechar">
+          <X size={22} />
+        </button>
+      </div>
+        </div>
+      </div>
+
       {/* Reply (only for others) */}
       {!isMine && (
-        <div className="p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] flex gap-2 items-center bg-black">
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] flex gap-2 items-center bg-gradient-to-t from-black/70 via-black/40 to-transparent">
           <input
             value={reply}
             onChange={(e) => setReply(e.target.value)}
