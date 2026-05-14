@@ -73,55 +73,78 @@ export default function QuizResult() {
       <Navbar />
       <div className="max-w-md mx-auto px-4 space-y-4 animate-fade-in">
         {/* Hero card */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#FD46A1] via-[#FF6FB3] to-[#FF9DCB] text-white shadow-xl">
-          {/* Decorative blobs */}
-          <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-12 w-56 h-56 rounded-full bg-white/15 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[32px] bg-white border border-[#FFD1E7] shadow-xl shadow-pink-100 p-6">
+          {/* Background glows */}
+          <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#FFD1E7] rounded-full blur-3xl opacity-50" />
+          <div className="pointer-events-none absolute -bottom-12 -left-12 w-32 h-32 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
 
-          <div className="relative p-6 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 animate-scale-in">
-              <Trophy className="h-8 w-8 text-white" />
+          <div className="relative z-10">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6 gap-3">
+              <div className="min-w-0">
+                <h3 className="text-foreground text-lg font-bold leading-none mb-1">Seu resultado</h3>
+                <p className="text-[#FD46A1] text-xs font-semibold uppercase tracking-wider">
+                  Quiz concluído
+                </p>
+              </div>
+              {attempt.is_perfect && (
+                <div className="flex items-center bg-[#FFD1E7]/40 px-3 py-1.5 rounded-full border border-[#FFD1E7] shrink-0">
+                  <Sparkles className="h-3.5 w-3.5 mr-1.5 text-[#FD46A1]" />
+                  <span className="text-[#FD46A1] text-[10px] font-bold">QUIZ PERFEITO</span>
+                </div>
+              )}
             </div>
 
-            <div className="text-sm text-white/85">Sua pontuação</div>
-            <div className="text-7xl font-bold tabular-nums leading-none my-2 drop-shadow-sm">
-              {Math.round(animatedScore)}
+            {/* Score visual */}
+            <div className="flex items-center gap-5 mb-6">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] flex items-center justify-center shadow-lg shadow-pink-200">
+                  <Trophy className="h-12 w-12 text-white" fill="white" />
+                </div>
+                {isPro && (
+                  <div className="absolute -bottom-2 -right-2 bg-white px-2 py-1 rounded-lg shadow-sm border border-gray-100 flex items-center gap-1">
+                    <Crown className="h-3 w-3 text-[#FD46A1]" />
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
+                      Pro ×1,25
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-5xl font-extrabold text-foreground tracking-tight leading-none tabular-nums">
+                  {Math.round(animatedScore)}
+                </span>
+                <span className="text-sm font-medium text-muted-foreground mt-1">pontos</span>
+              </div>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md rounded-full px-3 py-1 text-sm">
-              <Target className="h-3.5 w-3.5" />
-              <span>
-                {attempt.correct_count} de {attempt.total_questions} corretas
-              </span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="w-full mt-5">
-              <div className="h-2 rounded-full bg-white/20 overflow-hidden">
+            {/* Acertos / Progress */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-end">
+                <p className="text-xs font-semibold text-foreground/80">
+                  Acertos: <span className="text-[#FD46A1]">{attempt.correct_count} de {attempt.total_questions}</span>
+                </p>
+                <p className="text-[10px] font-bold text-muted-foreground">
+                  {Math.round(progress)}%
+                </p>
+              </div>
+              <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
                 <div
-                  className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
+                  className="h-full bg-gradient-to-r from-[#FD46A1] to-[#ff8cb8] rounded-full shadow-[0_0_8px_rgba(253,70,161,0.4)] transition-all duration-700"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <div className="text-[11px] text-white/80 mt-1.5">
-                {Math.round(progress)}% de acerto
-              </div>
             </div>
 
-            {/* Badges */}
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {attempt.is_perfect && (
-                <div className="inline-flex items-center gap-1 bg-white text-[#FD46A1] rounded-full px-3 py-1 text-xs font-medium animate-fade-in">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Quiz perfeito!
-                </div>
-              )}
-              {isPro && (
-                <div className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-md rounded-full px-3 py-1 text-xs font-medium">
-                  <Crown className="h-3.5 w-3.5" />
-                  Bônus Pro ×1,25
-                </div>
-              )}
+            {/* Footer */}
+            <div className="pt-4 mt-4 border-t border-gray-100">
+              <p className="text-[13px] leading-relaxed text-muted-foreground font-medium">
+                {attempt.is_perfect
+                  ? <>Pontuação perfeita! Você dominou o tema 🏆</>
+                  : progress >= 70
+                    ? <>Ótimo desempenho — continue jogando para subir no <span className="text-[#FD46A1] font-bold">ranking</span>!</>
+                    : <>Bom começo! Tente outro quiz para somar mais pontos.</>}
+              </p>
             </div>
           </div>
         </div>
