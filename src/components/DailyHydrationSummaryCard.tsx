@@ -145,139 +145,142 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex items-stretch px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500 gap-2.5`}
+      className={`w-full h-full ${bgClass} flex flex-col px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
       <div aria-hidden className="pointer-events-none absolute -top-8 -right-6 h-24 w-24 rounded-full bg-white/15 blur-2xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-6 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
 
-      {/* Bottle (left, big) */}
-      <div className="flex items-center justify-center shrink-0 relative">
-        <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
-          <defs>
-            <clipPath id="bottleClip">
-              <path d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z" />
-            </clipPath>
-          </defs>
-          <rect x="20" y="0" width="16" height="8" rx="2" fill="white" opacity="0.95" />
-          <rect x="22" y="8" width="12" height="9" fill="white" opacity="0.95" />
-          <path
-            d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z"
-            fill="rgba(255,255,255,0.18)"
-            stroke="white"
-            strokeWidth="2"
-          />
-          <rect
-            x="12"
-            y={fillY}
-            width="32"
-            height={BODY_BOTTOM - fillY}
-            fill="white"
-            clipPath="url(#bottleClip)"
-            className="transition-all duration-700 ease-out"
-          />
-          {percentage > 0 && (
-            <ellipse
-              cx="28"
-              cy={fillY}
-              rx="16"
-              ry="2.5"
+      {/* Top row: bottle | text stack | weekly chart */}
+      <div className="flex items-center gap-2.5 flex-1 min-h-0 relative">
+        {/* Bottle (left, big) */}
+        <div className="flex items-center justify-center shrink-0 relative">
+          <svg width={BOTTLE_W} height={BOTTLE_H} viewBox="0 0 56 112" className="drop-shadow-md">
+            <defs>
+              <clipPath id="bottleClip">
+                <path d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z" />
+              </clipPath>
+            </defs>
+            <rect x="20" y="0" width="16" height="8" rx="2" fill="white" opacity="0.95" />
+            <rect x="22" y="8" width="12" height="9" fill="white" opacity="0.95" />
+            <path
+              d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z"
+              fill="rgba(255,255,255,0.18)"
+              stroke="white"
+              strokeWidth="2"
+            />
+            <rect
+              x="12"
+              y={fillY}
+              width="32"
+              height={BODY_BOTTOM - fillY}
               fill="white"
-              opacity="0.7"
               clipPath="url(#bottleClip)"
               className="transition-all duration-700 ease-out"
             />
+            {percentage > 0 && (
+              <ellipse
+                cx="28"
+                cy={fillY}
+                rx="16"
+                ry="2.5"
+                fill="white"
+                opacity="0.7"
+                clipPath="url(#bottleClip)"
+                className="transition-all duration-700 ease-out"
+              />
+            )}
+          </svg>
+        </div>
+
+        {/* Middle column: title + percent + ml */}
+        <div className="flex-1 flex flex-col justify-center min-w-0">
+          <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
+            Hidratação do Dia
+          </p>
+
+          {goalReached ? (
+            <div className="flex items-center gap-1.5 mt-1">
+              <Trophy className="w-5 h-5 text-white" />
+              <span className="text-white text-base font-bold">Meta batida!</span>
+            </div>
+          ) : (
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className="text-white text-3xl font-black leading-none">{percentage}</span>
+              <span className="text-white/80 text-base font-semibold">%</span>
+            </div>
           )}
-        </svg>
-      </div>
 
-      {/* Middle column: title + stats + quick adds */}
-      <div className="flex-1 flex flex-col justify-center min-w-0 relative">
-        <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
-          Hidratação do Dia
-        </p>
-
-        {goalReached ? (
-          <div className="flex items-center gap-1.5 mt-1">
-            <Trophy className="w-5 h-5 text-white" />
-            <span className="text-white text-base font-bold">Meta batida!</span>
-          </div>
-        ) : (
-          <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-white text-3xl font-black leading-none">{percentage}</span>
-            <span className="text-white/80 text-base font-semibold">%</span>
-          </div>
-        )}
-
-        <span className="text-white/85 text-[11px] mt-0.5 truncate">
-          {consumedMl} / {goalMl} ml
-        </span>
-
-        <div className="flex items-center gap-1.5 mt-2">
-          {QUICK_ADDS.map((ml) => (
-            <button
-              key={ml}
-              onClick={(e) => quickAdd(e, ml)}
-              disabled={adding !== null}
-              className="flex-1 flex items-center justify-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full px-1.5 py-1 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
-              aria-label={`Adicionar ${ml}ml`}
-            >
-              <Plus className="w-3 h-3" strokeWidth={3} />
-              {ml}
-            </button>
-          ))}
+          <span className="text-white/85 text-[11px] mt-0.5 truncate">
+            {consumedMl} / {goalMl} ml
+          </span>
         </div>
-      </div>
 
-      {/* Right column: weekly mini chart */}
-      <div
-        className="flex flex-col items-center justify-center shrink-0 relative"
-        style={{ width: 56 }}
-        aria-label="Constância semanal de hidratação"
-      >
-        <p className="text-white/80 text-[9px] font-semibold uppercase tracking-wider mb-1">
-          Semana
-        </p>
-        <div className="flex items-end gap-[3px] h-12">
-          {weekly.map((ml, i) => {
-            const rawPct = goalMl > 0 ? (ml / goalMl) * 100 : 0;
-            const clamped = Math.min(100, rawPct);
-            const isToday = i === todayIdx;
-            const reached = rawPct >= 100;
-            const heightPct = ml > 0 ? Math.max(8, clamped) : 4;
-            return (
-              <div key={i} className="relative flex items-end w-[5px] h-full">
-                <div className="absolute inset-0 rounded-sm bg-white/15" />
-                <div
-                  className={`relative w-full rounded-sm transition-[height] duration-500 ease-out ${
-                    isToday ? 'bg-white ring-1 ring-white/70' : 'bg-white/85'
-                  }`}
-                  style={{ height: `${heightPct}%` }}
-                >
-                  {reached && (
-                    <span
-                      aria-hidden
-                      className="absolute -top-1 left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-yellow-300 shadow"
-                    />
-                  )}
+        {/* Right column: weekly mini chart */}
+        <div
+          className="flex flex-col items-center justify-center shrink-0"
+          aria-label="Constância semanal de hidratação"
+        >
+          <p className="text-white/80 text-[9px] font-semibold uppercase tracking-wider mb-1">
+            Semana
+          </p>
+          <div className="flex items-end gap-[3px] h-12">
+            {weekly.map((ml, i) => {
+              const rawPct = goalMl > 0 ? (ml / goalMl) * 100 : 0;
+              const clamped = Math.min(100, rawPct);
+              const isToday = i === todayIdx;
+              const reached = rawPct >= 100;
+              const heightPct = ml > 0 ? Math.max(8, clamped) : 4;
+              return (
+                <div key={i} className="relative flex items-end w-[5px] h-full">
+                  <div className="absolute inset-0 rounded-sm bg-white/15" />
+                  <div
+                    className={`relative w-full rounded-sm transition-[height] duration-500 ease-out ${
+                      isToday ? 'bg-white ring-1 ring-white/70' : 'bg-white/85'
+                    }`}
+                    style={{ height: `${heightPct}%` }}
+                  >
+                    {reached && (
+                      <span
+                        aria-hidden
+                        className="absolute -top-1 left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-yellow-300 shadow"
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <div className="flex items-end gap-[3px] mt-1">
+            {DAY_LABELS.map((lbl, i) => (
+              <span
+                key={i}
+                className={`w-[5px] text-center text-[8px] leading-none ${
+                  i === todayIdx ? 'text-white font-bold' : 'text-white/70'
+                }`}
+              >
+                {lbl}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex items-end gap-[3px] mt-1">
-          {DAY_LABELS.map((lbl, i) => (
-            <span
-              key={i}
-              className={`w-[5px] text-center text-[8px] leading-none ${
-                i === todayIdx ? 'text-white font-bold' : 'text-white/70'
-              }`}
-            >
-              {lbl}
-            </span>
-          ))}
-        </div>
+      </div>
+
+      {/* Bottom row: quick add buttons spanning full width */}
+      <div className="flex items-center gap-1.5 mt-2 relative">
+        {QUICK_ADDS.map((ml) => (
+          <button
+            key={ml}
+            onClick={(e) => quickAdd(e, ml)}
+            disabled={adding !== null}
+            className="flex-1 flex items-center justify-center gap-0.5 bg-white/25 hover:bg-white/40 active:scale-95 transition-all rounded-full px-1.5 py-1.5 text-white text-[11px] font-bold backdrop-blur-sm disabled:opacity-50"
+            aria-label={`Adicionar ${ml}ml`}
+          >
+            <Plus className="w-3 h-3" strokeWidth={3} />
+            {ml}
+          </button>
+        ))}
       </div>
     </div>
   );
