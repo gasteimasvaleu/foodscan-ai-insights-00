@@ -605,7 +605,6 @@ function DayView({
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }
