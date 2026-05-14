@@ -218,6 +218,16 @@ export default function Comunidade() {
         userId={user.id}
         onCreated={fetchPosts}
       />
+
+      <PostDetailModal
+        postId={selectedPostId}
+        userId={user.id}
+        onClose={() => setSelectedPostId(null)}
+        onChanged={() => {
+          fetchPosts();
+          fetchUserLikes();
+        }}
+      />
     </>
   );
 }
