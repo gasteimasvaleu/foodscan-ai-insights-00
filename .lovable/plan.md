@@ -1,10 +1,17 @@
-Hoje, em `src/components/community/StoriesCarousel.tsx`, ao clicar no próprio avatar:
-- se o usuário **não tem** stories → abre o modal de criação;
-- se o usuário **já tem** stories → abre o visualizador, sem opção de postar outro.
+## Objetivo
+Padronizar o header da página `/comunidade/dm` (DMList) para o card header do app e mover o botão de voltar para dentro do card, alinhado à direita.
 
-Plano:
-1. Tornar o badge `+` (canto inferior direito do avatar do usuário) um elemento clicável independente que **sempre** chama `onAddStory()` — permitindo postar quantos stories quiser.
-2. Manter o clique no avatar com o comportamento atual: ver os stories existentes (ou criar, caso não tenha nenhum).
-3. Aumentar levemente o badge `+` para ser fácil de tocar (touch target adequado) e usar `stopPropagation` para não disparar o clique do avatar.
+## Alteração
+Arquivo: `src/pages/DMList.tsx`
 
-Sem mudanças no banco — `community_stories` já aceita múltiplos registros por usuário.
+- Substituir o header simples (`flex items-center gap-2 mb-4 px-1`) pelo card padrão do app:
+  - Wrapper com `animate-fade-in`
+  - Card: `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
+  - Ícone em `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` (usar ícone de mensagens, ex: `MessageCircle` do lucide-react)
+  - Título: `text-lg font-bold text-primary flex-1` ("Mensagens")
+  - Botão voltar: dentro do card, à direita, com `ArrowLeft` e navegação para `/comunidade`
+
+- Importar o ícone necessário (`MessageCircle` ou similar do lucide-react).
+
+## Resultado esperado
+Header visualmente consistente com as páginas `/comunidade`, `/maternidade`, etc., com o botão de voltar integrado no card à direita.
