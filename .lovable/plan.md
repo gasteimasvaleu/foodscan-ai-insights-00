@@ -1,15 +1,34 @@
-## Aumentar e reposicionar a badge "18:6"
+## Melhorar UX do card "Boas-vindas, {userName}!"
 
-Editar somente `src/components/DailyFastingSummaryCard.tsx`.
+Arquivo: `src/components/AuthCard.tsx` (linhas 264–270). Mantém o tamanho do card (`p-4`, mesma altura visual) e o tamanho da fonte do nome (`text-sm`).
 
-### Mudanças
+### Problemas atuais
+- Texto único centralizado, sem hierarquia visual.
+- Não usa o espaço horizontal disponível.
+- Não dá nenhuma informação útil além do nome.
+- Email completo aparece como "userName" quando o profile não tem nome (quebra/trunca).
 
-1. **Remover a badge do header** (linhas 155-159): tirar o `<span>` absolute com `{protocol}` que fica colado no topo direito.
+### Proposta
 
-2. **Adicionar a badge maior na coluna de texto**, alinhada com o "17h39":
-   - Dentro do bloco `isFasting`, ao lado do número grande `formatTime(remainingHours)`, envolver os dois em um `flex items-baseline gap-2`.
-   - Badge maior: `text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none` para ficar visível na altura do hero time.
-   
-   Resultado: `[17h39] [18:6]` lado a lado, com a badge bem alinhada à baseline do tempo principal.
+Layout em 3 zonas dentro do mesmo card:
 
-Sem mudanças em lógica, dados ou outros componentes.
+```text
+[ AV ]   Bom dia,                    [ qua, 14 mai ]
+         Diego!
+```
+
+1. **Avatar circular à esquerda** (`h-9 w-9 rounded-full bg-white/60`) com a inicial do nome em `text-primary font-bold`. Dá identidade pessoal sem aumentar a altura.
+2. **Bloco central**:
+   - Linha 1 (label): saudação dinâmica por hora — "Bom dia", "Boa tarde", "Boa noite" — em `text-[11px] text-foreground/60 leading-none`.
+   - Linha 2 (nome): apenas o **primeiro nome** (split do `profileName` ou parte antes do `@` do email) em `text-sm font-semibold` (mesma fonte de antes), com `truncate`.
+3. **Pill de data à direita**: dia da semana + data curta em pt-BR (`qua, 14 mai`) em `text-[10px] bg-white/50 rounded-full px-2 py-1`. Reforça o contexto diário do dashboard logo acima.
+
+Tudo dentro de um `flex items-center gap-3` no `CardContent` atual. Nada de mudança de altura ou fonte do nome.
+
+### Detalhes técnicos
+- Helper inline `getGreeting()` baseado em `new Date().getHours()`.
+- `firstName = (profileName ?? user.email ?? '').split(/[\s@]/)[0]`.
+- `initial = firstName.charAt(0).toUpperCase()`.
+- Data: `new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })`.
+- Sem novos imports, sem mudanças de dados/RLS, sem alterar o restante do componente.
+
