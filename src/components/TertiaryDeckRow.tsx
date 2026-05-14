@@ -42,7 +42,7 @@ export const TertiaryDeckRow: React.FC = () => {
         <img
           src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/image_1778753342779_756d33ee.png"
           alt="Conquistas"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-top"
           loading="lazy"
         />
         <span className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#FD46A1] text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-md">
