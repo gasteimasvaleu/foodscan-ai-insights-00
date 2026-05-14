@@ -384,7 +384,7 @@ export default function Desafio14Dias() {
   );
 }
 
-function DayViewDialog({
+function DayView({
   day,
   userId,
   progress,
