@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, Crown, Sparkles, ArrowRight } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
+import confetti from "canvas-confetti";
 
 export default function QuizResult() {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +41,34 @@ export default function QuizResult() {
       : 0;
     const t = setTimeout(() => setProgress(pct), 200);
     return () => clearTimeout(t);
+  }, [attempt]);
+
+  const confettiFired = useRef(false);
+  useEffect(() => {
+    if (!attempt || confettiFired.current) return;
+    confettiFired.current = true;
+    const colors = ["#FD46A1", "#FF6FB3", "#FFD1E7", "#ffffff"];
+    const isPerfect = !!attempt.is_perfect;
+
+    confetti({
+      particleCount: isPerfect ? 180 : 120,
+      spread: 80,
+      startVelocity: 45,
+      origin: { y: 0.35 },
+      colors,
+      zIndex: 9999,
+    });
+    setTimeout(() => {
+      confetti({ particleCount: 60, angle: 60, spread: 70, origin: { x: 0, y: 0.6 }, colors, zIndex: 9999 });
+    }, 200);
+    setTimeout(() => {
+      confetti({ particleCount: 60, angle: 120, spread: 70, origin: { x: 1, y: 0.6 }, colors, zIndex: 9999 });
+    }, 400);
+    if (isPerfect) {
+      setTimeout(() => {
+        confetti({ particleCount: 100, spread: 120, startVelocity: 35, origin: { y: 0.4 }, colors, zIndex: 9999 });
+      }, 700);
+    }
   }, [attempt]);
 
   if (loading) {
