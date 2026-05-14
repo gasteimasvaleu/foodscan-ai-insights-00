@@ -1,15 +1,6 @@
-## Reposicionar botão "Voltar aos 14 dias"
+Vou corrigir o conflito visual no `/desafio-14-dias` reduzindo a distância inferior do sticky action bar para ele voltar a ficar acima do menu tubelight, mas sem sobrepor o botão “Salvar rascunho e voltar depois”.
 
-Mover o botão de voltar para a mesma linha do título "Dia X", alinhado à direita, com o "Dia X" do mesmo tamanho do botão.
-
-### Mudanças em `src/pages/Desafio14Dias.tsx`
-
-1. **Remover o botão da página inline (linhas 265-271)** — não fica mais acima do card.
-
-2. **Atualizar o cabeçalho do `DayView` (linhas 524-530)** para layout em duas colunas:
-   - Coluna esquerda: `Dia {day}` (mesmo `text-sm font-semibold text-[#FD46A1]` do botão, em vez do `text-xs`) + título + resumo.
-   - Coluna direita: botão "Voltar aos 14 dias" (`ArrowLeft` + texto), alinhado ao topo-direita, mesma cor pink.
-
-3. **Passar `onClose` como prop usada para o botão** (já existe, hoje fecha a página inline) — o botão dentro do `DayView` chamará `onClose()`.
-
-Resultado: em todos os 14 dias, o cabeçalho do card fica `Dia X` à esquerda e `← Voltar aos 14 dias` à direita, ambos no mesmo tamanho de fonte.
+Plano:
+1. Alterar o `bottom` do sticky action bar de `calc(env(safe-area-inset-bottom) + 7rem)` para um valor intermediário mais baixo.
+2. Adicionar um pequeno padding inferior no conteúdo principal da página, se necessário, para garantir que o último botão não fique escondido atrás do sticky bar/menu.
+3. Manter o design atual do card sticky intacto, mudando apenas espaçamento/posicionamento.
