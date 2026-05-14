@@ -1,17 +1,27 @@
-## Objetivo
-Padronizar o header da página `/comunidade/dm` (DMList) para o card header do app e mover o botão de voltar para dentro do card, alinhado à direita.
+## Diagnóstico
 
-## Alteração
-Arquivo: `src/pages/DMList.tsx`
+Olhando o código:
+- `PostCard.tsx` linha 187: o botão de comentar simplesmente faz `setShowComments(!showComments)` — não tem nenhuma checagem que limite a apenas o autor.
+- RLS de `post_comments` permite qualquer usuário autenticado ler e inserir o próprio comentário (verificado via SQL).
+- `CommentSection` renderiza o input para qualquer usuário logado.
 
-- Substituir o header simples (`flex items-center gap-2 mb-4 px-1`) pelo card padrão do app:
-  - Wrapper com `animate-fade-in`
-  - Card: `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
-  - Ícone em `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` (usar ícone de mensagens, ex: `MessageCircle` do lucide-react)
-  - Título: `text-lg font-bold text-primary flex-1` ("Mensagens")
-  - Botão voltar: dentro do card, à direita, com `ArrowLeft` e navegação para `/comunidade`
+Tecnicamente, o botão **deveria** funcionar para todos. Pelo session replay, o usuário está clicando no canto direito do card (x≈388, viewport 390px), onde ficam os ícones de **3 pontinhos (MoreHorizontal)** e **Enviar DM (Send)** — não no ícone de comentar, que fica à esquerda (Heart, MessageCircle, Send, em sequência com `gap-3 px-3`).
 
-- Importar o ícone necessário (`MessageCircle` ou similar do lucide-react).
+Hipótese mais provável: a barra de ações (Heart / MessageCircle / Send) está **fora do viewport visível** quando o post tem imagem grande (até 600px), empurrando os botões para baixo da dobra. O usuário então clica nos únicos ícones visíveis (no header do card) achando que são "comentar".
 
-## Resultado esperado
-Header visualmente consistente com as páginas `/comunidade`, `/maternidade`, etc., com o botão de voltar integrado no card à direita.
+## Plano
+
+1. **Reproduzir no preview** com `browser--navigate_to_sandbox` em `/comunidade`, logado como um usuário que não é o autor de nenhum post, e verificar:
+   - Se a barra de ações realmente fica abaixo da dobra
+   - Se o clique no `MessageCircle` abre `CommentSection` normalmente
+   - Se há algum erro de JS no console
+
+2. **Correções prováveis** em `src/components/community/PostCard.tsx`:
+   - Reduzir `max-h-[600px]` da imagem para algo como `max-h-[420px]` ou `aspect-square` para garantir que os ícones de ação fiquem visíveis no viewport mobile.
+   - Garantir que o ícone de comentar tenha área de toque maior (`p-1` no botão) e contraste melhor.
+
+3. Se a hipótese estiver errada e o problema for outro (ex: erro de RLS específico, click bloqueado), ajustar conforme o que for descoberto na reprodução.
+
+## Pergunta de confirmação
+
+Antes de implementar, gostaria de confirmar com você: ao tocar no ícone de **balão de fala (segundo ícone, abaixo da imagem do post)**, nada acontece? Ou você está tocando nos **3 pontinhos (canto superior direito)** esperando que abrisse comentários?

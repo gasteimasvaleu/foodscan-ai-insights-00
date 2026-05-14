@@ -168,14 +168,14 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
           <img
             src={post.before_photo_url}
             alt={hasDescription ? post.description : "Publicação"}
-            className="w-full max-h-[600px] object-cover"
+            className="w-full max-h-[420px] object-cover"
           />
         </button>
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-3 px-3 pt-2.5">
-        <button onClick={handleLike} aria-label="Curtir">
+      <div className="flex items-center gap-1 px-2 pt-2.5">
+        <button onClick={handleLike} aria-label="Curtir" className="p-1.5">
           <Heart
             size={26}
             className={cn(
@@ -184,11 +184,15 @@ export function PostCard({ post, userId, userLiked, onLikeToggle, onPostDeleted 
             )}
           />
         </button>
-        <button onClick={() => setShowComments(!showComments)} aria-label="Comentar">
+        <button
+          onClick={() => setShowComments((v) => !v)}
+          aria-label="Comentar"
+          className="p-1.5"
+        >
           <MessageCircle size={26} className="text-foreground" />
         </button>
         {!isOwner && (
-          <button onClick={handleSendDM} aria-label="Enviar mensagem">
+          <button onClick={handleSendDM} aria-label="Enviar mensagem" className="p-1.5">
             <Send size={24} className="text-foreground" />
           </button>
         )}
