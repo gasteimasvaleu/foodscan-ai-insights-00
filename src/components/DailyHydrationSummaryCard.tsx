@@ -219,7 +219,7 @@ export const DailyHydrationSummaryCard = () => {
 
         {/* Right column: weekly mini chart */}
         <div
-          className="flex flex-col items-center justify-center shrink-0"
+          className="flex flex-col items-center justify-center shrink-0 mr-2"
           aria-label="Constância semanal de hidratação"
         >
           <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider mb-1">
