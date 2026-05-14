@@ -1,1 +1,1 @@
-Em `src/pages/Comunidade.tsx` linha 167, trocar `bottom-20` por `bottom-16` para descer mais o botão `+`.
+Em `src/pages/Comunidade.tsx` linha 167, alterar `bottom-16` para `bottom-28` para que o botão `+` fique acima da Tubelight Navbar com espaço de respiro.
