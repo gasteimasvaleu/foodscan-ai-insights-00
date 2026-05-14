@@ -1,37 +1,74 @@
-Adicionar um botão de grade (ícone Grid) no header da página `/comunidade`, à esquerda do botão de avião (DM). Ao ativá-lo, o feed e os Stories são substituídos por uma grade estilo Instagram com **as publicações do próprio usuário logado**. Clicar em uma célula abre o post completo (com curtidas, comentários e descrição).
+## Objetivo
+Transformar o card de cabeçalho do `/profile` em uma experiência mais rica (estilo Instagram/Strava), com banner de capa, avatar grande sobreposto, mais dados pessoais editáveis e estatísticas em destaque.
 
-## Comportamento
+## 1. Banco de dados (migration em `public.profiles`)
+Adicionar colunas opcionais:
+- `bio` text
+- `phone` text
+- `address` text
+- `city` text
+- `state` text
+- `email_public` text (email de exibição editável; o email de login continua em `auth.users`)
+- `cover_url` text (imagem de capa)
 
-- Estado `view: 'feed' | 'grid'` em `Comunidade.tsx` (default: `feed`).
-- Botão grade: ícone `LayoutGrid` (lucide). Ativo = fundo `#FD46A1` + ícone branco; inativo = ícone `text-foreground`.
-- Quando `view === 'grid'`:
-  - Esconder `StoriesCarousel` e a lista de `PostCard`.
-  - Renderizar `<MyPostsGrid userId={user.id} onOpenPost={...} />`.
-- Botão DM (avião) e botão flutuante "+" continuam funcionando normalmente.
+RLS já existente em `profiles` permanece. Sem alterações de policies.
 
-## Grade (`MyPostsGrid`)
+Storage: reutilizar bucket `avatars` para covers (pasta `{userId}/cover-*.jpg`) — não precisa migration adicional.
 
-- Novo componente em `src/components/community/MyPostsGrid.tsx`.
-- Query: `community_posts` filtrando por `user_id = currentUser`, ordem `created_at desc`, com `before_photo_url` não nulo.
-- Layout: `grid grid-cols-3 gap-1`, cada célula `aspect-square`, `object-cover`, sem bordas — visual Instagram.
-- Empty state: "Você ainda não publicou nada" (mesmo padrão visual do empty atual).
-- Loading: spinner pequeno centralizado.
+## 2. Novo card `ProfileHeaderCard` (`src/components/profile/ProfileHeaderCard.tsx`)
 
-## Abrir post completo
+Layout (mobile-first):
+```
+┌──────────────────────────────────┐
+│  [cover image — 160px h]        │  ← editável (ícone câmera no canto)
+│       ╭──────╮                   │
+│       │AVATAR│ ← sobreposto -50% │
+│       ╰──────╯  + badge Pro 👑   │
+├──────────────────────────────────┤
+│  Nome do Usuário      [Editar]  │
+│  📍 Cidade, Estado               │
+│  Bio em até 2 linhas...          │
+│  ─────── stats chips ───────     │
+│  🔥 12  │  🏅 5  │  📅 mar/26    │
+│  streak   badges    membro       │
+└──────────────────────────────────┘
+```
 
-- Novo componente `PostDetailModal` (`src/components/community/PostDetailModal.tsx`) usando `Dialog` com glassmorphism (bg-white/70, backdrop-blur-md, rounded-2xl).
-- Reutiliza `PostCard` internamente passando os mesmos props (post, userId, userLiked, callbacks).
-- Estado em `Comunidade.tsx`: `selectedPostId: string | null`. Ao fechar, atualiza likes/comments via `fetchPosts` opcional.
+Visual:
+- Container: `rounded-3xl overflow-hidden bg-white/70 backdrop-blur-md border border-white/40 shadow-xl`
+- Cover: gradiente fallback `from-[#FD46A1] to-[#FF8FC4]`, `aspect-[3/1]`, botão câmera no canto
+- Avatar: `w-28 h-28 border-4 border-white -mt-14 ml-5`
+- Badge Pro (Crown) absoluto no avatar quando `subscriptionStatus.subscribed`
+- Stats: 3 chips em `bg-[#FFD1E7]/60 rounded-2xl`, ícones #FD46A1, valores `text-base`
 
-## Detalhes técnicos
+## 3. Modal "Editar Perfil" expandido
+Substituir o Dialog atual por formulário com tabs/seções (`bg-white/70 backdrop-blur-md`):
+- **Identidade**: nome, bio (textarea, max 160), email público
+- **Contato**: telefone, endereço, cidade, estado
+- **Imagens**: upload de avatar e de capa
 
-- Não muda nada de backend / RLS — `community_posts` já é select-able.
-- Não toca em `PostCard.tsx` exceto se necessário (idealmente reusar como está).
-- Mantém `pt-[calc(env(safe-area-inset-top)+2.5rem)]` e demais constraints.
-- Cores via tokens existentes; `#FD46A1` mantido para coerência visual com o resto do app.
+Validação com `zod`: nome 2-50, bio max 160, telefone regex, etc. Inputs `text-base` (anti-zoom iOS).
 
-## Arquivos
+## 4. Stats reais
+- **Streak**: ler de `user_streaks` (já existe via gamification)
+- **Badges**: `count` em `user_badges` do usuário
+- **Membro desde**: `profile.created_at` (mantém)
 
-- `src/pages/Comunidade.tsx` — adicionar botão Grid + estado `view` + render condicional + modal.
-- `src/components/community/MyPostsGrid.tsx` — novo.
-- `src/components/community/PostDetailModal.tsx` — novo.
+Carregar em paralelo no `useEffect`.
+
+## 5. Arquivos
+- **Novo**: migration adicionando colunas
+- **Novo**: `src/components/profile/ProfileHeaderCard.tsx`
+- **Novo**: `src/components/profile/EditProfileDialog.tsx`
+- **Editar**: `src/pages/Profile.tsx` — substituir o Card de header atual pelo novo componente; remover o Dialog inline
+- Usar `@/integrations/supabase/client` e `useAuth`
+
+## 6. Detalhes técnicos
+- Upload de cover: igual ao avatar (Supabase Storage `avatars` bucket, `upsert`)
+- Subscription Pro badge: usa `subscriptionStatus.subscribed` do `useAuth`
+- Sem mudanças em outros cards da página (Pro, Ações Rápidas, etc.)
+- Sem mexer em `types.ts` manualmente — será regenerado após migration
+
+## Fora de escopo
+- Não alterar página de comunidade nem outros perfis públicos
+- Não tocar nos outros cards do `/profile`
