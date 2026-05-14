@@ -371,33 +371,35 @@ export default function PhysicalAssessment() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {assessment.before_photo_url && (
-                      <div>
-                        <p className="text-sm font-medium mb-2">Antes</p>
-                        <img
-                          src={assessment.before_photo_url}
-                          alt="Antes"
-                          className="rounded-lg w-full h-48 object-cover"
-                        />
-                      </div>
+                {(assessment.before_photo_url || assessment.after_photo_url || assessment.notes) && (
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {assessment.before_photo_url && (
+                        <div>
+                          <p className="text-sm font-medium mb-2">Antes</p>
+                          <img
+                            src={assessment.before_photo_url}
+                            alt="Antes"
+                            className="rounded-lg w-full h-48 object-cover"
+                          />
+                        </div>
+                      )}
+                      {assessment.after_photo_url && (
+                        <div>
+                          <p className="text-sm font-medium mb-2">Depois</p>
+                          <img
+                            src={assessment.after_photo_url}
+                            alt="Depois"
+                            className="rounded-lg w-full h-48 object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {assessment.notes && (
+                      <p className="mt-4 text-sm text-muted-foreground">{assessment.notes}</p>
                     )}
-                    {assessment.after_photo_url && (
-                      <div>
-                        <p className="text-sm font-medium mb-2">Depois</p>
-                        <img
-                          src={assessment.after_photo_url}
-                          alt="Depois"
-                          className="rounded-lg w-full h-48 object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  {assessment.notes && (
-                    <p className="mt-4 text-sm text-muted-foreground">{assessment.notes}</p>
-                  )}
-                </CardContent>
+                  </CardContent>
+                )}
               </Card>
             ))
           )}
