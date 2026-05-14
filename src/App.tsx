@@ -61,6 +61,7 @@ import QuizPlay from "./pages/QuizPlay";
 import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
+import Desafio14Dias from "./pages/Desafio14Dias";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -156,6 +157,7 @@ const App = () => (
             <Route path="/quiz/:id" element={<QuizPlay />} />
             <Route path="/quiz/:id/resultado" element={<QuizResult />} />
             <Route path="/conquistas" element={<Conquistas />} />
+            <Route path="/desafio-14-dias" element={<Desafio14Dias />} />
             <Route path="/admin/assinaturas-promocionais" element={<AdminSubscriptions />} />
 
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
