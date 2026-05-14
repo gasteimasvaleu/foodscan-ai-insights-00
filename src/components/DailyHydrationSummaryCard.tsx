@@ -6,6 +6,7 @@ import { Plus, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 
 const QUICK_ADDS = [200, 300, 500];
+const DAY_LABELS = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D']; // seg→dom
 
 const formatDateOnly = (d: Date) => {
   const y = d.getFullYear();
@@ -14,25 +15,66 @@ const formatDateOnly = (d: Date) => {
   return `${y}-${m}-${day}`;
 };
 
+// Index 0 = segunda, 6 = domingo
+const getDayIndex = (d: Date) => {
+  const js = d.getDay(); // 0 = dom
+  return (js + 6) % 7;
+};
+
+const getMonday = (d: Date) => {
+  const m = new Date(d);
+  m.setHours(0, 0, 0, 0);
+  m.setDate(m.getDate() - getDayIndex(m));
+  return m;
+};
+
 export const DailyHydrationSummaryCard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [goalMl, setGoalMl] = useState(3000);
   const [consumedMl, setConsumedMl] = useState(0);
+  const [weekly, setWeekly] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]); // ml por dia
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState<number | null>(null);
 
+  const todayIdx = getDayIndex(new Date());
+
   const fetchData = async () => {
     if (!user?.id) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const monday = getMonday(today);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const mondayISO = formatDateOnly(monday);
+    const sundayISO = formatDateOnly(sunday);
+    const todayISO = formatDateOnly(today);
+
     const [profileRes, hydrationRes] = await Promise.all([
       supabase.from('profiles').select('hydration_goal_ml').eq('id', user.id).single(),
-      supabase.from('hydration_records').select('hydration_impact_ml').eq('user_id', user.id).eq('consumption_date', today),
+      supabase
+        .from('hydration_records')
+        .select('hydration_impact_ml, consumption_date')
+        .eq('user_id', user.id)
+        .gte('consumption_date', mondayISO)
+        .lte('consumption_date', sundayISO),
     ]);
+
     if (profileRes.data?.hydration_goal_ml) setGoalMl(profileRes.data.hydration_goal_ml);
+
+    const week = [0, 0, 0, 0, 0, 0, 0];
+    let todaySum = 0;
     if (hydrationRes.data) {
-      setConsumedMl(hydrationRes.data.reduce((sum, r) => sum + Number(r.hydration_impact_ml), 0));
+      for (const r of hydrationRes.data as Array<{ hydration_impact_ml: number; consumption_date: string }>) {
+        const [y, mo, da] = r.consumption_date.split('-').map(Number);
+        const dt = new Date(y, mo - 1, da);
+        const idx = getDayIndex(dt);
+        const val = Number(r.hydration_impact_ml) || 0;
+        if (idx >= 0 && idx < 7) week[idx] += val;
+        if (r.consumption_date === todayISO) todaySum += val;
+      }
     }
+    setWeekly(week);
+    setConsumedMl(todaySum);
     setLoading(false);
   };
 
@@ -49,8 +91,12 @@ export const DailyHydrationSummaryCard = () => {
     e.stopPropagation();
     if (!user || adding !== null) return;
     setAdding(ml);
-    // optimistic
     setConsumedMl((prev) => prev + ml);
+    setWeekly((prev) => {
+      const next = [...prev];
+      next[todayIdx] = (next[todayIdx] || 0) + ml;
+      return next;
+    });
     const now = new Date();
     const { error } = await supabase.from('hydration_records').insert({
       user_id: user.id,
@@ -66,6 +112,11 @@ export const DailyHydrationSummaryCard = () => {
     setAdding(null);
     if (error) {
       setConsumedMl((prev) => prev - ml);
+      setWeekly((prev) => {
+        const next = [...prev];
+        next[todayIdx] = Math.max(0, (next[todayIdx] || 0) - ml);
+        return next;
+      });
       toast.error('Erro ao registrar');
     } else {
       toast.success(`+${ml}ml registrados 💧`);
@@ -83,7 +134,7 @@ export const DailyHydrationSummaryCard = () => {
   // Bottle fill height (visual)
   const BOTTLE_W = 56;
   const BOTTLE_H = 110;
-  const BODY_TOP = 22; // y where body starts (after cap/neck)
+  const BODY_TOP = 22;
   const BODY_BOTTOM = 108;
   const BODY_RANGE = BODY_BOTTOM - BODY_TOP;
   const fillY = BODY_BOTTOM - (percentage / 100) * BODY_RANGE;
@@ -94,7 +145,7 @@ export const DailyHydrationSummaryCard = () => {
 
   return (
     <div
-      className={`w-full h-full ${bgClass} flex items-stretch px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500 gap-3`}
+      className={`w-full h-full ${bgClass} flex items-stretch px-3 py-2.5 cursor-pointer relative overflow-hidden transition-colors duration-500 gap-2.5`}
       onClick={() => navigate('/hidratacao')}
     >
       {/* Decorative bubbles */}
@@ -109,18 +160,14 @@ export const DailyHydrationSummaryCard = () => {
               <path d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z" />
             </clipPath>
           </defs>
-          {/* Cap */}
           <rect x="20" y="0" width="16" height="8" rx="2" fill="white" opacity="0.95" />
-          {/* Neck */}
           <rect x="22" y="8" width="12" height="9" fill="white" opacity="0.95" />
-          {/* Body outline */}
           <path
             d="M12 22 Q12 17 20 17 L36 17 Q44 17 44 22 L44 102 Q44 108 37 108 L19 108 Q12 108 12 102 Z"
             fill="rgba(255,255,255,0.18)"
             stroke="white"
             strokeWidth="2"
           />
-          {/* Water fill */}
           <rect
             x="12"
             y={fillY}
@@ -130,7 +177,6 @@ export const DailyHydrationSummaryCard = () => {
             clipPath="url(#bottleClip)"
             className="transition-all duration-700 ease-out"
           />
-          {/* Wave on top of fill */}
           {percentage > 0 && (
             <ellipse
               cx="28"
@@ -146,7 +192,7 @@ export const DailyHydrationSummaryCard = () => {
         </svg>
       </div>
 
-      {/* Right column: title + stats + quick adds */}
+      {/* Middle column: title + stats + quick adds */}
       <div className="flex-1 flex flex-col justify-center min-w-0 relative">
         <p className="text-white/90 text-[10px] font-semibold uppercase tracking-wider">
           Hidratação do Dia
@@ -168,7 +214,6 @@ export const DailyHydrationSummaryCard = () => {
           {consumedMl} / {goalMl} ml
         </span>
 
-        {/* Quick add row */}
         <div className="flex items-center gap-1.5 mt-2">
           {QUICK_ADDS.map((ml) => (
             <button
@@ -181,6 +226,56 @@ export const DailyHydrationSummaryCard = () => {
               <Plus className="w-3 h-3" strokeWidth={3} />
               {ml}
             </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Right column: weekly mini chart */}
+      <div
+        className="flex flex-col items-center justify-center shrink-0 relative"
+        style={{ width: 56 }}
+        aria-label="Constância semanal de hidratação"
+      >
+        <p className="text-white/80 text-[9px] font-semibold uppercase tracking-wider mb-1">
+          Semana
+        </p>
+        <div className="flex items-end gap-[3px] h-12">
+          {weekly.map((ml, i) => {
+            const rawPct = goalMl > 0 ? (ml / goalMl) * 100 : 0;
+            const clamped = Math.min(100, rawPct);
+            const isToday = i === todayIdx;
+            const reached = rawPct >= 100;
+            const heightPct = ml > 0 ? Math.max(8, clamped) : 4;
+            return (
+              <div key={i} className="relative flex items-end w-[5px] h-full">
+                <div className="absolute inset-0 rounded-sm bg-white/15" />
+                <div
+                  className={`relative w-full rounded-sm transition-[height] duration-500 ease-out ${
+                    isToday ? 'bg-white ring-1 ring-white/70' : 'bg-white/85'
+                  }`}
+                  style={{ height: `${heightPct}%` }}
+                >
+                  {reached && (
+                    <span
+                      aria-hidden
+                      className="absolute -top-1 left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-yellow-300 shadow"
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex items-end gap-[3px] mt-1">
+          {DAY_LABELS.map((lbl, i) => (
+            <span
+              key={i}
+              className={`w-[5px] text-center text-[8px] leading-none ${
+                i === todayIdx ? 'text-white font-bold' : 'text-white/70'
+              }`}
+            >
+              {lbl}
+            </span>
           ))}
         </div>
       </div>
