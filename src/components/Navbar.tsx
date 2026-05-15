@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
-import { User, X, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, LogOut } from 'lucide-react';
 
 import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -51,20 +50,25 @@ export const Navbar = () => {
             {/* Desktop menu removed */}
           </div>
 
-          {/* Hamburger Menu with MENU text */}
+          {/* Profile Trigger - unified single tap target */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <div className="flex items-center space-x-2 cursor-pointer">
-              <span 
-                  className="text-sm font-medium text-white/90 hover:text-white transition-colors"
-                  onClick={() => setIsOpen(true)}
-                >
-                  MEU PERFIL
+              <button
+                aria-label="Abrir menu do perfil"
+                className="relative z-50 flex items-center gap-2 min-w-[48px] min-h-[48px] p-2 rounded-xl text-white/90 hover:text-white hover:bg-white/10 active:scale-95 transition-all duration-150"
+              >
+                <span className="text-sm font-medium">MEU PERFIL</span>
+                <span className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-sm font-semibold text-white">
+                  {isOpen ? (
+                    <X className="h-4 w-4" />
+                  ) : (
+                    ((user.user_metadata?.name as string | undefined) || user.email || '?')
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase()
+                  )}
                 </span>
-                <Button variant="ghost" size="icon" className="relative z-50 text-white hover:text-white/80">
-                  {isOpen ? <X className="h-5 w-5" /> : <User className="h-5 w-5" />}
-                </Button>
-              </div>
+              </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-white/10 backdrop-blur-xl border-2 border-primary rounded-2xl p-0 flex flex-col h-[calc(100%-3rem)] my-6">
               <SheetHeader className="p-6 border-b border-white/20 flex-shrink-0">
