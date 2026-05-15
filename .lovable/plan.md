@@ -1,39 +1,22 @@
-## Melhorar UX do botão "Meu Perfil" no Navbar
+## Adicionar card de aviso do prêmio semanal na /quiz
 
-Arquivo: `src/components/Navbar.tsx` (linhas 55–68)
+Inserir um novo card logo abaixo do card do header "Quiz" (e acima do card "Exclusivo Pro"), na página `src/pages/Quiz.tsx`, anunciando o prêmio semanal de R$ 500 via Pix para o 1º colocado.
 
-### Mudanças
+### Conteúdo do card
+- Ícone: `Trophy` (lucide-react, já importado) dentro de um badge circular gradiente rosa.
+- Título curto: "Prêmio semanal: R$ 500 no Pix"
+- Subtexto: "O 1º colocado do ranking semanal leva R$ 500 via Pix toda semana."
+- Pequeno selo "Toda semana" no canto.
 
-Substituir o `<div>` + `<span>` + `<Button icon>` por um único `<button>` unificado como `SheetTrigger asChild`:
+### Estilo (alinhado ao design system do projeto)
+- Card branco com borda `border-[#FD46A1]/40`, `rounded-3xl`, `shadow-xl shadow-pink-100`, padding `p-4` — mesmo padrão visual do card "Exclusivo Pro" logo abaixo, para manter coerência.
+- Glows decorativos sutis (blur) em rosa nos cantos, igual ao card Pro.
+- Ícone em badge `w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3]` com `Trophy` branco.
+- Tipografia: label uppercase `text-[#FD46A1]` + título `text-sm font-semibold text-foreground`.
 
-- **Alvo único e maior**: `min-w-[48px] min-h-[48px] p-2`, com `flex items-center gap-2`
-- **Avatar circular com inicial**: substitui o ícone `User`. Círculo `w-8 h-8 rounded-full bg-white/20 border border-white/40` exibindo a primeira letra do `user.email` (ou `user.user_metadata?.name`) em uppercase, branco, `text-sm font-semibold`. Quando aberto, mostra `X` no lugar da inicial (mesmo container, transição suave)
-- **Label**: mantém "MEU PERFIL" com `text-sm font-medium text-white/90`
-- **Micro-interação**: `transition-all active:scale-95 hover:bg-white/10 rounded-xl` no botão inteiro
-- **A11y**: `aria-label="Abrir menu do perfil"`
+### Localização exata
+Em `src/pages/Quiz.tsx`, inserir o novo bloco entre as linhas 105 (fechamento do card header) e 107 (início do `{!isPro && ...}`), de modo que o card de prêmio apareça sempre, independente de ser Pro.
 
-Sem mudanças de lógica, rotas, ou no conteúdo do `SheetContent`.
-
-### Detalhes técnicos
-
-```tsx
-const initial = (user.user_metadata?.name || user.email || '?')
-  .trim().charAt(0).toUpperCase();
-
-<SheetTrigger asChild>
-  <button
-    aria-label="Abrir menu do perfil"
-    className="flex items-center gap-2 min-w-[48px] min-h-[48px] p-2 rounded-xl
-               text-white/90 hover:text-white hover:bg-white/10
-               active:scale-95 transition-all duration-150"
-  >
-    <span className="text-sm font-medium">MEU PERFIL</span>
-    <span className="relative w-8 h-8 rounded-full bg-white/20 border border-white/40
-                     flex items-center justify-center text-sm font-semibold">
-      {isOpen ? <X className="h-4 w-4" /> : initial}
-    </span>
-  </button>
-</SheetTrigger>
-```
-
-Remove o import de `Button` (não mais usado) e mantém `User` removido se não usado em outro lugar (verificar: só é usado aqui).
+### Observações
+- Apenas mudança de UI; sem lógica, rotas, ou chamadas de dados.
+- Sem novas dependências; reutiliza `Trophy` do lucide-react já importado.

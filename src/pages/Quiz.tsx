@@ -104,6 +104,25 @@ export default function Quiz() {
           </div>
         </div>
 
+        <div className="relative overflow-hidden rounded-3xl bg-white border border-[#FD46A1]/40 shadow-xl shadow-pink-100 p-4">
+          <div className="pointer-events-none absolute -top-10 -right-10 w-28 h-28 bg-[#FFD1E7] rounded-full blur-3xl opacity-60" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 w-28 h-28 bg-[#FD46A1] rounded-full blur-3xl opacity-10" />
+
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FD46A1] to-[#ff7eb3] flex items-center justify-center shadow-md shadow-pink-200 shrink-0">
+              <Trophy className="w-6 h-6 text-white" fill="white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#FD46A1] mb-0.5">
+                Toda semana
+              </p>
+              <p className="text-sm font-semibold text-foreground leading-tight">
+                Prêmio de R$ 500 no Pix <span className="text-muted-foreground font-medium">para o 1º colocado do ranking semanal</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
         {!isPro && (
           <div className="relative overflow-hidden rounded-3xl bg-white border border-[#FD46A1]/40 shadow-xl shadow-pink-100 p-4">
             {/* Background glows */}
