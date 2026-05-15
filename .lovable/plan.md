@@ -1,14 +1,11 @@
 ## Objetivo
-Aumentar o tamanho do disco circular de % de gordura corporal (BG) no card de Avaliação Física do dashboard, deixando-o mais legível no mobile real.
+Reposicionar e aumentar a badge "18:6" do card de Jejum Intermitente para alinhar visualmente com o tempo restante.
 
 ## Arquivo
-`src/components/DailyAssessmentSummaryCard.tsx`
+`src/components/DailyFastingSummaryCard.tsx` (linhas 157-161)
 
 ## Mudanças
-- Aumentar o SVG de 64×64 para ~84×84 (raio de 28 → 36, stroke de 5 → 6).
-- Ajustar o container `w-[64px] h-[64px]` para `w-[84px] h-[84px]`.
-- Aumentar a tipografia interna: número `text-sm` → `text-base`, label "BG" mantida em `text-[8px]` (ou `text-[9px]`).
-- Recalcular `circumference` para o novo raio (já é dinâmico, basta trocar a constante).
-- Manter o grid de 3 colunas e o alinhamento central — peso e IMC permanecem iguais.
+- Aumentar `top-9` para `top-14` (~descer ~20px) para alinhar à altura do número grande "6h57".
+- Aumentar tamanho da badge: `text-sm` → `text-base`, `px-2.5 py-1` → `px-3 py-1.5`.
 
-Sem alterações em lógica, dados ou outros cards.
+Sem outras alterações.
