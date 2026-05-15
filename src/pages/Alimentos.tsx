@@ -148,7 +148,7 @@ const Alimentos = () => {
             {foods.map(f => (
               <Card
                 key={f.id}
-                className="bg-[#FFD1E7] border-0 rounded-2xl p-3 flex items-center gap-3 cursor-pointer hover:bg-[#FFC1DE] transition-colors"
+                className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] p-3 pl-5 flex items-center gap-3 cursor-pointer hover:bg-white transition-colors before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]"
                 onClick={() => openFood(f)}
               >
                 <div className="flex-1 min-w-0">
