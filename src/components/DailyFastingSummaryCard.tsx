@@ -155,7 +155,7 @@ export const DailyFastingSummaryCard = () => {
       </div>
 
       {isFasting && (
-        <span className="absolute right-3 top-9 text-white text-sm font-bold bg-white/25 rounded-full px-2.5 py-1 leading-none z-10">
+        <span className="absolute right-3 top-14 text-white text-base font-bold bg-white/25 rounded-full px-3 py-1.5 leading-none z-10">
           {protocol}
         </span>
       )}
