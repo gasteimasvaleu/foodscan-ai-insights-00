@@ -107,7 +107,7 @@ export const DailyAssessmentSummaryCard = () => {
   const prevWeight = previous?.weight ? Number(previous.weight) : null;
   const delta = weight && prevWeight ? +(weight - prevWeight).toFixed(1) : null;
   const bfPct = bodyFat ? Math.min(Math.max(bodyFat, 0), 100) : 0;
-  const radius = 28;
+  const radius = 36;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (bfPct / 100) * circumference;
 
@@ -192,20 +192,20 @@ export const DailyAssessmentSummaryCard = () => {
           {/* Col 2: BG ring */}
           <div className="flex items-center justify-center h-full">
             {bodyFat !== null ? (
-              <div className="relative w-[64px] h-[64px] flex items-center justify-center">
-                <svg width="64" height="64" className="rotate-[-90deg]">
-                  <circle cx="32" cy="32" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="5" />
+              <div className="relative w-[84px] h-[84px] flex items-center justify-center">
+                <svg width="84" height="84" className="rotate-[-90deg]">
+                  <circle cx="42" cy="42" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="6" />
                   <circle
-                    cx="32" cy="32" r={radius} fill="none"
-                    stroke="white" strokeWidth="5" strokeLinecap="round"
+                    cx="42" cy="42" r={radius} fill="none"
+                    stroke="white" strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
                     className="transition-all duration-700"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-white text-sm font-black leading-none">{bodyFat.toFixed(0)}%</span>
-                  <span className="text-white/60 text-[8px] uppercase tracking-wider">BG</span>
+                  <span className="text-white text-base font-black leading-none">{bodyFat.toFixed(0)}%</span>
+                  <span className="text-white/60 text-[9px] uppercase tracking-wider">BG</span>
                 </div>
               </div>
             ) : (

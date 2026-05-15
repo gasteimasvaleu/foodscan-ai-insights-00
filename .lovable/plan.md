@@ -1,20 +1,14 @@
-## Causa
+## Objetivo
+Aumentar o tamanho do disco circular de % de gordura corporal (BG) no card de Avaliação Física do dashboard, deixando-o mais legível no mobile real.
 
-A função `generate-home-recipe` falha no preflight CORS porque o cliente envia o header `x-app-platform` (configurado em `src/integrations/supabase/client.ts`), mas a função só permite:
+## Arquivo
+`src/components/DailyAssessmentSummaryCard.tsx`
 
-```
-"authorization, x-client-info, apikey, content-type"
-```
+## Mudanças
+- Aumentar o SVG de 64×64 para ~84×84 (raio de 28 → 36, stroke de 5 → 6).
+- Ajustar o container `w-[64px] h-[64px]` para `w-[84px] h-[84px]`.
+- Aumentar a tipografia interna: número `text-sm` → `text-base`, label "BG" mantida em `text-[8px]` (ou `text-[9px]`).
+- Recalcular `circumference` para o novo raio (já é dinâmico, basta trocar a constante).
+- Manter o grid de 3 colunas e o alinhamento central — peso e IMC permanecem iguais.
 
-A `identify-dish` já inclui `x-app-platform` e por isso a primeira etapa funciona. Quando você toca uma das opções (pizza), a segunda chamada quebra com "Failed to send a request to the Edge Function".
-
-## Correção
-
-Em `supabase/functions/generate-home-recipe/index.ts`, adicionar `x-app-platform` ao `Access-Control-Allow-Headers`:
-
-```ts
-"Access-Control-Allow-Headers":
-  "authorization, x-client-info, apikey, content-type, x-app-platform",
-```
-
-Sem outras mudanças.
+Sem alterações em lógica, dados ou outros cards.
