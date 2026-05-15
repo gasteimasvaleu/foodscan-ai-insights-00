@@ -120,11 +120,11 @@ const AdicionarRefeicao = () => {
     const key = `${m.food_name.toLowerCase()}|${m.portion.toLowerCase()}`;
     const isFav = favoriteKeys.has(key);
     return (
-      <Card key={m.id} className="bg-[#FFD1E7] border-0 rounded-3xl p-4 flex items-center gap-3">
+      <Card key={m.id} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] p-4 pl-5 flex items-center gap-3 before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
         {m.image_url ? (
           <img src={m.image_url} alt={m.food_name} className="w-14 h-14 rounded-2xl object-cover flex-shrink-0" />
         ) : (
-          <div className="w-14 h-14 rounded-2xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-[#FFD1E7]/50 flex items-center justify-center flex-shrink-0">
             <span className="text-2xl">🍽️</span>
           </div>
         )}
@@ -184,7 +184,7 @@ const AdicionarRefeicao = () => {
 
         {/* Repetir ontem */}
         {(yesterday?.length ?? 0) > 0 && (
-          <Card className="bg-[#FFD1E7] border-0 rounded-3xl p-4 mb-4">
+          <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] p-4 pl-5 mb-4 before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
             <p className="text-base text-foreground mb-1">Repetir refeições de ontem</p>
             <p className="text-xs text-muted-foreground mb-3">
               {yesterday!.length} refeição{yesterday!.length === 1 ? "" : "es"} registrada{yesterday!.length === 1 ? "" : "s"} ontem
