@@ -275,6 +275,38 @@ const ToAquiEditVenue = () => {
           >
             {submitting ? "Salvando…" : "Salvar alterações"}
           </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={deleting}
+                className="w-full rounded-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                {deleting ? "Excluindo…" : "Excluir venue"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-white/70 backdrop-blur-md rounded-3xl border-2 border-primary">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir este venue?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Todas as mensagens, presenças e
+                  interações deste venue serão apagadas.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Sim, excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </form>
       </div>
     </div>
