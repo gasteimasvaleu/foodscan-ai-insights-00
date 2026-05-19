@@ -62,3 +62,6 @@ verify_jwt = true
 
 [functions.generate-weekly-ideas]
 verify_jwt = true
+
+[functions.generate-post-recipe]
+verify_jwt = true
