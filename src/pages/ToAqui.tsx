@@ -41,15 +41,6 @@ const ToAqui = () => {
               <MapPin className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-lg font-bold text-primary">Tô Aqui</h1>
-            <Link to="/to-aqui/owner" className="ml-auto">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-primary hover:bg-white/40 rounded-full"
-                aria-label="Meus venues"
-              >
-              </Button>
-            </Link>
           </div>
         </div>
 
