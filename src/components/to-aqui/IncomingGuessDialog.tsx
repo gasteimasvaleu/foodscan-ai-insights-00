@@ -47,7 +47,14 @@ export default function IncomingGuessDialog({ guess, onClose }: Props) {
       toast({
         title: "🎉 Vocês se descobriram!",
         description: "Uma conversa privada foi aberta.",
+        action: dmId ? (
+          <ToastAction altText="Abrir conversa" onClick={() => navigate(`/comunidade/dm/${dmId}`)}>
+            <MessageCircle className="w-4 h-4 mr-1" /> Abrir
+          </ToastAction>
+        ) : undefined,
       });
+      if (dmId) navigate(`/comunidade/dm/${dmId}`);
+
     } else {
       toast({ title: "😅 Você marcou como errado", description: "Ninguém saberá o quê foi chutado." });
     }
