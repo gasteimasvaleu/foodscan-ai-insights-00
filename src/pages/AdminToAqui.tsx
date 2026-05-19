@@ -6,9 +6,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Shield, MapPin, Check, X, EyeOff, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, Shield, MapPin, Check, X, EyeOff, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { VENUE_CATEGORIES, type Venue } from "@/hooks/useVenues";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type StatusTab = "pending" | "approved" | "rejected";
 
@@ -58,6 +69,19 @@ const AdminToAqui = () => {
       toast.success("Venue atualizado");
     },
     onError: (e: any) => toast.error(e.message ?? "Erro ao atualizar"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("venues").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-venues"] });
+      qc.invalidateQueries({ queryKey: ["venues"] });
+      toast.success("Venue excluído");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Erro ao excluir"),
   });
 
   if (loading || checking) {
@@ -187,6 +211,36 @@ const AdminToAqui = () => {
                             <ExternalLink className="h-4 w-4 mr-1" /> Abrir
                           </Button>
                         </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" /> Excluir
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir venue?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza? Esta ação remove "{v.name}" e todos os dados relacionados
+                                (chats, presenças, etc) permanentemente. Não pode ser desfeita.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => deleteMutation.mutate(v.id)}
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </li>
                   );
