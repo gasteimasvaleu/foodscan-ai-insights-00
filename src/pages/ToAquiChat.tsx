@@ -202,7 +202,10 @@ export default function ToAquiChat() {
       )
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState();
-        setOnlineCount(Object.keys(state).length);
+        const ids = Object.keys(state);
+        setOnlineCount(ids.length);
+        setOnlineUserIds(ids);
+        refreshMembers(ids);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
