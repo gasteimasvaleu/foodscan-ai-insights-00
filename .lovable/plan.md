@@ -1,24 +1,26 @@
 ## Plano
 
-1. **Corrigir a Edge Function `venue-mystery-hint`**
-   - Trocar a importação de CORS que pode falhar no runtime por headers definidos diretamente no arquivo.
-   - Garantir que `OPTIONS` e todas as respostas retornem CORS corretamente.
-   - Melhorar o tratamento de erro para retornar uma mensagem amigável em vez de quebrar com “Failed to send request”.
+1. **Header do chat (`ToAquiChat.tsx`)**
+   - Remover o ícone de IA (`Sparkles`) do topo. A geração de dicas continua disponível pelo botão ao lado do input.
+   - Colocar no lugar um botão "Atividade" (ícone `Activity` / coração com pulso) que leva para a nova página de atividades daquele venue.
 
-2. **Ajustar autenticação da função**
-   - Como o botão é usado dentro do app por usuário logado, manter a chamada pelo `supabase.functions.invoke`.
-   - Se necessário, deixar a função com `verify_jwt = false` e validar em código apenas o que for essencial para evitar bloqueio por ausência/intermitência do header no preview/webview.
+2. **Nova página `ToAquiActivity`** (rota `/to-aqui/venue/:id/atividade`)
+   - Mostra a lista de interações do usuário logado naquele venue: enviadas e recebidas (paquera, drink, mesa, conta).
+   - Cada item exibe: tipo + emoji, nome (ou "Anônimo"/apelido) do outro lado, direção (você → fulano / fulano → você), data relativa, e badge "Match 💞" quando `dm_conversation_id` estiver preenchido.
+   - Botões: "Abrir conversa" quando houver match (vai para `/comunidade/dm/:id`) e "Retribuir" para sinais recebidos sem match (envia o mesmo `type` de volta).
+   - Filtros simples: "Tudo / Enviadas / Recebidas / Matches".
+   - Estado vazio amigável.
 
-3. **Simplificar o retorno da IA**
-   - Remover dependência de `tool_choice/function calling`, que pode variar entre modelos.
-   - Pedir JSON simples ao AI Gateway e fazer fallback para dividir texto em até 3 dicas se o JSON vier malformado.
+3. **Rota e navegação**
+   - Adicionar `<Route path="/to-aqui/venue/:id/atividade" element={<ToAquiActivity />} />` em `App.tsx`.
+   - Manter a página em tela cheia no mesmo padrão (esconder Navbar como já é feito para `/chat`).
 
-4. **Validar após a correção**
-   - Reimplantar/testar a Edge Function diretamente.
-   - Confirmar que ela retorna `{ hints: [...] }` com uma pista real antes de considerar resolvido.
+4. **Padrão visual**
+   - Header rosa #FD46A1, cartões `bg-[#FFD1E7]` `rounded-3xl`, glassmorphism nos modais (nenhum modal novo é necessário).
+   - Sem mexer em backend nem no schema.
 
 ## Detalhes técnicos
-
-- Arquivo principal: `supabase/functions/venue-mystery-hint/index.ts`
-- Possível ajuste adicional: `supabase/config.toml`
-- Não serão feitas mudanças visuais no modal nem no fluxo do chat.
+- Arquivos:
+  - `src/pages/ToAquiChat.tsx` (header: substitui botão Sparkles por Activity → `navigate('/to-aqui/venue/${venueId}/atividade')`).
+  - `src/pages/ToAquiActivity.tsx` (novo): query `venue_interactions` filtrando por `venue_id` e `(sender_id = me OR receiver_id = me)`, join leve em `venue_memberships` + `profiles` para mostrar nome/avatar respeitando `display_mode`.
+  - `src/App.tsx`: nova rota + adicionar regex no guard de Navbar para esconder também em `/atividade` (opcional, ou manter Navbar — usar o mesmo padrão do `/venue/:id`).
