@@ -1,97 +1,36 @@
-## /nutricionista-que-vende — MVP simplificado (sem Instagram API)
+## Ajustes no "Nutricionista que Vende"
 
-Pulando toda a integração com Meta/Instagram. O usuário **gera o conteúdo com IA**, **baixa a imagem** e **copia a legenda** para postar manualmente no Instagram.
+### 1. Formato de imagem por tipo de post
 
-### O que entra
+Hoje `generate-social-image` gera sempre 1080x1080 (quadrado). Vamos passar o `post_type` para definir a proporção:
 
-**Rota:** `/nutricionista-que-vende` (protegida por `ProRoute`, disponível a todos usuários Pro)
+- `story` e `reel` → **1080x1920 (9:16)**
+- demais tipos (`dica`, `carrossel`, `receita`, `antes_depois`) → **1080x1080 (1:1)**
 
-**Fluxo principal:**
-1. Usuário escolhe tipo de post (Carrossel educativo, Dica rápida, Receita, Antes/Depois, Story, Reel script)
-2. Descreve o tema em 1 frase (ex: "benefícios da proteína no café da manhã")
-3. Escolhe tom (Profissional, Descontraído, Motivacional) e público (Emagrecimento, Hipertrofia, Saúde geral, Gestantes…)
-4. IA gera:
-   - **Legenda** completa pronta para colar
-   - **Hashtags** sugeridas (15–20)
-   - **Imagem** do post (gerada via IA, fundo + texto principal)
-   - **CTA** final
-5. Tela de resultado com:
-   - Preview da imagem
-   - Botão **Baixar imagem** (PNG, formato 1080×1080 ou 1080×1350)
-   - Botão **Copiar legenda** (com hashtags)
-   - Botão **Compartilhar** nativo (Web Share API / Capacitor Share)
-   - Botão **Regenerar** (legenda / imagem separadamente)
-   - Botão **Salvar no histórico**
+Mudanças:
+- **`supabase/functions/generate-social-image/index.ts`**: ajustar o prompt para informar a proporção correta ("Imagem vertical 1080x1920 (9:16) para Story/Reel" vs "Imagem quadrada 1080x1080 (1:1)"). Salvar a proporção retornada junto (`aspect_ratio`).
+- **`PostResultCard.tsx`**: o preview hoje é `aspect-square` fixo. Trocar para `aspect-[9/16]` quando o tipo for `story`/`reel`, senão `aspect-square`. Receberá uma prop opcional `postType`.
+- **`NutricionistaQueVende.tsx`**: passar `form.post_type` para o `PostResultCard`.
 
-**Histórico de posts:**
-- Aba "Meus posts" listando o que o usuário já gerou
-- Cada item: thumbnail, tema, data, ações (baixar de novo, copiar legenda, duplicar, excluir)
+> Observação: o modelo Nano Banana nem sempre respeita exatamente as dimensões pedidas; o prompt vai reforçar "vertical 9:16, sem cortar elementos importantes". O container do preview garante o enquadramento visual correto independente do que o modelo retornar.
 
-**Calendário/sugestões (light):**
-- Card com **5 ideias da semana** geradas pela IA conforme nicho do usuário
-- Clique numa ideia → preenche o formulário e gera
+### 2. Botão "Gerar receita com IA" quando o post for de receita
 
-### O que fica fora
+Quando `post_type === "receita"`, mostrar no `PostResultCard` (logo abaixo da legenda) um botão extra **"Gerar receita completa com IA"**.
 
-- ❌ OAuth Instagram / Meta Developers
-- ❌ Edge function `instagram-webhook`
-- ❌ Agendamento real de publicação
-- ❌ Métricas (likes, alcance, comentários)
-- ❌ Resposta automática a comentários/DMs
+Comportamento:
+- Chama uma nova edge function **`generate-post-recipe`** que recebe `{ theme, audience }` e retorna `{ title, ingredients: string[], steps: string[], tips?: string, macros?: { kcal, protein, carbs, fat } }` via tool calling (`google/gemini-2.5-flash`).
+- O resultado aparece em um card expansível dentro do `PostResultCard` (sem sair da página), com botões **Copiar receita** e **Adicionar à legenda** (concatena a receita formatada ao final do `caption`).
+- A receita gerada **não** é salva em tabela nova — fica apenas no estado local; se o usuário clicar "Adicionar à legenda" + "Salvar", ela entra no campo `caption` do `generated_posts` já existente.
 
-Tudo isso pode entrar numa V2 se fizer sentido.
+Mudanças:
+- Nova função **`supabase/functions/generate-post-recipe/index.ts`** (estrutura idêntica às outras: CORS, valida JWT, usa `LOVABLE_API_KEY`, retorna 429/402).
+- Atualizar **`supabase/config.toml`** adicionando a função.
+- **`PostResultCard.tsx`**: novo bloco condicional (`postType === "receita"`) com botão de IA, estado local `recipe`, `loadingRecipe`, e card de exibição.
+- **`NutricionistaQueVende.tsx`**: passar `postType={form.post_type}` para o card.
 
-### Detalhes técnicos
+### Fora do escopo
 
-**Tabelas novas (uma migration):**
-
-```text
-generated_posts
-  id uuid pk
-  user_id uuid → public.profiles(id)
-  post_type text          -- carrossel, dica, receita, antes_depois, story, reel
-  theme text              -- prompt do usuário
-  tone text
-  audience text
-  caption text            -- legenda gerada
-  hashtags text[]
-  image_url text          -- storage público
-  cta text
-  created_at timestamptz default now()
-
-post_ideas_weekly
-  id uuid pk
-  user_id uuid → public.profiles(id)
-  week_start date
-  ideas jsonb             -- [{title, hook, post_type}, ...]
-  created_at timestamptz default now()
-```
-
-RLS: dono lê/escreve/apaga apenas os próprios registros.
-
-**Storage bucket:** `social-posts` (público, leitura anônima, escrita autenticada do dono via pasta `{user_id}/`).
-
-**Edge functions novas:**
-- `generate-social-caption` — recebe `{post_type, theme, tone, audience}`, chama Lovable AI Gateway (`google/gemini-2.5-flash`), retorna `{caption, hashtags, cta}`
-- `generate-social-image` — recebe `{theme, post_type, style}`, gera imagem via `gemini-2.5-flash-image-preview` (Lovable AI), salva em `social-posts/{user_id}/...png`, retorna URL pública
-- `generate-weekly-ideas` — retorna 5 sugestões textuais para a semana
-
-Tudo via `LOVABLE_API_KEY` (já existe). Nenhum secret novo.
-
-**Componentes novos (`src/pages/NutricionistaQueVende.tsx` + `src/components/nutri-sells/`):**
-- `PostGeneratorForm.tsx` — formulário inicial
-- `PostResultCard.tsx` — preview + ações (baixar/copiar/compartilhar)
-- `PostHistoryGrid.tsx` — histórico
-- `WeeklyIdeasCard.tsx` — sugestões
-- `hooks/useGeneratedPosts.ts`
-
-**Download/cópia (frontend puro):**
-- Copiar legenda: `navigator.clipboard.writeText(caption + "\n\n" + hashtags.join(" "))`
-- Baixar imagem: fetch da `image_url` → blob → `URL.createObjectURL` → `<a download>` (no Capacitor usa `@capacitor/filesystem` + `Share`)
-- Compartilhar: Web Share API com fallback
-
-**Rota:**
-- Adicionar `<Route path="/nutricionista-que-vende" element={<ProRoute><NutricionistaQueVende /></ProRoute>} />` em `App.tsx`
-- Entrada no Menu "+" (BottomPlusMenu) na seção apropriada
-
-### Confirma para eu implementar?
+- Não muda schema do banco (`generated_posts` continua igual).
+- Não cria tipo separado de "receita salva" (já existe `useUserRecipes` para isso; aqui é só conteúdo do post).
+- Bucket `social-posts` continua o mesmo (aceita qualquer dimensão).

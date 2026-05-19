@@ -142,6 +142,9 @@ export default function NutricionistaQueVende() {
             {result && (
               <PostResultCard
                 result={result}
+                postType={form.post_type}
+                theme={form.theme}
+                audience={form.audience}
                 loadingCaption={loadingCaption}
                 loadingImage={loadingImage}
                 saving={saving}
@@ -149,6 +152,10 @@ export default function NutricionistaQueVende() {
                 onRegenerateCaption={handleRegenerateCaption}
                 onRegenerateImage={handleRegenerateImage}
                 onSave={handleSave}
+                onAppendToCaption={(extra) => {
+                  setResult((r) => r ? { ...r, caption: (r.caption || "") + extra } : r);
+                  setSaved(false);
+                }}
               />
             )}
           </TabsContent>
