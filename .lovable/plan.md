@@ -1,21 +1,19 @@
-## Problema
+## Objetivo
 
-As interações **Paquera** (`flirt`), **Convidar pra mesa** (`sit_table`) e **Pagar sua conta** (`pay_bill`) falham silenciosamente porque o `CHECK constraint` da tabela `venue_interactions` só aceita os tipos antigos: `poke`, `drink`, `found_you`. Qualquer insert com os tipos novos é rejeitado pelo Postgres com erro de check constraint.
+Em `/to-aqui`, quando o usuário for Pro, substituir o card de upsell ("Adicione seu bar...") por um card equivalente que leva para `/to-aqui/owner` (cadastro e administração de venues).
 
-Apenas **Oferecer drink** funciona hoje porque `drink` está na lista permitida.
+## Mudança
 
-## Correção
+Arquivo: `src/pages/ToAqui.tsx`
 
-### 1. Migration: ampliar o CHECK
-```sql
-ALTER TABLE public.venue_interactions DROP CONSTRAINT venue_interactions_type_check;
-ALTER TABLE public.venue_interactions ADD CONSTRAINT venue_interactions_type_check
-  CHECK (type = ANY (ARRAY['poke','drink','found_you','flirt','sit_table','pay_bill']));
-```
-Mantemos os tipos antigos para não invalidar registros existentes.
+- Remover o gate `!isPro` do card atual.
+- Renderizar **sempre** um card no mesmo slot, com conteúdo condicional:
+  - **Não Pro** → texto "Adicione seu bar, restaurante ou festa" + subtítulo "Seja Pro para divulgar seu local no Tô Aqui", clique vai para `/assinar?reason=to_aqui_owner_upsell` (comportamento atual).
+  - **Pro** → texto "Meus venues" + subtítulo "Cadastre e administre seus locais", clique vai para `/to-aqui/owner`.
+- Manter o mesmo visual (gradiente rosa #FD46A1, ícone Crown, ChevronRight, animação) para consistência.
+- Remover o `<Link to="/to-aqui/owner">` vazio que está dentro do header (botão sem ícone/label, atualmente inútil).
 
-### 2. Sem mudanças de código
-O frontend (`ToAquiChat.tsx` e `ToAquiActivity.tsx`) já envia/lê os tipos corretos. Nada além da migration é necessário.
+## Fora de escopo
 
-## Verificação
-Após aplicar, testar cada botão (Paquera, Mesa, Conta, Drink) no chat do venue e confirmar que aparecem em `/to-aqui/venue/:id/atividade`.
+- Nenhuma alteração em rotas, `ProRoute`, hooks de assinatura ou na página `/to-aqui/owner`.
+- Sem mudanças de backend.

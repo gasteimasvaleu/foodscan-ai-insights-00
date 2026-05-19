@@ -55,23 +55,32 @@ const ToAqui = () => {
 
 
 
-        {!isPro && (
-          <button
-            onClick={() => navigate('/assinar?reason=to_aqui_owner_upsell')}
-            className="w-full text-left rounded-3xl shadow-xl border border-white/20 overflow-hidden bg-gradient-to-br from-[#FD46A1] to-[#FF6FB5] active:scale-[0.99] transition-all animate-fade-in"
-          >
-            <div className="flex items-center gap-4 py-4 px-5">
-              <div className="w-12 h-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center flex-shrink-0">
-                <Crown className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0 text-white">
-                <p className="text-base">Adicione seu bar, restaurante ou festa</p>
-                <p className="text-sm text-white/85">Seja Pro para divulgar seu local no Tô Aqui</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
+        <button
+          onClick={() =>
+            navigate(isPro ? '/to-aqui/owner' : '/assinar?reason=to_aqui_owner_upsell')
+          }
+          className="w-full text-left rounded-3xl shadow-xl border border-white/20 overflow-hidden bg-gradient-to-br from-[#FD46A1] to-[#FF6FB5] active:scale-[0.99] transition-all animate-fade-in"
+        >
+          <div className="flex items-center gap-4 py-4 px-5">
+            <div className="w-12 h-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center flex-shrink-0">
+              <Crown className="w-6 h-6 text-white" />
             </div>
-          </button>
-        )}
+            <div className="flex-1 min-w-0 text-white">
+              {isPro ? (
+                <>
+                  <p className="text-base">Meus venues</p>
+                  <p className="text-sm text-white/85">Cadastre e administre seus locais</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-base">Adicione seu bar, restaurante ou festa</p>
+                  <p className="text-sm text-white/85">Seja Pro para divulgar seu local no Tô Aqui</p>
+                </>
+              )}
+            </div>
+            <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
+          </div>
+        </button>
 
 
 
