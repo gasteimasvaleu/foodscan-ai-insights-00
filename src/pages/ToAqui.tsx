@@ -12,26 +12,27 @@ const ToAqui = () => {
   const { data: venues = [], isLoading } = useVenues({ search, category });
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-background pb-24">
       <Navbar />
-      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-[#FD46A1]">Tô Aqui</h1>
-            <p className="text-sm text-gray-600">
-              Bares, restaurantes e festas com chat ao vivo
-            </p>
+      <div className="max-w-2xl mx-auto pt-[calc(env(safe-area-inset-top)+4rem)] px-4 pb-4 space-y-5">
+        {/* Card header padrão */}
+        <div className="animate-fade-in">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <MapPin className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-primary">Tô Aqui</h1>
+            <Link to="/to-aqui/owner" className="ml-auto">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-primary hover:bg-white/40 rounded-full"
+                aria-label="Meus venues"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
-          <Link to="/to-aqui/owner">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full border-[#FD46A1] text-[#FD46A1] hover:bg-[#FFD1E7]"
-            >
-              <Settings className="h-4 w-4 mr-1" />
-              Meus venues
-            </Button>
-          </Link>
         </div>
 
         {/* Busca */}
