@@ -62,6 +62,8 @@ export default function ToAquiChat() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [onlineCount, setOnlineCount] = useState(0);
+  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
+  const [onlineModalOpen, setOnlineModalOpen] = useState(false);
   const [needIdentity, setNeedIdentity] = useState(false);
   const [identityMode, setIdentityMode] = useState<"real" | "anonymous">("real");
   const [identityAlias, setIdentityAlias] = useState("");

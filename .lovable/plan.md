@@ -1,28 +1,41 @@
 ## Objetivo
 
-No botão de "Atividade" (ícone Activity) no header do chat do venue (`/to-aqui/venue/:id/chat`), mostrar um badge com o número de interações novas recebidas e fazer o botão pulsar enquanto houver alguma.
+Adicionar, ao lado do botão de Atividade (header do chat do venue), um botão que abre um modal padrão do app listando todos os usuários online no chat naquele momento.
 
-## Como funciona hoje
+## Arquivo único
 
-- O chat já assina em tempo real `venue_interactions` filtrando `receiver_id=eq.${user.id}` e dispara um toast (linhas 213-232).
-- O botão de atividade só navega para `/to-aqui/venue/:id/atividade`, sem qualquer indicador visual.
+`src/pages/ToAquiChat.tsx`
 
-## Plano
+## Mudanças
 
-**Arquivo único:** `src/pages/ToAquiChat.tsx`
+1. **State novo**
+   - `onlineUserIds: string[]` — lista de user_ids presentes no canal.
+   - `onlineModalOpen: boolean`.
 
-1. **State** — `const [newInteractionsCount, setNewInteractionsCount] = useState(0)`.
-2. **Chave de "última visita"** em `localStorage`: `toaqui-activity-seen-${venueId}-${user.id}` guardando ISO timestamp.
-3. **Carga inicial** — após login/venue prontos, fazer um `SELECT count(*)` em `venue_interactions` filtrando `receiver_id=user.id`, `venue_id=venueId`, `created_at > lastSeen` e setar no state.
-4. **Realtime** — no handler que já existe (INSERT em `venue_interactions` recebido), incrementar `newInteractionsCount` além de mostrar o toast.
-5. **Botão Activity (linha 576-584)**:
-   - Wrappear em `relative`.
-   - Quando `newInteractionsCount > 0`, adicionar classe `animate-pulse` no botão.
-   - Renderizar um badge absoluto no canto superior direito: círculo rosa pequeno (`bg-[#FD46A1] text-white`, `text-[10px]`, `rounded-full`, `min-w-[18px] h-[18px]`) com o número (mostrar `9+` se ≥ 10).
-6. **Reset ao clicar** — no `onClick` do botão, antes de navegar: gravar `localStorage[lastSeenKey] = new Date().toISOString()` e `setNewInteractionsCount(0)`.
+2. **Presence sync (linhas 201-204)**
+   - Hoje só seta `onlineCount`. Atualizar também `setOnlineUserIds(Object.keys(state))`.
+   - Manter `setOnlineCount` para o subtítulo.
+   - Observação: `fetchOnlineDb` continua só ajustando o contador (não temos ids pelo RPC), então o modal mostra os usuários do canal realtime — fonte de verdade dos "conectados agora".
 
-## Sem mudanças
+3. **Botão novo no header (entre os dois botões já existentes, ~linha 590)**
+   - Ícone `Users` (já importado), `variant="ghost" size="icon"`, cor `#FD46A1`.
+   - `aria-label="Quem está online"`.
+   - `onClick`: abre o modal e dispara `refreshMembers(onlineUserIds)` para garantir avatar/nome de quem ainda não apareceu no chat.
+   - Badge pequeno (mesmo estilo do badge de interações) no canto superior direito com `onlineCount`.
 
-- Sem alteração de banco / RLS.
-- Sem novas dependências.
-- Toast e demais comportamentos do chat permanecem iguais.
+4. **Modal (Dialog do shadcn — padrão glassmorphism do app)**
+   - `DialogContent` com `bg-white/70 backdrop-blur-md`, `rounded-3xl`, `max-h-[80vh] overflow-y-auto`.
+   - `DialogHeader`: título "Online agora" + `DialogDescription` com `{onlineCount} {pessoa/pessoas} no chat`.
+   - Lista de itens (uma linha por user_id em `onlineUserIds`):
+     - Avatar (mesma lógica usada nas mensagens: se `display_mode === "anonymous"`, mostrar inicial do alias dentro de um círculo cinza com ícone genérico; senão `avatar_url` ou inicial do nome).
+     - Nome: alias (se anônimo) ou `profile_name`.
+     - Badge "Você" para o próprio user.
+   - Estado vazio: "Ninguém online no momento."
+   - Sem ações por linha (apenas visualização) — mantém escopo mínimo.
+
+## Fora do escopo
+
+- Não mexer no contador/subtítulo do header (já existe e fica).
+- Não criar tabela nem RLS — usa o `presenceState()` já existente.
+- Sem mudança no botão de Atividade nem no botão Voltar.
+- Sem ações de DM/paquera direto pelo modal (pode ser uma próxima iteração se você quiser).
