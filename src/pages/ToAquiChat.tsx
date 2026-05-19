@@ -511,7 +511,7 @@ export default function ToAquiChat() {
 
       {/* Mystery hint dialog */}
       <Dialog open={hintOpen} onOpenChange={(o) => { setHintOpen(o); if (!o) { setHintInput(""); setHintSuggestions([]); } }}>
-        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-w-sm">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-[#FD46A1] flex items-center gap-2">
               <Sparkles className="w-5 h-5" /> Dica misteriosa via IA
