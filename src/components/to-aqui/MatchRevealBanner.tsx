@@ -12,7 +12,10 @@ interface Props {
   venueId?: string;
   currentUserId?: string;
   messageSenderId?: string;
+  messageId: string;
 }
+
+const dismissKey = (id: string) => `to-aqui:match-reveal-dismissed:${id}`;
 
 export default function MatchRevealBanner({
   senderAlias,
@@ -21,10 +24,18 @@ export default function MatchRevealBanner({
   venueId,
   currentUserId,
   messageSenderId,
+  messageId,
 }: Props) {
   const fired = useRef(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return typeof window !== "undefined" && localStorage.getItem(dismissKey(messageId)) === "1";
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     if (!fireConfetti || fired.current) return;
