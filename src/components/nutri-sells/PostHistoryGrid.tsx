@@ -4,6 +4,7 @@ import { Trash2, Copy, Download, ChevronLeft, ChevronRight } from "lucide-react"
 import { GeneratedPost } from "@/hooks/useGeneratedPosts";
 import { copyToClipboard, downloadImage } from "@/lib/socialShare";
 import { toast } from "@/hooks/use-toast";
+import { PostDetailModal } from "./PostDetailModal";
 import {
   format,
   startOfMonth,
