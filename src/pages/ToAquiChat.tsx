@@ -21,8 +21,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
+import VenueChatOnboardingModal from "@/components/to-aqui/VenueChatOnboardingModal";
+
+const ONBOARDING_KEY = "toAquiChatOnboardingSeen";
 
 interface VenueMsg {
   id: string;
@@ -58,6 +61,10 @@ export default function ToAquiChat() {
 
   const [messages, setMessages] = useState<VenueMsg[]>([]);
   const [members, setMembers] = useState<Record<string, MemberInfo>>({});
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(ONBOARDING_KEY) !== "true";
+  });
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -690,6 +697,15 @@ export default function ToAquiChat() {
               </span>
             )}
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowOnboarding(true)}
+            aria-label="Como funciona o chat"
+            className="text-[#FD46A1]"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -798,6 +814,13 @@ export default function ToAquiChat() {
           </div>
         </div>
       </div>
+      <VenueChatOnboardingModal
+        open={showOnboarding}
+        onClose={() => {
+          localStorage.setItem(ONBOARDING_KEY, "true");
+          setShowOnboarding(false);
+        }}
+      />
     </>
   );
 }
