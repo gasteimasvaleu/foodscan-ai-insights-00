@@ -48,39 +48,60 @@ const ToAquiVenue = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
 
-          <div className="aspect-[16/9] rounded-3xl overflow-hidden bg-[#FFD1E7] mb-4">
-            {venue.photo_url ? (
-              <img
-                src={venue.photo_url}
-                alt={venue.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-7xl">
-                {cat?.emoji ?? "📍"}
+          <div className="bg-white rounded-3xl shadow-sm overflow-hidden mb-4">
+            <div className="relative h-32 bg-gradient-to-br from-[#FD46A1] to-[#FFD1E7]">
+              {venue.photo_url && (
+                <img
+                  src={venue.photo_url}
+                  alt={venue.name}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+              {cat && (
+                <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-[#FD46A1] font-medium flex items-center gap-1">
+                  <span>{cat.emoji}</span>
+                  {cat.label}
+                </span>
+              )}
+            </div>
+
+            <div className="px-4 pb-4">
+              <div className="flex items-end justify-between gap-3 -mt-12">
+                <div className="w-24 h-24 rounded-full bg-[#FFD1E7] border-4 border-white flex items-center justify-center text-4xl shadow-sm">
+                  {cat?.emoji ?? venue.name?.[0]?.toUpperCase() ?? "📍"}
+                </div>
+                <Button
+                  onClick={() => navigate(`/to-aqui/venue/${venue.id}/chat`)}
+                  className="rounded-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 h-10"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Entrar
+                </Button>
               </div>
-            )}
-          </div>
 
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-gray-900">{venue.name}</h1>
-            <span className="text-xs px-2 py-1 rounded-full bg-[#FFD1E7] text-[#FD46A1] shrink-0">
-              {cat?.label}
-            </span>
-          </div>
+              <h1 className="text-2xl font-bold text-gray-900 mt-3">{venue.name}</h1>
+              <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <MapPin className="h-4 w-4" />
+                {venue.address ? `${venue.address} · ${venue.city}` : venue.city}
+              </p>
 
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-4 w-4" /> {venue.city}
-            </span>
-            <span className="flex items-center gap-1">
-              <Users className="h-4 w-4" /> chat ao vivo
-            </span>
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
+                  <MessageCircle className="w-5 h-5 text-[#FD46A1] mx-auto mb-1" />
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wide">Chat</p>
+                </div>
+                <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
+                  <MapPin className="w-5 h-5 text-[#FD46A1] mx-auto mb-1" />
+                  <p className="text-xs font-semibold text-gray-800 truncate">{venue.city}</p>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wide">Local</p>
+                </div>
+                <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
+                  <div className="text-xl leading-none mb-1">{cat?.emoji ?? "📍"}</div>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wide">Tipo</p>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {venue.address && (
-            <p className="text-sm text-gray-600 mb-3">{venue.address}</p>
-          )}
 
           {venue.description && (
             <div className="bg-white rounded-3xl p-4 mb-3 shadow-sm">
@@ -98,19 +119,6 @@ const ToAquiVenue = () => {
               <p className="text-sm text-gray-800 whitespace-pre-wrap">{venue.rules}</p>
             </div>
           )}
-
-          <div className="bg-white rounded-3xl p-5 text-center shadow-sm">
-            <p className="text-sm text-gray-600 mb-3">
-              Converse em tempo real com quem está aqui agora.
-            </p>
-            <Button
-              onClick={() => navigate(`/to-aqui/venue/${venue.id}/chat`)}
-              className="rounded-full bg-[#FD46A1] hover:bg-[#FD46A1]/90"
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Entrar no chat
-            </Button>
-          </div>
         </div>
       </div>
     </div>
