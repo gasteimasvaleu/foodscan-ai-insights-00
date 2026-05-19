@@ -1,12 +1,9 @@
-## Card "Seja Pro" em `src/pages/ToAqui.tsx`
+## Substituir chips por Drawer com WheelPicker em `src/pages/ToAqui.tsx`
 
-Adicionar logo abaixo do card header (após linha 36) um Card clicável no padrão do upsell de `Profile.tsx`:
+Trocar a linha horizontal de botões de categoria (linhas 74-99) por um seletor **Button + Drawer + WheelPicker** seguindo exatamente o padrão de `src/pages/Loja.tsx`.
 
-- Gradiente `from-[#FD46A1] to-[#FF6FB5]`, `rounded-3xl`, `shadow-xl`
-- Ícone `Crown` (lucide) em quadrado branco translúcido (`bg-white/25 backdrop-blur-md`)
-- Texto: **"Adicione seu bar, restaurante ou festa"** + sub: "Seja Pro para divulgar seu local no Tô Aqui"
-- `ChevronRight` à direita
-- onClick → `navigate('/assinar?reason=to_aqui_owner_upsell')`
-- Só aparece para usuários **não Pro** (usar mesma flag/contexto que `Profile.tsx` usa via `subscriptionStatus`)
-
-Precisarei converter `Link`s para `useNavigate` e checar status de assinatura via o hook já usado no projeto (verificar em Profile.tsx qual é).
+### Mudanças
+1. **Imports**: adicionar `Drawer`, `DrawerContent`, `DrawerHeader`, `DrawerTitle`, `DrawerFooter` de `@/components/ui/drawer`; `WheelPicker` de `@/components/ui/wheel-picker`; ícone `ChevronDown`.
+2. **State**: `isCategoryDrawerOpen` e `pendingCategory` (com sentinela `ALL_VALUE = "__all__"`).
+3. **UI**: substituir o bloco de chips por um `<Button variant="outline">` largura total mostrando o emoji+label da categoria atual (ou "Todas as categorias"), com `ChevronDown` à direita. Ao clicar abre o Drawer.
+4. **Drawer**: glassmorphism `bg-white/70 backdrop-blur-md border-2 border-primary`, `max-w-md mx-auto rounded-t-2xl`, título "Selecionar Categoria", `WheelPicker` com `[{ Todas }, ...VENUE_CATEGORIES]`, footer com Cancelar/Confirmar (padrão pink primary).
