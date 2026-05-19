@@ -72,6 +72,7 @@ import ToAquiOwner from "./pages/ToAquiOwner";
 import ToAquiNewVenue from "./pages/ToAquiNewVenue";
 import ToAquiEditVenue from "./pages/ToAquiEditVenue";
 import ToAquiChat from "./pages/ToAquiChat";
+import ToAquiActivity from "./pages/ToAquiActivity";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -101,7 +102,7 @@ const AuthAwareNavbar = () => {
   useStreakMilestones(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
-  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/chat$/.test(location.pathname)) return null;
+  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/(chat|atividade)$/.test(location.pathname)) return null;
 
   // Don't render navbar until auth is ready
   if (!authReady || !user) return null;
@@ -181,6 +182,7 @@ const App = () => (
             <Route path="/to-aqui" element={<ToAqui />} />
             <Route path="/to-aqui/venue/:id" element={<ToAquiVenue />} />
             <Route path="/to-aqui/venue/:id/chat" element={<ToAquiChat />} />
+            <Route path="/to-aqui/venue/:id/atividade" element={<ToAquiActivity />} />
             <Route path="/to-aqui/owner" element={<ProRoute feature="to-aqui-owner"><ToAquiOwner /></ProRoute>} />
             <Route path="/to-aqui/owner/venue/new" element={<ProRoute feature="to-aqui-owner"><ToAquiNewVenue /></ProRoute>} />
             <Route path="/to-aqui/owner/venue/:id/edit" element={<ProRoute feature="to-aqui-owner"><ToAquiEditVenue /></ProRoute>} />

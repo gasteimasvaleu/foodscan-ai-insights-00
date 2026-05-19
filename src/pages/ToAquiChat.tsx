@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
 
 interface VenueMsg {
@@ -576,11 +576,11 @@ export default function ToAquiChat() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setHintOpen(true)}
-            aria-label="Dica misteriosa via IA"
+            onClick={() => navigate(`/to-aqui/venue/${venueId}/atividade`)}
+            aria-label="Minha atividade neste venue"
             className="text-[#FD46A1]"
           >
-            <Sparkles className="h-5 w-5" />
+            <Activity className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
             <ArrowLeft className="h-5 w-5" />
