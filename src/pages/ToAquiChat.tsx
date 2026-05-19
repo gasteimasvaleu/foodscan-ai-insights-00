@@ -592,6 +592,19 @@ export default function ToAquiChat() {
                 <span className="text-sm text-gray-800">{it.label}</span>
               </button>
             ))}
+            <button
+              disabled={!!sendingInteraction}
+              onClick={() => {
+                setGuessTargetId(interactionTarget);
+                setInteractionTarget(null);
+                setGuessDialogOpen(true);
+              }}
+              className="col-span-2 flex flex-col items-center gap-2 p-4 rounded-2xl bg-[#FD46A1]/10 border-2 border-[#FD46A1]/30 active:scale-95 transition disabled:opacity-50"
+            >
+              <Search className="w-7 h-7 text-[#FD46A1]" />
+              <span className="text-sm text-gray-800">Já sei quem é você</span>
+              <span className="text-[10px] text-gray-500">Acertou? Vira match revelado 🎉</span>
+            </button>
           </div>
         </DrawerContent>
       </Drawer>
