@@ -177,7 +177,8 @@ export default function NutricionistaQueVende() {
             <PostHistoryGrid posts={posts} loading={loadingPosts} onDelete={remove} />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
