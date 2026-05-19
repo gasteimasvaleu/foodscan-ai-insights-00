@@ -334,9 +334,6 @@ export default function ToAquiChat() {
           className="flex items-center gap-3 px-4 py-3 border-b bg-white shadow-sm shrink-0"
           style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}
         >
-          <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
           <div className="bg-[#FD46A1] p-2 rounded-xl">
             <MessageCircle className="w-5 h-5 text-white" />
           </div>
@@ -347,6 +344,9 @@ export default function ToAquiChat() {
               {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
             </p>
           </div>
+          <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
