@@ -42,25 +42,19 @@ serve(async (req) => {
 
     const isVertical = post_type === "story" || post_type === "reel";
     const dims = isVertical ? "vertical 1080x1920 (proporção 9:16)" : "quadrada 1080x1080 (proporção 1:1)";
+    const safeArea = isVertical
+      ? "Mantenha margem segura de 15% em todas as bordas — sujeito principal centralizado no terço central vertical, longe do topo e da base (onde o Instagram coloca avatar e barra de resposta)."
+      : "Mantenha margem segura de 8% em todas as bordas, com sujeito principal bem centralizado.";
 
-    const safetyRules = isVertical
-      ? `REGRAS CRÍTICAS DE COMPOSIÇÃO (orientação vertical 9:16):
-- Deixe MARGEM SEGURA mínima de 15% em TODAS as bordas (topo, base, esquerda e direita). Nenhum texto, logo ou elemento importante pode tocar ou ficar próximo das bordas.
-- O texto principal deve ficar CENTRALIZADO no terço central vertical da imagem (entre 30% e 70% da altura), longe do topo (onde aparece o avatar do Instagram) e da base (onde aparece a barra de resposta).
-- Máximo 4 palavras no texto principal, quebradas em até 2 linhas curtas.
-- Fonte grande, peso bold, alto contraste com o fundo. A largura do texto não pode passar de 80% da largura da imagem.
-- PROIBIDO: texto cortado, letras encostando nas bordas, texto pequeno, texto sobre área de baixo contraste.`
-      : `REGRAS DE COMPOSIÇÃO (quadrada 1:1):
-- Margem segura de 8% em todas as bordas. Texto centralizado, máximo 6 palavras em até 2 linhas, sem encostar nas bordas.`;
-
-    const imagePrompt = `Imagem ${dims} para post de Instagram de nutricionista, em português do Brasil.
-Tipo: ${post_type || "dica"}.
+    const imagePrompt = `Imagem ${dims} para post de Instagram de nutricionista.
 Tema: ${theme}.
-Estilo visual: ${style || "moderno, clean, cores quentes, fotografia de alimentos saudáveis quando aplicável"}.
+Estilo visual: ${style || "moderno, clean, fotografia profissional de alimentos saudáveis, luz natural, cores quentes e apetitosas"}.
+Composição puramente visual focada em alimentos, ingredientes, pratos, mesa posta ou ambiente — sem nenhum elemento textual.
+${safeArea}
 
-${safetyRules}
+REGRA ABSOLUTA: a imagem NÃO PODE conter NENHUM texto, letras, palavras, números, frases, legendas, títulos, rótulos, logos, marcas, assinaturas ou marcas d'água. Apenas elementos visuais (comida, objetos, cenário). Zero tipografia. Zero caracteres escritos.
 
-Alta qualidade, paleta harmônica, sem marcas d'água, sem watermark.`;
+Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
