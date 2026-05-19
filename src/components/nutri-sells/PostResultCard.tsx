@@ -152,7 +152,7 @@ export const PostResultCard = ({
       </div>
 
       {/* Legenda */}
-      <div className="rounded-2xl bg-white/80 backdrop-blur-md p-3 space-y-2">
+      <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-2">
         {loadingCaption ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground py-6 justify-center">
             <Loader2 className="w-4 h-4 animate-spin" /> Gerando legenda…
