@@ -588,15 +588,31 @@ export default function ToAquiChat() {
               {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/to-aqui/venue/${venueId}/atividade`)}
-            aria-label="Minha atividade neste venue"
-            className="text-[#FD46A1]"
-          >
-            <Activity className="h-5 w-5" />
-          </Button>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (user) {
+                  localStorage.setItem(
+                    `toaqui-activity-seen-${venueId}-${user.id}`,
+                    new Date().toISOString()
+                  );
+                }
+                setNewInteractionsCount(0);
+                navigate(`/to-aqui/venue/${venueId}/atividade`);
+              }}
+              aria-label="Minha atividade neste venue"
+              className={`text-[#FD46A1] ${newInteractionsCount > 0 ? "animate-pulse" : ""}`}
+            >
+              <Activity className="h-5 w-5" />
+            </Button>
+            {newInteractionsCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FD46A1] text-white text-[10px] font-bold flex items-center justify-center shadow">
+                {newInteractionsCount > 9 ? "9+" : newInteractionsCount}
+              </span>
+            )}
+          </div>
           <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
