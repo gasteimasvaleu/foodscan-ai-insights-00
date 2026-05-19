@@ -259,6 +259,19 @@ export default function ToAquiChat() {
       )
       .subscribe();
 
+    // Contagem inicial de interações novas (recebidas desde última visita à atividade)
+    (async () => {
+      const seenKey = `toaqui-activity-seen-${venueId}-${user.id}`;
+      const lastSeen = localStorage.getItem(seenKey) ?? "1970-01-01T00:00:00Z";
+      const { count } = await supabase
+        .from("venue_interactions")
+        .select("id", { count: "exact", head: true })
+        .eq("receiver_id", user.id)
+        .eq("venue_id", venueId)
+        .gt("created_at", lastSeen);
+      if (!cancelled && typeof count === "number") setNewInteractionsCount(count);
+    })();
+
     const fetchOnlineDb = async () => {
       const { data: oc } = await supabase.rpc("get_venue_online_count", { _venue_id: venueId });
       if (typeof oc === "number") {
