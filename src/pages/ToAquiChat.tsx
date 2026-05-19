@@ -356,6 +356,7 @@ export default function ToAquiChat() {
       cancelled = true;
       supabase.removeChannel(channel);
       supabase.removeChannel(intChannel);
+      supabase.removeChannel(guessChannel);
       channelRef.current = null;
       if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
       window.clearInterval(dbInterval);
