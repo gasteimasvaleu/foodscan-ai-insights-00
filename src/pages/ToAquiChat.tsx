@@ -62,6 +62,8 @@ export default function ToAquiChat() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [onlineCount, setOnlineCount] = useState(0);
+  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
+  const [onlineModalOpen, setOnlineModalOpen] = useState(false);
   const [needIdentity, setNeedIdentity] = useState(false);
   const [identityMode, setIdentityMode] = useState<"real" | "anonymous">("real");
   const [identityAlias, setIdentityAlias] = useState("");
@@ -200,7 +202,10 @@ export default function ToAquiChat() {
       )
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState();
-        setOnlineCount(Object.keys(state).length);
+        const ids = Object.keys(state);
+        setOnlineCount(ids.length);
+        setOnlineUserIds(ids);
+        refreshMembers(ids);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
@@ -573,6 +578,59 @@ export default function ToAquiChat() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={onlineModalOpen} onOpenChange={setOnlineModalOpen}>
+        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#FD46A1]">Online agora</DialogTitle>
+            <DialogDescription>
+              {onlineCount} {onlineCount === 1 ? "pessoa" : "pessoas"} no chat
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 mt-2">
+            {onlineUserIds.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-6">Ninguém online no momento.</p>
+            ) : (
+              onlineUserIds.map((uid) => {
+                const info = members[uid];
+                const isAnon = info?.display_mode === "anonymous";
+                const name = isAnon
+                  ? info?.display_alias || "Anônimo"
+                  : info?.profile_name || "Usuário";
+                const initials = name.slice(0, 1).toUpperCase();
+                const isMe = uid === user?.id;
+                return (
+                  <div
+                    key={uid}
+                    className="flex items-center gap-3 p-2 rounded-2xl bg-white/60"
+                  >
+                    {isAnon || !info?.avatar_url ? (
+                      <div className="w-10 h-10 rounded-full bg-[#FFD1E7] text-[#FD46A1] flex items-center justify-center font-bold">
+                        {initials}
+                      </div>
+                    ) : (
+                      <img
+                        src={info.avatar_url}
+                        alt={name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{name}</p>
+                      {isAnon && <p className="text-[10px] text-gray-500">Anônimo</p>}
+                    </div>
+                    {isMe && (
+                      <span className="text-[10px] font-bold text-white bg-[#FD46A1] px-2 py-0.5 rounded-full">
+                        Você
+                      </span>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="fixed inset-0 flex flex-col bg-[#F7FAFB]">
         <div
           className="flex items-center gap-3 px-4 py-3 border-b bg-white shadow-sm shrink-0"
@@ -587,6 +645,25 @@ export default function ToAquiChat() {
               <Users className="w-3 h-3" />
               {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
             </p>
+          </div>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                refreshMembers(onlineUserIds);
+                setOnlineModalOpen(true);
+              }}
+              aria-label="Quem está online"
+              className="text-[#FD46A1]"
+            >
+              <Users className="h-5 w-5" />
+            </Button>
+            {onlineCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FD46A1] text-white text-[10px] font-bold flex items-center justify-center shadow">
+                {onlineCount > 9 ? "9+" : onlineCount}
+              </span>
+            )}
           </div>
           <div className="relative">
             <Button
