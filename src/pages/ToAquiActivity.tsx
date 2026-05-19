@@ -223,7 +223,7 @@ export default function ToAquiActivity() {
         </Button>
       </div>
 
-      <div className="px-3 pt-3 pb-2 flex gap-2 overflow-x-auto shrink-0 bg-white border-b">
+      <div className="px-3 pt-3 pb-2 flex gap-2 overflow-x-auto shrink-0 bg-white border-b justify-center">
         {([
           { k: "all", l: "Tudo" },
           { k: "received", l: "Recebidas" },
