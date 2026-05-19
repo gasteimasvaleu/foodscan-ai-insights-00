@@ -609,6 +609,27 @@ export default function ToAquiChat() {
         </DrawerContent>
       </Drawer>
 
+      {/* Guess identity dialogs */}
+      {guessTargetId && (
+        <GuessIdentityDialog
+          open={guessDialogOpen}
+          onClose={() => {
+            setGuessDialogOpen(false);
+            setGuessTargetId(null);
+          }}
+          venueId={venueId!}
+          senderId={user.id}
+          receiverId={guessTargetId}
+          receiverDisplayName={
+            members[guessTargetId]?.display_mode === "anonymous"
+              ? members[guessTargetId]?.display_alias || "essa pessoa"
+              : members[guessTargetId]?.profile_name || "essa pessoa"
+          }
+        />
+      )}
+      <IncomingGuessDialog guess={incomingGuess} onClose={() => setIncomingGuess(null)} />
+
+
       {/* Mystery hint dialog */}
       <Dialog open={hintOpen} onOpenChange={(o) => { setHintOpen(o); if (!o) { setHintInput(""); setHintSuggestions([]); } }}>
         <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
