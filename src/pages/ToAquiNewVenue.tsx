@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ImagePlus, Loader2, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
+import { VenuePhotoHeader } from "@/components/to-aqui/VenuePhotoHeader";
 
 const ToAquiNewVenue = () => {
   const navigate = useNavigate();
@@ -17,7 +18,6 @@ const ToAquiNewVenue = () => {
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [photoPath, setPhotoPath] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     category: "bar" as VenueCategory,
