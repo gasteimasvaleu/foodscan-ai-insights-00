@@ -67,10 +67,6 @@ const ToAquiNewVenue = () => {
       toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
       return;
     }
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
-      return;
-    }
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Arquivo muito grande", description: "Limite de 5 MB.", variant: "destructive" });
       return;
