@@ -178,8 +178,9 @@ const App = () => (
             <Route path="/to-aqui" element={<ToAqui />} />
             <Route path="/to-aqui/venue/:id" element={<ToAquiVenue />} />
             <Route path="/to-aqui/venue/:id/chat" element={<ToAquiChat />} />
-            <Route path="/to-aqui/owner" element={<ToAquiOwner />} />
-            <Route path="/to-aqui/owner/venue/new" element={<ToAquiNewVenue />} />
+            <Route path="/to-aqui/owner" element={<ProRoute feature="to-aqui-owner"><ToAquiOwner /></ProRoute>} />
+            <Route path="/to-aqui/owner/venue/new" element={<ProRoute feature="to-aqui-owner"><ToAquiNewVenue /></ProRoute>} />
+
 
 
 
