@@ -179,7 +179,8 @@ const App = () => (
             <Route path="/to-aqui/owner" element={<ToAquiOwner />} />
             <Route path="/to-aqui/owner/venue/new" element={<ToAquiNewVenue />} />
 
-            <Route path="/auth" element={<Auth />} />
+
+
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
