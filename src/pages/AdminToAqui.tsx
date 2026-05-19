@@ -71,6 +71,19 @@ const AdminToAqui = () => {
     onError: (e: any) => toast.error(e.message ?? "Erro ao atualizar"),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("venues").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-venues"] });
+      qc.invalidateQueries({ queryKey: ["venues"] });
+      toast.success("Venue excluído");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Erro ao excluir"),
+  });
+
   if (loading || checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
