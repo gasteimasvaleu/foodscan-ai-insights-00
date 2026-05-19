@@ -53,3 +53,12 @@ verify_jwt = true
 
 [functions.generate-baby]
 verify_jwt = true
+
+[functions.generate-social-caption]
+verify_jwt = true
+
+[functions.generate-social-image]
+verify_jwt = true
+
+[functions.generate-weekly-ideas]
+verify_jwt = true
