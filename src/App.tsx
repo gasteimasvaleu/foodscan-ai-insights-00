@@ -62,6 +62,7 @@ import Quiz from "./pages/Quiz";
 import QuizPlay from "./pages/QuizPlay";
 import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
+import AdminToAqui from "./pages/AdminToAqui";
 import Conquistas from "./pages/Conquistas";
 import Desafio14Dias from "./pages/Desafio14Dias";
 import NutricionistaQueVende from "./pages/NutricionistaQueVende";
