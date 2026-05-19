@@ -330,6 +330,27 @@ export default function ToAquiActivity() {
           })
         )}
       </div>
+
+      <AlertDialog open={!!confirmHide} onOpenChange={(o) => !o && setConfirmHide(null)}>
+        <AlertDialogContent className="bg-white/70 backdrop-blur-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover essa interação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ela vai sumir da sua lista, mas continua visível para a outra pessoa.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!!hidingId}
+              onClick={() => confirmHide && hideRow(confirmHide)}
+              className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white"
+            >
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
