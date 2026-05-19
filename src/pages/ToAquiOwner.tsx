@@ -52,12 +52,22 @@ const ToAquiOwner = () => {
           </div>
         </div>
 
-        <Link to="/to-aqui/owner/venue/new">
-          <Button className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-full mb-6">
-            <Plus className="h-4 w-4 mr-1" />
-            Cadastrar novo venue
+        <div className="text-center text-xs text-gray-600">
+          {venues.length}/3 venues cadastrados
+        </div>
+
+        {venues.length >= 3 ? (
+          <Button disabled className="w-full rounded-full mb-6">
+            Limite de 3 venues atingido
           </Button>
-        </Link>
+        ) : (
+          <Link to="/to-aqui/owner/venue/new">
+            <Button className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-full mb-6">
+              <Plus className="h-4 w-4 mr-1" />
+              Cadastrar novo venue
+            </Button>
+          </Link>
+        )}
 
         {isLoading ? (
           <p className="text-center text-gray-500">Carregando…</p>
