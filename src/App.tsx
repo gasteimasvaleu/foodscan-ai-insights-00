@@ -65,6 +65,10 @@ import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
 import Desafio14Dias from "./pages/Desafio14Dias";
 import NutricionistaQueVende from "./pages/NutricionistaQueVende";
+import ToAqui from "./pages/ToAqui";
+import ToAquiVenue from "./pages/ToAquiVenue";
+import ToAquiOwner from "./pages/ToAquiOwner";
+import ToAquiNewVenue from "./pages/ToAquiNewVenue";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -169,6 +173,14 @@ const App = () => (
             <Route path="/whatsapp-settings" element={<ProRoute feature="whatsapp-settings"><WhatsAppSettings /></ProRoute>} />
             <Route path="/assinar" element={<Paywall />} />
             <Route path="/auth" element={<Auth />} />
+
+            <Route path="/to-aqui" element={<ToAqui />} />
+            <Route path="/to-aqui/venue/:id" element={<ToAquiVenue />} />
+            <Route path="/to-aqui/owner" element={<ToAquiOwner />} />
+            <Route path="/to-aqui/owner/venue/new" element={<ToAquiNewVenue />} />
+
+
+
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
