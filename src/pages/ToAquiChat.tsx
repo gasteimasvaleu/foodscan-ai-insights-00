@@ -849,6 +849,7 @@ export default function ToAquiChat() {
                     venueId={venueId}
                     currentUserId={user.id}
                     messageSenderId={m.user_id}
+                    messageId={m.id}
                   />
 
                 );
