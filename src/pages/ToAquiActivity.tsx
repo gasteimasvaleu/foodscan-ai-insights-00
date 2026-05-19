@@ -31,6 +31,8 @@ interface Row {
   type: string;
   created_at: string;
   dm_conversation_id: string | null;
+  hidden_for_sender: boolean;
+  hidden_for_receiver: boolean;
 }
 
 interface MemberInfo {
