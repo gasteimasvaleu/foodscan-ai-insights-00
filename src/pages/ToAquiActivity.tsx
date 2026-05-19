@@ -164,9 +164,9 @@ export default function ToAquiActivity() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-[#F7FAFB]">
+    <div className="min-h-screen flex flex-col bg-[#F7FAFB]">
       <div
-        className="flex items-center gap-3 px-4 py-3 border-b bg-white shadow-sm shrink-0"
+        className="flex items-center gap-3 px-4 py-3 border-b bg-white shadow-sm sticky top-0 z-20"
         style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.75rem)" }}
       >
         <div className="bg-[#FD46A1] p-2 rounded-xl">
@@ -207,7 +207,7 @@ export default function ToAquiActivity() {
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      <div className="flex-1 px-3 py-3 space-y-2 pb-28">
         {loading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="animate-spin text-[#FD46A1]" />
