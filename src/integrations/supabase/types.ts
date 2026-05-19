@@ -1185,6 +1185,59 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_posts: {
+        Row: {
+          audience: string | null
+          caption: string | null
+          created_at: string
+          cta: string | null
+          hashtags: string[] | null
+          id: string
+          image_url: string | null
+          post_type: string
+          theme: string
+          tone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience?: string | null
+          caption?: string | null
+          created_at?: string
+          cta?: string | null
+          hashtags?: string[] | null
+          id?: string
+          image_url?: string | null
+          post_type: string
+          theme: string
+          tone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience?: string | null
+          caption?: string | null
+          created_at?: string
+          cta?: string | null
+          hashtags?: string[] | null
+          id?: string
+          image_url?: string | null
+          post_type?: string
+          theme?: string
+          tone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       homepage_banners: {
         Row: {
           created_at: string
@@ -1514,6 +1567,38 @@ export type Database = {
           },
           {
             foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_ideas_weekly: {
+        Row: {
+          created_at: string
+          id: string
+          ideas: Json
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ideas?: Json
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ideas?: Json
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_ideas_weekly_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
