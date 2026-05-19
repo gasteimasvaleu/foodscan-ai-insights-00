@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Store } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,19 +101,25 @@ const ToAquiNewVenue = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
-        <div className="flex items-center gap-2 mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-bold text-[#FD46A1]">Novo venue</h1>
+      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-5">
+        <div className="animate-fade-in">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <Store className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-primary">Novo venue</h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              aria-label="Voltar"
+              className="ml-auto text-primary hover:bg-white/40 rounded-full"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4 bg-white rounded-3xl p-5 shadow-sm">
