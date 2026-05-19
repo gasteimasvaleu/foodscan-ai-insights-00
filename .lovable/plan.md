@@ -1,23 +1,21 @@
-## Padronizar página de editar venue
+## Apagar cards na atividade do Tô Aqui
 
-Atualizar `src/pages/ToAquiEditVenue.tsx` para seguir o mesmo padrão visual de `ToAquiOwner.tsx`.
+Em `/to-aqui/venue/:id/atividade`, adicionar a opção de remover (esconder) cards de interação. Como o registro pertence aos dois lados (sender/receiver), usar **soft-hide por usuário** para que apagar para mim não apague para o outro.
 
-### Mudanças
+### Banco (migration)
 
-1. **Background** — trocar `bg-[#F7FAFB]` por `bg-background` (mesmo de `ToAquiOwner`) e também na tela de loading/erro.
+Tabela `venue_interactions`:
+- Adicionar `hidden_for_sender boolean default false` e `hidden_for_receiver boolean default false`.
+- Atualizar a policy de UPDATE para permitir que cada lado atualize apenas o próprio flag:
+  - sender pode setar `hidden_for_sender`
+  - receiver continua podendo atualizar (já tem policy `auth.uid() = receiver_id`); ampliar para `auth.uid() IN (sender_id, receiver_id)` apenas para esses dois campos via trigger de validação, ou simplificar criando uma policy adicional `FOR UPDATE USING (auth.uid() = sender_id)` (mais simples e seguro o suficiente porque a UI só toca nesses flags).
 
-2. **Header em card** — substituir o bloco atual:
-   ```
-   <Button ghost> ArrowLeft </Button>
-   <h1>Editar venue</h1>
-   ```
-   pelo padrão do `ToAquiOwner`:
-   - Wrapper `animate-fade-in mb-4`
-   - Card com `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
-   - Ícone à esquerda: `Pencil` (lucide) em caixinha `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` com `text-white`
-   - Título `text-lg font-bold text-primary`: "Editar venue"
-   - Botão voltar `ArrowLeft` com `ml-auto text-primary hover:bg-white/40 rounded-full` navegando para `/to-aqui/owner`
+### Frontend (`src/pages/ToAquiActivity.tsx`)
 
-3. **Borda rosa no card de informações** — no `<form>`, trocar `bg-white rounded-3xl p-5 shadow-sm` por `bg-white rounded-3xl p-5 shadow-sm border border-[#FD46A1]/30` (mesma cor/opacidade já usada em outros cards do Tô Aqui).
+1. Selecionar também `hidden_for_sender, hidden_for_receiver` na query.
+2. Filtrar localmente: ocultar linhas onde o flag do meu lado está `true`.
+3. Adicionar botão "X" (ícone `Trash2` ou `X` da lucide) no canto superior direito de cada card, com `AlertDialog` de confirmação ("Remover essa interação da sua lista?").
+4. Ao confirmar, fazer `update` no campo correto (`hidden_for_sender` ou `hidden_for_receiver`) conforme `isSent`, atualizar `rows` no estado e mostrar toast.
+5. Visual do botão: pequeno, `text-gray-400 hover:text-[#FD46A1]`, posicionado depois do CTA principal (Abrir/Retribuir/Aguardando).
 
-Sem alterações de lógica, hooks, upload de foto ou submit.
+Nenhuma mudança em outras telas; o registro continua visível para a outra pessoa até que ela também o oculte.
