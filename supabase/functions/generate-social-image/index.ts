@@ -40,12 +40,16 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "invalid_input" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const imagePrompt = `Imagem quadrada 1080x1080 para post de Instagram de nutricionista, em português do Brasil.
+    const isVertical = post_type === "story" || post_type === "reel";
+    const dims = isVertical ? "vertical 1080x1920 (proporção 9:16)" : "quadrada 1080x1080 (proporção 1:1)";
+
+    const imagePrompt = `Imagem ${dims} para post de Instagram de nutricionista, em português do Brasil.
 Tipo: ${post_type || "dica"}.
 Tema: ${theme}.
 Estilo visual: ${style || "moderno, clean, cores quentes, fotografia de alimentos saudáveis quando aplicável"}.
+${isVertical ? "IMPORTANTE: imagem em orientação vertical (9:16), com elementos centralizados verticalmente, sem cortar texto ou rostos." : "Composição centralizada quadrada."}
 Pode conter um texto curto e legível em português (máximo 6 palavras) como título principal.
-Composição centralizada, alta qualidade, paleta harmônica, sem marcas d'água.`;
+Alta qualidade, paleta harmônica, sem marcas d'água.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
