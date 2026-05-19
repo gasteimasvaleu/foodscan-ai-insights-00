@@ -21,11 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle, Search } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
 import VenueChatOnboardingModal from "@/components/to-aqui/VenueChatOnboardingModal";
+import GuessIdentityDialog from "@/components/to-aqui/GuessIdentityDialog";
+import IncomingGuessDialog, { type IncomingGuess } from "@/components/to-aqui/IncomingGuessDialog";
+import MatchRevealBanner from "@/components/to-aqui/MatchRevealBanner";
 
 const ONBOARDING_KEY = "toAquiChatOnboardingSeen";
+const MATCH_REVEAL_PREFIX = "__match_reveal__:";
 
 interface VenueMsg {
   id: string;
