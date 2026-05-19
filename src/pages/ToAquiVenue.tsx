@@ -121,7 +121,8 @@ const ToAquiVenue = () => {
                   <p className="text-[10px] text-gray-600 uppercase tracking-wide">Local</p>
                 </div>
                 <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
-                  <div className="text-xl leading-none mb-1">{cat?.emoji ?? "📍"}</div>
+                  <div className="text-base leading-none mb-1">{cat?.emoji ?? "📍"}</div>
+                  <p className="text-xs font-semibold text-gray-800 truncate">{cat?.label ?? "—"}</p>
                   <p className="text-[10px] text-gray-600 uppercase tracking-wide">Tipo</p>
                 </div>
               </div>
