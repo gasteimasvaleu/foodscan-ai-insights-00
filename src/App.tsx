@@ -102,7 +102,7 @@ const AuthAwareNavbar = () => {
   useStreakMilestones(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
-  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/(chat|atividade)$/.test(location.pathname)) return null;
+  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/chat$/.test(location.pathname)) return null;
 
   // Don't render navbar until auth is ready
   if (!authReady || !user) return null;
