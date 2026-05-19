@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Users, Settings, Crown, ChevronRight } from "lucide-react";
+import { Search, MapPin, Users, Settings, Crown, ChevronRight, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { useAuth } from "@/hooks/useAuth";
+
+const ALL_VALUE = "__all__";
 
 const ToAqui = () => {
   const navigate = useNavigate();
@@ -13,7 +23,12 @@ const ToAqui = () => {
   const isPro = subscriptionStatus?.subscribed;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<VenueCategory | null>(null);
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
   const { data: venues = [], isLoading } = useVenues({ search, category });
+
+  const currentCat = VENUE_CATEGORIES.find((c) => c.value === category);
+  const currentLabel = currentCat ? `${currentCat.emoji} ${currentCat.label}` : "Todas as categorias";
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -71,32 +86,69 @@ const ToAqui = () => {
           />
         </div>
 
-        {/* Chips */}
-        <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 mb-4 [&::-webkit-scrollbar]:hidden">
-          <button
-            onClick={() => setCategory(null)}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition ${
-              category === null
-                ? "bg-[#FD46A1] text-white"
-                : "bg-white text-gray-700 border border-gray-200"
-            }`}
-          >
-            Todos
-          </button>
-          {VENUE_CATEGORIES.map((c) => (
-            <button
-              key={c.value}
-              onClick={() => setCategory(c.value)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-sm whitespace-nowrap transition ${
-                category === c.value
-                  ? "bg-[#FD46A1] text-white"
-                  : "bg-white text-gray-700 border border-gray-200"
-              }`}
-            >
-              {c.emoji} {c.label}
-            </button>
-          ))}
-        </div>
+        {/* Seletor de categoria */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-11 justify-between text-base font-normal bg-white mb-2"
+          onClick={() => {
+            setPendingCategory(category ?? ALL_VALUE);
+            setIsCategoryDrawerOpen(true);
+          }}
+        >
+          <span className="truncate">{currentLabel}</span>
+          <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        </Button>
+
+        <Drawer open={isCategoryDrawerOpen} onOpenChange={setIsCategoryDrawerOpen}>
+          <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl px-4 pb-4 max-h-[75vh]">
+            <DrawerHeader className="px-0 pt-3 pb-2 text-center">
+              <DrawerTitle className="text-base font-semibold">
+                Selecionar Categoria
+              </DrawerTitle>
+            </DrawerHeader>
+
+            <WheelPicker
+              value={pendingCategory}
+              onChange={setPendingCategory}
+              options={[
+                { value: ALL_VALUE, label: "Todas as categorias" },
+                ...VENUE_CATEGORIES.map((c) => ({
+                  value: c.value,
+                  label: `${c.emoji} ${c.label}`,
+                })),
+              ]}
+              visibleItems={5}
+              itemHeight={44}
+            />
+
+            <DrawerFooter className="px-0 pt-4 flex-row gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 rounded-xl"
+                onClick={() => setIsCategoryDrawerOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-white"
+                onClick={() => {
+                  setCategory(
+                    pendingCategory === ALL_VALUE
+                      ? null
+                      : (pendingCategory as VenueCategory)
+                  );
+                  setIsCategoryDrawerOpen(false);
+                }}
+              >
+                Confirmar
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
 
         {/* Lista */}
         {isLoading ? (
