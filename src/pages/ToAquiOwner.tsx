@@ -70,10 +70,11 @@ const ToAquiOwner = () => {
               const cat = VENUE_CATEGORIES.find((c) => c.value === v.category);
               const st = STATUS_LABEL[v.status];
               return (
-                <li
-                  key={v.id}
-                  className="bg-white rounded-3xl p-4 shadow-sm flex items-center gap-3"
-                >
+                <li key={v.id}>
+                  <Link
+                    to={`/to-aqui/owner/venue/${v.id}/edit`}
+                    className="bg-white rounded-3xl p-4 shadow-sm flex items-center gap-3 hover:bg-[#FFD1E7]/30 transition"
+                  >
                   <div className="h-14 w-14 rounded-2xl bg-[#FFD1E7] flex items-center justify-center text-2xl shrink-0 overflow-hidden">
                     {v.photo_url ? (
                       <img src={v.photo_url} alt="" className="h-full w-full object-cover" />
@@ -92,6 +93,7 @@ const ToAquiOwner = () => {
                       <st.Icon className="h-3 w-3" /> {st.label}
                     </span>
                   </div>
+                  </Link>
                 </li>
               );
             })}

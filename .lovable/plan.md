@@ -1,40 +1,46 @@
 ## Objetivo
 
-Refatorar o header da página `/to-aqui/venue/:id` para seguir o mesmo padrão visual do card de perfil do print (banner com gradiente rosa, avatar circular branco sobreposto à esquerda, ação à direita, nome/endereço abaixo, mini-cards de stats).
+Reaproveitar o layout de header (banner gradiente + avatar circular sobreposto) na página do owner para **alterar a foto do venue** via upload, tanto no cadastro novo quanto na edição.
 
-## Mudanças em `src/pages/ToAquiVenue.tsx`
+## Decisão de UX
 
-Substituir o bloco atual (foto 16:9 + título + linha de meta + endereço + descrição soltos) por **um único card branco arredondado** com a seguinte estrutura:
+O usuário pediu para alterar a imagem na "página de admin do venue". Hoje só existe `/to-aqui/owner/venue/new` (cadastro). Vamos:
 
-```text
-┌────────────────────────────────────┐
-│  [Banner rosa gradiente / foto]    │
-│                       [📷 categoria]│ ← chip flutuante topo-direita
-│  ╭─────╮                            │
-│  │ AV  │            [💬 Entrar]    │ ← avatar overlap + CTA à direita
-│  ╰─────╯                            │
-│  Nome do bar                        │
-│  📍 endereço / cidade               │
-│                                     │
-│  [🔥 online] [👥 membros] [📅 desde]│ ← 3 mini-cards #FFD1E7
-└────────────────────────────────────┘
-```
+1. Substituir o picker de foto atual em `ToAquiNewVenue.tsx` por um **header preview** no mesmo padrão de `ToAquiVenue.tsx`:
+   - Banner h-32 com gradiente `from-[#FD46A1] to-[#FFD1E7]` (mostra `photo_url` se houver)
+   - Avatar circular 112×112 com borda branca, sobreposto (-mt-16)
+   - **Botão circular #FD46A1 com ícone Camera** sobre o avatar (canto inferior direito), aciona `<input type="file">`
+   - Se já há foto: pequeno botão X sobre o banner para remover
 
-### Detalhes
-- Card externo: `bg-white rounded-3xl shadow-sm overflow-hidden`.
-- Banner: altura `h-32`, `bg-gradient-to-br from-[#FD46A1] to-[#FFD1E7]`. Se `venue.photo_url`, usar como `<img>` cobrindo; senão gradiente puro.
-- Chip de categoria flutuante no topo-direita do banner (`absolute top-3 right-3`), pílula branca translúcida com emoji + label.
-- Avatar: círculo `w-24 h-24 rounded-full bg-[#FFD1E7] border-4 border-white -mt-12 ml-4`, mostrando emoji da categoria centralizado (ou inicial do nome).
-- Linha avatar: `flex justify-between items-end px-4`, com botão "Entrar no chat" pill `#FD46A1` à direita (substitui o card de CTA inferior atual).
-- Abaixo do avatar: `<h1>` nome `text-2xl font-bold`, e linha `text-sm text-gray-500` com `MapPin` + endereço/cidade.
-- 3 mini-cards `bg-[#FFD1E7] rounded-2xl p-3 text-center` na base do card com:
-  1. Chat ao vivo (ícone `MessageCircle`, label "CHAT")
-  2. Cidade (ícone `MapPin`, label "LOCAL")
-  3. Categoria (emoji, label "TIPO")
+2. Criar página de edição `/to-aqui/owner/venue/:id/edit` (gated por `ProRoute`) reutilizando o mesmo formulário/header, com:
+   - Carrega dados via `useVenue(id)` (só permite editar se `owner_id === user.id`)
+   - Update via `supabase.from("venues").update(...).eq("id", id)`
+   - Bloqueia edição se outro usuário
 
-Manter abaixo do card os blocos existentes de **descrição** e **regras** como cards separados (sem mudar conteúdo).
+3. Tornar cada card em `ToAquiOwner` clicável (`<Link to={/to-aqui/owner/venue/${v.id}/edit}>`).
 
-Remover o card de CTA inferior (já está no header agora).
+## Arquivos
 
-## Sem outras mudanças
-- Hook `useVenue`, rotas, dados e demais páginas permanecem iguais.
+### Novo: `src/components/to-aqui/VenuePhotoHeader.tsx`
+Componente reutilizável com:
+- Props: `photoUrl`, `categoryEmoji`, `name`, `uploading`, `onPickFile(file)`, `onRemove()`
+- Renderiza banner + avatar + botão Camera (input file oculto) + botão X opcional.
+
+### Editado: `src/pages/ToAquiNewVenue.tsx`
+- Remove o card de upload atual (`ImagePlus` button + preview)
+- Insere `<VenuePhotoHeader ... />` no topo do formulário
+- Mantém handlers `onPickPhoto` / `onRemovePhoto` (passados ao componente)
+
+### Novo: `src/pages/ToAquiEditVenue.tsx`
+- Carrega venue, popula form igual ao de cadastro, salva via `update`
+- Mesmo header reutilizado
+
+### Editado: `src/App.tsx`
+- Adicionar rota `/to-aqui/owner/venue/:id/edit` (lazy import) protegida por `ProRoute`
+
+### Editado: `src/pages/ToAquiOwner.tsx`
+- Envolver cada `<li>` em `<Link to={/to-aqui/owner/venue/${v.id}/edit}>`
+
+## Sem mudanças
+- Bucket `venue-photos` já existe, RLS de `venues` já permite owner update (presumido — se não, criar policy).
+- Nenhuma migração de schema necessária.

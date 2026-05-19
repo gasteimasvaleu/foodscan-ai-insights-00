@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,13 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
+import { useVenue, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { VenuePhotoHeader } from "@/components/to-aqui/VenuePhotoHeader";
+import { useQueryClient } from "@tanstack/react-query";
 
-const ToAquiNewVenue = () => {
+const ToAquiEditVenue = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const qc = useQueryClient();
+  const { data: venue, isLoading } = useVenue(id);
+
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [photoPath, setPhotoPath] = useState<string | null>(null);
@@ -28,38 +33,20 @@ const ToAquiNewVenue = () => {
     photo_url: "",
   });
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      toast({ title: "Faça login para cadastrar", variant: "destructive" });
-      return;
-    }
-    if (!form.name.trim() || !form.city.trim()) {
-      toast({ title: "Preencha nome e cidade", variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    const { error } = await supabase.from("venues").insert({
-      owner_id: user.id,
-      name: form.name.trim(),
-      category: form.category,
-      city: form.city.trim(),
-      address: form.address.trim() || null,
-      description: form.description.trim() || null,
-      rules: form.rules.trim() || null,
-      photo_url: form.photo_url.trim() || null,
+  useEffect(() => {
+    if (!venue) return;
+    setForm({
+      name: venue.name ?? "",
+      category: (venue.category as VenueCategory) ?? "bar",
+      city: venue.city ?? "",
+      address: venue.address ?? "",
+      description: venue.description ?? "",
+      rules: venue.rules ?? "",
+      photo_url: venue.photo_url ?? "",
     });
-    setSubmitting(false);
-    if (error) {
-      toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({
-      title: "Venue enviado!",
-      description: "Vamos analisar e liberar em breve.",
-    });
-    navigate("/to-aqui/owner");
-  };
+  }, [venue]);
+
+  const isOwner = !!user && !!venue && venue.owner_id === user.id;
 
   const onPickPhoto = async (file: File) => {
     if (!file || !user) return;
@@ -82,7 +69,6 @@ const ToAquiNewVenue = () => {
       toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
       return;
     }
-    // Remove anterior se houver
     if (photoPath) {
       await supabase.storage.from("venue-photos").remove([photoPath]);
     }
@@ -100,6 +86,62 @@ const ToAquiNewVenue = () => {
     setForm((f) => ({ ...f, photo_url: "" }));
   };
 
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isOwner || !id) return;
+    if (!form.name.trim() || !form.city.trim()) {
+      toast({ title: "Preencha nome e cidade", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase
+      .from("venues")
+      .update({
+        name: form.name.trim(),
+        category: form.category,
+        city: form.city.trim(),
+        address: form.address.trim() || null,
+        description: form.description.trim() || null,
+        rules: form.rules.trim() || null,
+        photo_url: form.photo_url.trim() || null,
+      })
+      .eq("id", id);
+    setSubmitting(false);
+    if (error) {
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Alterações salvas!" });
+    qc.invalidateQueries({ queryKey: ["venue", id] });
+    qc.invalidateQueries({ queryKey: ["my-venues"] });
+    navigate("/to-aqui/owner");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F7FAFB]">
+        <Navbar />
+        <div className="pt-[calc(env(safe-area-inset-top)+5rem)] text-center text-gray-500">
+          <Loader2 className="animate-spin inline" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!venue || !isOwner) {
+    return (
+      <div className="min-h-screen bg-[#F7FAFB]">
+        <Navbar />
+        <div className="pt-[calc(env(safe-area-inset-top)+5rem)] text-center">
+          <p className="text-gray-600">Você não pode editar este venue.</p>
+          <Button onClick={() => navigate("/to-aqui/owner")} className="mt-3">
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
       <Navbar />
@@ -113,16 +155,24 @@ const ToAquiNewVenue = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-[#FD46A1]">Novo venue</h1>
+          <h1 className="text-xl font-bold text-[#FD46A1]">Editar venue</h1>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4 bg-white rounded-3xl p-5 shadow-sm">
+          <VenuePhotoHeader
+            photoUrl={form.photo_url || null}
+            categoryEmoji={VENUE_CATEGORIES.find((c) => c.value === form.category)?.emoji}
+            name={form.name}
+            uploading={uploading}
+            onPickFile={onPickPhoto}
+            onRemove={onRemovePhoto}
+          />
+
           <div>
             <label className="text-sm text-gray-700 mb-1 block">Nome *</label>
             <Input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Ex.: Bar do Zé"
               className="text-base"
             />
           </div>
@@ -152,7 +202,6 @@ const ToAquiNewVenue = () => {
             <Input
               value={form.city}
               onChange={(e) => setForm({ ...form, city: e.target.value })}
-              placeholder="Ex.: São Paulo"
               className="text-base"
             />
           </div>
@@ -162,26 +211,15 @@ const ToAquiNewVenue = () => {
             <Input
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
-              placeholder="Rua, número, bairro"
               className="text-base"
             />
           </div>
-
-          <VenuePhotoHeader
-            photoUrl={form.photo_url || null}
-            categoryEmoji={VENUE_CATEGORIES.find((c) => c.value === form.category)?.emoji}
-            name={form.name}
-            uploading={uploading}
-            onPickFile={onPickPhoto}
-            onRemove={onRemovePhoto}
-          />
 
           <div>
             <label className="text-sm text-gray-700 mb-1 block">Descrição</label>
             <Textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="O que tem de especial nesse lugar?"
               rows={3}
               className="text-base"
             />
@@ -192,22 +230,17 @@ const ToAquiNewVenue = () => {
             <Textarea
               value={form.rules}
               onChange={(e) => setForm({ ...form, rules: e.target.value })}
-              placeholder="Ex.: respeito sempre, sem spam"
               rows={2}
               className="text-base"
             />
           </div>
-
-          <p className="text-xs text-gray-500">
-            Seu venue passará por uma análise rápida antes de ficar visível.
-          </p>
 
           <Button
             type="submit"
             disabled={submitting}
             className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-full"
           >
-            {submitting ? "Enviando…" : "Enviar para análise"}
+            {submitting ? "Salvando…" : "Salvar alterações"}
           </Button>
         </form>
       </div>
@@ -215,4 +248,4 @@ const ToAquiNewVenue = () => {
   );
 };
 
-export default ToAquiNewVenue;
+export default ToAquiEditVenue;
