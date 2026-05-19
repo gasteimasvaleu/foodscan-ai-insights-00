@@ -598,6 +598,25 @@ export default function ToAquiChat() {
               variant="ghost"
               size="icon"
               onClick={() => {
+                refreshMembers(onlineUserIds);
+                setOnlineModalOpen(true);
+              }}
+              aria-label="Quem está online"
+              className="text-[#FD46A1]"
+            >
+              <Users className="h-5 w-5" />
+            </Button>
+            {onlineCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FD46A1] text-white text-[10px] font-bold flex items-center justify-center shadow">
+                {onlineCount > 9 ? "9+" : onlineCount}
+              </span>
+            )}
+          </div>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
                 if (user) {
                   localStorage.setItem(
                     `toaqui-activity-seen-${venueId}-${user.id}`,
