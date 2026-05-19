@@ -1,15 +1,30 @@
-## Remover texto das imagens geradas
+## Objetivo
 
-A IA de geração de imagem não escreve bem em português brasileiro (erros de ortografia, letras cortadas, palavras inventadas). Vamos pedir explicitamente imagens **sem nenhum texto**, deixando o texto só na legenda do post.
+Alinhar `/nutricionista-que-vende` ao padrão visual do app (mesmo padrão de MasterCheFIT, Comunidade, etc.): mostrar a Navbar, usar o background gradiente do app e colocar o título dentro do card-header padrão.
 
-### Mudança única: `supabase/functions/generate-social-image/index.ts`
+## Mudanças em `src/pages/NutricionistaQueVende.tsx`
 
-Reescrever o `imagePrompt` para:
-- Instruir composição puramente visual (foco no alimento, ingredientes, ambiente, mood).
-- Adicionar regra explícita: **"SEM TEXTO, sem letras, sem palavras, sem números, sem logos, sem marcas d'água"** — repetida no final como reforço.
-- Manter a regra de orientação (vertical 9:16 para story/reel, quadrada 1:1 para os demais) e margens seguras para o enquadramento do Instagram.
-- Remover o bloco que mencionava "máximo X palavras", "fonte bold", "alto contraste de texto", etc.
+1. **Importar e renderizar a Navbar**
+   - Adicionar `import { Navbar } from "@/components/Navbar";`
+   - Envolver o retorno em `<>...</>` e renderizar `<Navbar />` antes do container.
 
-### Fora do escopo
-- Não muda a UI nem a legenda gerada (essa continua em português, gerada por modelo de texto que escreve bem).
-- Não muda outras edge functions.
+2. **Background e safe-area no padrão do app**
+   - Trocar `bg-[#F7FAFB]` por `bg-gradient-primary`.
+   - Ajustar o padding-top para `pt-[calc(env(safe-area-inset-top)+2.5rem)]` (mesmo valor das demais páginas internas).
+   - Manter `pb-28` e `px-4`.
+
+3. **Header dentro de card (mesmo padrão MasterCheFIT)**
+   - Substituir o `<header>` atual por um bloco com:
+     - Container `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
+     - Ícone (ex.: `Sparkles` ou `Megaphone` do lucide-react) em caixinha `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` com `text-white`.
+     - `<h1 className="text-xl font-bold text-[#FD46A1]">Nutricionista que Vende</h1>`
+   - Mover a frase descritiva ("Gere posts profissionais...") para fora do card como `<p className="text-sm text-muted-foreground px-1">` logo abaixo, ou removê-la se ficar redundante.
+
+4. **TabsList**
+   - Manter como está (já segue padrão rosa do app).
+
+Nenhuma mudança em lógica, geração de imagem/legenda, hooks ou edge functions. Apenas layout/shell da página.
+
+## Validação visual
+
+- Confirmar no preview mobile (390px) que a Navbar aparece no topo, o background é o gradiente rosa padrão e o título "Nutricionista que Vende" está dentro do card-header com ícone, igual às outras páginas internas.
