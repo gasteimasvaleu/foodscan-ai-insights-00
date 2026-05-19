@@ -6,9 +6,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Shield, MapPin, Check, X, EyeOff, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, Shield, MapPin, Check, X, EyeOff, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { VENUE_CATEGORIES, type Venue } from "@/hooks/useVenues";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type StatusTab = "pending" | "approved" | "rejected";
 
