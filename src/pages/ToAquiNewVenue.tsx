@@ -61,10 +61,12 @@ const ToAquiNewVenue = () => {
     navigate("/to-aqui/owner");
   };
 
-  const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
+  const onPickPhoto = async (file: File) => {
     if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
+      return;
+    }
     if (!file.type.startsWith("image/")) {
       toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
       return;
