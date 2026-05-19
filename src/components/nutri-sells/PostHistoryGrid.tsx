@@ -36,6 +36,7 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
   const today = useMemo(() => new Date(), []);
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
   const [selectedDay, setSelectedDay] = useState<Date>(today);
+  const [openPost, setOpenPost] = useState<GeneratedPost | null>(null);
 
   const postsByDay = useMemo(() => {
     const map = new Map<string, GeneratedPost[]>();
