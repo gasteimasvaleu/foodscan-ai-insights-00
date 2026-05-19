@@ -49,6 +49,13 @@ export default function MatchRevealBanner({
     })();
   }, [fireConfetti]);
 
+  const dismiss = () => {
+    try {
+      localStorage.setItem(dismissKey(messageId), "1");
+    } catch {}
+    setDismissed(true);
+  };
+
   const openDM = async () => {
     if (!venueId || !currentUserId) return;
     setLoading(true);
@@ -70,6 +77,7 @@ export default function MatchRevealBanner({
         });
         setLoading(false);
         if (rpcId) {
+          dismiss();
           navigate(`/comunidade/dm/${rpcId}`);
           return;
         }
@@ -79,11 +87,14 @@ export default function MatchRevealBanner({
       return;
     }
     setLoading(false);
+    dismiss();
     navigate(`/comunidade/dm/${data.dm_conversation_id}`);
   };
 
   const isParticipant =
     !!currentUserId && !!venueId && (messageSenderId === currentUserId || messageSenderId !== currentUserId);
+
+  if (dismissed) return null;
 
   return (
     <div className="my-3 mx-auto max-w-xs">
