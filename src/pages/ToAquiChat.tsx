@@ -417,7 +417,7 @@ export default function ToAquiChat() {
     <>
       {/* Identity dialog */}
       <Dialog open={needIdentity} onOpenChange={(o) => !o && navigate(-1)}>
-        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-w-sm">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-[#FD46A1]">Como você quer aparecer?</DialogTitle>
             <DialogDescription>Essa escolha vale só para este venue.</DialogDescription>
