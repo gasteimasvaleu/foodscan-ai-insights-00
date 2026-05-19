@@ -65,3 +65,6 @@ verify_jwt = true
 
 [functions.generate-post-recipe]
 verify_jwt = true
+
+[functions.venue-mystery-hint]
+verify_jwt = true
