@@ -167,50 +167,14 @@ const ToAquiNewVenue = () => {
             />
           </div>
 
-          <div>
-            <label className="text-sm text-gray-700 mb-1 block">Foto do local</label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={onPickPhoto}
-            />
-            {form.photo_url ? (
-              <div className="relative rounded-3xl overflow-hidden bg-[#FFD1E7] aspect-[16/9]">
-                <img
-                  src={form.photo_url}
-                  alt="Prévia do venue"
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={onRemovePhoto}
-                  className="absolute top-2 right-2 bg-[#FD46A1] text-white rounded-full p-2 shadow-md"
-                  aria-label="Remover foto"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="w-full aspect-[16/9] rounded-3xl border-2 border-dashed border-[#FD46A1]/40 bg-[#FFD1E7]/40 flex flex-col items-center justify-center gap-2 text-[#FD46A1] hover:bg-[#FFD1E7]/60 transition"
-              >
-                {uploading ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <>
-                    <ImagePlus className="h-6 w-6" />
-                    <span className="text-sm">Escolher foto</span>
-                  </>
-                )}
-              </button>
-            )}
-            <p className="text-xs text-gray-500 mt-1">JPG ou PNG, até 5 MB.</p>
-          </div>
+          <VenuePhotoHeader
+            photoUrl={form.photo_url || null}
+            categoryEmoji={VENUE_CATEGORIES.find((c) => c.value === form.category)?.emoji}
+            name={form.name}
+            uploading={uploading}
+            onPickFile={onPickPhoto}
+            onRemove={onRemovePhoto}
+          />
 
           <div>
             <label className="text-sm text-gray-700 mb-1 block">Descrição</label>
