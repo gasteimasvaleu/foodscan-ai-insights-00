@@ -66,8 +66,8 @@ const ToAquiVenue = () => {
             </div>
 
             <div className="px-4 pb-4">
-              <div className="flex items-end justify-between gap-3 -mt-12">
-                <div className="w-24 h-24 rounded-full bg-[#FFD1E7] border-4 border-white flex items-center justify-center text-4xl shadow-sm">
+              <div className="flex items-end justify-between gap-3 -mt-16 relative z-10">
+                <div className="w-28 h-28 rounded-full bg-[#FFD1E7] border-4 border-white flex items-center justify-center text-5xl shadow-md">
                   {cat?.emoji ?? venue.name?.[0]?.toUpperCase() ?? "📍"}
                 </div>
                 <Button
