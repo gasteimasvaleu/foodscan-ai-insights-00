@@ -66,6 +66,7 @@ export default function ToAquiChat() {
   const [identityMode, setIdentityMode] = useState<"real" | "anonymous">("real");
   const [identityAlias, setIdentityAlias] = useState("");
   const [joining, setJoining] = useState(false);
+  const [newInteractionsCount, setNewInteractionsCount] = useState(0);
 
   // Interactions drawer
   const [interactionTarget, setInteractionTarget] = useState<string | null>(null);
@@ -224,6 +225,7 @@ export default function ToAquiChat() {
           if (it.venue_id !== venueId) return;
           const meta = INTERACTIONS.find((i) => i.type === it.type);
           if (!meta) return;
+          setNewInteractionsCount((c) => c + 1);
           toast({
             title: `${meta.emoji} Alguém te mandou: ${meta.label}!`,
             description: "Retribua o sinal — se rolar match, abre a conversa.",
@@ -256,6 +258,19 @@ export default function ToAquiChat() {
         }
       )
       .subscribe();
+
+    // Contagem inicial de interações novas (recebidas desde última visita à atividade)
+    (async () => {
+      const seenKey = `toaqui-activity-seen-${venueId}-${user.id}`;
+      const lastSeen = localStorage.getItem(seenKey) ?? "1970-01-01T00:00:00Z";
+      const { count } = await supabase
+        .from("venue_interactions")
+        .select("id", { count: "exact", head: true })
+        .eq("receiver_id", user.id)
+        .eq("venue_id", venueId)
+        .gt("created_at", lastSeen);
+      if (!cancelled && typeof count === "number") setNewInteractionsCount(count);
+    })();
 
     const fetchOnlineDb = async () => {
       const { data: oc } = await supabase.rpc("get_venue_online_count", { _venue_id: venueId });
@@ -573,15 +588,31 @@ export default function ToAquiChat() {
               {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/to-aqui/venue/${venueId}/atividade`)}
-            aria-label="Minha atividade neste venue"
-            className="text-[#FD46A1]"
-          >
-            <Activity className="h-5 w-5" />
-          </Button>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (user) {
+                  localStorage.setItem(
+                    `toaqui-activity-seen-${venueId}-${user.id}`,
+                    new Date().toISOString()
+                  );
+                }
+                setNewInteractionsCount(0);
+                navigate(`/to-aqui/venue/${venueId}/atividade`);
+              }}
+              aria-label="Minha atividade neste venue"
+              className={`text-[#FD46A1] ${newInteractionsCount > 0 ? "animate-pulse" : ""}`}
+            >
+              <Activity className="h-5 w-5" />
+            </Button>
+            {newInteractionsCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FD46A1] text-white text-[10px] font-bold flex items-center justify-center shadow">
+                {newInteractionsCount > 9 ? "9+" : newInteractionsCount}
+              </span>
+            )}
+          </div>
           <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>

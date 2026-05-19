@@ -1,21 +1,28 @@
 ## Objetivo
 
-No card "Tipo" da página do venue (`/to-aqui/venue/:id`), exibir o nome da categoria (Bar, Restaurante, Festa, etc.) em vez de só o emoji.
+No botão de "Atividade" (ícone Activity) no header do chat do venue (`/to-aqui/venue/:id/chat`), mostrar um badge com o número de interações novas recebidas e fazer o botão pulsar enquanto houver alguma.
 
-## Mudança
+## Como funciona hoje
 
-**Arquivo:** `src/pages/ToAquiVenue.tsx` (card linha ~121-125)
+- O chat já assina em tempo real `venue_interactions` filtrando `receiver_id=eq.${user.id}` e dispara um toast (linhas 213-232).
+- O botão de atividade só navega para `/to-aqui/venue/:id/atividade`, sem qualquer indicador visual.
 
-Hoje:
-- Emoji grande + label "Tipo"
+## Plano
 
-Depois:
-- Emoji menor + nome da categoria (`cat.label`) + label "Tipo"
-- Seguindo o mesmo padrão do card "Local" (valor + label embaixo)
+**Arquivo único:** `src/pages/ToAquiChat.tsx`
 
-`cat.label` já vem de `VENUE_CATEGORIES.find((c) => c.value === venue.category)` que está disponível no escopo.
+1. **State** — `const [newInteractionsCount, setNewInteractionsCount] = useState(0)`.
+2. **Chave de "última visita"** em `localStorage`: `toaqui-activity-seen-${venueId}-${user.id}` guardando ISO timestamp.
+3. **Carga inicial** — após login/venue prontos, fazer um `SELECT count(*)` em `venue_interactions` filtrando `receiver_id=user.id`, `venue_id=venueId`, `created_at > lastSeen` e setar no state.
+4. **Realtime** — no handler que já existe (INSERT em `venue_interactions` recebido), incrementar `newInteractionsCount` além de mostrar o toast.
+5. **Botão Activity (linha 576-584)**:
+   - Wrappear em `relative`.
+   - Quando `newInteractionsCount > 0`, adicionar classe `animate-pulse` no botão.
+   - Renderizar um badge absoluto no canto superior direito: círculo rosa pequeno (`bg-[#FD46A1] text-white`, `text-[10px]`, `rounded-full`, `min-w-[18px] h-[18px]`) com o número (mostrar `9+` se ≥ 10).
+6. **Reset ao clicar** — no `onClick` do botão, antes de navegar: gravar `localStorage[lastSeenKey] = new Date().toISOString()` e `setNewInteractionsCount(0)`.
 
 ## Sem mudanças
 
-- Nada de banco / schema.
-- Nenhum outro card é alterado.
+- Sem alteração de banco / RLS.
+- Sem novas dependências.
+- Toast e demais comportamentos do chat permanecem iguais.
