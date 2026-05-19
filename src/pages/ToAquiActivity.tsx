@@ -4,7 +4,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, Activity, MessageCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, Loader2, Activity, MessageCircle, RotateCcw, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useVenue } from "@/hooks/useVenues";
 
 const INTERACTIONS: Record<string, { emoji: string; label: string }> = {
@@ -21,6 +31,8 @@ interface Row {
   type: string;
   created_at: string;
   dm_conversation_id: string | null;
+  hidden_for_sender: boolean;
+  hidden_for_receiver: boolean;
 }
 
 interface MemberInfo {
@@ -51,6 +63,8 @@ export default function ToAquiActivity() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [retrying, setRetrying] = useState<string | null>(null);
+  const [hidingId, setHidingId] = useState<string | null>(null);
+  const [confirmHide, setConfirmHide] = useState<Row | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -63,7 +77,7 @@ export default function ToAquiActivity() {
       setLoading(true);
       const { data, error } = await supabase
         .from("venue_interactions")
-        .select("id, sender_id, receiver_id, type, created_at, dm_conversation_id")
+        .select("id, sender_id, receiver_id, type, created_at, dm_conversation_id, hidden_for_sender, hidden_for_receiver")
         .eq("venue_id", venueId)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order("created_at", { ascending: false })
@@ -123,12 +137,35 @@ export default function ToAquiActivity() {
   const filtered = useMemo(() => {
     if (!user) return [] as Row[];
     return rows.filter((r) => {
-      if (filter === "sent") return r.sender_id === user.id;
+      const isSent = r.sender_id === user.id;
+      if (isSent && r.hidden_for_sender) return false;
+      if (!isSent && r.hidden_for_receiver) return false;
+      if (filter === "sent") return isSent;
       if (filter === "received") return r.receiver_id === user.id;
       if (filter === "matches") return !!r.dm_conversation_id;
       return true;
     });
   }, [rows, filter, user]);
+
+  const hideRow = async (r: Row) => {
+    if (!user || hidingId) return;
+    setHidingId(r.id);
+    const isSent = r.sender_id === user.id;
+    const patch = isSent
+      ? { hidden_for_sender: true }
+      : { hidden_for_receiver: true };
+    const { error } = await supabase
+      .from("venue_interactions")
+      .update(patch)
+      .eq("id", r.id);
+    setHidingId(null);
+    setConfirmHide(null);
+    if (error) {
+      toast({ title: "Erro ao remover", description: error.message, variant: "destructive" });
+      return;
+    }
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, ...patch } : x)));
+  };
 
   const retribute = async (r: Row) => {
     if (!user || !venueId || retrying) return;
@@ -280,11 +317,40 @@ export default function ToAquiActivity() {
                 ) : (
                   <span className="text-[11px] text-gray-500 shrink-0 px-1">Aguardando</span>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setConfirmHide(r)}
+                  aria-label="Remover da lista"
+                  className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-gray-400 hover:text-[#FD46A1] hover:bg-white/60 transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             );
           })
         )}
       </div>
+
+      <AlertDialog open={!!confirmHide} onOpenChange={(o) => !o && setConfirmHide(null)}>
+        <AlertDialogContent className="bg-white/70 backdrop-blur-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover essa interação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ela vai sumir da sua lista, mas continua visível para a outra pessoa.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!!hidingId}
+              onClick={() => confirmHide && hideRow(confirmHide)}
+              className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white"
+            >
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
