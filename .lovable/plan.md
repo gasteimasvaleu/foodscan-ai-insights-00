@@ -1,9 +1,18 @@
-## Substituir chips por Drawer com WheelPicker em `src/pages/ToAqui.tsx`
+## Padronizar header de `/to-aqui/owner/venue/new`
 
-Trocar a linha horizontal de botões de categoria (linhas 74-99) por um seletor **Button + Drawer + WheelPicker** seguindo exatamente o padrão de `src/pages/Loja.tsx`.
+Alinhar a página `ToAquiNewVenue.tsx` ao padrão visual do app (mesmo header usado em `ToAqui.tsx`).
 
-### Mudanças
-1. **Imports**: adicionar `Drawer`, `DrawerContent`, `DrawerHeader`, `DrawerTitle`, `DrawerFooter` de `@/components/ui/drawer`; `WheelPicker` de `@/components/ui/wheel-picker`; ícone `ChevronDown`.
-2. **State**: `isCategoryDrawerOpen` e `pendingCategory` (com sentinela `ALL_VALUE = "__all__"`).
-3. **UI**: substituir o bloco de chips por um `<Button variant="outline">` largura total mostrando o emoji+label da categoria atual (ou "Todas as categorias"), com `ChevronDown` à direita. Ao clicar abre o Drawer.
-4. **Drawer**: glassmorphism `bg-white/70 backdrop-blur-md border-2 border-primary`, `max-w-md mx-auto rounded-t-2xl`, título "Selecionar Categoria", `WheelPicker` com `[{ Todas }, ...VENUE_CATEGORIES]`, footer com Cancelar/Confirmar (padrão pink primary).
+### Mudanças em `src/pages/ToAquiNewVenue.tsx`
+
+1. **Background**: trocar `bg-[#F7FAFB]` por `bg-background` (token semântico já usado em Tô Aqui).
+
+2. **Header card padrão** (substituir o bloco atual de back + título nas linhas 107–117):
+   - Wrapper `animate-fade-in`.
+   - Card `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`.
+   - Ícone à esquerda em quadradinho `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` com `Store` (ou `MapPin`) branco.
+   - Título `Novo venue` com `text-lg font-bold text-primary`.
+   - Botão **voltar** alinhado à direita via `ml-auto`: `Button variant="ghost" size="icon"` com `ArrowLeft`, classes `text-primary hover:bg-white/40 rounded-full`, `onClick={() => navigate(-1)}`, `aria-label="Voltar"`.
+
+3. Importar o ícone novo (`Store`) de `lucide-react` se for usado no lugar do MapPin.
+
+Nenhuma outra alteração no formulário.
