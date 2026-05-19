@@ -1,29 +1,18 @@
-# Efeito Pulsante Neon no ToAquiPromoCard
+# Atualizar NoveltyCard para Promo Quiz R$500
 
-## Objetivo
-Adicionar um efeito de borda pulsante neon na cor `#FD46A1` (rosa primário do app) no card promocional do Tô Aqui (`ToAquiPromoCard.tsx`).
+## Alterações em `src/components/NoveltyCard.tsx`
 
-## Implementação
-
-### 1. Adicionar keyframe de pulsação neon em `src/index.css`
-Criar um `@keyframes` chamado `neon-pulse` que varie o `box-shadow` da cor primária entre estados de brilho intenso e suave:
-- **0%, 100%**: `box-shadow: 0 0 5px #FD46A1, 0 0 10px #FD46A1, 0 0 15px #FD46A1`
-- **50%**: `box-shadow: 0 0 10px #FD46A1, 0 0 20px #FD46A1, 0 0 30px #FD46A1`
-
-### 2. Aplicar animação no componente
-Em `src/components/ToAquiPromoCard.tsx`:
-- Adicionar `animate-[neon-pulse_2s_ease-in-out_infinite]` (ou classe utilitária equivalente) no elemento `<Link>` principal do card.
-- Garantir que a borda/arredondamento (`rounded-3xl`) permaneça intacto.
-- Adicionar `border border-[#FD46A1]/50` para dar base visual à borda neon.
-
-### 3. Verificar responsividade
-- Confirmar que o efeito não quebra o layout mobile (viewport 390x609).
-- O card já é `w-full` com `aspect-[21/9]` — a animação de sombra não afeta dimensões.
+1. **Imagem**: trocar `src` para `https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/0217792196146522b8720b6d986e81ce95e9b006de0a2cb27ba73_0.jpeg`
+2. **Rota**: `Link to="/maternidade"` → `to="/quiz"`
+3. **`aria-label`** e **`alt`**: atualizar para refletir a promo do quiz
+4. **Faixa preta translúcida** (mantém `bg-black/55 backdrop-blur-sm`):
+   - Tag superior: `PRÊMIO DE R$500`
+   - Texto descritivo curto com CTA:
+     > "Fique em 1º no ranking do Quiz e leve R$500. Bora jogar agora!"
 
 ## Fora do escopo
-- Nenhuma mudança em outros cards (`NoveltyCard`, etc.) a menos que solicitado.
-- Nenhuma mudança de funcionalidade ou lógica — apenas estilo visual.
+- Não alterar layout, animação, dimensões (aspect-[21/9]) nem o `ToAquiPromoCard`.
+- Nenhuma mudança de regra de negócio do Quiz/ranking.
 
-## Arquivos alterados
-- `src/index.css` — novo keyframe `neon-pulse`
-- `src/components/ToAquiPromoCard.tsx` — classes de animação e borda
+## Arquivo alterado
+- `src/components/NoveltyCard.tsx`
