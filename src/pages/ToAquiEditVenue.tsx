@@ -33,6 +33,7 @@ const ToAquiEditVenue = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [photoPath, setPhotoPath] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
