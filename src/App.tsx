@@ -69,6 +69,7 @@ import ToAqui from "./pages/ToAqui";
 import ToAquiVenue from "./pages/ToAquiVenue";
 import ToAquiOwner from "./pages/ToAquiOwner";
 import ToAquiNewVenue from "./pages/ToAquiNewVenue";
+import ToAquiChat from "./pages/ToAquiChat";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -176,6 +177,7 @@ const App = () => (
 
             <Route path="/to-aqui" element={<ToAqui />} />
             <Route path="/to-aqui/venue/:id" element={<ToAquiVenue />} />
+            <Route path="/to-aqui/venue/:id/chat" element={<ToAquiChat />} />
             <Route path="/to-aqui/owner" element={<ToAquiOwner />} />
             <Route path="/to-aqui/owner/venue/new" element={<ToAquiNewVenue />} />
 
