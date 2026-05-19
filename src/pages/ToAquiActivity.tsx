@@ -317,6 +317,14 @@ export default function ToAquiActivity() {
                 ) : (
                   <span className="text-[11px] text-gray-500 shrink-0 px-1">Aguardando</span>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setConfirmHide(r)}
+                  aria-label="Remover da lista"
+                  className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-gray-400 hover:text-[#FD46A1] hover:bg-white/60 transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             );
           })
