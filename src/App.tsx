@@ -174,6 +174,13 @@ const App = () => (
             <Route path="/assinar" element={<Paywall />} />
             <Route path="/auth" element={<Auth />} />
 
+            <Route path="/to-aqui" element={<ToAqui />} />
+            <Route path="/to-aqui/venue/:id" element={<ToAquiVenue />} />
+            <Route path="/to-aqui/owner" element={<ToAquiOwner />} />
+            <Route path="/to-aqui/owner/venue/new" element={<ToAquiNewVenue />} />
+
+            <Route path="/auth" element={<Auth />} />
+
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
