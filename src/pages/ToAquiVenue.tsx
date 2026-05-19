@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, MessageCircle, Utensils, ShieldCheck, Check } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useVenue, VENUE_CATEGORIES } from "@/hooks/useVenues";
+import { supabase } from "@/integrations/supabase/client";
 
 const PAGE_BG = "min-h-screen bg-gradient-to-br from-background via-background to-primary/5";
 
@@ -10,6 +12,25 @@ const ToAquiVenue = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: venue, isLoading } = useVenue(id);
+  const [onlineCount, setOnlineCount] = useState(0);
+
+  useEffect(() => {
+    if (!id) return;
+    const viewerKey = `viewer-${Math.random().toString(36).slice(2, 10)}`;
+    const channel = supabase.channel(`venue-${id}`, {
+      config: { presence: { key: viewerKey } },
+    });
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const state = channel.presenceState();
+        setOnlineCount(Object.keys(state).length);
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id]);
+
 
   if (isLoading) {
     return (

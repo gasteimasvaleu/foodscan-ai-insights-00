@@ -1,21 +1,26 @@
-## Apagar cards na atividade do Tô Aqui
+## Objetivo
 
-Em `/to-aqui/venue/:id/atividade`, adicionar a opção de remover (esconder) cards de interação. Como o registro pertence aos dois lados (sender/receiver), usar **soft-hide por usuário** para que apagar para mim não apague para o outro.
+No card "Chat" da página do venue (`/to-aqui/venue/:id`), exibir em tempo real quantas pessoas estão online no chat daquele local.
 
-### Banco (migration)
+## Como funciona hoje
 
-Tabela `venue_interactions`:
-- Adicionar `hidden_for_sender boolean default false` e `hidden_for_receiver boolean default false`.
-- Atualizar a policy de UPDATE para permitir que cada lado atualize apenas o próprio flag:
-  - sender pode setar `hidden_for_sender`
-  - receiver continua podendo atualizar (já tem policy `auth.uid() = receiver_id`); ampliar para `auth.uid() IN (sender_id, receiver_id)` apenas para esses dois campos via trigger de validação, ou simplificar criando uma policy adicional `FOR UPDATE USING (auth.uid() = sender_id)` (mais simples e seguro o suficiente porque a UI só toca nesses flags).
+- O chat (`ToAquiChat.tsx`) já usa um canal Supabase Realtime `venue-${venueId}` com `presence` e também grava registros em `venue_presence` ao entrar/sair.
+- A página do venue (`ToAquiVenue.tsx`, linha 91-95) tem um quadradinho "Chat" no grid de 3 estatísticas que hoje só mostra o ícone e o label.
 
-### Frontend (`src/pages/ToAquiActivity.tsx`)
+## Plano
 
-1. Selecionar também `hidden_for_sender, hidden_for_receiver` na query.
-2. Filtrar localmente: ocultar linhas onde o flag do meu lado está `true`.
-3. Adicionar botão "X" (ícone `Trash2` ou `X` da lucide) no canto superior direito de cada card, com `AlertDialog` de confirmação ("Remover essa interação da sua lista?").
-4. Ao confirmar, fazer `update` no campo correto (`hidden_for_sender` ou `hidden_for_receiver`) conforme `isSent`, atualizar `rows` no estado e mostrar toast.
-5. Visual do botão: pequeno, `text-gray-400 hover:text-[#FD46A1]`, posicionado depois do CTA principal (Abrir/Retribuir/Aguardando).
+1. **`ToAquiVenue.tsx`** — assinar o mesmo canal de presence `venue-${id}` (sem `track`, apenas observador) para contar usuários únicos online em tempo real.
+   - `useEffect` cria `supabase.channel("venue-{id}", { config: { presence: { key: "viewer-{random}" } } })`.
+   - Listener `presence sync` lê `presenceState()` e atualiza `onlineCount = Object.keys(state).length`.
+   - Cleanup com `removeChannel` no unmount.
+2. **Card "Chat"** (linha 92-95) — passar a mostrar o número:
+   - Número grande (ex.: `text-base font-semibold text-gray-800`) acima do label "Chat".
+   - Label vira "online" (mantendo padrão do card "Local" que tem valor + label).
+   - Se `onlineCount === 0`, mostrar `0` normalmente.
+3. **Sem mudanças de banco** — usa apenas presence em memória, igual ao chat já faz.
 
-Nenhuma mudança em outras telas; o registro continua visível para a outra pessoa até que ela também o oculte.
+## Detalhes técnicos
+
+- O viewer não chama `track()`, então não conta como "online" — só observa.
+- Como o chat usa `presence.key = user.id`, a contagem reflete usuários únicos.
+- Usar `useRef` para o channel + `useState<number>` para o count, igual ao padrão já existente em `ToAquiChat.tsx`.
