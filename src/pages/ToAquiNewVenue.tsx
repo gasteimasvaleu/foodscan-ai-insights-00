@@ -39,6 +39,19 @@ const ToAquiNewVenue = () => {
       return;
     }
     setSubmitting(true);
+    const { count } = await supabase
+      .from("venues")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", user.id);
+    if (typeof count === "number" && count >= 3) {
+      setSubmitting(false);
+      toast({
+        title: "Limite atingido",
+        description: "Você já tem 3 venues — remova um antes de cadastrar outro.",
+        variant: "destructive",
+      });
+      return;
+    }
     const { error } = await supabase.from("venues").insert({
       owner_id: user.id,
       name: form.name.trim(),
@@ -51,7 +64,14 @@ const ToAquiNewVenue = () => {
     });
     setSubmitting(false);
     if (error) {
-      toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+      const isLimit = error.message?.includes("venue_limit_reached");
+      toast({
+        title: isLimit ? "Limite atingido" : "Erro ao cadastrar",
+        description: isLimit
+          ? "Você já tem 3 venues — remova um antes de cadastrar outro."
+          : error.message,
+        variant: "destructive",
+      });
       return;
     }
     toast({

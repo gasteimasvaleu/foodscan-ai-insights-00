@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Loader2, Pencil, Trash2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,6 +33,7 @@ const ToAquiEditVenue = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [photoPath, setPhotoPath] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
@@ -47,6 +59,21 @@ const ToAquiEditVenue = () => {
   }, [venue]);
 
   const isOwner = !!user && !!venue && venue.owner_id === user.id;
+
+  const handleDelete = async () => {
+    if (!isOwner || !id || !user) return;
+    setDeleting(true);
+    const { error } = await supabase.from("venues").delete().eq("id", id);
+    setDeleting(false);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["venues", "mine", user.id] });
+    qc.invalidateQueries({ queryKey: ["venues", "approved"] });
+    toast({ title: "Venue excluído" });
+    navigate("/to-aqui/owner");
+  };
 
   const onPickPhoto = async (file: File) => {
     if (!file || !user) return;
@@ -248,6 +275,38 @@ const ToAquiEditVenue = () => {
           >
             {submitting ? "Salvando…" : "Salvar alterações"}
           </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={deleting}
+                className="w-full rounded-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                {deleting ? "Excluindo…" : "Excluir venue"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-white/70 backdrop-blur-md rounded-3xl border-2 border-primary">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir este venue?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Todas as mensagens, presenças e
+                  interações deste venue serão apagadas.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Sim, excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </form>
       </div>
     </div>
