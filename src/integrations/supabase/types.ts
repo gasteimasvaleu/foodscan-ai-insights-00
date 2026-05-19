@@ -2581,6 +2581,8 @@ export type Database = {
           created_at: string
           dm_conversation_id: string | null
           emoji: string | null
+          hidden_for_receiver: boolean
+          hidden_for_sender: boolean
           id: string
           receiver_id: string
           sender_id: string
@@ -2592,6 +2594,8 @@ export type Database = {
           created_at?: string
           dm_conversation_id?: string | null
           emoji?: string | null
+          hidden_for_receiver?: boolean
+          hidden_for_sender?: boolean
           id?: string
           receiver_id: string
           sender_id: string
@@ -2603,6 +2607,8 @@ export type Database = {
           created_at?: string
           dm_conversation_id?: string | null
           emoji?: string | null
+          hidden_for_receiver?: boolean
+          hidden_for_sender?: boolean
           id?: string
           receiver_id?: string
           sender_id?: string

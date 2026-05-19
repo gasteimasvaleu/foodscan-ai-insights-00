@@ -4,7 +4,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, Activity, MessageCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, Loader2, Activity, MessageCircle, RotateCcw, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useVenue } from "@/hooks/useVenues";
 
 const INTERACTIONS: Record<string, { emoji: string; label: string }> = {
