@@ -122,11 +122,11 @@ export const PostResultCard = ({
   };
 
   return (
-    <div className="rounded-3xl bg-[#FFD1E7] p-4 space-y-4">
+    <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0] pl-5 pr-4 py-4 space-y-4">
       <h2 className="text-base text-foreground">Seu post</h2>
 
       {/* Imagem */}
-      <div className={`relative ${isVertical ? "aspect-[9/16] max-w-[280px] mx-auto" : "aspect-square"} w-full rounded-2xl overflow-hidden bg-white/70 backdrop-blur-md flex items-center justify-center`}>
+      <div className={`relative ${isVertical ? "aspect-[9/16] max-w-[280px] mx-auto" : "aspect-square"} w-full rounded-xl overflow-hidden bg-[#FFD1E7]/30 border border-[#FD46A1]/15 flex items-center justify-center`}>
         {loadingImage ? (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Loader2 className="w-8 h-8 animate-spin text-[#FD46A1]" />
@@ -152,7 +152,7 @@ export const PostResultCard = ({
       </div>
 
       {/* Legenda */}
-      <div className="rounded-2xl bg-white/80 backdrop-blur-md p-3 space-y-2">
+      <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-2">
         {loadingCaption ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground py-6 justify-center">
             <Loader2 className="w-4 h-4 animate-spin" /> Gerando legenda…
@@ -179,7 +179,7 @@ export const PostResultCard = ({
 
       {/* Receita IA */}
       {isRecipe && (
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md p-3 space-y-3">
+        <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-3">
           {!recipe ? (
             <Button
               className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-2xl h-11"
