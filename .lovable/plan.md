@@ -1,39 +1,28 @@
 ## Objetivo
 
-Transformar a aba **"Meus posts"** em uma visualização de calendário mensal. Dias com posts ficam destacados; ao clicar em um dia, os posts daquela data aparecem em uma lista logo abaixo do calendário.
+Ao clicar em um card de post (na lista do dia, na aba "Meus posts" de `/nutricionista-que-vende`), abrir um modal padrão do app com a imagem ampliada e todas as informações geradas (tema, tipo, data/hora, legenda, CTA, hashtags) e as ações já existentes (Copiar, Baixar, Excluir).
 
 ## Mudanças
 
 ### 1. `src/components/nutri-sells/PostHistoryGrid.tsx`
+- Adicionar estado `openPost: GeneratedPost | null`.
+- Envolver o conteúdo do item da lista do dia em um `<button>` (toda a área clicável) que faz `setOpenPost(p)`. Manter os botões de ação (Copiar/Baixar/Excluir) dentro do mesmo item, mas com `onClick` que chama `e.stopPropagation()` para não disparar o modal.
+- Renderizar `<PostDetailModal post={openPost} onOpenChange={(o) => !o && setOpenPost(null)} onDelete={(id) => { onDelete(id); setOpenPost(null); }} />` no fim do componente.
 
-Reescrever para layout calendário:
-
-- **Estado**: `currentMonth` (Date) e `selectedDay` (Date | null, default = hoje).
-- **Cálculo**: agrupar `posts` por dia (`yyyy-MM-dd`) usando `created_at` em fuso local pt-BR. Memoizar com `useMemo`.
-- **Card calendário** (mesmo wrapper card branco com stripe rosa já adotado):
-  - Header: nome do mês + ano (`format(currentMonth, "MMMM yyyy", { locale: ptBR })`, capitalizado) + dois `Button` ghost com `ChevronLeft` / `ChevronRight` para navegar.
-  - Linha de cabeçalhos dos dias da semana (D, S, T, Q, Q, S, S) em `grid grid-cols-7 text-xs text-muted-foreground`.
-  - Grade `grid grid-cols-7 gap-1` com células 1:1 (`aspect-square`):
-    - Dias fora do mês: vazio (opacidade reduzida).
-    - Dia com post: célula destacada em `bg-[#FFD1E7] text-[#FD46A1]` com badge contador no canto inferior direito (`text-[10px]`) quando >1.
-    - Dia selecionado: ring `ring-2 ring-[#FD46A1]`.
-    - Dia atual: borda `border border-[#FD46A1]/40`.
-    - Click só ativo em dias com posts.
-- **Lista abaixo do calendário**:
-  - Se `selectedDay` tem posts → render array de cards (mesmo layout horizontal atual: miniatura 20×20 + tema + tipo + horário + ações Copiar/Baixar/Excluir).
-  - Se não tem → mensagem "Nenhum post neste dia".
-- **Estado vazio global** (sem nenhum post salvo): mantém o card branco com stripe + mensagem atual ("Você ainda não salvou nenhum post.").
-
-### 2. Dependências
-- Usar `date-fns` (já no projeto, presente em outras telas) com `locale/pt-BR` para nomes de mês/dias.
-- Ícones `ChevronLeft`, `ChevronRight` do `lucide-react`.
+### 2. Novo arquivo `src/components/nutri-sells/PostDetailModal.tsx`
+- `Dialog` do shadcn com `DialogContent` no padrão do app: `w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white/70 backdrop-blur-md border border-[#FD46A1]/30 shadow-xl max-h-[85vh] overflow-y-auto`.
+- Conteúdo:
+  - `DialogHeader` com `DialogTitle` exibindo o tema (`text-base`, sem ícone), e logo abaixo a meta linha `{format(created_at, "d 'de' MMMM • HH:mm")} • {post_type}` em `text-xs text-muted-foreground`.
+  - Imagem do post: bloco com `bg-[#FFD1E7]/30 border border-[#FD46A1]/15 rounded-xl overflow-hidden`. Se `post_type` for `story` ou `reel`, usar `aspect-[9/16] max-w-[260px] mx-auto`; senão `aspect-square`. Placeholder com ícone se não tiver imagem.
+  - Bloco da legenda (mesmo sub-card claro `rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3`): caption (`whitespace-pre-wrap text-sm`), CTA em `text-sm font-medium text-[#FD46A1]`, hashtags em `text-xs text-muted-foreground break-words`.
+  - Grade 2 colunas de botões: `Copiar legenda` (variant outline) e `Baixar imagem` (variant outline; desabilitado sem imagem) — reaproveitar helpers `copyToClipboard` e `downloadImage` de `@/lib/socialShare`.
+  - Botão `Excluir` (variant ghost, `text-destructive`, full width) que chama `onDelete(post.id)`.
+- Botão de fechar nativo do Radix: aplicar override visual via Core memory ("Close buttons use #FD46A1 bg") — `DialogContent` do projeto já estiliza o `X`; manter como vier do `ui/dialog`.
 
 ### 3. Fora de escopo
-- Sem alterar `useGeneratedPosts` nem schema do banco — a data vem de `created_at`.
-- Sem alterar a página `NutricionistaQueVende.tsx` (já passa `posts` para o componente).
-- Tabs "Criar" e "Ideias" continuam intocadas.
-- Não introduzir o componente `<Calendar />` do shadcn — calendário simples customizado, mais compacto e alinhado ao visual do app.
+- Sem alterar `useGeneratedPosts`, sem alterar o calendário, sem alterar a geração de posts.
+- Sem novas tabelas/edge functions.
 
 ## Validação
 
-- Conferir no preview mobile (390px) que: o calendário cabe sem scroll horizontal, dias com posts ficam pintados, o dia de hoje aparece destacado, ao tocar em outro dia a lista abaixo atualiza, e as ações (copiar/baixar/excluir) continuam funcionando.
+- No preview mobile (390px), abrir aba "Meus posts", tocar em um post na lista do dia: modal abre centralizado, com imagem 9:16 para story/reel ou quadrada para os demais, legenda/CTA/hashtags legíveis, e ações de copiar/baixar/excluir funcionando.
