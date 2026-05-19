@@ -39,15 +39,6 @@ const ToAquiVenue = () => {
       <Navbar />
       <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
         <div className="px-4 max-w-2xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="rounded-full mb-3"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden mb-4">
             <div className="relative h-32 bg-gradient-to-br from-[#FD46A1] to-[#FFD1E7]">
               {venue.photo_url && (
@@ -57,6 +48,13 @@ const ToAquiVenue = () => {
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
+              <button
+                onClick={() => navigate("/to-aqui")}
+                className="absolute top-3 left-3 h-8 w-8 rounded-lg bg-white/80 backdrop-blur-md text-[#FD46A1] flex items-center justify-center shadow-sm"
+                aria-label="Voltar"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
               {cat && (
                 <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-[#FD46A1] font-medium flex items-center gap-1">
                   <span>{cat.emoji}</span>
