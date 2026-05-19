@@ -63,6 +63,8 @@ export default function ToAquiActivity() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [retrying, setRetrying] = useState<string | null>(null);
+  const [hidingId, setHidingId] = useState<string | null>(null);
+  const [confirmHide, setConfirmHide] = useState<Row | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
