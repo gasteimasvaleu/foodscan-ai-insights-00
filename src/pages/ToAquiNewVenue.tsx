@@ -15,6 +15,9 @@ const ToAquiNewVenue = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [photoPath, setPhotoPath] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     category: "bar" as VenueCategory,
