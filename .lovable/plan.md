@@ -1,48 +1,40 @@
 ## Objetivo
 
-Manter `/to-aqui` (listagem + entrada em venue + chat) totalmente pública e gatear apenas o cadastro/gerência de venues atrás do paywall Pro (ProRoute), seguindo o padrão do app.
+Criar a página `/admin/to-aqui` para o admin moderar venues cadastrados (aprovar, rejeitar, reativar e ativar/desativar), e linká-la no painel admin.
 
-## Estado atual em `src/App.tsx`
+## Contexto
 
-```
-/to-aqui                       → ToAqui              (público)
-/to-aqui/venue/:id             → ToAquiVenue         (público)
-/to-aqui/venue/:id/chat        → ToAquiChat          (público)
-/to-aqui/owner                 → ToAquiOwner         (público)  ← deve virar Pro
-/to-aqui/owner/venue/new       → ToAquiNewVenue      (público)  ← deve virar Pro
-```
+A tabela `public.venues` já possui:
+- `status` (`pending` | `approved` | `rejected`)
+- `is_active` (boolean)
+- RLS de admin: `venues admin select` e `venues admin update` via `has_role(auth.uid(),'admin')` — não precisa de migration.
+
+A listagem pública em `useVenues` já filtra `status='approved' AND is_active=true`, então a moderação tem efeito imediato.
 
 ## Mudanças
 
-### 1. `src/App.tsx` — envolver rotas de owner com `ProRoute`
+### 1. Nova página `src/pages/AdminToAqui.tsx`
+- Verificação de admin igual aos outros admin pages (`has_role`).
+- Header padrão do app (gradient card com ícone `MapPin`, título "Tô Aqui — Moderação").
+- Tabs: **Pendentes** / **Aprovados** / **Rejeitados** (filtra por `status`).
+- Cada item exibe: foto (`photo_url`), nome, categoria com emoji, cidade, descrição curta, data, owner_id (com link/foto do perfil se trivial — opcional).
+- Ações:
+  - Pendente → botões **Aprovar** (status=approved) e **Rejeitar** (status=rejected).
+  - Aprovado → botão **Desativar** (is_active=false) ou **Rejeitar**.
+  - Rejeitado → botão **Aprovar** (reverter).
+  - Sempre presente: link "Abrir página" para `/to-aqui/venue/:id`.
+- `useQuery` por aba; `useMutation` para `update` em `venues`; invalida queries após sucesso; `toast` de feedback.
 
-```tsx
-<Route
-  path="/to-aqui/owner"
-  element={
-    <ProRoute feature="to-aqui-owner">
-      <ToAquiOwner />
-    </ProRoute>
-  }
-/>
-<Route
-  path="/to-aqui/owner/venue/new"
-  element={
-    <ProRoute feature="to-aqui-owner">
-      <ToAquiNewVenue />
-    </ProRoute>
-  }
-/>
-```
+### 2. `src/App.tsx`
+- Importar `AdminToAqui`.
+- Adicionar `<Route path="/admin/to-aqui" element={<AdminToAqui />} />` (admin gate é interno como nos outros).
 
-`ProRoute` já só efetivamente bloqueia em iOS nativo + free; web/android continuam abrindo normal. Isso mantém a paridade com o resto do app.
+### 3. `src/pages/AdminDashboard.tsx`
+- Adicionar entrada no array `adminPages`:
+  ```ts
+  { title: 'Tô Aqui', description: 'Aprovar e moderar venues cadastrados', icon: MapPin, path: '/admin/to-aqui' }
+  ```
+- Importar `MapPin` de lucide-react.
 
-### 2. Nada a alterar em `/to-aqui`, `/to-aqui/venue/:id` e `/to-aqui/venue/:id/chat`
-Continuam públicas. Os links internos para "Meus venues" e "Cadastrar venue" passam naturalmente pelo paywall quando o usuário toca neles (sem mudança de UI).
-
-### 3. Sem mudanças de banco
-RLS atual já permite leitura pública de venues e exige `auth.uid()` para criar — o gating Pro é apenas de UX/iOS, sem impacto em policies.
-
-## Detalhes técnicos
-- `ProRoute` importado de `@/components/ProRoute` (já usado em outras rotas).
-- Sem alteração em hooks, edge functions ou tabelas.
+## Sem mudanças no banco
+RLS e colunas já suportam tudo. Nenhuma migration necessária.

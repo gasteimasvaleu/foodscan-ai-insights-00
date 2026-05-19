@@ -62,6 +62,7 @@ import Quiz from "./pages/Quiz";
 import QuizPlay from "./pages/QuizPlay";
 import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
+import AdminToAqui from "./pages/AdminToAqui";
 import Conquistas from "./pages/Conquistas";
 import Desafio14Dias from "./pages/Desafio14Dias";
 import NutricionistaQueVende from "./pages/NutricionistaQueVende";
@@ -164,6 +165,7 @@ const App = () => (
             <Route path="/admin/loja" element={<AdminLoja />} />
             <Route path="/admin/alimentos-comunidade" element={<AdminAlimentosComunidade />} />
             <Route path="/admin/quiz" element={<AdminQuiz />} />
+            <Route path="/admin/to-aqui" element={<AdminToAqui />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz/:id" element={<QuizPlay />} />
             <Route path="/quiz/:id/resultado" element={<QuizResult />} />
