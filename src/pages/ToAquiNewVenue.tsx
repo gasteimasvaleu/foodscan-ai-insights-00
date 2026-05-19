@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, X } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,9 @@ const ToAquiNewVenue = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [photoPath, setPhotoPath] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: "",
     category: "bar" as VenueCategory,
@@ -56,6 +59,47 @@ const ToAquiNewVenue = () => {
       description: "Vamos analisar e liberar em breve.",
     });
     navigate("/to-aqui/owner");
+  };
+
+  const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Limite de 5 MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("venue-photos")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+      return;
+    }
+    // Remove anterior se houver
+    if (photoPath) {
+      await supabase.storage.from("venue-photos").remove([photoPath]);
+    }
+    const { data } = supabase.storage.from("venue-photos").getPublicUrl(path);
+    setPhotoPath(path);
+    setForm((f) => ({ ...f, photo_url: data.publicUrl }));
+    setUploading(false);
+  };
+
+  const onRemovePhoto = async () => {
+    if (photoPath) {
+      await supabase.storage.from("venue-photos").remove([photoPath]);
+    }
+    setPhotoPath(null);
+    setForm((f) => ({ ...f, photo_url: "" }));
   };
 
   return (
@@ -126,13 +170,48 @@ const ToAquiNewVenue = () => {
           </div>
 
           <div>
-            <label className="text-sm text-gray-700 mb-1 block">Foto (URL)</label>
-            <Input
-              value={form.photo_url}
-              onChange={(e) => setForm({ ...form, photo_url: e.target.value })}
-              placeholder="https://…"
-              className="text-base"
+            <label className="text-sm text-gray-700 mb-1 block">Foto do local</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onPickPhoto}
             />
+            {form.photo_url ? (
+              <div className="relative rounded-3xl overflow-hidden bg-[#FFD1E7] aspect-[16/9]">
+                <img
+                  src={form.photo_url}
+                  alt="Prévia do venue"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={onRemovePhoto}
+                  className="absolute top-2 right-2 bg-[#FD46A1] text-white rounded-full p-2 shadow-md"
+                  aria-label="Remover foto"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full aspect-[16/9] rounded-3xl border-2 border-dashed border-[#FD46A1]/40 bg-[#FFD1E7]/40 flex flex-col items-center justify-center gap-2 text-[#FD46A1] hover:bg-[#FFD1E7]/60 transition"
+              >
+                {uploading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  <>
+                    <ImagePlus className="h-6 w-6" />
+                    <span className="text-sm">Escolher foto</span>
+                  </>
+                )}
+              </button>
+            )}
+            <p className="text-xs text-gray-500 mt-1">JPG ou PNG, até 5 MB.</p>
           </div>
 
           <div>
