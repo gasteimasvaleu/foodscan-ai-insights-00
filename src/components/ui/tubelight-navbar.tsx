@@ -47,6 +47,7 @@ const moreSheetItems: Array<{
   { name: "Objetivos", description: "Monitore suas metas semanais", url: "/objetivos", icon: Target, isPro: true },
   { name: "Sono", description: "Registre e acompanhe a qualidade do sono", url: "/sono", icon: Moon, isPro: true },
   { name: "Treinos", description: "Vídeos de treino e dicas em casa", url: "/treinos", icon: Dumbbell, isPro: true },
+  { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
