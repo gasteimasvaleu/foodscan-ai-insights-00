@@ -313,12 +313,18 @@ export default function ToAquiChat() {
           filter: `sender_id=eq.${user.id}`,
         },
         (payload) => {
-          const g = payload.new as { status: string; venue_id: string };
+          const g = payload.new as { status: string; venue_id: string; dm_conversation_id: string | null };
           if (g.venue_id !== venueId) return;
           if (g.status === "correct") {
+            const dmId = g.dm_conversation_id;
             toast({
               title: "🎉 Você acertou!",
-              description: "Conversa privada aberta. Confira em Atividade.",
+              description: "Conversa privada aberta.",
+              action: dmId ? (
+                <ToastAction altText="Abrir conversa" onClick={() => navigate(`/comunidade/dm/${dmId}`)}>
+                  Abrir
+                </ToastAction>
+              ) : undefined,
             });
           } else if (g.status === "wrong") {
             toast({
@@ -327,6 +333,7 @@ export default function ToAquiChat() {
             });
           }
         }
+
       )
       .subscribe();
 
