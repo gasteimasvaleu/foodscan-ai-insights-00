@@ -137,12 +137,35 @@ export default function ToAquiActivity() {
   const filtered = useMemo(() => {
     if (!user) return [] as Row[];
     return rows.filter((r) => {
-      if (filter === "sent") return r.sender_id === user.id;
+      const isSent = r.sender_id === user.id;
+      if (isSent && r.hidden_for_sender) return false;
+      if (!isSent && r.hidden_for_receiver) return false;
+      if (filter === "sent") return isSent;
       if (filter === "received") return r.receiver_id === user.id;
       if (filter === "matches") return !!r.dm_conversation_id;
       return true;
     });
   }, [rows, filter, user]);
+
+  const hideRow = async (r: Row) => {
+    if (!user || hidingId) return;
+    setHidingId(r.id);
+    const isSent = r.sender_id === user.id;
+    const patch = isSent
+      ? { hidden_for_sender: true }
+      : { hidden_for_receiver: true };
+    const { error } = await supabase
+      .from("venue_interactions")
+      .update(patch)
+      .eq("id", r.id);
+    setHidingId(null);
+    setConfirmHide(null);
+    if (error) {
+      toast({ title: "Erro ao remover", description: error.message, variant: "destructive" });
+      return;
+    }
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, ...patch } : x)));
+  };
 
   const retribute = async (r: Row) => {
     if (!user || !venueId || retrying) return;
