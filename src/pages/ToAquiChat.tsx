@@ -91,6 +91,12 @@ export default function ToAquiChat() {
   const [hintLoading, setHintLoading] = useState(false);
   const [hintSuggestions, setHintSuggestions] = useState<string[]>([]);
 
+  // Guess identity
+  const [guessDialogOpen, setGuessDialogOpen] = useState(false);
+  const [guessTargetId, setGuessTargetId] = useState<string | null>(null);
+  const [incomingGuess, setIncomingGuess] = useState<IncomingGuess | null>(null);
+  const [revealedMessageIds, setRevealedMessageIds] = useState<Set<string>>(new Set());
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const heartbeatRef = useRef<number | null>(null);
