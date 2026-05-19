@@ -7,9 +7,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export interface IncomingGuess {
   id: string;
@@ -24,20 +26,24 @@ interface Props {
 
 export default function IncomingGuessDialog({ guess, onClose }: Props) {
   const [resolving, setResolving] = useState<"correct" | "wrong" | null>(null);
+  const navigate = useNavigate();
 
   const resolve = async (status: "correct" | "wrong") => {
     if (!guess) return;
     setResolving(status);
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("venue_guesses")
       .update({ status })
-      .eq("id", guess.id);
+      .eq("id", guess.id)
+      .select("dm_conversation_id")
+      .maybeSingle();
     setResolving(null);
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
       return;
     }
     if (status === "correct") {
+      const dmId = data?.dm_conversation_id;
       toast({
         title: "🎉 Vocês se descobriram!",
         description: "Uma conversa privada foi aberta.",
