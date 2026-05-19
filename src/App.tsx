@@ -64,6 +64,7 @@ import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
 import Desafio14Dias from "./pages/Desafio14Dias";
+import NutricionistaQueVende from "./pages/NutricionistaQueVende";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
