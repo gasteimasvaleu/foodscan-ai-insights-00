@@ -43,13 +43,24 @@ serve(async (req) => {
     const isVertical = post_type === "story" || post_type === "reel";
     const dims = isVertical ? "vertical 1080x1920 (proporção 9:16)" : "quadrada 1080x1080 (proporção 1:1)";
 
+    const safetyRules = isVertical
+      ? `REGRAS CRÍTICAS DE COMPOSIÇÃO (orientação vertical 9:16):
+- Deixe MARGEM SEGURA mínima de 15% em TODAS as bordas (topo, base, esquerda e direita). Nenhum texto, logo ou elemento importante pode tocar ou ficar próximo das bordas.
+- O texto principal deve ficar CENTRALIZADO no terço central vertical da imagem (entre 30% e 70% da altura), longe do topo (onde aparece o avatar do Instagram) e da base (onde aparece a barra de resposta).
+- Máximo 4 palavras no texto principal, quebradas em até 2 linhas curtas.
+- Fonte grande, peso bold, alto contraste com o fundo. A largura do texto não pode passar de 80% da largura da imagem.
+- PROIBIDO: texto cortado, letras encostando nas bordas, texto pequeno, texto sobre área de baixo contraste.`
+      : `REGRAS DE COMPOSIÇÃO (quadrada 1:1):
+- Margem segura de 8% em todas as bordas. Texto centralizado, máximo 6 palavras em até 2 linhas, sem encostar nas bordas.`;
+
     const imagePrompt = `Imagem ${dims} para post de Instagram de nutricionista, em português do Brasil.
 Tipo: ${post_type || "dica"}.
 Tema: ${theme}.
 Estilo visual: ${style || "moderno, clean, cores quentes, fotografia de alimentos saudáveis quando aplicável"}.
-${isVertical ? "IMPORTANTE: imagem em orientação vertical (9:16), com elementos centralizados verticalmente, sem cortar texto ou rostos." : "Composição centralizada quadrada."}
-Pode conter um texto curto e legível em português (máximo 6 palavras) como título principal.
-Alta qualidade, paleta harmônica, sem marcas d'água.`;
+
+${safetyRules}
+
+Alta qualidade, paleta harmônica, sem marcas d'água, sem watermark.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
