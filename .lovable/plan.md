@@ -1,16 +1,24 @@
-## Ajuste de largura do modal "Dica misteriosa via IA"
+## Plano
 
-Os dois `DialogContent` em `src/pages/ToAquiChat.tsx` (linhas 420 e 514) usam apenas `max-w-sm`, sem `w-[calc(100%-2rem)]`, o que faz o modal ocupar toda a largura horizontal no mobile (390px), fora do padrão do app.
+1. **Corrigir a Edge Function `venue-mystery-hint`**
+   - Trocar a importação de CORS que pode falhar no runtime por headers definidos diretamente no arquivo.
+   - Garantir que `OPTIONS` e todas as respostas retornem CORS corretamente.
+   - Melhorar o tratamento de erro para retornar uma mensagem amigável em vez de quebrar com “Failed to send request”.
 
-### Mudança
-Atualizar a className dos dois `DialogContent` para o padrão usado nos outros modais do app:
+2. **Ajustar autenticação da função**
+   - Como o botão é usado dentro do app por usuário logado, manter a chamada pelo `supabase.functions.invoke`.
+   - Se necessário, deixar a função com `verify_jwt = false` e validar em código apenas o que for essencial para evitar bloqueio por ausência/intermitência do header no preview/webview.
 
-```
-w-[calc(100%-2rem)] max-w-md rounded-3xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl
-```
+3. **Simplificar o retorno da IA**
+   - Remover dependência de `tool_choice/function calling`, que pode variar entre modelos.
+   - Pedir JSON simples ao AI Gateway e fazer fallback para dividir texto em até 3 dicas se o JSON vier malformado.
 
-Aplicar em:
-- Linha 420 — modal de interações (caso exista um Dialog ali também)
-- Linha 514 — modal "Dica misteriosa via IA"
+4. **Validar após a correção**
+   - Reimplantar/testar a Edge Function diretamente.
+   - Confirmar que ela retorna `{ hints: [...] }` com uma pista real antes de considerar resolvido.
 
-Resultado: margens laterais de 1rem, largura máxima 28rem, borda rosa e glassmorphism consistentes com `WidgetPromoModal`, `AddObjectiveModal`, etc.
+## Detalhes técnicos
+
+- Arquivo principal: `supabase/functions/venue-mystery-hint/index.ts`
+- Possível ajuste adicional: `supabase/config.toml`
+- Não serão feitas mudanças visuais no modal nem no fluxo do chat.
