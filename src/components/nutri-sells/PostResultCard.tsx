@@ -122,7 +122,7 @@ export const PostResultCard = ({
   };
 
   return (
-    <div className="rounded-3xl bg-[#FFD1E7] p-4 space-y-4">
+    <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0] pl-5 pr-4 py-4 space-y-4">
       <h2 className="text-base text-foreground">Seu post</h2>
 
       {/* Imagem */}
