@@ -66,6 +66,7 @@ export default function ToAquiChat() {
   const [identityMode, setIdentityMode] = useState<"real" | "anonymous">("real");
   const [identityAlias, setIdentityAlias] = useState("");
   const [joining, setJoining] = useState(false);
+  const [newInteractionsCount, setNewInteractionsCount] = useState(0);
 
   // Interactions drawer
   const [interactionTarget, setInteractionTarget] = useState<string | null>(null);
