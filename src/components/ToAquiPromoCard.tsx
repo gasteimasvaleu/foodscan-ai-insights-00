@@ -4,7 +4,7 @@ export const ToAquiPromoCard = () => {
   return (
     <Link
       to="/to-aqui"
-      className="block relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-lg active:scale-[0.99] transition-transform"
+      className="block relative w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-lg active:scale-[0.99] transition-transform border border-[#FD46A1]/60 animate-neon-pulse"
       aria-label="Tô Aqui — converse com quem está no mesmo lugar"
     >
       <img
