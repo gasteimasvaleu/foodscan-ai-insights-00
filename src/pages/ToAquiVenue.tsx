@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, Users, MessageCircle } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Utensils, ShieldCheck, Check } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useVenue, VENUE_CATEGORIES } from "@/hooks/useVenues";
+
+const PAGE_BG = "min-h-screen bg-gradient-to-br from-background via-background to-primary/5";
 
 const ToAquiVenue = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,7 +13,7 @@ const ToAquiVenue = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB]">
+      <div className={PAGE_BG}>
         <Navbar />
         <p className="text-center pt-32 text-gray-500">Carregando…</p>
       </div>
@@ -20,7 +22,7 @@ const ToAquiVenue = () => {
 
   if (!venue) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB]">
+      <div className={PAGE_BG}>
         <Navbar />
         <div className="pt-[calc(env(safe-area-inset-top)+5rem)] text-center">
           <p className="text-gray-600">Venue não encontrado.</p>
@@ -33,13 +35,16 @@ const ToAquiVenue = () => {
   }
 
   const cat = VENUE_CATEGORIES.find((c) => c.value === venue.category);
+  const ruleLines = venue.rules
+    ? venue.rules.split("\n").map((l) => l.trim()).filter(Boolean)
+    : [];
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className={PAGE_BG}>
       <Navbar />
       <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
-        <div className="px-4 max-w-2xl mx-auto">
-          <div className="bg-white rounded-3xl shadow-sm overflow-hidden mb-4">
+        <div className="px-4 max-w-2xl mx-auto space-y-4">
+          <div className="relative bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-3xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)]">
             <div className="relative h-32 bg-gradient-to-br from-[#FD46A1] to-[#FFD1E7]">
               {venue.photo_url && (
                 <img
@@ -102,19 +107,48 @@ const ToAquiVenue = () => {
           </div>
 
           {venue.description && (
-            <div className="bg-white rounded-3xl p-4 mb-3 shadow-sm">
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                {venue.description}
-              </p>
+            <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+              <div className="pl-5 pr-4 py-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-xl bg-[#FFD1E7] flex items-center justify-center">
+                    <Utensils className="w-4 h-4 text-[#FD46A1]" />
+                  </div>
+                  <p className="text-xs text-[#FD46A1] uppercase tracking-wide font-semibold">
+                    Comida
+                  </p>
+                </div>
+                <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-4">
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {venue.description}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
-          {venue.rules && (
-            <div className="bg-[#FFD1E7] rounded-3xl p-4 mb-4">
-              <p className="text-xs text-[#FD46A1] uppercase tracking-wide mb-1">
-                Regras do chat
-              </p>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">{venue.rules}</p>
+          {ruleLines.length > 0 && (
+            <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+              <div className="pl-5 pr-4 py-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-xl bg-[#FFD1E7] flex items-center justify-center">
+                    <ShieldCheck className="w-4 h-4 text-[#FD46A1]" />
+                  </div>
+                  <p className="text-xs text-[#FD46A1] uppercase tracking-wide font-semibold">
+                    Regras do chat
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {ruleLines.map((line, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-2 rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3"
+                    >
+                      <Check className="w-4 h-4 text-[#FD46A1] mt-0.5 shrink-0" />
+                      <p className="text-sm text-gray-800 leading-relaxed">{line}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
