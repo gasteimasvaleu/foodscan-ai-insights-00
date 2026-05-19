@@ -93,6 +93,7 @@ const ToAquiOwner = () => {
                       <st.Icon className="h-3 w-3" /> {st.label}
                     </span>
                   </div>
+                  </Link>
                 </li>
               );
             })}
