@@ -2524,6 +2524,361 @@ export type Database = {
           },
         ]
       }
+      venue_bans: {
+        Row: {
+          banned_by: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          reason: string | null
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          banned_by: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          banned_by?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_bans_banned_by_fkey"
+            columns: ["banned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_bans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_bans_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_interactions: {
+        Row: {
+          created_at: string
+          dm_conversation_id: string | null
+          emoji: string | null
+          id: string
+          receiver_id: string
+          sender_id: string
+          status: string
+          type: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          dm_conversation_id?: string | null
+          emoji?: string | null
+          id?: string
+          receiver_id: string
+          sender_id: string
+          status?: string
+          type: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          dm_conversation_id?: string | null
+          emoji?: string | null
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+          status?: string
+          type?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_interactions_dm_conversation_id_fkey"
+            columns: ["dm_conversation_id"]
+            isOneToOne: false
+            referencedRelation: "dm_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_interactions_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_interactions_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_interactions_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_memberships: {
+        Row: {
+          display_alias: string | null
+          display_mode: string
+          id: string
+          joined_at: string
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          display_alias?: string | null
+          display_mode?: string
+          id?: string
+          joined_at?: string
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          display_alias?: string | null
+          display_mode?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_memberships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_memberships_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_mystery_tip: boolean
+          mystery_hint: string | null
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_mystery_tip?: boolean
+          mystery_hint?: string | null
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_mystery_tip?: boolean
+          mystery_hint?: string | null
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_messages_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_presence: {
+        Row: {
+          last_seen: string
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          last_seen?: string
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          last_seen?: string
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_presence_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_reports: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string | null
+          reason: string
+          reported_user_id: string
+          reporter_id: string
+          status: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id?: string | null
+          reason: string
+          reported_user_id: string
+          reporter_id: string
+          status?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string | null
+          reason?: string
+          reported_user_id?: string
+          reporter_id?: string
+          status?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "venue_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_reports_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venues: {
+        Row: {
+          address: string | null
+          category: string
+          city: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          owner_id: string
+          photo_url: string | null
+          rules: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          city: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          owner_id: string
+          photo_url?: string | null
+          rules?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          city?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          owner_id?: string
+          photo_url?: string | null
+          rules?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venues_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_summaries: {
         Row: {
           calories: number
@@ -2732,6 +3087,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_access_venue: {
+        Args: { _user_id: string; _venue_id: string }
+        Returns: boolean
+      }
       check_and_unlock_badges: {
         Args: { _user_id: string }
         Returns: undefined
@@ -2762,11 +3121,20 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_venue_online_count: { Args: { _venue_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_venue_banned: {
+        Args: { _user_id: string; _venue_id: string }
+        Returns: boolean
+      }
+      is_venue_member: {
+        Args: { _user_id: string; _venue_id: string }
         Returns: boolean
       }
       normalize_food_name: { Args: { _name: string }; Returns: string }
