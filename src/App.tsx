@@ -165,6 +165,7 @@ const App = () => (
             <Route path="/admin/loja" element={<AdminLoja />} />
             <Route path="/admin/alimentos-comunidade" element={<AdminAlimentosComunidade />} />
             <Route path="/admin/quiz" element={<AdminQuiz />} />
+            <Route path="/admin/to-aqui" element={<AdminToAqui />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/quiz/:id" element={<QuizPlay />} />
             <Route path="/quiz/:id/resultado" element={<QuizResult />} />
