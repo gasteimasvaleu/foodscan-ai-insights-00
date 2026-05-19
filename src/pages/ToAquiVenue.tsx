@@ -101,11 +101,11 @@ const ToAquiVenue = () => {
 
           <div className="bg-white rounded-3xl p-5 text-center shadow-sm">
             <p className="text-sm text-gray-600 mb-3">
-              O chat ao vivo deste venue será habilitado em breve.
+              Converse em tempo real com quem está aqui agora.
             </p>
             <Button
-              disabled
-              className="rounded-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 opacity-60"
+              onClick={() => navigate(`/to-aqui/venue/${venue.id}/chat`)}
+              className="rounded-full bg-[#FD46A1] hover:bg-[#FD46A1]/90"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
               Entrar no chat
