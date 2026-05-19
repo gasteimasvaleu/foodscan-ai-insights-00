@@ -1,19 +1,15 @@
-## Corrigir corte de texto em imagens de Story (9:16)
+## Remover texto das imagens geradas
 
-O modelo Nano Banana às vezes posiciona o texto muito perto das bordas no formato vertical, fazendo com que letras fiquem cortadas. A correção é instruir o modelo de forma explícita no prompt.
+A IA de geração de imagem não escreve bem em português brasileiro (erros de ortografia, letras cortadas, palavras inventadas). Vamos pedir explicitamente imagens **sem nenhum texto**, deixando o texto só na legenda do post.
 
 ### Mudança única: `supabase/functions/generate-social-image/index.ts`
 
-Ajustar o `imagePrompt` para Stories/Reels com regras explícitas de margem segura e tamanho de texto:
-
-- Reservar **margem segura de pelo menos 15%** em todas as bordas (especialmente topo e base, onde o Instagram coloca avatar, nome e barra de progresso).
-- Texto principal **centralizado no terço central vertical** da imagem.
-- **Máximo 4 palavras** no título (em vez de 6) e quebra em até 2 linhas curtas.
-- Fonte grande, alto contraste, sem ultrapassar 80% da largura.
-- Proibir expressamente texto colado nas bordas ou cortado.
-
-Também reforçar para o tipo quadrado uma instrução leve de margem para consistência (não é o problema reportado, mas evita regressão).
+Reescrever o `imagePrompt` para:
+- Instruir composição puramente visual (foco no alimento, ingredientes, ambiente, mood).
+- Adicionar regra explícita: **"SEM TEXTO, sem letras, sem palavras, sem números, sem logos, sem marcas d'água"** — repetida no final como reforço.
+- Manter a regra de orientação (vertical 9:16 para story/reel, quadrada 1:1 para os demais) e margens seguras para o enquadramento do Instagram.
+- Remover o bloco que mencionava "máximo X palavras", "fonte bold", "alto contraste de texto", etc.
 
 ### Fora do escopo
-- Não mudar UI nem aspect ratio do preview (já está correto em `aspect-[9/16]`).
-- Não mudar modelo nem dimensões; só o texto do prompt.
+- Não muda a UI nem a legenda gerada (essa continua em português, gerada por modelo de texto que escreve bem).
+- Não muda outras edge functions.
