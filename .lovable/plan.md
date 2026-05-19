@@ -1,24 +1,19 @@
 ## Problema
 
-Após o usuário clicar em "Abrir conversa" no `MatchRevealBanner`, ele navega para a DM, mas ao voltar pro chat do venue o banner continua lá (porque vem da mensagem `__match_reveal__:` persistida no banco). Hoje não há nenhum mecanismo de "dispensar".
+Hoje o confete só não dispara duas vezes na mesma sessão (graças ao `revealedMessageIds` em memória no `ToAquiChat`). Mas se o usuário sai e volta para o chat do venue, o state é recriado vazio e o confete dispara de novo para mensagens `__match_reveal__:` antigas.
 
 ## Solução
 
-Dispensar o banner localmente após o clique, de forma persistente por mensagem.
+Persistir por mensagem que o confete já foi disparado, igual fizemos com o "dispensado".
 
-### 1. `MatchRevealBanner.tsx`
-- Aceitar nova prop `messageId: string`.
-- Manter estado `dismissed` inicializado lendo `localStorage` da chave `to-aqui:match-reveal-dismissed:${messageId}`.
-- Função `openDM`: após `navigate()`, gravar `"1"` em `localStorage` nessa chave e setar `dismissed=true`.
-- Se `dismissed === true`, o componente retorna `null` (não renderiza nada).
+### `MatchRevealBanner.tsx`
+- Nova chave: `to-aqui:match-reveal-confetti:${messageId}` no `localStorage`.
+- No `useEffect` que dispara o confete:
+  - Antes de animar, ler a chave. Se já existe, sair sem disparar.
+  - Após disparar, gravar `"1"` na chave.
+- O `ref` local `fired` continua, para evitar duplicar no mesmo mount.
 
-### 2. `ToAquiChat.tsx` (linha ~844)
-- Passar `messageId={m.id}` para o `MatchRevealBanner`.
-- Nenhuma outra mudança — a mensagem continua no banco; só o banner fica oculto pra esse usuário neste dispositivo.
+Nenhuma outra mudança — `ToAquiChat` continua passando `fireConfetti={isNew}` (ainda útil pra não animar em mensagens já marcadas em memória), e o banner agora também respeita o persistido.
 
 ## Fora de escopo
-- Não mexer no banco nem deletar a mensagem `__match_reveal__:` (ela serve de registro para o caso de o outro participante ainda não ter visto, e o filtro é por usuário/dispositivo).
-- Não mexer no toast/dialog do `IncomingGuessDialog` nem na lógica de criação de DM.
-
-## Detalhe técnico
-Chave de localStorage isolada por mensagem garante: (a) sobrevive a refresh; (b) cada banner (caso haja vários matches no venue) tem dispensa independente; (c) não afeta o outro participante.
+- Não mexer no banco, no toast, no botão "Abrir conversa" nem na lógica de dismiss já implementada.
