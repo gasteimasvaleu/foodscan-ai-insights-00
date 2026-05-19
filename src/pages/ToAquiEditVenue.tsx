@@ -119,7 +119,7 @@ const ToAquiEditVenue = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB]">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-[calc(env(safe-area-inset-top)+5rem)] text-center text-gray-500">
           <Loader2 className="animate-spin inline" />
@@ -130,7 +130,7 @@ const ToAquiEditVenue = () => {
 
   if (!venue || !isOwner) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB]">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-[calc(env(safe-area-inset-top)+5rem)] text-center">
           <p className="text-gray-600">Você não pode editar este venue.</p>
@@ -143,22 +143,28 @@ const ToAquiEditVenue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
-        <div className="flex items-center gap-2 mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-bold text-[#FD46A1]">Editar venue</h1>
+        <div className="animate-fade-in mb-4">
+          <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+              <Pencil className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-primary">Editar venue</h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/to-aqui/owner")}
+              aria-label="Voltar"
+              className="ml-auto text-primary hover:bg-white/40 rounded-full"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4 bg-white rounded-3xl p-5 shadow-sm">
+        <form onSubmit={onSubmit} className="space-y-4 bg-white rounded-3xl p-5 shadow-sm border border-[#FD46A1]/30">
           <VenuePhotoHeader
             photoUrl={form.photo_url || null}
             categoryEmoji={VENUE_CATEGORIES.find((c) => c.value === form.category)?.emoji}
