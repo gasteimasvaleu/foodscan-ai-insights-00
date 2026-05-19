@@ -1,19 +1,29 @@
-## Problema
+# Efeito Pulsante Neon no ToAquiPromoCard
 
-Hoje o confete só não dispara duas vezes na mesma sessão (graças ao `revealedMessageIds` em memória no `ToAquiChat`). Mas se o usuário sai e volta para o chat do venue, o state é recriado vazio e o confete dispara de novo para mensagens `__match_reveal__:` antigas.
+## Objetivo
+Adicionar um efeito de borda pulsante neon na cor `#FD46A1` (rosa primário do app) no card promocional do Tô Aqui (`ToAquiPromoCard.tsx`).
 
-## Solução
+## Implementação
 
-Persistir por mensagem que o confete já foi disparado, igual fizemos com o "dispensado".
+### 1. Adicionar keyframe de pulsação neon em `src/index.css`
+Criar um `@keyframes` chamado `neon-pulse` que varie o `box-shadow` da cor primária entre estados de brilho intenso e suave:
+- **0%, 100%**: `box-shadow: 0 0 5px #FD46A1, 0 0 10px #FD46A1, 0 0 15px #FD46A1`
+- **50%**: `box-shadow: 0 0 10px #FD46A1, 0 0 20px #FD46A1, 0 0 30px #FD46A1`
 
-### `MatchRevealBanner.tsx`
-- Nova chave: `to-aqui:match-reveal-confetti:${messageId}` no `localStorage`.
-- No `useEffect` que dispara o confete:
-  - Antes de animar, ler a chave. Se já existe, sair sem disparar.
-  - Após disparar, gravar `"1"` na chave.
-- O `ref` local `fired` continua, para evitar duplicar no mesmo mount.
+### 2. Aplicar animação no componente
+Em `src/components/ToAquiPromoCard.tsx`:
+- Adicionar `animate-[neon-pulse_2s_ease-in-out_infinite]` (ou classe utilitária equivalente) no elemento `<Link>` principal do card.
+- Garantir que a borda/arredondamento (`rounded-3xl`) permaneça intacto.
+- Adicionar `border border-[#FD46A1]/50` para dar base visual à borda neon.
 
-Nenhuma outra mudança — `ToAquiChat` continua passando `fireConfetti={isNew}` (ainda útil pra não animar em mensagens já marcadas em memória), e o banner agora também respeita o persistido.
+### 3. Verificar responsividade
+- Confirmar que o efeito não quebra o layout mobile (viewport 390x609).
+- O card já é `w-full` com `aspect-[21/9]` — a animação de sombra não afeta dimensões.
 
-## Fora de escopo
-- Não mexer no banco, no toast, no botão "Abrir conversa" nem na lógica de dismiss já implementada.
+## Fora do escopo
+- Nenhuma mudança em outros cards (`NoveltyCard`, etc.) a menos que solicitado.
+- Nenhuma mudança de funcionalidade ou lógica — apenas estilo visual.
+
+## Arquivos alterados
+- `src/index.css` — novo keyframe `neon-pulse`
+- `src/components/ToAquiPromoCard.tsx` — classes de animação e borda

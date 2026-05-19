@@ -217,6 +217,19 @@
     animation: pulse-glow 1s ease-in-out infinite;
   }
 
+  @keyframes neon-pulse {
+    0%, 100% {
+      box-shadow: 0 0 4px #FD46A1, 0 0 10px #FD46A1, 0 0 18px rgba(253, 70, 161, 0.6);
+    }
+    50% {
+      box-shadow: 0 0 10px #FD46A1, 0 0 22px #FD46A1, 0 0 38px rgba(253, 70, 161, 0.9);
+    }
+  }
+
+  .animate-neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
   .wheel-picker-scroll {
     -ms-overflow-style: none;
     scrollbar-width: none;
