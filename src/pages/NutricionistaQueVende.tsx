@@ -7,6 +7,8 @@ import { PostHistoryGrid } from "@/components/nutri-sells/PostHistoryGrid";
 import { WeeklyIdeasCard } from "@/components/nutri-sells/WeeklyIdeasCard";
 import { useGeneratedPosts } from "@/hooks/useGeneratedPosts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Navbar } from "@/components/Navbar";
+import { Megaphone } from "lucide-react";
 
 export default function NutricionistaQueVende() {
   const [form, setForm] = useState<PostFormValues>({
