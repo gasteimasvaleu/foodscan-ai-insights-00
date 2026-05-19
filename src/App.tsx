@@ -69,6 +69,7 @@ import ToAqui from "./pages/ToAqui";
 import ToAquiVenue from "./pages/ToAquiVenue";
 import ToAquiOwner from "./pages/ToAquiOwner";
 import ToAquiNewVenue from "./pages/ToAquiNewVenue";
+import ToAquiChat from "./pages/ToAquiChat";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
