@@ -64,6 +64,7 @@ import QuizResult from "./pages/QuizResult";
 import AdminQuiz from "./pages/AdminQuiz";
 import Conquistas from "./pages/Conquistas";
 import Desafio14Dias from "./pages/Desafio14Dias";
+import NutricionistaQueVende from "./pages/NutricionistaQueVende";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -145,6 +146,7 @@ const App = () => (
             <Route path="/faca-em-casa" element={<ProRoute feature="faca-em-casa"><FacaEmCasa /></ProRoute>} />
             <Route path="/provador" element={<ProRoute feature="provador"><Provador /></ProRoute>} />
             <Route path="/treinos" element={<ProRoute feature="treinos"><Treinos /></ProRoute>} />
+            <Route path="/nutricionista-que-vende" element={<ProRoute feature="nutricionista-que-vende"><NutricionistaQueVende /></ProRoute>} />
             <Route path="/loja" element={<Loja />} />
             <Route path="/lista-de-compras" element={<ShoppingList />} />
             <Route path="/lista-de-compras/:id" element={<ShoppingListDetail />} />
