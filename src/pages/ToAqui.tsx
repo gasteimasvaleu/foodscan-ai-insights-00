@@ -33,10 +33,12 @@ const ToAqui = () => {
                 className="text-primary hover:bg-white/40 rounded-full"
                 aria-label="Meus venues"
               >
-                <Settings className="h-5 w-5" />
               </Button>
             </Link>
+          </div>
         </div>
+
+
 
         {!isPro && (
           <button
