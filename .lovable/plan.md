@@ -1,41 +1,22 @@
 ## Objetivo
 
-Adicionar, ao lado do botão de Atividade (header do chat do venue), um botão que abre um modal padrão do app listando todos os usuários online no chat naquele momento.
+Adicionar, no Dashboard logado (`/`), um card no mesmo formato do `NoveltyCard` logo abaixo do AuthCard (boas-vindas) e acima do `NoveltyCard` atual, divulgando o "Tô Aqui".
 
-## Arquivo único
+## Implementação
 
-`src/pages/ToAquiChat.tsx`
+**Novo componente:** `src/components/ToAquiPromoCard.tsx`
+- Cópia da estrutura do `NoveltyCard` (Link 21:9, imagem absoluta, faixa translúcida `bg-black/55 backdrop-blur-sm` na base).
+- `to="/to-aqui"`.
+- Imagem: `https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/021779196477043682bfa727eaa8ae907bb4f408e14b63d586dcb_0.jpeg` (alt: "Tô Aqui — converse com quem está no mesmo lugar").
+- Faixa inferior:
+  - Tag superior: "TÔ AQUI" em `text-[#FFD1E7] text-xs font-bold uppercase tracking-wider`.
+  - Texto: "Quer saber e conversar com quem tá no seu bar, festa ou restaurante? Clica aqui." em `text-white text-sm leading-snug`.
 
-## Mudanças
-
-1. **State novo**
-   - `onlineUserIds: string[]` — lista de user_ids presentes no canal.
-   - `onlineModalOpen: boolean`.
-
-2. **Presence sync (linhas 201-204)**
-   - Hoje só seta `onlineCount`. Atualizar também `setOnlineUserIds(Object.keys(state))`.
-   - Manter `setOnlineCount` para o subtítulo.
-   - Observação: `fetchOnlineDb` continua só ajustando o contador (não temos ids pelo RPC), então o modal mostra os usuários do canal realtime — fonte de verdade dos "conectados agora".
-
-3. **Botão novo no header (entre os dois botões já existentes, ~linha 590)**
-   - Ícone `Users` (já importado), `variant="ghost" size="icon"`, cor `#FD46A1`.
-   - `aria-label="Quem está online"`.
-   - `onClick`: abre o modal e dispara `refreshMembers(onlineUserIds)` para garantir avatar/nome de quem ainda não apareceu no chat.
-   - Badge pequeno (mesmo estilo do badge de interações) no canto superior direito com `onlineCount`.
-
-4. **Modal (Dialog do shadcn — padrão glassmorphism do app)**
-   - `DialogContent` com `bg-white/70 backdrop-blur-md`, `rounded-3xl`, `max-h-[80vh] overflow-y-auto`.
-   - `DialogHeader`: título "Online agora" + `DialogDescription` com `{onlineCount} {pessoa/pessoas} no chat`.
-   - Lista de itens (uma linha por user_id em `onlineUserIds`):
-     - Avatar (mesma lógica usada nas mensagens: se `display_mode === "anonymous"`, mostrar inicial do alias dentro de um círculo cinza com ícone genérico; senão `avatar_url` ou inicial do nome).
-     - Nome: alias (se anônimo) ou `profile_name`.
-     - Badge "Você" para o próprio user.
-   - Estado vazio: "Ninguém online no momento."
-   - Sem ações por linha (apenas visualização) — mantém escopo mínimo.
+**Edit:** `src/pages/Index.tsx` (linha 111-112)
+- Inserir `<ToAquiPromoCard />` entre `<AuthCard />` e `<NoveltyCard />`.
+- Adicionar o import.
 
 ## Fora do escopo
 
-- Não mexer no contador/subtítulo do header (já existe e fica).
-- Não criar tabela nem RLS — usa o `presenceState()` já existente.
-- Sem mudança no botão de Atividade nem no botão Voltar.
-- Sem ações de DM/paquera direto pelo modal (pode ser uma próxima iteração se você quiser).
+- Sem mudança no `NoveltyCard` nem nos outros decks.
+- Sem nova rota, tabela ou tracking.
