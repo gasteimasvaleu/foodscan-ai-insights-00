@@ -281,6 +281,55 @@ export default function ToAquiChat() {
       )
       .subscribe();
 
+    // Guesses channel: receber palpites e ouvir resolução dos meus
+    const guessChannel = supabase.channel(`venue-guess-${venueId}-${user.id}`);
+    guessChannel
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "venue_guesses",
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const g = payload.new as { id: string; venue_id: string; sender_id: string; guess_text: string };
+          if (g.venue_id !== venueId) return;
+          await refreshMembers([g.sender_id]);
+          const info = members[g.sender_id];
+          const name =
+            info?.display_mode === "anonymous"
+              ? info.display_alias || "Anônimo"
+              : info?.profile_name || "Alguém";
+          setIncomingGuess({ id: g.id, guess_text: g.guess_text, senderDisplayName: name });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "venue_guesses",
+          filter: `sender_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const g = payload.new as { status: string; venue_id: string };
+          if (g.venue_id !== venueId) return;
+          if (g.status === "correct") {
+            toast({
+              title: "🎉 Você acertou!",
+              description: "Conversa privada aberta. Confira em Atividade.",
+            });
+          } else if (g.status === "wrong") {
+            toast({
+              title: "😅 Errou!",
+              description: "Tente outra vez daqui a 5 minutos.",
+            });
+          }
+        }
+      )
+      .subscribe();
+
     // Contagem inicial de interações novas (recebidas desde última visita à atividade)
     (async () => {
       const seenKey = `toaqui-activity-seen-${venueId}-${user.id}`;
