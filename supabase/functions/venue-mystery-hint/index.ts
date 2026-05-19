@@ -1,20 +1,33 @@
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-app-platform",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { raw_hint } = await req.json();
+    let payload: any = {};
+    try {
+      payload = await req.json();
+    } catch {
+      return json({ error: "JSON inválido" }, 400);
+    }
+    const raw_hint = payload?.raw_hint;
     if (!raw_hint || typeof raw_hint !== "string" || raw_hint.trim().length < 3) {
-      return new Response(JSON.stringify({ error: "raw_hint inválido" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Escreva uma pista com pelo menos 3 caracteres." }, 400);
     }
     const cleaned = raw_hint.trim().slice(0, 200);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY ausente");
+    if (!LOVABLE_API_KEY) return json({ error: "LOVABLE_API_KEY ausente" }, 500);
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -23,94 +36,51 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
             content:
               "Você cria dicas misteriosas e poéticas em PT-BR para um chat de bar/festa. " +
               "A pessoa quer dar pistas sobre si mesma sem se identificar. " +
-              "Gere 3 dicas curtas (máx 80 caracteres cada), divertidas, charmosas, no estilo 'caça ao tesouro'. " +
-              "Nunca inclua links, telefones, emails, nomes próprios, marcas óbvias ou qualquer dado pessoal. " +
-              "Use emojis com moderação.",
+              "Responda APENAS com JSON válido no formato {\"hints\":[\"...\",\"...\",\"...\"]} com exatamente 3 dicas, " +
+              "cada uma com no máximo 80 caracteres, charmosas, estilo caça ao tesouro. " +
+              "Nunca inclua links, telefones, emails, nomes próprios ou marcas óbvias. Emojis com moderação.",
           },
-          {
-            role: "user",
-            content: `Pista bruta da pessoa: "${cleaned}". Gere 3 dicas misteriosas.`,
-          },
+          { role: "user", content: `Pista bruta: "${cleaned}". Gere 3 dicas misteriosas.` },
         ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "return_hints",
-              description: "Retorna 3 dicas misteriosas",
-              parameters: {
-                type: "object",
-                properties: {
-                  hints: {
-                    type: "array",
-                    items: { type: "string", maxLength: 80 },
-                    minItems: 3,
-                    maxItems: 3,
-                  },
-                },
-                required: ["hints"],
-                additionalProperties: false,
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "return_hints" } },
+        response_format: { type: "json_object" },
       }),
     });
 
-    if (resp.status === 429) {
-      return new Response(JSON.stringify({ error: "Muitas requisições, tente novamente em instantes." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (resp.status === 402) {
-      return new Response(JSON.stringify({ error: "Créditos da IA esgotados." }), {
-        status: 402,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (resp.status === 429) return json({ error: "Muitas requisições, tente em instantes." }, 429);
+    if (resp.status === 402) return json({ error: "Créditos da IA esgotados." }, 402);
     if (!resp.ok) {
       const t = await resp.text();
       console.error("gateway error", resp.status, t);
-      return new Response(JSON.stringify({ error: "Erro na IA" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Erro na IA" }, 500);
     }
 
     const data = await resp.json();
-    const args = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+    const content: string = data?.choices?.[0]?.message?.content ?? "";
     let hints: string[] = [];
-    if (args) {
-      try {
-        hints = JSON.parse(args).hints ?? [];
-      } catch {
-        hints = [];
-      }
+    try {
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed?.hints)) hints = parsed.hints;
+    } catch {
+      // fallback: split lines
+      hints = content
+        .split(/\n+/)
+        .map((l) => l.replace(/^[\s\-\d\.\)]+/, "").trim())
+        .filter((l) => l.length > 0)
+        .slice(0, 3);
     }
-    if (!Array.isArray(hints) || hints.length === 0) {
-      return new Response(JSON.stringify({ error: "Não consegui gerar dicas, tente reescrever." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    hints = hints.filter((h) => typeof h === "string" && h.trim().length > 0).slice(0, 3);
+    if (hints.length === 0) return json({ error: "Não consegui gerar dicas, tente reescrever." }, 500);
 
-    return new Response(JSON.stringify({ hints: hints.slice(0, 3) }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ hints });
   } catch (e) {
-    console.error(e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "unknown" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("venue-mystery-hint error", e);
+    return json({ error: e instanceof Error ? e.message : "Erro desconhecido" }, 500);
   }
 });
