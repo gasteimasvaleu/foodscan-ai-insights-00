@@ -179,7 +179,7 @@ export const PostResultCard = ({
 
       {/* Receita IA */}
       {isRecipe && (
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md p-3 space-y-3">
+        <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-3">
           {!recipe ? (
             <Button
               className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-2xl h-11"
