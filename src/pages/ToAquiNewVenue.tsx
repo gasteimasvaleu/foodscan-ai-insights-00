@@ -61,6 +61,47 @@ const ToAquiNewVenue = () => {
     navigate("/to-aqui/owner");
   };
 
+  const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Limite de 5 MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("venue-photos")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+      return;
+    }
+    // Remove anterior se houver
+    if (photoPath) {
+      await supabase.storage.from("venue-photos").remove([photoPath]);
+    }
+    const { data } = supabase.storage.from("venue-photos").getPublicUrl(path);
+    setPhotoPath(path);
+    setForm((f) => ({ ...f, photo_url: data.publicUrl }));
+    setUploading(false);
+  };
+
+  const onRemovePhoto = async () => {
+    if (photoPath) {
+      await supabase.storage.from("venue-photos").remove([photoPath]);
+    }
+    setPhotoPath(null);
+    setForm((f) => ({ ...f, photo_url: "" }));
+  };
+
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
       <Navbar />
