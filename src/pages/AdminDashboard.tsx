@@ -91,6 +91,12 @@ const AdminDashboard = () => {
       path: '/admin/quiz',
     },
     {
+      title: 'Tô Aqui',
+      description: 'Aprovar e moderar venues cadastrados',
+      icon: MapPin,
+      path: '/admin/to-aqui',
+    },
+    {
       title: 'Assinaturas Promocionais',
       description: 'Enviar convites e tokens de acesso por email',
       icon: Tag,
