@@ -796,6 +796,30 @@ export default function ToAquiChat() {
             </div>
           ) : (
             messages.map((m) => {
+              // Mensagem de match revelado (parse do prefixo)
+              if (m.content.startsWith(MATCH_REVEAL_PREFIX)) {
+                const payload = m.content.slice(MATCH_REVEAL_PREFIX.length);
+                const [sAlias, rAlias] = payload.split("|");
+                const isNew = !revealedMessageIds.has(m.id);
+                if (isNew) {
+                  // marca como processada (dispara confete apenas 1x)
+                  setTimeout(() => {
+                    setRevealedMessageIds((prev) => {
+                      const n = new Set(prev);
+                      n.add(m.id);
+                      return n;
+                    });
+                  }, 0);
+                }
+                return (
+                  <MatchRevealBanner
+                    key={m.id}
+                    senderAlias={sAlias || "Anônimo"}
+                    receiverAlias={rAlias || "Anônimo"}
+                    fireConfetti={isNew}
+                  />
+                );
+              }
               const isMine = m.user_id === user.id;
               const info = members[m.user_id];
               const name =
