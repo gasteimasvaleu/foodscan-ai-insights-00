@@ -112,7 +112,8 @@ const ToAquiVenue = () => {
               <div className="grid grid-cols-3 gap-2 mt-4">
                 <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
                   <MessageCircle className="w-5 h-5 text-[#FD46A1] mx-auto mb-1" />
-                  <p className="text-[10px] text-gray-600 uppercase tracking-wide">Chat</p>
+                  <p className="text-xs font-semibold text-gray-800">{onlineCount}</p>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wide">Online</p>
                 </div>
                 <div className="bg-[#FFD1E7] rounded-2xl p-3 text-center">
                   <MapPin className="w-5 h-5 text-[#FD46A1] mx-auto mb-1" />
