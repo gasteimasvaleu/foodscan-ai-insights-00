@@ -1,17 +1,43 @@
-## Adicionar botão de excluir venue em /admin/to-aqui
+## Objetivo
 
-Adicionar um botão "Excluir" em cada card de venue na página `src/pages/AdminToAqui.tsx`, permitindo que o admin remova permanentemente o bar/festa/restaurante.
+O usuário `admin@wediet.app` já tem a role `admin` e as policies de `venues`, `venue_memberships`, `venue_messages`, `venue_presence`, `venue_bans` e `venue_interactions` já permitem acesso total para admin (SELECT/UPDATE/DELETE com `has_role(auth.uid(), 'admin')`).
 
-### Mudanças em `src/pages/AdminToAqui.tsx`
+A única restrição que ainda bloqueia o admin é a trigger `venues_enforce_owner_limit`, que limita qualquer dono a no máximo 3 venues. Vou isentá-la para admins.
 
-1. Importar `Trash2` de `lucide-react` e os componentes `AlertDialog*` de `@/components/ui/alert-dialog`.
-2. Criar uma mutation `deleteMutation`:
-   - `supabase.from("venues").delete().eq("id", id)`
-   - Em `onSuccess`: invalidar `["admin-venues"]` e `["venues"]`, mostrar toast "Venue excluído".
-3. Adicionar um botão vermelho "Excluir" no final da linha de ações (em todas as tabs: pendentes, aprovados e rejeitados), envolvido em um `AlertDialog` de confirmação com o texto: "Tem certeza? Esta ação remove o venue e todos os dados relacionados (chats, presenças, etc) permanentemente."
-4. O `ON DELETE CASCADE` já existente nas tabelas `venue_*` cuida das dependências.
+## Mudança
 
-### Fora de escopo
+Atualizar a função `public.venues_enforce_owner_limit()` para pular a checagem quando `public.has_role(NEW.owner_id, 'admin')` retornar true.
 
-- Sem mudanças de schema/RLS (a policy `venues admin manage` já permite delete para admins).
-- Sem mudanças em outras páginas.
+```sql
+CREATE OR REPLACE FUNCTION public.venues_enforce_owner_limit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+DECLARE
+  _count int;
+BEGIN
+  -- Admin não tem limite
+  IF public.has_role(NEW.owner_id, 'admin') THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT count(*) INTO _count FROM public.venues WHERE owner_id = NEW.owner_id;
+  IF _count >= 3 THEN
+    RAISE EXCEPTION 'venue_limit_reached: cada usuário pode cadastrar no máximo 3 venues';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+```
+
+## O que não muda
+
+- Demais usuários continuam limitados a 3 venues.
+- Policies já cobrem SELECT/UPDATE/DELETE de tudo para admin — nada a mexer.
+- Frontend (`/admin/to-aqui`, criação de venue) já funciona; nenhum código React precisa de alteração.
+
+## Resultado
+
+Após a migração, o admin poderá cadastrar quantos venues quiser e continua com acesso total a venues, mensagens, presenças, interações e bans via as RLS atuais.
