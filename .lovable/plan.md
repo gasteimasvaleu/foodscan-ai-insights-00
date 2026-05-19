@@ -1,26 +1,48 @@
 ## Objetivo
 
-Alinhar `/to-aqui` ao padrão visual do app (mesmo padrão de `/loja`, `/quiz`, etc.): background neutro `bg-background` e card de cabeçalho em gradiente translúcido com ícone em pill.
+Manter `/to-aqui` (listagem + entrada em venue + chat) totalmente pública e gatear apenas o cadastro/gerência de venues atrás do paywall Pro (ProRoute), seguindo o padrão do app.
 
-## Mudanças em `src/pages/ToAqui.tsx`
+## Estado atual em `src/App.tsx`
 
-1. **Background da página**
-   - `bg-[#F7FAFB]` → `bg-background`
-   - Container: trocar `pb-28` por `pb-24 space-y-5` (igual `/loja`)
+```
+/to-aqui                       → ToAqui              (público)
+/to-aqui/venue/:id             → ToAquiVenue         (público)
+/to-aqui/venue/:id/chat        → ToAquiChat          (público)
+/to-aqui/owner                 → ToAquiOwner         (público)  ← deve virar Pro
+/to-aqui/owner/venue/new       → ToAquiNewVenue      (público)  ← deve virar Pro
+```
 
-2. **Card header padrão**
-   - Substituir o bloco atual (título + subtítulo + botão "Meus venues" em outline) por:
-     - Card único: `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
-     - Pill de ícone: `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` com `<MapPin className="w-6 h-6 text-white" />`
-     - Título: `<h1 className="text-lg font-bold text-primary">Tô Aqui</h1>`
-     - Botão "Meus venues" como ícone discreto à direita (`ml-auto`), `variant="ghost"` `size="icon"` com `Settings` em `text-primary` — mantém acesso sem poluir o header.
-   - Envelopar em `<div className="animate-fade-in">`.
+## Mudanças
 
-3. **Resto da página**
-   - Mantém busca, chips de categoria, lista e empty-state. Sem mudanças funcionais.
-   - Trocar cores hex fixas (`#FD46A1`, `#FFD1E7`) por tokens (`primary`, `primary/10`, `primary-foreground`) nos chips e empty-state para coerência total — opcional, mas recomendado.
+### 1. `src/App.tsx` — envolver rotas de owner com `ProRoute`
+
+```tsx
+<Route
+  path="/to-aqui/owner"
+  element={
+    <ProRoute feature="to-aqui-owner">
+      <ToAquiOwner />
+    </ProRoute>
+  }
+/>
+<Route
+  path="/to-aqui/owner/venue/new"
+  element={
+    <ProRoute feature="to-aqui-owner">
+      <ToAquiNewVenue />
+    </ProRoute>
+  }
+/>
+```
+
+`ProRoute` já só efetivamente bloqueia em iOS nativo + free; web/android continuam abrindo normal. Isso mantém a paridade com o resto do app.
+
+### 2. Nada a alterar em `/to-aqui`, `/to-aqui/venue/:id` e `/to-aqui/venue/:id/chat`
+Continuam públicas. Os links internos para "Meus venues" e "Cadastrar venue" passam naturalmente pelo paywall quando o usuário toca neles (sem mudança de UI).
+
+### 3. Sem mudanças de banco
+RLS atual já permite leitura pública de venues e exige `auth.uid()` para criar — o gating Pro é apenas de UX/iOS, sem impacto em policies.
 
 ## Detalhes técnicos
-- Não toca em rotas, hooks ou dados.
-- Mantém Navbar, paddings de safe-area e `max-w-2xl mx-auto`.
-- Sem alterações em backend.
+- `ProRoute` importado de `@/components/ProRoute` (já usado em outras rotas).
+- Sem alteração em hooks, edge functions ou tabelas.
