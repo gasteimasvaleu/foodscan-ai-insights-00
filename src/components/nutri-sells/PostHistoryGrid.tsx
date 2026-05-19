@@ -14,7 +14,7 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
   if (loading) return <p className="text-sm text-muted-foreground text-center py-6">Carregando…</p>;
   if (!posts.length) {
     return (
-      <div className="rounded-3xl bg-[#FFD1E7] p-6 text-center">
+      <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0] pl-5 pr-4 py-6 text-center">
         <p className="text-sm text-muted-foreground">
           Você ainda não salvou nenhum post. Gere e clique em "Salvar".
         </p>
