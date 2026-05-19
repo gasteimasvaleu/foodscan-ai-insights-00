@@ -70,6 +70,7 @@ import ToAqui from "./pages/ToAqui";
 import ToAquiVenue from "./pages/ToAquiVenue";
 import ToAquiOwner from "./pages/ToAquiOwner";
 import ToAquiNewVenue from "./pages/ToAquiNewVenue";
+import ToAquiEditVenue from "./pages/ToAquiEditVenue";
 import ToAquiChat from "./pages/ToAquiChat";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
