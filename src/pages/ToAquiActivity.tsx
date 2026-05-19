@@ -332,7 +332,7 @@ export default function ToAquiActivity() {
       </div>
 
       <AlertDialog open={!!confirmHide} onOpenChange={(o) => !o && setConfirmHide(null)}>
-        <AlertDialogContent className="bg-white/70 backdrop-blur-md">
+        <AlertDialogContent className="bg-white/70 backdrop-blur-md border-2 border-[#FD46A1]/40 rounded-3xl w-[calc(100%-2rem)] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle>Remover essa interação?</AlertDialogTitle>
             <AlertDialogDescription>
