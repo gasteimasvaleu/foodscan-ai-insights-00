@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Users, Settings, Crown, ChevronRight } from "lucide-react";
+import { Search, MapPin, Users, Settings, Crown, ChevronRight, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
+import { WheelPicker } from "@/components/ui/wheel-picker";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { useAuth } from "@/hooks/useAuth";
+
+const ALL_VALUE = "__all__";
 
 const ToAqui = () => {
   const navigate = useNavigate();
@@ -13,7 +23,12 @@ const ToAqui = () => {
   const isPro = subscriptionStatus?.subscribed;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<VenueCategory | null>(null);
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
   const { data: venues = [], isLoading } = useVenues({ search, category });
+
+  const currentCat = VENUE_CATEGORIES.find((c) => c.value === category);
+  const currentLabel = currentCat ? `${currentCat.emoji} ${currentCat.label}` : "Todas as categorias";
 
   return (
     <div className="min-h-screen bg-background pb-24">
