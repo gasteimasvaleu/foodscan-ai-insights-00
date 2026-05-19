@@ -2576,6 +2576,50 @@ export type Database = {
           },
         ]
       }
+      venue_guesses: {
+        Row: {
+          created_at: string
+          dm_conversation_id: string | null
+          guess_text: string
+          id: string
+          receiver_id: string
+          resolved_at: string | null
+          sender_id: string
+          status: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          dm_conversation_id?: string | null
+          guess_text: string
+          id?: string
+          receiver_id: string
+          resolved_at?: string | null
+          sender_id: string
+          status?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          dm_conversation_id?: string | null
+          guess_text?: string
+          id?: string
+          receiver_id?: string
+          resolved_at?: string | null
+          sender_id?: string
+          status?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_guesses_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       venue_interactions: {
         Row: {
           created_at: string

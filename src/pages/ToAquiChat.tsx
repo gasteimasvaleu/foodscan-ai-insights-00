@@ -21,11 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle, Search } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
 import VenueChatOnboardingModal from "@/components/to-aqui/VenueChatOnboardingModal";
+import GuessIdentityDialog from "@/components/to-aqui/GuessIdentityDialog";
+import IncomingGuessDialog, { type IncomingGuess } from "@/components/to-aqui/IncomingGuessDialog";
+import MatchRevealBanner from "@/components/to-aqui/MatchRevealBanner";
 
 const ONBOARDING_KEY = "toAquiChatOnboardingSeen";
+const MATCH_REVEAL_PREFIX = "__match_reveal__:";
 
 interface VenueMsg {
   id: string;
@@ -86,6 +90,12 @@ export default function ToAquiChat() {
   const [hintInput, setHintInput] = useState("");
   const [hintLoading, setHintLoading] = useState(false);
   const [hintSuggestions, setHintSuggestions] = useState<string[]>([]);
+
+  // Guess identity
+  const [guessDialogOpen, setGuessDialogOpen] = useState(false);
+  const [guessTargetId, setGuessTargetId] = useState<string | null>(null);
+  const [incomingGuess, setIncomingGuess] = useState<IncomingGuess | null>(null);
+  const [revealedMessageIds, setRevealedMessageIds] = useState<Set<string>>(new Set());
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
@@ -271,6 +281,55 @@ export default function ToAquiChat() {
       )
       .subscribe();
 
+    // Guesses channel: receber palpites e ouvir resolução dos meus
+    const guessChannel = supabase.channel(`venue-guess-${venueId}-${user.id}`);
+    guessChannel
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "venue_guesses",
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const g = payload.new as { id: string; venue_id: string; sender_id: string; guess_text: string };
+          if (g.venue_id !== venueId) return;
+          await refreshMembers([g.sender_id]);
+          const info = members[g.sender_id];
+          const name =
+            info?.display_mode === "anonymous"
+              ? info.display_alias || "Anônimo"
+              : info?.profile_name || "Alguém";
+          setIncomingGuess({ id: g.id, guess_text: g.guess_text, senderDisplayName: name });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "venue_guesses",
+          filter: `sender_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const g = payload.new as { status: string; venue_id: string };
+          if (g.venue_id !== venueId) return;
+          if (g.status === "correct") {
+            toast({
+              title: "🎉 Você acertou!",
+              description: "Conversa privada aberta. Confira em Atividade.",
+            });
+          } else if (g.status === "wrong") {
+            toast({
+              title: "😅 Errou!",
+              description: "Tente outra vez daqui a 5 minutos.",
+            });
+          }
+        }
+      )
+      .subscribe();
+
     // Contagem inicial de interações novas (recebidas desde última visita à atividade)
     (async () => {
       const seenKey = `toaqui-activity-seen-${venueId}-${user.id}`;
@@ -297,6 +356,7 @@ export default function ToAquiChat() {
       cancelled = true;
       supabase.removeChannel(channel);
       supabase.removeChannel(intChannel);
+      supabase.removeChannel(guessChannel);
       channelRef.current = null;
       if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
       window.clearInterval(dbInterval);
@@ -532,9 +592,43 @@ export default function ToAquiChat() {
                 <span className="text-sm text-gray-800">{it.label}</span>
               </button>
             ))}
+            <button
+              disabled={!!sendingInteraction}
+              onClick={() => {
+                setGuessTargetId(interactionTarget);
+                setInteractionTarget(null);
+                setGuessDialogOpen(true);
+              }}
+              className="col-span-2 flex flex-col items-center gap-2 p-4 rounded-2xl bg-[#FD46A1]/10 border-2 border-[#FD46A1]/30 active:scale-95 transition disabled:opacity-50"
+            >
+              <Search className="w-7 h-7 text-[#FD46A1]" />
+              <span className="text-sm text-gray-800">Já sei quem é você</span>
+              <span className="text-[10px] text-gray-500">Acertou? Vira match revelado 🎉</span>
+            </button>
           </div>
         </DrawerContent>
       </Drawer>
+
+      {/* Guess identity dialogs */}
+      {guessTargetId && (
+        <GuessIdentityDialog
+          open={guessDialogOpen}
+          onClose={() => {
+            setGuessDialogOpen(false);
+            setGuessTargetId(null);
+          }}
+          venueId={venueId!}
+          senderId={user.id}
+          receiverId={guessTargetId}
+          receiverDisplayName={
+            members[guessTargetId]?.display_mode === "anonymous"
+              ? members[guessTargetId]?.display_alias || "essa pessoa"
+              : members[guessTargetId]?.profile_name || "essa pessoa"
+          }
+        />
+      )}
+      <IncomingGuessDialog guess={incomingGuess} onClose={() => setIncomingGuess(null)} />
+
 
       {/* Mystery hint dialog */}
       <Dialog open={hintOpen} onOpenChange={(o) => { setHintOpen(o); if (!o) { setHintInput(""); setHintSuggestions([]); } }}>
@@ -723,6 +817,30 @@ export default function ToAquiChat() {
             </div>
           ) : (
             messages.map((m) => {
+              // Mensagem de match revelado (parse do prefixo)
+              if (m.content.startsWith(MATCH_REVEAL_PREFIX)) {
+                const payload = m.content.slice(MATCH_REVEAL_PREFIX.length);
+                const [sAlias, rAlias] = payload.split("|");
+                const isNew = !revealedMessageIds.has(m.id);
+                if (isNew) {
+                  // marca como processada (dispara confete apenas 1x)
+                  setTimeout(() => {
+                    setRevealedMessageIds((prev) => {
+                      const n = new Set(prev);
+                      n.add(m.id);
+                      return n;
+                    });
+                  }, 0);
+                }
+                return (
+                  <MatchRevealBanner
+                    key={m.id}
+                    senderAlias={sAlias || "Anônimo"}
+                    receiverAlias={rAlias || "Anônimo"}
+                    fireConfetti={isNew}
+                  />
+                );
+              }
               const isMine = m.user_id === user.id;
               const info = members[m.user_id];
               const name =
