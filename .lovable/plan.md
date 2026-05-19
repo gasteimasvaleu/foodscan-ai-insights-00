@@ -1,19 +1,23 @@
-## Objetivo
+## Padronizar página de editar venue
 
-Em `/to-aqui`, quando o usuário for Pro, substituir o card de upsell ("Adicione seu bar...") por um card equivalente que leva para `/to-aqui/owner` (cadastro e administração de venues).
+Atualizar `src/pages/ToAquiEditVenue.tsx` para seguir o mesmo padrão visual de `ToAquiOwner.tsx`.
 
-## Mudança
+### Mudanças
 
-Arquivo: `src/pages/ToAqui.tsx`
+1. **Background** — trocar `bg-[#F7FAFB]` por `bg-background` (mesmo de `ToAquiOwner`) e também na tela de loading/erro.
 
-- Remover o gate `!isPro` do card atual.
-- Renderizar **sempre** um card no mesmo slot, com conteúdo condicional:
-  - **Não Pro** → texto "Adicione seu bar, restaurante ou festa" + subtítulo "Seja Pro para divulgar seu local no Tô Aqui", clique vai para `/assinar?reason=to_aqui_owner_upsell` (comportamento atual).
-  - **Pro** → texto "Meus venues" + subtítulo "Cadastre e administre seus locais", clique vai para `/to-aqui/owner`.
-- Manter o mesmo visual (gradiente rosa #FD46A1, ícone Crown, ChevronRight, animação) para consistência.
-- Remover o `<Link to="/to-aqui/owner">` vazio que está dentro do header (botão sem ícone/label, atualmente inútil).
+2. **Header em card** — substituir o bloco atual:
+   ```
+   <Button ghost> ArrowLeft </Button>
+   <h1>Editar venue</h1>
+   ```
+   pelo padrão do `ToAquiOwner`:
+   - Wrapper `animate-fade-in mb-4`
+   - Card com `bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3`
+   - Ícone à esquerda: `Pencil` (lucide) em caixinha `bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg` com `text-white`
+   - Título `text-lg font-bold text-primary`: "Editar venue"
+   - Botão voltar `ArrowLeft` com `ml-auto text-primary hover:bg-white/40 rounded-full` navegando para `/to-aqui/owner`
 
-## Fora de escopo
+3. **Borda rosa no card de informações** — no `<form>`, trocar `bg-white rounded-3xl p-5 shadow-sm` por `bg-white rounded-3xl p-5 shadow-sm border border-[#FD46A1]/30` (mesma cor/opacidade já usada em outros cards do Tô Aqui).
 
-- Nenhuma alteração em rotas, `ProRoute`, hooks de assinatura ou na página `/to-aqui/owner`.
-- Sem mudanças de backend.
+Sem alterações de lógica, hooks, upload de foto ou submit.
