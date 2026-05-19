@@ -39,7 +39,17 @@ export default function MatchRevealBanner({
 
   useEffect(() => {
     if (!fireConfetti || fired.current) return;
+    const confettiKey = `to-aqui:match-reveal-confetti:${messageId}`;
+    try {
+      if (localStorage.getItem(confettiKey) === "1") {
+        fired.current = true;
+        return;
+      }
+    } catch {}
     fired.current = true;
+    try {
+      localStorage.setItem(confettiKey, "1");
+    } catch {}
     const end = Date.now() + 1500;
     const colors = ["#FD46A1", "#FFD1E7", "#ffffff"];
     (function frame() {
@@ -47,7 +57,7 @@ export default function MatchRevealBanner({
       confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors });
       if (Date.now() < end) requestAnimationFrame(frame);
     })();
-  }, [fireConfetti]);
+  }, [fireConfetti, messageId]);
 
   const dismiss = () => {
     try {
