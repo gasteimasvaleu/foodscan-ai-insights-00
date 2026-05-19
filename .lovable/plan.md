@@ -1,43 +1,40 @@
-## Objetivo
+## Ideia
 
-O usuário `admin@wediet.app` já tem a role `admin` e as policies de `venues`, `venue_memberships`, `venue_messages`, `venue_presence`, `venue_bans` e `venue_interactions` já permitem acesso total para admin (SELECT/UPDATE/DELETE com `has_role(auth.uid(), 'admin')`).
+Ótima sugestão. Hoje quem entra no chat de um venue não tem nenhuma pista visual de que pode tocar no avatar de outro usuário para enviar uma paquera, drink, mesa ou conta — e que dois envios mútuos viram match e abrem uma DM. Um modal de boas-vindas resolve isso.
 
-A única restrição que ainda bloqueia o admin é a trigger `venues_enforce_owner_limit`, que limita qualquer dono a no máximo 3 venues. Vou isentá-la para admins.
+## Comportamento
 
-## Mudança
+- Exibir 1× por usuário ao entrar em qualquer `/to-aqui/venue/:id/chat`.
+- Persistência da flag em `localStorage` (`toAquiChatOnboardingSeen=true`) — sem migração de banco.
+- Botão "Entendi" fecha e marca como visto. Link discreto "Ver de novo" no header do chat (ícone de ajuda `HelpCircle`) reabre quando quiser.
 
-Atualizar a função `public.venues_enforce_owner_limit()` para pular a checagem quando `public.has_role(NEW.owner_id, 'admin')` retornar true.
+## Conteúdo do modal
 
-```sql
-CREATE OR REPLACE FUNCTION public.venues_enforce_owner_limit()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path TO 'public'
-AS $$
-DECLARE
-  _count int;
-BEGIN
-  -- Admin não tem limite
-  IF public.has_role(NEW.owner_id, 'admin') THEN
-    RETURN NEW;
-  END IF;
+Título: "Como funciona o chat do local"
 
-  SELECT count(*) INTO _count FROM public.venues WHERE owner_id = NEW.owner_id;
-  IF _count >= 3 THEN
-    RAISE EXCEPTION 'venue_limit_reached: cada usuário pode cadastrar no máximo 3 venues';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-```
+3 passos curtos com ícone + texto:
+1. 👤 **Toque no avatar** de qualquer pessoa para abrir as ações.
+2. 💘🍹🪑💸 **Envie uma paquera, drink, mesa ou conta** — discreto e sem mensagem.
+3. ✨ **Match!** Quando alguém retribuir a mesma ação, abre uma conversa privada (DM).
 
-## O que não muda
+Rodapé: aviso de respeito + botão "Entendi".
 
-- Demais usuários continuam limitados a 3 venues.
-- Policies já cobrem SELECT/UPDATE/DELETE de tudo para admin — nada a mexer.
-- Frontend (`/admin/to-aqui`, criação de venue) já funciona; nenhum código React precisa de alteração.
+## Visual
 
-## Resultado
+- Componente `VenueChatOnboardingModal.tsx` em `src/components/to-aqui/`.
+- `Dialog` shadcn com glassmorphism (`bg-white/80 backdrop-blur-md`, `rounded-3xl`) seguindo o padrão do app.
+- Ícones via `lucide-react` + emojis das interações já definidas em `INTERACTIONS`.
+- Botão "Entendi" com `bg-[#FD46A1]`.
 
-Após a migração, o admin poderá cadastrar quantos venues quiser e continua com acesso total a venues, mensagens, presenças, interações e bans via as RLS atuais.
+## Arquivos
+
+- **Novo**: `src/components/to-aqui/VenueChatOnboardingModal.tsx`
+- **Editar**: `src/pages/ToAquiChat.tsx`
+  - Estado `showOnboarding` inicializado a partir do localStorage no primeiro render.
+  - Botão `HelpCircle` no header próximo ao "Voltar" para reabrir.
+  - Renderizar o modal no final do JSX.
+
+## O que NÃO muda
+
+- Nenhuma mudança de banco, RLS ou edge function.
+- Lógica de interações/match permanece intocada.
