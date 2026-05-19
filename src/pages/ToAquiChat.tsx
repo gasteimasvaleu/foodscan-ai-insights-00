@@ -11,9 +11,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
 
 interface VenueMsg {
@@ -33,6 +41,15 @@ interface MemberInfo {
 const PAGE_SIZE = 50;
 const PRESENCE_INTERVAL_MS = 60_000;
 
+const INTERACTIONS = [
+  { type: "flirt", emoji: "💘", label: "Paquera" },
+  { type: "drink", emoji: "🍹", label: "Oferecer drink" },
+  { type: "sit_table", emoji: "🪑", label: "Convidar pra mesa" },
+  { type: "pay_bill", emoji: "💸", label: "Pagar sua conta" },
+] as const;
+
+type InteractionType = (typeof INTERACTIONS)[number]["type"];
+
 export default function ToAquiChat() {
   const { id: venueId } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -49,6 +66,17 @@ export default function ToAquiChat() {
   const [identityMode, setIdentityMode] = useState<"real" | "anonymous">("real");
   const [identityAlias, setIdentityAlias] = useState("");
   const [joining, setJoining] = useState(false);
+
+  // Interactions drawer
+  const [interactionTarget, setInteractionTarget] = useState<string | null>(null);
+  const [sendingInteraction, setSendingInteraction] = useState<InteractionType | null>(null);
+
+  // Mystery hint dialog
+  const [hintOpen, setHintOpen] = useState(false);
+  const [hintInput, setHintInput] = useState("");
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintSuggestions, setHintSuggestions] = useState<string[]>([]);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const heartbeatRef = useRef<number | null>(null);
@@ -85,7 +113,6 @@ export default function ToAquiChat() {
           avatar_url: profMap[m.user_id]?.avatar_url ?? null,
         };
       });
-      // Fallback for users without membership row (shouldn't happen but safe)
       missing.forEach((id) => {
         if (!next[id]) {
           next[id] = {
@@ -101,7 +128,7 @@ export default function ToAquiChat() {
     [members, venueId]
   );
 
-  // Check membership; show identity dialog if missing
+  // Membership check
   useEffect(() => {
     if (!user || !venueId) return;
     (async () => {
@@ -118,7 +145,7 @@ export default function ToAquiChat() {
     })();
   }, [user, venueId]);
 
-  // Load messages + subscribe once we have membership
+  // Messages + presence
   useEffect(() => {
     if (!user || !venueId || needIdentity) return;
     let cancelled = false;
@@ -145,7 +172,6 @@ export default function ToAquiChat() {
       setTimeout(scrollToBottom, 50);
     })();
 
-    // Presence heartbeat
     const upsertPresence = async () => {
       await supabase
         .from("venue_presence")
@@ -157,7 +183,6 @@ export default function ToAquiChat() {
     upsertPresence();
     heartbeatRef.current = window.setInterval(upsertPresence, PRESENCE_INTERVAL_MS);
 
-    // Realtime channel: messages + presence sync via venue_presence postgres_changes + supabase presence
     const channel = supabase.channel(`venue-${venueId}`, {
       config: { presence: { key: user.id } },
     });
@@ -183,7 +208,55 @@ export default function ToAquiChat() {
       });
     channelRef.current = channel;
 
-    // Refresh online count from DB periodically (fallback if presence misses)
+    // Interactions channel (received + match notifications)
+    const intChannel = supabase.channel(`venue-int-${venueId}-${user.id}`);
+    intChannel
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "venue_interactions",
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const it = payload.new as { type: string; venue_id: string };
+          if (it.venue_id !== venueId) return;
+          const meta = INTERACTIONS.find((i) => i.type === it.type);
+          if (!meta) return;
+          toast({
+            title: `${meta.emoji} Alguém te mandou: ${meta.label}!`,
+            description: "Retribua o sinal — se rolar match, abre a conversa.",
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "venue_interactions",
+          filter: `sender_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const it = payload.new as { dm_conversation_id: string | null; venue_id: string };
+          if (it.venue_id !== venueId || !it.dm_conversation_id) return;
+          toast({
+            title: "🎉 Vocês deram match!",
+            description: "Abrir conversa privada?",
+            action: (
+              <button
+                onClick={() => navigate(`/comunidade/dm/${it.dm_conversation_id}`)}
+                className="bg-[#FD46A1] text-white px-3 py-1.5 rounded-full text-xs font-medium"
+              >
+                Abrir
+              </button>
+            ) as any,
+          });
+        }
+      )
+      .subscribe();
+
     const fetchOnlineDb = async () => {
       const { data: oc } = await supabase.rpc("get_venue_online_count", { _venue_id: venueId });
       if (typeof oc === "number") {
@@ -196,10 +269,10 @@ export default function ToAquiChat() {
     return () => {
       cancelled = true;
       supabase.removeChannel(channel);
+      supabase.removeChannel(intChannel);
       channelRef.current = null;
       if (heartbeatRef.current) window.clearInterval(heartbeatRef.current);
       window.clearInterval(dbInterval);
-      // Best-effort presence cleanup
       supabase
         .from("venue_presence")
         .delete()
@@ -236,8 +309,8 @@ export default function ToAquiChat() {
     setNeedIdentity(false);
   };
 
-  const send = async () => {
-    const text = input.trim();
+  const send = async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
     if (!text || !user || !venueId || sending) return;
     if (text.length > 500) {
       toast({ title: "Mensagem muito longa", description: "Máximo 500 caracteres.", variant: "destructive" });
@@ -265,7 +338,64 @@ export default function ToAquiChat() {
       );
       setTimeout(scrollToBottom, 50);
     }
-    setInput("");
+    if (!overrideText) setInput("");
+  };
+
+  const sendInteraction = async (type: InteractionType) => {
+    if (!user || !venueId || !interactionTarget || sendingInteraction) return;
+    setSendingInteraction(type);
+    const { error } = await supabase.from("venue_interactions").insert({
+      venue_id: venueId,
+      sender_id: user.id,
+      receiver_id: interactionTarget,
+      type,
+    });
+    setSendingInteraction(null);
+    if (error) {
+      const msg = error.message || "";
+      let friendly = "Não foi possível enviar o sinal";
+      if (msg.includes("rate_limit")) friendly = "Limite de 20 interações por hora atingido.";
+      else if (msg.includes("cooldown")) friendly = "Aguarde alguns segundos antes de enviar de novo.";
+      toast({ title: "Erro", description: friendly, variant: "destructive" });
+      return;
+    }
+    const meta = INTERACTIONS.find((i) => i.type === type)!;
+    toast({
+      title: `${meta.emoji} Sinal enviado!`,
+      description: "É anônimo. Se a pessoa retribuir, vocês dão match 💞",
+    });
+    setInteractionTarget(null);
+  };
+
+  const generateHints = async () => {
+    const text = hintInput.trim();
+    if (text.length < 3) {
+      toast({ title: "Escreva uma pista", description: "Mínimo 3 caracteres.", variant: "destructive" });
+      return;
+    }
+    setHintLoading(true);
+    setHintSuggestions([]);
+    const { data, error } = await supabase.functions.invoke("venue-mystery-hint", {
+      body: { raw_hint: text },
+    });
+    setHintLoading(false);
+    if (error || !data?.hints) {
+      toast({
+        title: "Erro ao gerar dicas",
+        description: (data as any)?.error || error?.message || "Tente novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setHintSuggestions(data.hints);
+  };
+
+  const pickHint = async (hint: string) => {
+    const prefixed = `🔮 Dica misteriosa: ${hint}`;
+    setHintOpen(false);
+    setHintInput("");
+    setHintSuggestions([]);
+    await send(prefixed);
   };
 
   if (authLoading || !user) {
@@ -276,15 +406,21 @@ export default function ToAquiChat() {
     );
   }
 
+  const targetInfo = interactionTarget ? members[interactionTarget] : null;
+  const targetName =
+    targetInfo?.display_mode === "anonymous"
+      ? targetInfo.display_alias || "Anônimo"
+      : targetInfo?.profile_name || "Usuário";
+  const targetIsAnon = targetInfo?.display_mode === "anonymous";
+
   return (
     <>
+      {/* Identity dialog */}
       <Dialog open={needIdentity} onOpenChange={(o) => !o && navigate(-1)}>
         <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-[#FD46A1]">Como você quer aparecer?</DialogTitle>
-            <DialogDescription>
-              Essa escolha vale só para este venue.
-            </DialogDescription>
+            <DialogDescription>Essa escolha vale só para este venue.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <button
@@ -329,6 +465,99 @@ export default function ToAquiChat() {
         </DialogContent>
       </Dialog>
 
+      {/* Interactions drawer */}
+      <Drawer open={!!interactionTarget} onOpenChange={(o) => !o && setInteractionTarget(null)}>
+        <DrawerContent className="bg-white/70 backdrop-blur-md border-2 border-primary max-w-md mx-auto rounded-t-2xl">
+          <DrawerHeader>
+            <div className="flex items-center gap-3 justify-center">
+              <div className="w-12 h-12 rounded-full bg-[#FFD1E7] flex items-center justify-center overflow-hidden">
+                {!targetIsAnon && targetInfo?.avatar_url ? (
+                  <img src={targetInfo.avatar_url} alt={targetName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-lg font-bold text-[#FD46A1]">
+                    {targetIsAnon ? "?" : targetName.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="text-left">
+                <DrawerTitle className="text-[#FD46A1]">{targetName}</DrawerTitle>
+                <DrawerDescription className="text-xs">
+                  Sinal anônimo. Se retribuído, vira match 💞
+                </DrawerDescription>
+              </div>
+            </div>
+          </DrawerHeader>
+          <div className="grid grid-cols-2 gap-3 p-4 pb-8">
+            {INTERACTIONS.map((it) => (
+              <button
+                key={it.type}
+                disabled={!!sendingInteraction}
+                onClick={() => sendInteraction(it.type)}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-[#FFD1E7] active:scale-95 transition disabled:opacity-50"
+              >
+                <span className="text-3xl">
+                  {sendingInteraction === it.type ? (
+                    <Loader2 className="w-7 h-7 animate-spin text-[#FD46A1]" />
+                  ) : (
+                    it.emoji
+                  )}
+                </span>
+                <span className="text-sm text-gray-800">{it.label}</span>
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Mystery hint dialog */}
+      <Dialog open={hintOpen} onOpenChange={(o) => { setHintOpen(o); if (!o) { setHintInput(""); setHintSuggestions([]); } }}>
+        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-[#FD46A1] flex items-center gap-2">
+              <Sparkles className="w-5 h-5" /> Dica misteriosa via IA
+            </DialogTitle>
+            <DialogDescription>
+              Escreva pistas sobre você. A IA cria 3 dicas charmosas e anônimas pra mandar no chat.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <Textarea
+              value={hintInput}
+              onChange={(e) => setHintInput(e.target.value)}
+              maxLength={200}
+              rows={3}
+              placeholder="Camisa preta na mesa do canto, fã de rock, sotaque mineiro..."
+              className="text-base resize-none"
+            />
+            <Button
+              onClick={generateHints}
+              disabled={hintLoading || hintInput.trim().length < 3}
+              className="w-full rounded-full bg-[#FD46A1] hover:bg-[#FD46A1]/90"
+            >
+              {hintLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <><Sparkles className="w-4 h-4 mr-2" /> Gerar com IA</>
+              )}
+            </Button>
+            {hintSuggestions.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <p className="text-xs text-gray-600">Toque numa pra enviar no chat:</p>
+                {hintSuggestions.map((h, i) => (
+                  <button
+                    key={i}
+                    onClick={() => pickHint(h)}
+                    className="w-full text-left p-3 rounded-2xl border-2 border-[#FFD1E7] hover:border-[#FD46A1] bg-white transition"
+                  >
+                    <span className="text-sm text-gray-800">🔮 {h}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="fixed inset-0 flex flex-col bg-[#F7FAFB]">
         <div
           className="flex items-center gap-3 px-4 py-3 border-b bg-white shadow-sm shrink-0"
@@ -344,6 +573,15 @@ export default function ToAquiChat() {
               {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
             </p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setHintOpen(true)}
+            aria-label="Dica misteriosa via IA"
+            className="text-[#FD46A1]"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => navigate(`/to-aqui/venue/${venueId}`)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -372,23 +610,33 @@ export default function ToAquiChat() {
               return (
                 <div key={m.id} className={`flex gap-2 ${isMine ? "justify-end" : "justify-start"}`}>
                   {!isMine && (
-                    <div className="shrink-0 w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center overflow-hidden">
+                    <button
+                      onClick={() => setInteractionTarget(m.user_id)}
+                      aria-label={`Interagir com ${name}`}
+                      className="shrink-0 w-8 h-8 rounded-full bg-[#FFD1E7] flex items-center justify-center overflow-hidden active:scale-95 transition"
+                    >
                       {!isAnon && info?.avatar_url ? (
                         <img src={info.avatar_url} alt={name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-xs font-bold text-[#FD46A1]">{isAnon ? "?" : initials}</span>
                       )}
-                    </div>
+                    </button>
                   )}
                   <div className={`max-w-[78%] flex flex-col ${isMine ? "items-end" : "items-start"}`}>
                     {!isMine && (
-                      <span className="text-[11px] text-gray-500 mb-0.5 px-1">{name}</span>
+                      <button
+                        onClick={() => setInteractionTarget(m.user_id)}
+                        className="text-[11px] text-gray-500 mb-0.5 px-1 hover:text-[#FD46A1] transition"
+                      >
+                        {name}
+                      </button>
                     )}
                     <div
+                      onClick={() => !isMine && setInteractionTarget(m.user_id)}
                       className={`rounded-2xl px-3 py-2 text-base break-words [overflow-wrap:anywhere] ${
                         isMine
                           ? "bg-[#FD46A1] text-white rounded-br-md"
-                          : "bg-[#FFD1E7] text-gray-800 rounded-bl-md"
+                          : "bg-[#FFD1E7] text-gray-800 rounded-bl-md cursor-pointer"
                       }`}
                     >
                       {m.content}
@@ -405,6 +653,16 @@ export default function ToAquiChat() {
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
         >
           <div className="flex gap-2 items-end">
+            <Button
+              type="button"
+              onClick={() => setHintOpen(true)}
+              size="icon"
+              variant="outline"
+              className="rounded-full h-11 w-11 shrink-0 border-[#FD46A1] text-[#FD46A1]"
+              aria-label="Dica misteriosa via IA"
+            >
+              <Sparkles className="w-4 h-4" />
+            </Button>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -422,7 +680,7 @@ export default function ToAquiChat() {
               style={{ minHeight: "42px" }}
             />
             <Button
-              onClick={send}
+              onClick={() => send()}
               disabled={!input.trim() || sending || needIdentity}
               size="icon"
               className="rounded-full h-11 w-11 shrink-0 bg-[#FD46A1] hover:bg-[#FD46A1]/90"
