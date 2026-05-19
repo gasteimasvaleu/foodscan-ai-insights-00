@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, MapPin, Users, Settings } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, MapPin, Users, Settings, Crown, ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const ToAqui = () => {
+  const navigate = useNavigate();
+  const { subscriptionStatus } = useAuth();
+  const isPro = subscriptionStatus?.subscribed;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<VenueCategory | null>(null);
   const { data: venues = [], isLoading } = useVenues({ search, category });
