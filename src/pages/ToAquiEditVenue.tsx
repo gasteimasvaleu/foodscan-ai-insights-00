@@ -60,6 +60,21 @@ const ToAquiEditVenue = () => {
 
   const isOwner = !!user && !!venue && venue.owner_id === user.id;
 
+  const handleDelete = async () => {
+    if (!isOwner || !id || !user) return;
+    setDeleting(true);
+    const { error } = await supabase.from("venues").delete().eq("id", id);
+    setDeleting(false);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["venues", "mine", user.id] });
+    qc.invalidateQueries({ queryKey: ["venues", "approved"] });
+    toast({ title: "Venue excluído" });
+    navigate("/to-aqui/owner");
+  };
+
   const onPickPhoto = async (file: File) => {
     if (!file || !user) return;
     if (!file.type.startsWith("image/")) {
