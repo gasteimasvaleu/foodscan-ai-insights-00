@@ -846,7 +846,11 @@ export default function ToAquiChat() {
                     senderAlias={sAlias || "Anônimo"}
                     receiverAlias={rAlias || "Anônimo"}
                     fireConfetti={isNew}
+                    venueId={venueId}
+                    currentUserId={user.id}
+                    messageSenderId={m.user_id}
                   />
+
                 );
               }
               const isMine = m.user_id === user.id;
