@@ -225,6 +225,7 @@ export default function ToAquiChat() {
           if (it.venue_id !== venueId) return;
           const meta = INTERACTIONS.find((i) => i.type === it.type);
           if (!meta) return;
+          setNewInteractionsCount((c) => c + 1);
           toast({
             title: `${meta.emoji} Alguém te mandou: ${meta.label}!`,
             description: "Retribua o sinal — se rolar match, abre a conversa.",
