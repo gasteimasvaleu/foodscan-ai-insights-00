@@ -31,8 +31,8 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
   return (
     <div className="space-y-3">
       {posts.map((p) => (
-        <div key={p.id} className="rounded-3xl bg-[#FFD1E7] p-3 flex gap-3">
-          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/70 flex-shrink-0">
+        <div key={p.id} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0] pl-5 pr-3 py-3 flex gap-3">
+          <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#FFD1E7]/30 border border-[#FD46A1]/15 flex-shrink-0">
             {p.image_url ? (
               <img src={p.image_url} alt="" className="w-full h-full object-cover" />
             ) : null}
