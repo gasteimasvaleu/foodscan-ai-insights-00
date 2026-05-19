@@ -119,16 +119,23 @@ export default function NutricionistaQueVende() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4">
-      <div className="max-w-xl mx-auto space-y-4">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-bold text-[#FD46A1]">Nutricionista que Vende</h1>
-          <p className="text-sm text-muted-foreground">
-            Gere posts profissionais para o Instagram. Baixe a imagem, copie a legenda e cole direto no app do Instagram.
-          </p>
-        </header>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28 px-4">
+        <div className="max-w-xl mx-auto space-y-4">
+          <div className="animate-fade-in">
+            <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
+                <Megaphone className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-[#FD46A1]">Nutricionista que Vende</h1>
+            </div>
+            <p className="text-sm text-muted-foreground px-1 mt-2">
+              Gere posts profissionais para o Instagram. Baixe a imagem, copie a legenda e cole direto no app do Instagram.
+            </p>
+          </div>
 
-        <Tabs defaultValue="criar">
+          <Tabs defaultValue="criar">
           <TabsList className="grid w-full grid-cols-3 bg-[#FFD1E7]/50 rounded-2xl">
             <TabsTrigger value="criar" className="rounded-xl">Criar</TabsTrigger>
             <TabsTrigger value="ideias" className="rounded-xl">Ideias</TabsTrigger>
