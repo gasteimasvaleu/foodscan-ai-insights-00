@@ -77,7 +77,7 @@ export default function ToAquiActivity() {
       setLoading(true);
       const { data, error } = await supabase
         .from("venue_interactions")
-        .select("id, sender_id, receiver_id, type, created_at, dm_conversation_id")
+        .select("id, sender_id, receiver_id, type, created_at, dm_conversation_id, hidden_for_sender, hidden_for_receiver")
         .eq("venue_id", venueId)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order("created_at", { ascending: false })
