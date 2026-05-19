@@ -110,6 +110,7 @@ const Index = () => {
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-6">
             <AuthCard />
+            <ToAquiPromoCard />
             <NoveltyCard />
             <HeroDeckRow />
             <SecondaryDeckRow />
