@@ -4,6 +4,7 @@ import { Trash2, Copy, Download, ChevronLeft, ChevronRight } from "lucide-react"
 import { GeneratedPost } from "@/hooks/useGeneratedPosts";
 import { copyToClipboard, downloadImage } from "@/lib/socialShare";
 import { toast } from "@/hooks/use-toast";
+import { PostDetailModal } from "./PostDetailModal";
 import {
   format,
   startOfMonth,
@@ -35,6 +36,7 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
   const today = useMemo(() => new Date(), []);
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
   const [selectedDay, setSelectedDay] = useState<Date>(today);
+  const [openPost, setOpenPost] = useState<GeneratedPost | null>(null);
 
   const postsByDay = useMemo(() => {
     const map = new Map<string, GeneratedPost[]>();
@@ -155,7 +157,12 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
           </div>
         ) : (
           dayPosts.map((p) => (
-            <div key={p.id} className={`${CARD_WRAPPER} pl-5 pr-3 py-3 flex gap-3`}>
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setOpenPost(p)}
+              className={`${CARD_WRAPPER} pl-5 pr-3 py-3 flex gap-3 text-left w-full hover:bg-white transition-colors`}
+            >
               <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#FFD1E7]/30 border border-[#FD46A1]/15 flex-shrink-0">
                 {p.image_url ? (
                   <img src={p.image_url} alt="" className="w-full h-full object-cover" />
@@ -167,29 +174,38 @@ export const PostHistoryGrid = ({ posts, loading, onDelete }: Props) => {
                   {format(new Date(p.created_at), "HH:mm", { locale: ptBR })} • {p.post_type}
                 </p>
                 <div className="flex gap-1 pt-1">
-                  <Button size="sm" variant="ghost" className="h-8 px-2" onClick={() => handleCopy(p)}>
+                  <Button
+                    size="sm" variant="ghost" className="h-8 px-2"
+                    onClick={(e) => { e.stopPropagation(); handleCopy(p); }}
+                  >
                     <Copy className="w-3.5 h-3.5" />
                   </Button>
                   {p.image_url && (
                     <Button
                       size="sm" variant="ghost" className="h-8 px-2"
-                      onClick={() => downloadImage(p.image_url!, `post-${p.id}.png`)}
+                      onClick={(e) => { e.stopPropagation(); downloadImage(p.image_url!, `post-${p.id}.png`); }}
                     >
                       <Download className="w-3.5 h-3.5" />
                     </Button>
                   )}
                   <Button
                     size="sm" variant="ghost" className="h-8 px-2 text-destructive ml-auto"
-                    onClick={() => onDelete(p.id)}
+                    onClick={(e) => { e.stopPropagation(); onDelete(p.id); }}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
-            </div>
+            </button>
           ))
         )}
       </div>
+
+      <PostDetailModal
+        post={openPost}
+        onOpenChange={(o) => !o && setOpenPost(null)}
+        onDelete={(id) => { onDelete(id); setOpenPost(null); }}
+      />
     </div>
   );
 };
