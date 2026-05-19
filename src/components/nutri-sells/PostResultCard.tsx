@@ -126,7 +126,7 @@ export const PostResultCard = ({
       <h2 className="text-base text-foreground">Seu post</h2>
 
       {/* Imagem */}
-      <div className={`relative ${isVertical ? "aspect-[9/16] max-w-[280px] mx-auto" : "aspect-square"} w-full rounded-2xl overflow-hidden bg-white/70 backdrop-blur-md flex items-center justify-center`}>
+      <div className={`relative ${isVertical ? "aspect-[9/16] max-w-[280px] mx-auto" : "aspect-square"} w-full rounded-xl overflow-hidden bg-[#FFD1E7]/30 border border-[#FD46A1]/15 flex items-center justify-center`}>
         {loadingImage ? (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Loader2 className="w-8 h-8 animate-spin text-[#FD46A1]" />
