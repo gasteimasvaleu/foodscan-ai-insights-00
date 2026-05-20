@@ -48,9 +48,37 @@ const MercadoFacilIndex = () => {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return [];
-    return produtos.filter((p) => p.nome.toLowerCase().includes(q));
-  }, [search, produtos]);
+    let arr = produtos;
+    if (q) arr = arr.filter((p) => p.nome.toLowerCase().includes(q));
+    if (quickFilter === "ofertas" || quickFilter === "promocoes") {
+      arr = arr.filter((p) => p.preco_promo_centavos != null);
+    } else if (quickFilter === "menor_preco") {
+      arr = [...arr].sort((a, b) => (a.preco_promo_centavos ?? a.preco_centavos) - (b.preco_promo_centavos ?? b.preco_centavos));
+    } else if (quickFilter === "novidades") {
+      arr = [...arr].sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+    }
+    return arr;
+  }, [search, produtos, quickFilter]);
+
+  const quickButtons: { id: Exclude<QuickFilter, null>; label: string }[] = [
+    { id: "ofertas", label: "Ofertas do Dia" },
+    { id: "menor_preco", label: "Menor Preço" },
+    { id: "promocoes", label: "Promoções" },
+    { id: "novidades", label: "Novidades" },
+  ];
+
+  const handleSaveLocalizacao = (val: string) => {
+    setLocalizacao(val);
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      const cur = raw ? JSON.parse(raw) : {};
+      const [cidade, ...rest] = val.split(" — ");
+      localStorage.setItem(ADDRESS_KEY, JSON.stringify({ ...cur, cidade: cidade ?? val, endereco: rest.join(" — ") || cur.endereco || "" }));
+    } catch {}
+  };
+
+  const showFiltered = !!search.trim() || quickFilter !== null;
+
 
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
