@@ -12,17 +12,10 @@ export const QuickActions = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const hasAnimated = sessionStorage.getItem('quickActionsAnimated');
-    if (hasAnimated) {
-      setIsVisible(true);
-      return;
-    }
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setIsVisible(true);
-        sessionStorage.setItem('quickActionsAnimated', 'true');
-      });
+    const raf1 = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setIsVisible(true));
     });
+    return () => cancelAnimationFrame(raf1);
   }, []);
 
   if (!user) return null;
