@@ -1,6 +1,6 @@
 import { openExternalUrl } from "@/lib/openExternal";
 import { supabase } from "@/integrations/supabase/client";
-import { cleanPhone, formatBRL } from "./formatters";
+import { cleanPhone, formatBRL, normalizeCidade } from "./formatters";
 import type { MFCartItem, MFLoja } from "./types";
 import type { MFEntregador } from "./entregador-types";
 
