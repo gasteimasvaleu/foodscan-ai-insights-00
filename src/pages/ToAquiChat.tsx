@@ -934,33 +934,20 @@ export default function ToAquiChat() {
               variant="outline"
               className="rounded-full h-11 w-11 shrink-0 border-[#FD46A1] text-[#FD46A1]"
               aria-label="Dica misteriosa via IA"
+              disabled={needIdentity}
             >
               <Sparkles className="w-4 h-4" />
             </Button>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  send();
-                }
-              }}
-              placeholder="Mensagem..."
-              rows={1}
-              maxLength={500}
-              disabled={needIdentity}
-              className="flex-1 min-w-0 resize-none rounded-2xl border border-input bg-background px-4 py-2.5 text-base placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FD46A1] max-h-28"
-              style={{ minHeight: "42px" }}
-            />
-            <Button
-              onClick={() => send()}
-              disabled={!input.trim() || sending || needIdentity}
-              size="icon"
-              className="rounded-full h-11 w-11 shrink-0 bg-[#FD46A1] hover:bg-[#FD46A1]/90"
-            >
-              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </Button>
+            <div className="flex-1 min-w-0">
+              <ChatInputBar
+                onSend={(t, files) => send(t, files)}
+                onTextChange={setInput}
+                placeholder="Mensagem..."
+                isLoading={sending}
+                disabled={needIdentity}
+                maxLength={500}
+              />
+            </div>
           </div>
         </div>
       </div>
