@@ -1,59 +1,60 @@
-## Diagnóstico
+## Plano — Avaliação do entregador
 
-Existe 1 entregador cadastrado, aprovado e disponível:
+Quando o entregador marcar a entrega como **`entregue`**, o cliente vê um modal pedindo nota (1–5 estrelas) + comentário opcional. A média e o total recalculam automaticamente no perfil do entregador.
 
-- `caio` — cidade salva como **"joao pessoa"** (sem acento), estado PB, status `aprovado`, `disponivel = true`.
-
-No `MFEntregadoresDisponiveis.tsx` a busca é feita com:
-
-```ts
-.ilike("cidade", cidade.trim())
-```
-
-O `ilike` é case-insensitive, mas **não ignora acentos**. Quando o cliente digita "João Pessoa" no carrinho, o Postgres compara `"joao pessoa"` com `"João Pessoa"` e não encontra match — por isso o entregador não aparece.
-
-O mesmo problema atinge o painel do entregador (`useMFEntregas` com `scope: "entregador-disponivel"`) e qualquer outra busca por cidade.
-
-## Plano
-
-### 1. Migração — função RPC que ignora acentos
-
-Criar `public.mf_entregadores_disponiveis(_cidade text)` usando a extensão `unaccent` (já instalada no projeto):
+### 1. Migração — tabela + trigger
 
 ```sql
-create or replace function public.mf_entregadores_disponiveis(_cidade text)
-returns setof public.mf_entregadores
-language sql stable security definer set search_path = public
-as $$
-  select *
-  from public.mf_entregadores
-  where status = 'aprovado'
-    and disponivel = true
-    and lower(unaccent(cidade)) = lower(unaccent(coalesce(_cidade,'')))
-  order by avaliacao_media desc
-  limit 10;
-$$;
+create table public.mf_entregador_avaliacoes (
+  id uuid primary key default gen_random_uuid(),
+  entrega_id uuid not null unique references public.mf_entregas(id) on delete cascade,
+  entregador_id uuid not null references public.mf_entregadores(id) on delete cascade,
+  cliente_id uuid not null,
+  nota int not null check (nota between 1 and 5),
+  comentario text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.mf_entregador_avaliacoes enable row level security;
+
+-- Cliente vê e cria a própria avaliação; entregador vê as dele
+create policy "cliente_select_own" on public.mf_entregador_avaliacoes
+  for select using (auth.uid() = cliente_id or auth.uid() in (
+    select user_id from public.mf_entregadores where id = entregador_id
+  ));
+create policy "cliente_insert_own" on public.mf_entregador_avaliacoes
+  for insert with check (
+    auth.uid() = cliente_id
+    and exists (
+      select 1 from public.mf_entregas e
+      where e.id = entrega_id
+        and e.cliente_id = auth.uid()
+        and e.status = 'entregue'
+        and e.entregador_id = entregador_id
+    )
+  );
 ```
 
-(`grant execute` para `anon, authenticated`.)
+Trigger `after insert` que recalcula `avaliacao_media` (avg) e `total_entregas` (count) na linha do entregador.
 
-Não altero dados existentes — apenas a forma de buscar.
+### 2. Hook — `useMFPendingRating`
 
-### 2. Frontend — `src/components/mercado-facil/MFEntregadoresDisponiveis.tsx`
+`src/hooks/mercado-facil/useMFPendingRating.ts` — para o cliente logado, busca a primeira `mf_entregas` com `status='entregue'`, `cliente_id = me`, sem avaliação correspondente (left join). Retorna `{ entrega, entregador, dismiss(), submit(nota, comentario) }`.
 
-Trocar o `.from("mf_entregadores").select(...).ilike("cidade", ...)` por:
+### 3. Modal — `MFRatingModal`
 
-```ts
-supabase.rpc("mf_entregadores_disponiveis", { _cidade: cidade.trim() })
-```
+`src/components/mercado-facil/MFRatingModal.tsx` usando o `Dialog` padrão do shadcn, no padrão do app:
 
-Mantém o resto da UI igual.
+- `bg-white/70 backdrop-blur-md` (glassmorphism)
+- `rounded-3xl`, **`border-2 border-[#FD46A1]`** (borda rosa pedida)
+- `max-w-sm w-[calc(100%-2rem)] mx-auto` — **não ocupa toda a largura**, mantém respiro lateral em mobile
+- Conteúdo: foto + nome do entregador, "Como foi sua entrega?", 5 estrelas selecionáveis, textarea opcional, botão "Enviar avaliação" (bg `#FD46A1`) e "Avaliar depois" (ghost). Botão X fechar com `bg-[#FD46A1]` (padrão do app).
 
-### 3. (Opcional, recomendado) Normalizar cidade ao cadastrar
+### 4. Integração
 
-No `EntregadorCadastro.tsx`, ao salvar, capitalizar apenas para exibição mas manter compatível. Como o RPC já resolve, esta etapa é opcional — confirmo se quer incluir.
+Montar `<MFRatingModal />` em `src/pages/mercado-facil/Index.tsx` (entrada do Mercado Fácil). Abre sozinho quando o hook devolver uma entrega pendente. "Avaliar depois" só fecha (volta a aparecer na próxima visita). Enviar grava a avaliação → trigger atualiza o entregador → modal fecha.
 
-## Fora do escopo
+### Fora do escopo
 
-- Não mexo no painel do entregador / `useMFEntregas` agora (mesma raiz, mas é outro fluxo). Posso aplicar a mesma normalização lá num passo seguinte se quiser.
-- Sem alterações em RLS, esquema das tabelas ou em dados existentes.
+- Não mexo no fluxo do entregador (`EntregadorEntregas`), nem em notificações push, nem em avaliação da loja.
+- Sem mudança visual nos cards existentes.
