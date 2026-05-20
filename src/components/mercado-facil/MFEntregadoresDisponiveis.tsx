@@ -111,6 +111,9 @@ export function MFEntregadoresDisponiveis({
                   {Number(e.avaliacao_media ?? 0).toFixed(1)}
                 </span>
               </p>
+              <span className="inline-block mt-1 bg-[#FD46A1] text-white text-[11px] px-2 py-0.5 rounded-full">
+                {faixaPreco(e.taxa_min_centavos ?? 0, e.taxa_max_centavos ?? 0)}
+              </span>
             </div>
             <Button
               onClick={() => handleChamar(e)}
