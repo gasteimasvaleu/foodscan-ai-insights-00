@@ -145,6 +145,11 @@ export default {
 				rotate: {
 					to: { transform: "rotate(90deg)" },
 				},
+				shine: {
+					'0%': { transform: 'translateX(-120%) skewX(-12deg)' },
+					'60%': { transform: 'translateX(220%) skewX(-12deg)' },
+					'100%': { transform: 'translateX(220%) skewX(-12deg)' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -155,6 +160,8 @@ export default {
 				gradient: "gradient var(--animation-duration, 8s) linear infinite",
 				flip: "flip 6s infinite steps(2, end)",
 				rotate: "rotate 3s linear infinite both",
+				shine: 'shine 2.8s ease-in-out infinite',
+
 			}
 		}
 	},

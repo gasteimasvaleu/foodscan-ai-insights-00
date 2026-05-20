@@ -97,14 +97,19 @@ const MercadoFacilIndex = () => {
             alt=""
             className="w-24 h-24 object-contain shrink-0"
           />
-          <div className="min-w-0">
-            <h2 className="text-base font-semibold text-[#FD46A1] leading-tight">
+          <div className="relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-[#FD46A1]/40 bg-gradient-to-br from-[#FFD1E7] via-white to-[#FFE9F3] p-3 shadow-sm">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/70 to-transparent animate-shine"
+            />
+            <h2 className="relative text-base font-semibold text-[#FD46A1] leading-tight">
               Compare Preços e Economize
             </h2>
-            <p className="text-xs text-foreground/60 mt-1">
+            <p className="relative text-xs text-foreground/70 mt-1">
               Encontre os melhores preços em supermercados próximos a você
             </p>
           </div>
+
         </div>
 
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 space-y-2 shadow-sm">
