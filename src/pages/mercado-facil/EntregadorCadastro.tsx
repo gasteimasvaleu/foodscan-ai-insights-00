@@ -28,6 +28,29 @@ const EntregadorCadastro = () => {
   const [raio, setRaio] = useState("5");
   const [fotoUrl, setFotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadingFoto, setUploadingFoto] = useState(false);
+
+  const handleFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      return toast({ title: "Imagem muito grande", description: "Máx 5MB", variant: "destructive" });
+    }
+    setUploadingFoto(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/foto-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("mercado-facil-entregadores")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setUploadingFoto(false);
+      return toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-entregadores").getPublicUrl(path);
+    setFotoUrl(data.publicUrl);
+    setUploadingFoto(false);
+    toast({ title: "Foto enviada!" });
+  };
 
   useEffect(() => {
     if (entregador) {
