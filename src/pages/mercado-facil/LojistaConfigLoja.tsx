@@ -29,6 +29,8 @@ const LojistaConfigLoja = () => {
   const [telefone, setTelefone] = useState("");
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
+  const [rua, setRua] = useState("");
+  const [numero, setNumero] = useState("");
   const [uf, setUf] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
