@@ -49,7 +49,9 @@ const EntregadorEntregas = () => {
       <MFHeader title="Minhas Entregas" backTo="/mercado-facil/entregador" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <section>
-          <h3 className="text-base mb-2">Em andamento</h3>
+          <div className="bg-[#FFD1E7] rounded-2xl px-3 py-2 mb-2">
+            <h3 className="text-base text-[#FD46A1]">Em andamento</h3>
+          </div>
           {ativas.length === 0 ? (
             <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
               Você não tem entregas em andamento.
@@ -107,10 +109,10 @@ const EntregadorEntregas = () => {
 
         {entregador.status === "aprovado" && entregador.disponivel && (
           <section>
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-base">Disponíveis para aceitar</h3>
+            <div className="bg-[#FFD1E7] rounded-2xl px-3 py-2 mb-2 flex items-center gap-2">
+              <h3 className="text-base text-[#FD46A1]">Disponíveis para aceitar</h3>
               {disponiveis.length > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/70 text-[#FD46A1]">
                   {disponiveis.length}
                 </span>
               )}
