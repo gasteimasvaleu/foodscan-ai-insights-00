@@ -83,7 +83,7 @@ const Carrinho = () => {
     }
     supabase
       .from("profiles")
-      .select("id, name, avatar_url, cover_url, bio, email_public, phone, address, city, state, created_at, telefone_whatsapp")
+      .select("id, name, avatar_url, cover_url, bio, email_public, phone, address, city, state, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
