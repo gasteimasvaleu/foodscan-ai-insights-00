@@ -83,7 +83,7 @@ export function useMFPendingRating() {
     const { error } = await supabase.from("mf_entregador_avaliacoes").insert({
       entrega_id: entrega.id,
       entregador_id: entregador.id,
-      cliente_id: user.id,
+      autor_id: user.id,
       nota,
       comentario: comentario.trim() || null,
     });
