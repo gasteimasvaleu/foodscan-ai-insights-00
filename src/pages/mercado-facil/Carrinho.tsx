@@ -8,13 +8,35 @@ import { useAuthContext } from "@/contexts/AuthProvider";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
+import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import type { MFLoja } from "@/lib/mercado-facil/types";
+
+const ADDRESS_KEY = "mf_delivery_address_v1";
 
 const Carrinho = () => {
   const { byLoja, setQty, clearLoja, totalItens } = useMFCart();
   const { user } = useAuthContext();
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
   const [profileName, setProfileName] = useState<string | undefined>();
+  const [profilePhone, setProfilePhone] = useState<string | undefined>();
+  const [cidade, setCidade] = useState("");
+  const [endereco, setEndereco] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      if (raw) {
+        const v = JSON.parse(raw);
+        if (v.cidade) setCidade(v.cidade);
+        if (v.endereco) setEndereco(v.endereco);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(ADDRESS_KEY, JSON.stringify({ cidade, endereco }));
+  }, [cidade, endereco]);
+
 
   const lojaIds = Object.keys(byLoja);
 
@@ -38,11 +60,17 @@ const Carrinho = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name")
+      .select("name, telefone_whatsapp")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => setProfileName((data as { name?: string } | null)?.name));
+      .then(({ data }) => {
+        const d = data as { name?: string; telefone_whatsapp?: string } | null;
+        setProfileName(d?.name);
+        setProfilePhone(d?.telefone_whatsapp);
+      });
+
   }, [user?.id]);
+
 
   const handleSend = async (lojaId: string) => {
     if (!user) {
@@ -80,7 +108,29 @@ const Carrinho = () => {
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
           </p>
         ) : (
-          lojaIds.map((lojaId) => {
+          <>
+            <div className="bg-white rounded-3xl p-4 space-y-2">
+              <p className="text-sm font-medium text-foreground">Entrega</p>
+              <input
+                type="text"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+                placeholder="Cidade (ex: Goiânia)"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+              />
+              <input
+                type="text"
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+                placeholder="Endereço completo (rua, número, bairro)"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+              />
+              <p className="text-[11px] text-foreground/60">
+                Usado para encontrar entregadores próximos e compor a mensagem enviada.
+              </p>
+            </div>
+            {lojaIds.map((lojaId) => {
+
             const loja = lojas[lojaId];
             const itens = byLoja[lojaId];
             const total = itens.reduce((s, i) => s + i.preco_centavos * i.quantidade, 0);
@@ -139,11 +189,27 @@ const Carrinho = () => {
                 <p className="text-[11px] text-center text-foreground/60">
                   Você combina disponibilidade, frete e pagamento direto com a loja.
                 </p>
+                {loja && user && (
+                  <div className="pt-3 border-t">
+                    <MFEntregadoresDisponiveis
+                      loja={loja}
+                      cidade={cidade}
+                      endereco={endereco}
+                      clienteId={user.id}
+                      clienteNome={profileName}
+                      telefoneCliente={profilePhone}
+                      itens={itens}
+                      totalCentavos={total}
+                    />
+                  </div>
+                )}
               </div>
             );
-          })
+          })}
+          </>
         )}
       </main>
+
     </div>
   );
 };
