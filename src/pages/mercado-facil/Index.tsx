@@ -50,7 +50,10 @@ const MercadoFacilIndex = () => {
     const q = search.trim().toLowerCase();
     let arr = produtos;
     if (q) arr = arr.filter((p) => p.nome.toLowerCase().includes(q));
-    if (quickFilter === "ofertas" || quickFilter === "promocoes") {
+    if (quickFilter === "ofertas") {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      arr = arr.filter((p) => p.created_at && new Date(p.created_at) >= today);
+    } else if (quickFilter === "promocoes") {
       arr = arr.filter((p) => p.preco_promo_centavos != null);
     } else if (quickFilter === "menor_preco") {
       arr = [...arr].sort((a, b) => (a.preco_promo_centavos ?? a.preco_centavos) - (b.preco_promo_centavos ?? b.preco_centavos));
