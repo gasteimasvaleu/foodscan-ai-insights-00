@@ -112,6 +112,25 @@ const MercadoFacilIndex = () => {
 
         </div>
 
+        <section className="grid grid-cols-2 gap-2">
+          <Link
+            to="/mercado-facil/lojista"
+            className="bg-[#FD46A1] text-white rounded-2xl px-3 py-2 flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            <Store size={16} />
+            <span className="text-sm">Sou Lojista</span>
+          </Link>
+          <Link
+            to="/mercado-facil/entregador"
+            className="bg-white border border-[#FD46A1] text-[#FD46A1] rounded-2xl px-3 py-2 flex items-center gap-2 hover:bg-[#FFD1E7]/40 transition-colors"
+          >
+            <Truck size={16} />
+            <span className="text-sm">Sou Entregador</span>
+          </Link>
+        </section>
+
+
+
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 space-y-2 shadow-sm">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
