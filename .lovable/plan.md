@@ -1,49 +1,69 @@
-## Ajustes na TubelightNavbar
+## Trocar vídeo do VideoOverlay pelo AnimatedSpinner
 
-Três mudanças pequenas e independentes:
+O componente `VideoOverlay` é a única peça oficial de "loading com texto" no app — já usado em **FoodScan, MasterCheFIT, Provador, DailyControl**. Trocar **dentro dele** o vídeo MP4 pelo spinner conic-gradient resolve as 4 telas de uma vez sem mexer em nenhuma `page`.
 
-### 1. Remover Treinos da barra inferior
+### 1. Adaptar o spinner para Vite/React
 
-Em `src/App.tsx`, tirar a linha `{ name: 'Treinos', url: '/treinos', icon: Dumbbell }` do array `navItems` (linha 103) e remover `Dumbbell` do import da linha 13 (não é mais usado lá).
+O código original usa `<style jsx>` (Next.js) — não funciona em Vite. Vou portar pra CSS regular:
 
-A barra fica com 6 itens: Home, FoodScan, Controle, FitTracker, MasterChef, Mais — mais espaço pro botão **+** voltar a aparecer confortavelmente.
+- **Criar** `src/components/ui/animated-spinner.tsx` (Tailwind + classe CSS).
+- **Adicionar** as `@property` e `@keyframes` em `src/index.css` (uma única vez, escopadas em `.animated-spinner`).
+- Props: `size?: string` (default `10rem`), `className?: string`.
+- Cores ajustadas pra paleta We Diet: rosa primário `#FD46A1`, accent `#FA1690`, complementar suave `#FFD1E7` — em vez do amarelo/roxo/azul do exemplo. O `drop-shadow` fica rosa também.
 
-Treinos **já existe** no Sheet do Menu Mais (seção Premium, com ícone Dumbbell) — não precisa adicionar, só não duplicar.
+> Nota: `@property` tem suporte ~92% (Safari 16.4+, iOS 16.4+). Em browsers antigos o spinner ainda gira, só não anima o conic — fallback aceitável.
 
-### 2. Cor da TubelightNavbar igual à top Navbar
+### 2. Substituir o vídeo dentro do VideoOverlay
 
-Hoje a top Navbar usa: `bg-[#FA1690]/85 backdrop-blur-md border-b border-white/20`.
+Em `src/components/VideoOverlay.tsx`:
+- Remover a `<video>` e seu `src` MP4.
+- Trocar o fundo `bg-black/60` por um fundo mais coeso com o app: **gradient rosa escuro com leve blur**:
+  `bg-gradient-to-br from-[#1a0a14]/95 via-[#FA1690]/30 to-[#1a0a14]/95 backdrop-blur-xl`.
+- Inserir `<AnimatedSpinner size="9rem" />` acima do `message`.
+- Manter o `message`, o `subMessage` opcional e a progress bar (não duplicam — o spinner é o foco visual e a barra dá noção de movimento).
+- Manter `AnimatePresence`, z-index 60 e fade-in.
 
-A tubelight tinha sido alterada para `bg-[#FA1690]/40 backdrop-blur-2xl` (parte do experimento Liquid Glass). Voltar para a mesma fórmula da top:
+### 3. Onde mais aplicar (mesmo padrão, mesma API)
 
-- `bg-[#FA1690]/85`
-- `backdrop-blur-md`
-- `border border-white/20`
+O `VideoOverlay` já cobre os principais casos de IA. Vou estender pra outras telas com loading longo de IA/rede onde hoje só existe spinner inline ou nada:
 
-Em `src/components/ui/tubelight-navbar.tsx`, no container interno da pill (atual `bg-[#FA1690]/40 border-white/30 backdrop-blur-2xl`).
+| Tela | Quando aparece | Mensagem |
+|---|---|---|
+| `Faca em Casa` (`/faca-em-casa`) | Identifying dish + gerar receita | "Identificando o prato..." → "Gerando receita..." |
+| `Nutricionista que Vende` (`/nutricionista-que-vende`) | Gerar imagem + legenda | "Criando seu post..." |
+| `Provador` (já tem) | confirmar |
+| `Quiz` geração | Quando IA monta perguntas | "Preparando seu quiz..." |
+| `AI Goals Assistant` (`DailyControl`) | Cálculo de metas | "Calculando suas metas..." |
+| `NutriCoach` envio | **NÃO** — chat já mostra digitação inline, overlay seria intrusivo |
 
-### 3. Manter o efeito Liquid Glass só no que cabe com fundo opaco
+Para cada uma das telas acima:
+- Importar `VideoOverlay`.
+- Controlar com o `isLoading` que já existe.
+- Passar mensagem específica.
 
-Com o fundo voltando a `/85` (quase opaco), a camada de **refração SVG** (`feDisplacementMap`) perde sentido — não dá pra ver refração através de um vidro fosco. Vou **remover** a camada `filter: url(#liquid-glass)` e o `<LiquidGlassFilter />` da navbar (e o import correspondente). O arquivo `src/components/ui/liquid-glass-filter.tsx` fica para uso futuro em outros lugares (ex.: dock de Quick Actions desktop).
+### 4. Renomear (opcional — recomendo)
 
-O que **fica mantido** do experimento, porque combina bem com a cor sólida:
-- Highlight especular branco no topo (sheen `linear-gradient`).
-- `box-shadow` inset branco nas bordas (borda de vidro).
-- Sombra externa dupla pra "flutuar".
-- `active:scale-110` nos itens com easing spring.
-- Curva spring 220/22 do indicador "lamp".
+`VideoOverlay` não tem mais vídeo. Sugiro:
+- Renomear o arquivo/export para `LoadingOverlay`.
+- Manter um re-export de `VideoOverlay` pra não quebrar imports existentes em uma única leva.
+
+> Se preferir manter o nome `VideoOverlay` por simplicidade, podemos pular este passo — me diz.
 
 ### Arquivos
 
-- **Editar** `src/App.tsx` — remover item Treinos do `navItems` e ajustar import de `lucide-react` (tirar `Dumbbell`).
-- **Editar** `src/components/ui/tubelight-navbar.tsx`:
-  - Voltar bg/blur/border para os valores da top Navbar.
-  - Remover renderização condicional do `<LiquidGlassFilter />` e da camada de refração.
-  - Remover imports `useNativePlatform` e `LiquidGlassFilter` (não mais usados).
-  - Manter highlight, shadow inset e animações de toque.
+- **Criar** `src/components/ui/animated-spinner.tsx`
+- **Editar** `src/index.css` — adicionar `@property` + `@keyframes` + classe `.animated-spinner`
+- **Editar** `src/components/VideoOverlay.tsx` — remover vídeo, plugar spinner, ajustar background
+- **Editar** `src/pages/FacaEmCasa.tsx`, `src/pages/NutricionistaQueVende.tsx`, `src/pages/Quiz.tsx`, `src/pages/DailyControl.tsx` (no fluxo de AI Goals) — adicionar `<VideoOverlay isVisible={loading} message="..." />`
+- **(Opcional)** renomear export para `LoadingOverlay` com re-export legado
+
+### Cuidados
+
+- Não tocar nos loaders "estilo skeleton" das listas (esses ficam inline, não viram overlay fullscreen).
+- Não usar overlay em ações curtas (<800ms) — o flash é pior que esperar.
+- Não usar no chat do NutriCoach (digitação inline é melhor UX).
 
 ### Fora de escopo
 
-- Não mexer no Sheet do Menu Mais (Treinos já está lá).
-- Não tocar na top `Navbar` nem no `MFHeader`.
-- Não apagar `liquid-glass-filter.tsx` (pode reusar em outro lugar).
+- Não mexer no Splash screen (já tem o `loader-15` que adicionamos).
+- Não mexer nos botões inline com seus próprios spinners menores.
