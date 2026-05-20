@@ -11,7 +11,7 @@ interface Props {
   lojaNome?: string;
 }
 
-export const MFProductCard = ({ produto, lojaId }: Props) => {
+export const MFProductCard = ({ produto, lojaId, lojaNome }: Props) => {
   const { add } = useMFCart();
   const preco = produto.preco_promo_centavos ?? produto.preco_centavos;
 
