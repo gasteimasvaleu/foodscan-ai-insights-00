@@ -104,6 +104,7 @@ const Carrinho = () => {
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
+        <MFClientePedidosStatus />
         {totalItens === 0 ? (
           <p className="text-sm text-foreground/60 text-center pt-12">
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
