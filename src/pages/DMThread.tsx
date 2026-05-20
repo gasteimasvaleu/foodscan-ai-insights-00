@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Loader2, Send, ImagePlus, X } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { compressImage } from "@/lib/imageCompression";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
 
 interface Message {
   id: string;
@@ -120,14 +121,17 @@ export default function DMThread() {
     setPreview(URL.createObjectURL(f));
   };
 
-  const send = async () => {
+  const send = async (overrideText?: string, filesArg?: File[]) => {
     if (!user || !convId) return;
-    if (!text.trim() && !file) return;
+    const sendText = (overrideText ?? text).trim();
+    const sendFile = filesArg?.[0] ?? file;
+    if (!sendText && !sendFile) return;
     setSending(true);
     try {
       let imageUrl: string | null = null;
-      if (file) {
-        const base64 = await compressImage(file, 1200, 0.85);
+      let storagePath: string | null = null;
+      if (sendFile) {
+        const base64 = await compressImage(sendFile, 1200, 0.85);
         const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
         const path = `${user.id}/${Date.now()}.jpg`;
         const { error: upErr } = await supabase.storage
@@ -136,15 +140,17 @@ export default function DMThread() {
         if (upErr) throw upErr;
         const { data: urlData } = supabase.storage.from("dm-media").getPublicUrl(path);
         imageUrl = urlData.publicUrl;
+        storagePath = path;
       }
       const { error } = await supabase.from("dm_messages").insert({
         conversation_id: convId,
         sender_id: user.id,
-        content: text.trim() || null,
+        content: sendText || null,
         image_url: imageUrl,
+        storage_path: storagePath,
       });
       if (error) throw error;
-      setText("");
+      if (overrideText === undefined) setText("");
       setFile(null);
       setPreview(null);
     } catch (e: any) {
@@ -153,6 +159,7 @@ export default function DMThread() {
       setSending(false);
     }
   };
+
 
   if (authLoading || !user) {
     return (
@@ -224,52 +231,12 @@ export default function DMThread() {
 
       {/* Composer */}
       <div className="border-t bg-card p-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-        {preview && (
-          <div className="relative inline-block mb-2 ml-2">
-            <img src={preview} alt="" className="h-20 rounded-xl object-cover" />
-            <button
-              onClick={() => {
-                setFile(null);
-                setPreview(null);
-              }}
-              className="absolute -top-1.5 -right-1.5 bg-[#FD46A1] text-white rounded-full p-0.5"
-              aria-label="Remover"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => inputFileRef.current?.click()}
-            className="p-2 text-muted-foreground hover:text-primary"
-            aria-label="Anexar foto"
-          >
-            <ImagePlus size={22} />
-          </button>
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onSelectFile}
-          />
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
-            placeholder="Mensagem..."
-            className="flex-1 bg-muted rounded-full px-4 py-2.5 text-base outline-none border border-transparent focus:border-primary/40"
-          />
-          <button
-            onClick={send}
-            disabled={sending || (!text.trim() && !file)}
-            className="bg-[#FD46A1] disabled:opacity-40 text-white p-2.5 rounded-full"
-            aria-label="Enviar"
-          >
-            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-          </button>
-        </div>
+        <ChatInputBar
+          onSend={(t, files) => send(t, files)}
+          onTextChange={setText}
+          placeholder="Mensagem..."
+          isLoading={sending}
+        />
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { Send, Bot, User, Loader2, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Bot, User, Loader2, MessageCircle } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import ReactMarkdown from 'react-markdown';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { ChatInputBar } from '@/components/chat/ChatInputBar';
 
 type UserContext = {
   name?: string;
@@ -153,8 +153,8 @@ const NutriCoach = () => {
   if (loading) return null;
   if (!user) return <Navigate to="/auth" replace />;
 
-  const send = async () => {
-    const text = input.trim();
+  const send = async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
     if (!text || isLoading) return;
 
     const userMsg: Message = { role: 'user', content: text };
@@ -192,6 +192,7 @@ const NutriCoach = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -259,31 +260,19 @@ const NutriCoach = () => {
 
           {/* Input */}
           <div className="border-t bg-white p-3 shrink-0 min-w-0">
-            <div className="flex gap-2 items-end min-w-0">
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Pergunte sobre nutrição ou treinos..."
-                rows={1}
-                className="flex-1 min-w-0 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-base md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring max-h-24 overflow-y-auto"
-                style={{ minHeight: '40px' }}
-              />
-              <Button
-                onClick={send}
-                disabled={!input.trim() || isLoading}
-                size="icon"
-                className="rounded-xl h-10 w-10 shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
+            <ChatInputBar
+              onSend={(text) => send(text)}
+              placeholder="Pergunte sobre nutrição ou treinos..."
+              isLoading={isLoading}
+              enableAttachments={false}
+              enableVoice
+            />
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default NutriCoach;

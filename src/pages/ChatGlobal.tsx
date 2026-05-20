@@ -10,12 +10,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Send, Loader2, MoreVertical, Flag, Trash2, MessageCircle } from "lucide-react";
+import { ArrowLeft, Loader2, MoreVertical, Flag, Trash2, MessageCircle } from "lucide-react";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
+import { compressImage } from "@/lib/imageCompression";
 
 interface ChatMsg {
   id: string;
   user_id: string;
   content: string;
+  image_url?: string | null;
   created_at: string;
   is_deleted: boolean;
   profile?: { name: string; avatar_url: string | null } | null;
@@ -197,37 +200,55 @@ export default function ChatGlobal() {
     }, 1500);
   };
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || !user || sending) return;
+  const send = async (overrideText?: string, files: File[] = []) => {
+    const text = (overrideText ?? input).trim();
+    if ((!text && files.length === 0) || !user || sending) return;
     if (text.length > 500) {
       toast({ title: "Mensagem muito longa", description: "Máximo 500 caracteres.", variant: "destructive" });
       return;
     }
     setSending(true);
-    const { data: inserted, error } = await supabase
-      .from("chat_messages")
-      .insert({ user_id: user.id, content: text })
-      .select("id, user_id, content, created_at, is_deleted")
-      .single();
-    setSending(false);
-    if (error) {
-      const msg = error.message || "";
+    try {
+      let image_url: string | null = null;
+      let storage_path: string | null = null;
+      const file = files[0];
+      if (file) {
+        const base64 = await compressImage(file, 1200, 0.85);
+        const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+        const path = `${user.id}/${Date.now()}.jpg`;
+        const { error: upErr } = await supabase.storage
+          .from("community-images")
+          .upload(path, blob, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
+        const { data: urlData } = supabase.storage.from("community-images").getPublicUrl(path);
+        image_url = urlData.publicUrl;
+        storage_path = path;
+      }
+      const { data: inserted, error } = await supabase
+        .from("chat_messages")
+        .insert({ user_id: user.id, content: text, image_url, storage_path })
+        .select("id, user_id, content, image_url, created_at, is_deleted")
+        .single();
+      if (error) throw error;
+      if (inserted) {
+        await ensureProfile(user.id);
+        setMessages((prev) =>
+          prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as ChatMsg]
+        );
+        setTimeout(() => scrollToBottom(), 50);
+      }
+      if (!overrideText) setInput("");
+    } catch (e: any) {
+      const msg = e?.message || "";
       let friendly = "Erro ao enviar mensagem";
       if (msg.includes("blocked_word")) friendly = "Sua mensagem contém termos não permitidos.";
       else if (msg.includes("rate_limit")) friendly = "Aguarde alguns segundos antes de enviar mais mensagens.";
       toast({ title: "Não foi possível enviar", description: friendly, variant: "destructive" });
-      return;
+    } finally {
+      setSending(false);
     }
-    if (inserted) {
-      await ensureProfile(user.id);
-      setMessages((prev) =>
-        prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as ChatMsg]
-      );
-      setTimeout(() => scrollToBottom(), 50);
-    }
-    setInput("");
   };
+
 
   const handleReport = async (messageId: string) => {
     if (!user) return;
@@ -311,12 +332,15 @@ export default function ChatGlobal() {
                   )}
                   <div className="flex items-end gap-1">
                     <div
-                      className={`rounded-2xl px-3 py-2 text-base break-words [overflow-wrap:anywhere] ${
+                      className={`rounded-2xl px-3 py-2 text-base break-words [overflow-wrap:anywhere] overflow-hidden ${
                         isMine
                           ? "bg-[#FD46A1] text-white rounded-br-md"
                           : "bg-[#FFD1E7] text-gray-800 rounded-bl-md"
                       }`}
                     >
+                      {m.image_url && (
+                        <img src={m.image_url} alt="" className="-mx-3 -mt-2 mb-1 max-h-64 w-[calc(100%+1.5rem)] object-cover" />
+                      )}
                       {m.content}
                     </div>
                     <DropdownMenu>
@@ -355,34 +379,16 @@ export default function ChatGlobal() {
         className="border-t bg-white p-3 shrink-0"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
       >
-        <div className="flex gap-2 items-end">
-          <textarea
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              handleTyping();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
-            }}
-            placeholder="Mensagem..."
-            rows={1}
-            maxLength={500}
-            className="flex-1 min-w-0 resize-none rounded-2xl border border-input bg-background px-4 py-2.5 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary max-h-28"
-            style={{ minHeight: "42px" }}
-          />
-          <Button
-            onClick={send}
-            disabled={!input.trim() || sending}
-            size="icon"
-            className="rounded-full h-11 w-11 shrink-0 bg-[#FD46A1] hover:bg-[#FD46A1]/90"
-          >
-            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
-        </div>
+        <ChatInputBar
+          onSend={(t, files) => send(t, files)}
+          onTextChange={(v) => {
+            setInput(v);
+            handleTyping();
+          }}
+          placeholder="Mensagem..."
+          isLoading={sending}
+          maxLength={500}
+        />
       </div>
     </div>
   );
