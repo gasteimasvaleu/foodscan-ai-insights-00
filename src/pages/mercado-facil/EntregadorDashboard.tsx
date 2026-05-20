@@ -163,7 +163,7 @@ const EntregadorDashboard = () => {
                           <Clock size={12} /> {new Date(e.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
-                      <p className="text-[#FD46A1] font-bold">{formatBRL(e.taxa_centavos)}</p>
+                      <p className="text-[#FD46A1] font-bold">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</p>
                     </div>
                   </Link>
                 ))}
