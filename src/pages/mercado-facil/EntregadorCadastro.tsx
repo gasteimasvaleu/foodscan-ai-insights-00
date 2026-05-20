@@ -63,6 +63,8 @@ const EntregadorCadastro = () => {
       setDocumento(entregador.documento ?? "");
       setVeiculo(entregador.veiculo);
       setRaio(String(entregador.raio_atendimento_km));
+      setTaxaMin(entregador.taxa_min_centavos ? (entregador.taxa_min_centavos / 100).toFixed(2) : "");
+      setTaxaMax(entregador.taxa_max_centavos ? (entregador.taxa_max_centavos / 100).toFixed(2) : "");
       setFotoUrl(entregador.foto_url ?? "");
     }
   }, [entregador?.id]);
