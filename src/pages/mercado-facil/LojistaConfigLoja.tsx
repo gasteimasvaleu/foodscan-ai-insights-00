@@ -24,7 +24,34 @@ const LojistaConfigLoja = () => {
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const handleFotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      return toast({ title: "Selecione uma imagem", variant: "destructive" });
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return toast({ title: "Imagem muito grande", description: "Máximo 5MB", variant: "destructive" });
+    }
+    setUploading(true);
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `lojas/${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("mercado-facil-produtos")
+      .upload(path, file, { upsert: false, contentType: file.type });
+    if (error) {
+      setUploading(false);
+      return toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-produtos").getPublicUrl(path);
+    setFotoUrl(data.publicUrl);
+    setUploading(false);
+    toast({ title: "Foto enviada" });
+  };
 
   useEffect(() => {
     if (!user) return;
