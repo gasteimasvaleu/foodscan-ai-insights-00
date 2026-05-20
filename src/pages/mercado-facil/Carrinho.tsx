@@ -40,7 +40,7 @@ const Carrinho = () => {
   const [endereco, setEndereco] = useState("");
 
   const profileName = profile?.name;
-  const profilePhone = profile?.telefone_whatsapp ?? undefined;
+  const profilePhone = profile?.phone ?? undefined;
 
   useEffect(() => {
     try {
