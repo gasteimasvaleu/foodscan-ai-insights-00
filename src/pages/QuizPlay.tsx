@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Clock } from "lucide-react";
 import { toast } from "sonner";
+import VideoOverlay from "@/components/VideoOverlay";
 
 interface Question {
   question_id: string;
@@ -135,9 +136,7 @@ export default function QuizPlay() {
     return (
       <div className="min-h-screen bg-background pb-32">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] flex items-center justify-center text-muted-foreground">
-          Carregando…
-        </div>
+        <VideoOverlay isVisible={true} message="Preparando seu quiz..." subMessage="Carregando as perguntas" />
       </div>
     );
   }

@@ -8,6 +8,7 @@ import { WeeklyIdeasCard } from "@/components/nutri-sells/WeeklyIdeasCard";
 import { useGeneratedPosts } from "@/hooks/useGeneratedPosts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Navbar } from "@/components/Navbar";
+import VideoOverlay from "@/components/VideoOverlay";
 import { Megaphone } from "lucide-react";
 
 export default function NutricionistaQueVende() {
@@ -120,6 +121,11 @@ export default function NutricionistaQueVende() {
 
   return (
     <>
+      <VideoOverlay
+        isVisible={loadingCaption || loadingImage}
+        message={loadingImage ? "Criando a imagem do post..." : "Escrevendo a legenda..."}
+        subMessage="A IA está montando seu post para o Instagram"
+      />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4">
         <div className="max-w-xl mx-auto space-y-4">
