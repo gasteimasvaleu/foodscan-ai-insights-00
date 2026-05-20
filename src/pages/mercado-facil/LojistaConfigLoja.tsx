@@ -29,6 +29,8 @@ const LojistaConfigLoja = () => {
   const [telefone, setTelefone] = useState("");
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
+  const [rua, setRua] = useState("");
+  const [numero, setNumero] = useState("");
   const [uf, setUf] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -77,6 +79,8 @@ const LojistaConfigLoja = () => {
         setTelefone(l.telefone_whatsapp);
         setCidade(l.endereco?.cidade ?? "");
         setBairro(l.endereco?.bairro ?? "");
+        setRua(((l.endereco as any)?.rua ?? "").toString());
+        setNumero(((l.endereco as any)?.numero ?? "").toString());
         setUf(((l.endereco as any)?.uf ?? "").toString().toUpperCase());
         setFotoUrl(l.foto_url ?? "");
       });
@@ -95,7 +99,13 @@ const LojistaConfigLoja = () => {
       slug: loja?.slug ?? `${slugify(nome)}-${user.id.slice(0, 6)}`,
       descricao: descricao.trim() || null,
       telefone_whatsapp: cleanPhone(telefone),
-      endereco: { cidade: cidade.trim(), bairro: bairro.trim(), uf: uf || null },
+      endereco: {
+        rua: rua.trim() || null,
+        numero: numero.trim() || null,
+        bairro: bairro.trim(),
+        cidade: cidade.trim(),
+        uf: uf || null,
+      },
       foto_url: fotoUrl.trim() || null,
       ativa: true,
     };
@@ -153,6 +163,16 @@ const LojistaConfigLoja = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2 col-span-2">
+              <Label>Rua</Label>
+              <Input value={rua} onChange={(e) => setRua(e.target.value)} className="text-base" />
+            </div>
+            <div className="space-y-2">
+              <Label>Número</Label>
+              <Input value={numero} onChange={(e) => setNumero(e.target.value)} inputMode="numeric" className="text-base" />
             </div>
           </div>
           <div className="space-y-2">
