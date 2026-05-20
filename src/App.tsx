@@ -196,6 +196,16 @@ const App = () => (
             <Route path="/to-aqui/owner/venue/new" element={<ProRoute feature="to-aqui-owner"><ToAquiNewVenue /></ProRoute>} />
             <Route path="/to-aqui/owner/venue/:id/edit" element={<ProRoute feature="to-aqui-owner"><ToAquiEditVenue /></ProRoute>} />
 
+            <Route path="/mercado-facil" element={<MercadoFacilIndex />} />
+            <Route path="/mercado-facil/categoria/:slug" element={<MercadoFacilCategoria />} />
+            <Route path="/mercado-facil/loja/:id" element={<MercadoFacilLoja />} />
+            <Route path="/mercado-facil/produto/:id" element={<MercadoFacilProduto />} />
+            <Route path="/mercado-facil/carrinho" element={<MercadoFacilCarrinho />} />
+            <Route path="/mercado-facil/lojista" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaDashboard /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/loja" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaConfigLoja /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/produtos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaProdutos /></ProRoute>} />
+            <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
+
 
 
 
