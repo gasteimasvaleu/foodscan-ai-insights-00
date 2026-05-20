@@ -6,7 +6,7 @@ import { formatBRL } from "@/lib/mercado-facil/formatters";
 const OfertaCard = ({ oferta }: { oferta: OfertaDestaque }) => (
   <Link
     to={`/mercado-facil/produto/${oferta.id}`}
-    className="relative shrink-0 w-[240px] h-[320px] rounded-3xl overflow-hidden snap-center bg-[#FFD1E7] shadow-sm hover:shadow-md transition-shadow"
+    className="relative shrink-0 w-[170px] h-[230px] rounded-3xl overflow-hidden snap-center bg-[#FFD1E7] shadow-sm hover:shadow-md transition-shadow"
   >
     {oferta.foto_url ? (
       <img
@@ -17,36 +17,36 @@ const OfertaCard = ({ oferta }: { oferta: OfertaDestaque }) => (
         className="absolute inset-0 w-full h-full object-cover"
       />
     ) : (
-      <div className="absolute inset-0 flex items-center justify-center text-6xl">🛒</div>
+      <div className="absolute inset-0 flex items-center justify-center text-5xl">🛒</div>
     )}
 
     {/* overlay gradiente embaixo */}
     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
     {/* tag desconto */}
-    <div className="absolute top-3 left-3 inline-flex items-center gap-1 bg-[#FD46A1] text-white text-xs font-semibold rounded-full px-2.5 py-1 shadow-sm">
+    <div className="absolute top-2 left-2 inline-flex items-center gap-1 bg-[#FD46A1] text-white text-[10px] font-semibold rounded-full px-2 py-0.5 shadow-sm">
       <Tag className="w-3 h-3" />
       -{oferta.desconto_pct}%
     </div>
 
     {/* conteúdo */}
-    <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-      <p className="text-base leading-tight line-clamp-2">{oferta.nome}</p>
+    <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+      <p className="text-sm leading-tight line-clamp-2">{oferta.nome}</p>
       {oferta.loja && (
-        <p className="text-xs text-white/70 mt-1 truncate">{oferta.loja.nome}</p>
+        <p className="text-xs text-white/70 mt-0.5 truncate">{oferta.loja.nome}</p>
       )}
 
-      <div className="mt-2 flex items-end justify-between gap-2">
+      <div className="mt-1.5 flex items-end justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[11px] text-white/60 line-through">
             {formatBRL(oferta.preco_centavos)}
           </p>
-          <p className="text-lg font-semibold text-[#FFD1E7] leading-tight">
+          <p className="text-base font-semibold text-[#FFD1E7] leading-tight">
             {formatBRL(oferta.preco_promo_centavos)}
           </p>
         </div>
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FD46A1] text-white shadow-sm">
-          <ArrowRight className="w-4 h-4" />
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#FD46A1] text-white shadow-sm">
+          <ArrowRight className="w-3.5 h-3.5" />
         </span>
       </div>
     </div>
@@ -69,7 +69,7 @@ export const OfertasDestaqueCarousel = () => {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="shrink-0 w-[240px] h-[320px] rounded-3xl bg-[#FFD1E7]/60 animate-pulse"
+              className="shrink-0 w-[170px] h-[230px] rounded-3xl bg-[#FFD1E7]/60 animate-pulse"
             />
           ))}
         </div>
