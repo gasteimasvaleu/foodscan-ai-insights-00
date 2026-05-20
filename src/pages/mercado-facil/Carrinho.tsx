@@ -9,6 +9,7 @@ import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
+import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
 const ADDRESS_KEY = "mf_delivery_address_v1";
