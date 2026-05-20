@@ -116,14 +116,14 @@ const Carrinho = () => {
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
                 placeholder="Cidade (ex: Goiânia)"
-                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] border border-[#FD46A1]/30 px-4 text-base outline-none"
               />
               <input
                 type="text"
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Endereço completo (rua, número, bairro)"
-                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] border border-[#FD46A1]/30 px-4 text-base outline-none"
               />
               <p className="text-[11px] text-foreground/60">
                 Usado para encontrar entregadores próximos e compor a mensagem enviada.
