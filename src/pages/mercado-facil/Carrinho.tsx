@@ -108,7 +108,29 @@ const Carrinho = () => {
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
           </p>
         ) : (
-          lojaIds.map((lojaId) => {
+          <>
+            <div className="bg-white rounded-3xl p-4 space-y-2">
+              <p className="text-sm font-medium text-foreground">Entrega</p>
+              <input
+                type="text"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+                placeholder="Cidade (ex: Goiânia)"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+              />
+              <input
+                type="text"
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+                placeholder="Endereço completo (rua, número, bairro)"
+                className="w-full h-11 rounded-2xl bg-[#F7FAFB] px-4 text-base outline-none"
+              />
+              <p className="text-[11px] text-foreground/60">
+                Usado para encontrar entregadores próximos e compor a mensagem enviada.
+              </p>
+            </div>
+            {lojaIds.map((lojaId) => {
+
             const loja = lojas[lojaId];
             const itens = byLoja[lojaId];
             const total = itens.reduce((s, i) => s + i.preco_centavos * i.quantidade, 0);
