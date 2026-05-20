@@ -84,19 +84,53 @@ const MercadoFacilIndex = () => {
     <div className="min-h-screen bg-[#F7FAFB]">
       <MFHeader title="Mercado Fácil" backTo="/" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
-        <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" />
-          <Input
-            placeholder="Buscar produto..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 rounded-2xl bg-white text-base"
-          />
+        <div className="bg-white rounded-3xl p-3 space-y-2 shadow-sm">
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+            <input
+              type="text"
+              placeholder="Buscar produtos, marcas ou lojas..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-11 pl-10 pr-3 rounded-2xl bg-[#F4F6F8] text-base outline-none placeholder:text-foreground/40"
+            />
+          </div>
+          <div className="relative">
+            <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+            <input
+              type="text"
+              placeholder="Sua localização..."
+              value={localizacao}
+              onChange={(e) => handleSaveLocalizacao(e.target.value)}
+              className="w-full h-11 pl-10 pr-3 rounded-2xl bg-[#F4F6F8] text-base outline-none placeholder:text-foreground/40"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            {quickButtons.map((b) => {
+              const active = quickFilter === b.id;
+              return (
+                <button
+                  key={b.id}
+                  onClick={() => setQuickFilter(active ? null : b.id)}
+                  className={`h-11 rounded-2xl text-base transition-colors ${active ? "bg-[#FD46A1] text-white" : "bg-[#FD46A1]/90 text-white hover:bg-[#FD46A1]"}`}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {search ? (
+        {showFiltered ? (
           <section>
-            <h2 className="text-base font-semibold mb-3">Resultados</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold">
+                {quickFilter ? quickButtons.find((q) => q.id === quickFilter)?.label : "Resultados"}
+              </h2>
+              {quickFilter && (
+                <button onClick={() => setQuickFilter(null)} className="text-xs text-[#FD46A1]">limpar</button>
+              )}
+            </div>
             {filtered.length === 0 ? (
               <p className="text-sm text-foreground/60">Nenhum produto encontrado.</p>
             ) : (
@@ -106,6 +140,7 @@ const MercadoFacilIndex = () => {
             )}
           </section>
         ) : (
+
           <>
             <section>
               <div className="text-center mb-4">
