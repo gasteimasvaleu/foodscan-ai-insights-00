@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
