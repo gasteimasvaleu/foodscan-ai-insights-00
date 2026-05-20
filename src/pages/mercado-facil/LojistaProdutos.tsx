@@ -57,17 +57,45 @@ const LojistaProdutos = () => {
     })();
   }, [user?.id]);
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (file: File) => {
+    if (!user || !editing) return;
+    if (file.size > 5 * 1024 * 1024) return toast({ title: "Imagem muito grande (máx 5MB)", variant: "destructive" });
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("mercado-facil-produtos").upload(path, file, { upsert: false });
+    if (error) {
+      setUploading(false);
+      return toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-produtos").getPublicUrl(path);
+    setEditing({ ...editing, foto_url: data.publicUrl });
+    setUploading(false);
+  };
+
   const handleSave = async () => {
     if (!editing || !loja) return;
     const preco = Math.round(parseFloat(editing.preco_reais.replace(",", ".")) * 100);
     if (!editing.nome.trim() || isNaN(preco) || preco < 0)
       return toast({ title: "Preencha nome e preço válidos", variant: "destructive" });
 
+    let precoPromo: number | null = null;
+    if (editing.preco_promo_reais.trim()) {
+      const pp = Math.round(parseFloat(editing.preco_promo_reais.replace(",", ".")) * 100);
+      if (isNaN(pp) || pp < 0) return toast({ title: "Preço promocional inválido", variant: "destructive" });
+      if (pp >= preco) return toast({ title: "Preço promocional deve ser menor que o preço normal", variant: "destructive" });
+      precoPromo = pp;
+    }
+
     const payload = {
       loja_id: loja.id,
       nome: editing.nome.trim(),
       descricao: editing.descricao.trim() || null,
       preco_centavos: preco,
+      preco_promo_centavos: precoPromo,
       unidade: editing.unidade,
       categoria_id: editing.categoria_id || null,
       foto_url: editing.foto_url.trim() || null,
