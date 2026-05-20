@@ -188,7 +188,7 @@ const MercadoFacilIndex = () => {
               <p className="text-sm text-foreground/60">Nenhum produto encontrado.</p>
             ) : (
               <div className="grid grid-cols-2 gap-3">
-                {filtered.map((p) => <MFProductCard key={p.id} produto={p} />)}
+                {filtered.map((p) => <MFProductCard key={p.id} produto={p} lojaNome={lojaNomeById[p.loja_id]} />)}
               </div>
             )}
           </section>
