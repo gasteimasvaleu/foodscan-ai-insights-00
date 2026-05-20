@@ -1,40 +1,40 @@
-# Faixa de preço da entrega no card do entregador
+## Problema
 
-## Contexto
+O modal de avaliação do entregador (`MFRatingModal`) só é montado em `/mercado-facil` (Index do cliente) e só busca entregas no `useEffect` inicial. Hoje:
 
-Hoje a `taxa_centavos` da entrega vem da loja (`taxa_entrega_padrao_centavos`) e na maioria dos casos vale R$ 0,00, então o cliente não tem ideia de quanto vai pagar. Vamos deixar o próprio entregador declarar uma **faixa de preço** (mínimo e máximo) que ele cobra na cidade dele, e mostrar essa faixa no card antes do cliente chamá-lo.
+- O cliente vê o modal apenas se entrar/recarregar `/mercado-facil` *após* o entregador marcar como "entregue".
+- Se o cliente já estava com a aba aberta, nada acontece em tempo real.
+- Em outras rotas do app do cliente (carrinho, busca etc.) o modal nem existe.
 
-## Mudanças
+No banco existe a entrega `ab45…c5fc` com status `entregue` — ou seja, os dados estão certos; o problema é só de gatilho/montagem do modal.
 
-### 1. Banco — `mf_entregadores`
-Adicionar duas colunas opcionais:
-- `taxa_min_centavos integer` (default 0)
-- `taxa_max_centavos integer` (default 0)
+## Plano
 
-Sem CHECK constraint; valida no front. Quando ambos forem 0, o card mostra "A combinar".
+1. **Realtime no `useMFPendingRating`** — assinar `postgres_changes` em `mf_entregas` filtrado por `cliente_id=user.id`. Quando chegar um UPDATE com `status='entregue'`, chamar `load()` para abrir o modal imediatamente. Também reagir a INSERT/DELETE em `mf_entregador_avaliacoes` para sumir com o modal se já avaliada em outra aba. Limpar o canal no cleanup.
 
-### 2. Tipos — `src/lib/mercado-facil/entregador-types.ts`
-Adicionar os dois campos à interface `MFEntregador`.
+2. **Disponibilizar o modal globalmente para o cliente** — mover `<MFRatingModal />` de `src/pages/mercado-facil/Index.tsx` para um ponto compartilhado das rotas do cliente (ex.: dentro do layout/wrapper de `/mercado-facil/*` que NÃO seja entregador). Assim o modal aparece em qualquer página do Mercado Fácil onde o cliente esteja navegando.
 
-### 3. Cadastro do entregador — `EntregadorCadastro.tsx`
-Novo bloco "Faixa de preço por entrega" com dois `Input` (R$ mínimo e R$ máximo), salvos em centavos. Texto auxiliar: "Valor de referência. O combinado final é feito no WhatsApp com o cliente."
+   - Verificar se existe um layout de rotas; se não, adicionar o componente nas páginas principais do fluxo do cliente (Index, busca, loja, carrinho). Não montar nas rotas `/mercado-facil/entregador/*`.
 
-### 4. Card do entregador — `MFEntregadoresDisponiveis.tsx`
-Abaixo do nome/veículo/estrela, mostrar uma **faixa rosa**:
-- `min > 0 && max > 0 && min !== max` → "R$ 8,00 – R$ 25,00"
-- `min === max && min > 0` → "R$ 10,00"
-- ambos 0 → "Preço a combinar"
+3. **Polling leve de segurança** — além do realtime, fazer `reload()` quando a aba volta ao foco (`visibilitychange`) para cobrir cenários sem realtime (PWA suspenso, conexão caiu).
 
-Visual: pill `bg-[#FD46A1] text-white text-[11px] px-2 py-0.5 rounded-full`.
+4. **Sem mudanças no fluxo do entregador** — `EntregadorEntregas.tsx` continua marcando `status='entregue'` igual hoje; só o lado do cliente passa a reagir.
 
-### 5. Mensagem do WhatsApp — `whatsapp.ts`
-Se o entregador tem faixa preenchida, incluir uma linha:
-> "Sua faixa de entrega cadastrada: R$ X – R$ Y. Você confirma?"
+## Detalhes técnicos
 
-### 6. Página de entregas disponíveis — `EntregadorEntregas.tsx`
-Quando `taxa_centavos === 0`, em vez de "R$ 0,00", mostrar "A combinar" no canto do card (cosmético, deixa claro que o valor será fechado no WhatsApp).
+- Em `useMFPendingRating.ts`:
+  - Após `useEffect(load)`, adicionar outro `useEffect` que cria `supabase.channel('mf-rating-' + user.id)` com dois `on('postgres_changes', …)`:
+    - `{ event: 'UPDATE', schema: 'public', table: 'mf_entregas', filter: 'cliente_id=eq.<uid>' }` → `load()`
+    - `{ event: 'INSERT', schema: 'public', table: 'mf_entregador_avaliacoes', filter: 'autor_id=eq.<uid>' }` → `load()`
+  - Adicionar listener `document.addEventListener('visibilitychange', …)` que chama `load()` quando `document.visibilityState === 'visible'`.
+  - Cleanup remove canal e listener.
+
+- Garantir que `mf_entregas` e `mf_entregador_avaliacoes` estão em `supabase_realtime` publication (rodar migration `ALTER PUBLICATION supabase_realtime ADD TABLE …` se ainda não estiverem; é idempotente via `DO $$ … EXCEPTION WHEN duplicate_object`).
+
+- Modal: trocar a montagem única em `Index.tsx` por montagem nas rotas do cliente do Mercado Fácil (ou um wrapper de layout se existir). Confirmar com `rg` quais páginas formam o app do cliente antes de editar.
 
 ## Fora de escopo
 
-- Não vamos alterar `mf_entregas.taxa_centavos` automaticamente — continua sendo o valor combinado/final. A faixa é só uma referência visível ao cliente e ao próprio entregador.
-- Sem fluxo de "aceitar contraproposta" no app.
+- Mudar UX do modal, copy, design.
+- Tocar no painel do entregador.
+- Permitir reabrir avaliações já enviadas.
