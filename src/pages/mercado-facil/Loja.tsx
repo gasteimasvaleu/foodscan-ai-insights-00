@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
@@ -13,6 +14,7 @@ const Loja = () => {
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
   const [categorias, setCategorias] = useState<MFCategoria[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -29,9 +31,15 @@ const Loja = () => {
     })();
   }, [id]);
 
+  const produtosFiltrados = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return produtos;
+    return produtos.filter((p) => p.nome.toLowerCase().includes(term));
+  }, [produtos, search]);
+
   const grupos = useMemo(() => {
     const byCat = new Map<string | null, MFProduto[]>();
-    for (const prod of produtos) {
+    for (const prod of produtosFiltrados) {
       const key = prod.categoria_id ?? null;
       if (!byCat.has(key)) byCat.set(key, []);
       byCat.get(key)!.push(prod);
@@ -44,7 +52,7 @@ const Loja = () => {
     const outros = byCat.get(null);
     if (outros?.length) ordered.push({ id: null, name: "Outros", emoji: "🛒", items: outros });
     return ordered;
-  }, [produtos, categorias]);
+  }, [produtosFiltrados, categorias]);
 
   return (
     <div className="min-h-screen bg-gradient-primary">
@@ -104,8 +112,30 @@ const Loja = () => {
               </div>
             </div>
 
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 flex items-center gap-2">
+              <Search className="w-5 h-5 text-[#FD46A1] shrink-0 ml-1" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar produtos..."
+                className="flex-1 bg-transparent outline-none text-base placeholder:text-foreground/40"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="w-7 h-7 rounded-full bg-[#FFD1E7] flex items-center justify-center text-[#FD46A1] shrink-0"
+                  aria-label="Limpar busca"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
             {produtos.length === 0 ? (
               <p className="text-sm text-foreground/60">Esta loja ainda não cadastrou produtos.</p>
+            ) : grupos.length === 0 ? (
+              <p className="text-sm text-foreground/60">Nenhum produto encontrado para "{search}".</p>
             ) : (
               <div className="space-y-5">
                 {grupos.map((g) => (
