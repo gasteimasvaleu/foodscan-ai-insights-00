@@ -17,6 +17,8 @@ export interface ChatInputBarProps {
   className?: string;
   /** When true, mounts as `fixed bottom-0` with safe-area padding. */
   fixedBottom?: boolean;
+  /** Extra buttons rendered in the actions row, after the attach button. */
+  leadingActions?: React.ReactNode;
 }
 
 const VISUALIZER_BARS = 28;
