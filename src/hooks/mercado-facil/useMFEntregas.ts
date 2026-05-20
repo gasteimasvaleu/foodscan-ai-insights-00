@@ -4,7 +4,7 @@ import type { MFEntrega, MFEntregaStatus } from "@/lib/mercado-facil/entregador-
 import { normalizeCidade } from "@/lib/mercado-facil/formatters";
 
 interface UseEntregasArgs {
-  scope: "lojista" | "entregador-disponivel" | "entregador-ativa" | "entregador-historico";
+  scope: "lojista" | "entregador-disponivel" | "entregador-ativa" | "entregador-historico" | "cliente-ativas";
   userId?: string;
   entregadorId?: string;
   cidade?: string;
