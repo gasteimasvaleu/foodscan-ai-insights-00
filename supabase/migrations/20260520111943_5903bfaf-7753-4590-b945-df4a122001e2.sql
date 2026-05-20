@@ -1,0 +1,2 @@
+update public.mf_entregas set cidade = lower(public.unaccent(btrim(cidade))) where cidade is not null and cidade <> lower(public.unaccent(btrim(cidade)));
+update public.mf_entregadores set cidade = lower(public.unaccent(btrim(cidade))) where cidade is not null and cidade <> lower(public.unaccent(btrim(cidade)));
