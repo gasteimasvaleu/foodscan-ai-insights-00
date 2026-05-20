@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
+import Loader from '@/components/ui/loader-15';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -99,6 +100,12 @@ const NativeIOSSplash: React.FC<{ isVisible: boolean; onShortTimeout: () => void
             alt=""
             className="w-full h-full object-cover pointer-events-none select-none"
             draggable={false}
+          />
+          <Loader
+            size={64}
+            className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+            // posicionado abaixo da logo central da imagem nativa
+            {...({ style: { top: '72%' } } as any)}
           />
         </motion.div>
       )}
