@@ -23,16 +23,17 @@ const moreSheetItems: Array<{
   url: string
   icon: LucideIcon
   isPro: boolean
+  isExtra?: boolean
 }> = [
   { name: "Registrar refeição", description: "Repetir refeição de ontem ou favoritos em 1 toque", url: "/adicionar-refeicao", icon: Repeat, isPro: false },
   { name: "Alimentos brasileiros", description: "Busca em catálogo de arroz, feijão, açaí e mais", url: "/alimentos", icon: Apple, isPro: false },
-  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false },
-  { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false },
+  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false, isExtra: true },
+  { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false, isExtra: true },
   { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
-  { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false },
+  { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false, isExtra: true },
   { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
   { name: "ServiNUTRI", description: "Rede de nutricionistas", url: "/servinutri", icon: Apple, isPro: false },
-  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false },
+  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false, isExtra: true },
   { name: "Quiz", description: "Responda quizzes, ganhe pontos e dispute o ranking", url: "/quiz", icon: HelpCircle, isPro: false },
   { name: "Desafio 14 dias", description: "Cardápio, vídeos e checklist para 14 dias de transformação", url: "/desafio-14-dias", icon: CalendarCheck, isPro: false },
   { name: "Conquistas", description: "Sequência diária e medalhas desbloqueadas", url: "/conquistas", icon: Trophy, isPro: false },
@@ -41,7 +42,7 @@ const moreSheetItems: Array<{
   { name: "Gerar Cardápio", description: "Cardápios personalizados com IA (MasterCheFIT)", url: "/masterchef", icon: UtensilsCrossed, isPro: true },
   { name: "Receitas", description: "Buscar receitas e gerenciar suas próprias", url: "/receitas", icon: UtensilsCrossed, isPro: true },
   { name: "Faça em Casa", description: "Identifique pratos por foto e gere receitas caseiras", url: "/faca-em-casa", icon: ChefHat, isPro: true },
-  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true },
+  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true, isExtra: true },
   { name: "Gráficos e Progresso", description: "Acompanhe sua evolução", url: "/graficos-progresso", icon: BarChart3, isPro: true },
   { name: "Apple Health", description: "Dados detalhados de saúde e atividade", url: "/apple-health", icon: Heart, isPro: true },
   { name: "Hidratação", description: "Registre bebidas e acompanhe seu progresso", url: "/hidratacao", icon: Droplets, isPro: true },
@@ -49,7 +50,7 @@ const moreSheetItems: Array<{
   { name: "Objetivos", description: "Monitore suas metas semanais", url: "/objetivos", icon: Target, isPro: true },
   { name: "Sono", description: "Registre e acompanhe a qualidade do sono", url: "/sono", icon: Moon, isPro: true },
   { name: "Treinos", description: "Vídeos de treino e dicas em casa", url: "/treinos", icon: Dumbbell, isPro: true },
-  { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true },
+  { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true, isExtra: true },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
@@ -61,8 +62,9 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const { subscriptionStatus } = useAuthContext()
   const isPro = !!subscriptionStatus?.subscribed
 
-  const freeItems = moreSheetItems.filter((i) => !i.isPro)
-  const proItems = moreSheetItems.filter((i) => i.isPro)
+  const extrasItems = moreSheetItems.filter((i) => i.isExtra)
+  const freeItems = moreSheetItems.filter((i) => !i.isPro && !i.isExtra)
+  const proItems = moreSheetItems.filter((i) => i.isPro && !i.isExtra)
 
   useEffect(() => {
     const handleResize = () => {
