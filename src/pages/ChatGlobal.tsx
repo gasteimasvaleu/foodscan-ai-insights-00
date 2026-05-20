@@ -3,13 +3,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, MoreVertical, Flag, Trash2, MessageCircle } from "lucide-react";
+import { ArrowLeft, Loader2, MoreVertical, Flag, Trash2, MessageCircle } from "lucide-react";
 import { ChatInputBar } from "@/components/chat/ChatInputBar";
 import { compressImage } from "@/lib/imageCompression";
 
