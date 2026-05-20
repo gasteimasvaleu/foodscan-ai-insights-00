@@ -904,13 +904,16 @@ export default function ToAquiChat() {
                     )}
                     <div
                       onClick={() => !isMine && setInteractionTarget(m.user_id)}
-                      className={`rounded-2xl px-3 py-2 text-base break-words [overflow-wrap:anywhere] ${
+                      className={`rounded-2xl text-base break-words [overflow-wrap:anywhere] overflow-hidden ${
                         isMine
                           ? "bg-[#FD46A1] text-white rounded-br-md"
                           : "bg-[#FFD1E7] text-gray-800 rounded-bl-md cursor-pointer"
                       }`}
                     >
-                      {m.content}
+                      {m.image_url && (
+                        <img src={m.image_url} alt="" className="max-h-64 w-full object-cover" />
+                      )}
+                      {m.content && <div className="px-3 py-2">{m.content}</div>}
                     </div>
                   </div>
                 </div>
