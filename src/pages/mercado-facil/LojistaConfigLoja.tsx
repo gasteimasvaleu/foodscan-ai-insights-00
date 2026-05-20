@@ -124,7 +124,7 @@ const LojistaConfigLoja = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={loja ? "Editar loja" : "Cadastrar loja"} backTo="/mercado-facil/lojista" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-[calc(env(safe-area-inset-bottom)+9rem)] px-4 max-w-xl mx-auto space-y-4">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 space-y-4 shadow-sm border-2 border-[#FD46A1]/60">
           <div className="space-y-2">
             <Label>Nome da loja *</Label>
