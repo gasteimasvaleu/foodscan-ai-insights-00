@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Store, Truck } from "lucide-react";
+import { Search, Store, Truck, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
 import type { MFCategoria, MFLoja, MFProduto } from "@/lib/mercado-facil/types";
+
+type QuickFilter = "ofertas" | "menor_preco" | "promocoes" | "novidades" | null;
+const ADDRESS_KEY = "mf_delivery_address_v1";
+
 
 const MercadoFacilIndex = () => {
   const [categorias, setCategorias] = useState<MFCategoria[]>([]);
