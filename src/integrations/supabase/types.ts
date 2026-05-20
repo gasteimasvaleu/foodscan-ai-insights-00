@@ -1471,6 +1471,193 @@ export type Database = {
           },
         ]
       }
+      mf_entregador_avaliacoes: {
+        Row: {
+          autor_id: string
+          comentario: string | null
+          created_at: string
+          entrega_id: string | null
+          entregador_id: string
+          id: string
+          nota: number
+        }
+        Insert: {
+          autor_id: string
+          comentario?: string | null
+          created_at?: string
+          entrega_id?: string | null
+          entregador_id: string
+          id?: string
+          nota: number
+        }
+        Update: {
+          autor_id?: string
+          comentario?: string | null
+          created_at?: string
+          entrega_id?: string | null
+          entregador_id?: string
+          id?: string
+          nota?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_entregador_avaliacoes_entrega_id_fkey"
+            columns: ["entrega_id"]
+            isOneToOne: false
+            referencedRelation: "mf_entregas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mf_entregador_avaliacoes_entregador_id_fkey"
+            columns: ["entregador_id"]
+            isOneToOne: false
+            referencedRelation: "mf_entregadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mf_entregadores: {
+        Row: {
+          avaliacao_media: number
+          cidade: string
+          cnh_url: string | null
+          created_at: string
+          disponivel: boolean
+          documento: string | null
+          estado: string
+          foto_url: string | null
+          id: string
+          nome_completo: string
+          raio_atendimento_km: number
+          status: Database["public"]["Enums"]["mf_entregador_status"]
+          telefone_whatsapp: string
+          total_entregas: number
+          updated_at: string
+          user_id: string
+          veiculo: Database["public"]["Enums"]["mf_entregador_veiculo"]
+        }
+        Insert: {
+          avaliacao_media?: number
+          cidade: string
+          cnh_url?: string | null
+          created_at?: string
+          disponivel?: boolean
+          documento?: string | null
+          estado: string
+          foto_url?: string | null
+          id?: string
+          nome_completo: string
+          raio_atendimento_km?: number
+          status?: Database["public"]["Enums"]["mf_entregador_status"]
+          telefone_whatsapp: string
+          total_entregas?: number
+          updated_at?: string
+          user_id: string
+          veiculo?: Database["public"]["Enums"]["mf_entregador_veiculo"]
+        }
+        Update: {
+          avaliacao_media?: number
+          cidade?: string
+          cnh_url?: string | null
+          created_at?: string
+          disponivel?: boolean
+          documento?: string | null
+          estado?: string
+          foto_url?: string | null
+          id?: string
+          nome_completo?: string
+          raio_atendimento_km?: number
+          status?: Database["public"]["Enums"]["mf_entregador_status"]
+          telefone_whatsapp?: string
+          total_entregas?: number
+          updated_at?: string
+          user_id?: string
+          veiculo?: Database["public"]["Enums"]["mf_entregador_veiculo"]
+        }
+        Relationships: []
+      }
+      mf_entregas: {
+        Row: {
+          aceita_em: string | null
+          cidade: string
+          cliente_id: string
+          coletada_em: string | null
+          created_at: string
+          endereco_entrega: string
+          entregador_id: string | null
+          entregue_em: string | null
+          id: string
+          loja_id: string
+          lojista_id: string
+          order_log_id: string | null
+          status: Database["public"]["Enums"]["mf_entrega_status"]
+          taxa_centavos: number
+          telefone_cliente: string | null
+          telefone_lojista: string | null
+          updated_at: string
+        }
+        Insert: {
+          aceita_em?: string | null
+          cidade: string
+          cliente_id: string
+          coletada_em?: string | null
+          created_at?: string
+          endereco_entrega: string
+          entregador_id?: string | null
+          entregue_em?: string | null
+          id?: string
+          loja_id: string
+          lojista_id: string
+          order_log_id?: string | null
+          status?: Database["public"]["Enums"]["mf_entrega_status"]
+          taxa_centavos?: number
+          telefone_cliente?: string | null
+          telefone_lojista?: string | null
+          updated_at?: string
+        }
+        Update: {
+          aceita_em?: string | null
+          cidade?: string
+          cliente_id?: string
+          coletada_em?: string | null
+          created_at?: string
+          endereco_entrega?: string
+          entregador_id?: string | null
+          entregue_em?: string | null
+          id?: string
+          loja_id?: string
+          lojista_id?: string
+          order_log_id?: string | null
+          status?: Database["public"]["Enums"]["mf_entrega_status"]
+          taxa_centavos?: number
+          telefone_cliente?: string | null
+          telefone_lojista?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_entregas_entregador_id_fkey"
+            columns: ["entregador_id"]
+            isOneToOne: false
+            referencedRelation: "mf_entregadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mf_entregas_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "mf_lojas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mf_entregas_order_log_id_fkey"
+            columns: ["order_log_id"]
+            isOneToOne: false
+            referencedRelation: "mf_order_log"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mf_favoritos: {
         Row: {
           created_at: string
@@ -1502,6 +1689,7 @@ export type Database = {
       }
       mf_lojas: {
         Row: {
+          aceita_entregador: boolean
           ativa: boolean
           banner_url: string | null
           created_at: string
@@ -1513,10 +1701,12 @@ export type Database = {
           nome: string
           owner_id: string
           slug: string
+          taxa_entrega_padrao_centavos: number
           telefone_whatsapp: string
           updated_at: string
         }
         Insert: {
+          aceita_entregador?: boolean
           ativa?: boolean
           banner_url?: string | null
           created_at?: string
@@ -1528,10 +1718,12 @@ export type Database = {
           nome: string
           owner_id: string
           slug: string
+          taxa_entrega_padrao_centavos?: number
           telefone_whatsapp: string
           updated_at?: string
         }
         Update: {
+          aceita_entregador?: boolean
           ativa?: boolean
           banner_url?: string | null
           created_at?: string
@@ -1543,6 +1735,7 @@ export type Database = {
           nome?: string
           owner_id?: string
           slug?: string
+          taxa_entrega_padrao_centavos?: number
           telefone_whatsapp?: string
           updated_at?: string
         }
@@ -3443,6 +3636,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      mf_entrega_status:
+        | "disponivel"
+        | "aceita"
+        | "coletada"
+        | "entregue"
+        | "cancelada"
+      mf_entregador_status: "pendente" | "aprovado" | "recusado" | "suspenso"
+      mf_entregador_veiculo: "moto" | "carro" | "bicicleta" | "a_pe"
       nutrition_specialty:
         | "nutricao_clinica"
         | "nutricao_esportiva"
@@ -3580,6 +3781,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      mf_entrega_status: [
+        "disponivel",
+        "aceita",
+        "coletada",
+        "entregue",
+        "cancelada",
+      ],
+      mf_entregador_status: ["pendente", "aprovado", "recusado", "suspenso"],
+      mf_entregador_veiculo: ["moto", "carro", "bicicleta", "a_pe"],
       nutrition_specialty: [
         "nutricao_clinica",
         "nutricao_esportiva",

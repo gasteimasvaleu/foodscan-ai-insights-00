@@ -81,6 +81,10 @@ import MercadoFacilCarrinho from "./pages/mercado-facil/Carrinho";
 import MFLojistaDashboard from "./pages/mercado-facil/LojistaDashboard";
 import MFLojistaConfigLoja from "./pages/mercado-facil/LojistaConfigLoja";
 import MFLojistaProdutos from "./pages/mercado-facil/LojistaProdutos";
+import MFLojistaPedidos from "./pages/mercado-facil/LojistaPedidos";
+import MFEntregadorCadastro from "./pages/mercado-facil/EntregadorCadastro";
+import MFEntregadorDashboard from "./pages/mercado-facil/EntregadorDashboard";
+import MFEntregadorEntregas from "./pages/mercado-facil/EntregadorEntregas";
 import AdminMercadoFacil from "./pages/admin/AdminMercadoFacil";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
@@ -204,6 +208,10 @@ const App = () => (
             <Route path="/mercado-facil/lojista" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaDashboard /></ProRoute>} />
             <Route path="/mercado-facil/lojista/loja" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaConfigLoja /></ProRoute>} />
             <Route path="/mercado-facil/lojista/produtos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaProdutos /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/pedidos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaPedidos /></ProRoute>} />
+            <Route path="/mercado-facil/entregador" element={<MFEntregadorDashboard />} />
+            <Route path="/mercado-facil/entregador/cadastro" element={<MFEntregadorCadastro />} />
+            <Route path="/mercado-facil/entregador/entregas" element={<MFEntregadorEntregas />} />
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
 
 

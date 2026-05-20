@@ -19,6 +19,8 @@ export interface MFLoja {
   endereco: { cidade?: string; bairro?: string; rua?: string } | null;
   horario_funcionamento: Record<string, string> | null;
   ativa: boolean;
+  aceita_entregador?: boolean;
+  taxa_entrega_padrao_centavos?: number;
   created_at: string;
   updated_at: string;
 }
