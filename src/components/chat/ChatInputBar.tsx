@@ -318,6 +318,7 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
                 />
               </button>
             )}
+            {!isRecording && leadingActions}
           </div>
 
           <AnimatePresence mode="wait" initial={false}>
