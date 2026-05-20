@@ -60,7 +60,7 @@ const Carrinho = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name, whatsapp_phone")
+      .select("name, telefone_whatsapp")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
