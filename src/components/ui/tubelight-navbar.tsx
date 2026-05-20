@@ -139,7 +139,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                 key={item.name}
                 onClick={(e) => handleItemClick(item, e)}
                 className={cn(
-                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "relative cursor-pointer text-sm font-semibold px-2 sm:px-3 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
                   "text-white/90 hover:text-white active:scale-110",
                   "transition-all duration-500",
                   moreSheetOpen && "bg-white/20 text-white",
