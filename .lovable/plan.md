@@ -1,27 +1,35 @@
-## Objetivo
-Adicionar um card hero acima do card de busca em `/mercado-facil`, com a imagem `galegacomsacola.png` à esquerda e o texto "Compare Preços e Economize" + subtítulo à direita.
+## Destaque do texto no hero card de /mercado-facil
 
-## Mudança em `src/pages/mercado-facil/Index.tsx`
-Inserir antes do card de busca (linha 94):
+Envolver o bloco de texto à direita ("Compare Preços e Economize" + subtítulo) em um card interno com efeito visual de destaque, mantendo a imagem `galegacomsacola.png` à esquerda.
 
-```tsx
-<div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 shadow-sm flex items-center gap-3">
-  <img
-    src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/galegacomsacola.png"
-    alt=""
-    className="w-24 h-24 object-contain shrink-0"
-  />
-  <div className="min-w-0">
-    <h2 className="text-base font-semibold text-[#FD46A1] leading-tight">
-      Compare Preços e Economize
-    </h2>
-    <p className="text-xs text-foreground/60 mt-1">
-      Encontre os melhores preços em supermercados próximos a você
-    </p>
-  </div>
-</div>
+### Mudanças em `src/pages/mercado-facil/Index.tsx` (linhas 100–107)
+
+- Trocar o `<div className="min-w-0">` que envolve o `<h2>` e `<p>` por um card interno:
+  - Fundo com gradiente suave rosa: `bg-gradient-to-br from-[#FFD1E7] via-white to-[#FFE9F3]`
+  - Borda: `border border-[#FD46A1]/40`
+  - `rounded-2xl p-3 shadow-sm`
+  - `relative overflow-hidden` para suportar o brilho
+- Adicionar um brilho animado (shine) por cima usando um `<span>` absoluto com `bg-gradient-to-r from-transparent via-white/60 to-transparent` e `animate-[shine_2.8s_ease-in-out_infinite]`
+- Manter `<h2>` em `text-[#FD46A1]` e `<p>` em `text-foreground/70` (leve ajuste de contraste sobre o fundo rosa claro)
+
+### Keyframe `shine`
+
+Adicionar em `tailwind.config.ts` (dentro de `theme.extend.keyframes` e `animation`):
+
+```ts
+keyframes: {
+  shine: {
+    '0%':   { transform: 'translateX(-120%)' },
+    '60%':  { transform: 'translateX(120%)' },
+    '100%': { transform: 'translateX(120%)' },
+  },
+},
+animation: {
+  shine: 'shine 2.8s ease-in-out infinite',
+},
 ```
 
-## Fora do escopo
-- Animação, CTA ou link no card.
-- Mudanças no card de busca.
+### Fora de escopo
+
+- Não alterar a imagem, o card externo, o buscador, nem qualquer lógica.
+- Sem novos textos ou CTA.
