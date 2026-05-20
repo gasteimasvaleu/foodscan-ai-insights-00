@@ -42,6 +42,7 @@ const Categoria = () => {
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={cat?.name ?? "Categoria"} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
+        {cat && <MFCategoryHero slug={cat.slug} name={cat.name} emoji={cat.icon_emoji} />}
         <div className="relative mb-3">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
           <input
