@@ -1,22 +1,19 @@
-## Mostrar Tubelight Navbar no Mercado Fácil
+## Filtro "Novidades" — últimos 7 dias
 
-Hoje a navbar inferior está explicitamente escondida em todas as rotas `/mercado-facil/*` por uma condição em `src/App.tsx`.
+Atualizar a lógica do filtro em `src/pages/mercado-facil/Index.tsx` (bloco `useMemo` de `filtered`).
 
 ### Mudança
 
-Remover apenas o trecho `|| location.pathname.startsWith('/mercado-facil')` da condição em `AuthAwareNavbar` (linha 119 de `src/App.tsx`).
+No ramo `quickFilter === "novidades"`: filtrar produtos cujo `created_at` é maior ou igual a hoje menos 7 dias, mantendo a ordenação do mais recente para o mais antigo.
 
-As demais regras de ocultação continuam:
-- `/auth`
-- `/comunidade/chat`
-- `/comunidade/dm/:id`
-- `/to-aqui/venue/:id/chat`
+```ts
+} else if (quickFilter === "novidades") {
+  const seteDiasAtras = new Date();
+  seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+  arr = arr
+    .filter((p) => p.created_at && new Date(p.created_at) >= seteDiasAtras)
+    .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+}
+```
 
-### Por que é seguro
-
-Todas as 12 páginas do Mercado Fácil já usam `pb-28` no `<main>`, então o conteúdo não fica coberto pela Tubelight Navbar.
-
-### Não incluído
-
-- Não vou criar item dedicado "Mercado Fácil" na navbar (continua acessível pelo Menu +).
-- Não vou tocar em outros lugares onde a navbar é escondida (paywall, VIP, etc.).
+Sem mudanças em backend, schema ou outros filtros.

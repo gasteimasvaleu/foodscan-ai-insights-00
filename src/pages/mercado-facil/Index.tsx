@@ -58,7 +58,11 @@ const MercadoFacilIndex = () => {
     } else if (quickFilter === "menor_preco") {
       arr = [...arr].sort((a, b) => (a.preco_promo_centavos ?? a.preco_centavos) - (b.preco_promo_centavos ?? b.preco_centavos));
     } else if (quickFilter === "novidades") {
-      arr = [...arr].sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+      const seteDiasAtras = new Date();
+      seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+      arr = arr
+        .filter((p) => p.created_at && new Date(p.created_at) >= seteDiasAtras)
+        .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     }
     return arr;
   }, [search, produtos, quickFilter]);
