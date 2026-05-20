@@ -153,8 +153,8 @@ const NutriCoach = () => {
   if (loading) return null;
   if (!user) return <Navigate to="/auth" replace />;
 
-  const send = async () => {
-    const text = input.trim();
+  const send = async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
     if (!text || isLoading) return;
 
     const userMsg: Message = { role: 'user', content: text };
@@ -192,6 +192,7 @@ const NutriCoach = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
