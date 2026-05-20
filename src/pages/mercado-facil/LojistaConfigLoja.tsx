@@ -168,7 +168,7 @@ const LojistaConfigLoja = () => {
         </div>
         <Button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || uploading}
           className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12 text-base"
         >
           {saving ? "Salvando..." : "Salvar"}
