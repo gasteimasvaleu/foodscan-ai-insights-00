@@ -231,52 +231,12 @@ export default function DMThread() {
 
       {/* Composer */}
       <div className="border-t bg-card p-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-        {preview && (
-          <div className="relative inline-block mb-2 ml-2">
-            <img src={preview} alt="" className="h-20 rounded-xl object-cover" />
-            <button
-              onClick={() => {
-                setFile(null);
-                setPreview(null);
-              }}
-              className="absolute -top-1.5 -right-1.5 bg-[#FD46A1] text-white rounded-full p-0.5"
-              aria-label="Remover"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => inputFileRef.current?.click()}
-            className="p-2 text-muted-foreground hover:text-primary"
-            aria-label="Anexar foto"
-          >
-            <ImagePlus size={22} />
-          </button>
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onSelectFile}
-          />
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
-            placeholder="Mensagem..."
-            className="flex-1 bg-muted rounded-full px-4 py-2.5 text-base outline-none border border-transparent focus:border-primary/40"
-          />
-          <button
-            onClick={send}
-            disabled={sending || (!text.trim() && !file)}
-            className="bg-[#FD46A1] disabled:opacity-40 text-white p-2.5 rounded-full"
-            aria-label="Enviar"
-          >
-            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-          </button>
-        </div>
+        <ChatInputBar
+          onSend={(t, files) => send(t, files)}
+          onTextChange={setText}
+          placeholder="Mensagem..."
+          isLoading={sending}
+        />
       </div>
     </div>
   );
