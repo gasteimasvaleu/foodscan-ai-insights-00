@@ -240,13 +240,23 @@ const MercadoFacilIndex = () => {
                           <div className="w-full h-full flex items-center justify-center text-2xl">🏪</div>
                         )}
                       </div>
-                      <div className="min-w-0">
+                      <div className="flex-1 min-w-0">
                         <p className="text-base text-foreground truncate">{l.nome}</p>
                         {l.descricao && (
                           <p className="text-xs text-foreground/60 line-clamp-2">{l.descricao}</p>
                         )}
                       </div>
+                      {(() => {
+                        const partes = [l.endereco?.bairro, l.endereco?.cidade].filter(Boolean);
+                        if (partes.length === 0) return null;
+                        return (
+                          <p className="text-xs text-foreground/60 text-right shrink-0 max-w-[40%] line-clamp-2">
+                            {partes.join(" · ")}
+                          </p>
+                        );
+                      })()}
                     </Link>
+
                   ))}
                 </div>
               )}
