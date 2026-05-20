@@ -101,12 +101,12 @@ const NativeIOSSplash: React.FC<{ isVisible: boolean; onShortTimeout: () => void
             className="w-full h-full object-cover pointer-events-none select-none"
             draggable={false}
           />
-          <Loader
-            size={64}
+          <div
             className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-            // posicionado abaixo da logo central da imagem nativa
-            {...({ style: { top: '72%' } } as any)}
-          />
+            style={{ top: '72%' }}
+          >
+            <Loader size={64} />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
