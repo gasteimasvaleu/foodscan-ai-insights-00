@@ -562,7 +562,9 @@ export type Database = {
           created_at: string
           deleted_reason: string | null
           id: string
+          image_url: string | null
           is_deleted: boolean
+          storage_path: string | null
           user_id: string
         }
         Insert: {
@@ -570,7 +572,9 @@ export type Database = {
           created_at?: string
           deleted_reason?: string | null
           id?: string
+          image_url?: string | null
           is_deleted?: boolean
+          storage_path?: string | null
           user_id: string
         }
         Update: {
@@ -578,7 +582,9 @@ export type Database = {
           created_at?: string
           deleted_reason?: string | null
           id?: string
+          image_url?: string | null
           is_deleted?: boolean
+          storage_path?: string | null
           user_id?: string
         }
         Relationships: [
@@ -3186,8 +3192,10 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          image_url: string | null
           is_mystery_tip: boolean
           mystery_hint: string | null
+          storage_path: string | null
           user_id: string
           venue_id: string
         }
@@ -3195,8 +3203,10 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_mystery_tip?: boolean
           mystery_hint?: string | null
+          storage_path?: string | null
           user_id: string
           venue_id: string
         }
@@ -3204,8 +3214,10 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_mystery_tip?: boolean
           mystery_hint?: string | null
+          storage_path?: string | null
           user_id?: string
           venue_id?: string
         }
