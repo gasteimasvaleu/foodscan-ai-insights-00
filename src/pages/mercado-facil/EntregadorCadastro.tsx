@@ -122,7 +122,7 @@ const EntregadorCadastro = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={isEdit ? "Editar entregador" : "Cadastro de Entregador"} backTo="/mercado-facil/entregador" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-[calc(env(safe-area-inset-bottom)+9rem)] px-4 max-w-xl mx-auto space-y-4">
         {!isEdit && (
           <div className="bg-[#FFD1E7] rounded-3xl p-4">
             <p className="text-sm">
