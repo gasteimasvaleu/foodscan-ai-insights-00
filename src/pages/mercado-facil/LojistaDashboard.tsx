@@ -88,6 +88,19 @@ const LojistaDashboard = () => {
                 <p className="text-xs text-foreground/60">Adicionar, editar e remover itens</p>
               </div>
             </Link>
+
+            <Link
+              to="/mercado-facil/lojista/pedidos"
+              className="flex items-center gap-3 bg-white rounded-3xl p-4 hover:shadow-md"
+            >
+              <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center">
+                <ListOrdered size={22} className="text-[#FD46A1]" />
+              </div>
+              <div className="flex-1">
+                <p className="text-base">Pedidos recebidos</p>
+                <p className="text-xs text-foreground/60">Histórico e acionamento de entregadores</p>
+              </div>
+            </Link>
           </>
         )}
       </main>
