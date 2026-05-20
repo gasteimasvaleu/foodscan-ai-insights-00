@@ -104,12 +104,25 @@ const Loja = () => {
               </div>
             </div>
 
-            <h3 className="text-base font-semibold pt-2">Produtos</h3>
             {produtos.length === 0 ? (
               <p className="text-sm text-foreground/60">Esta loja ainda não cadastrou produtos.</p>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
-                {produtos.map((p) => <MFProductCard key={p.id} produto={p} lojaId={loja.id} />)}
+              <div className="space-y-5">
+                {grupos.map((g) => (
+                  <section key={g.id ?? "outros"}>
+                    <h3 className="text-base font-semibold mb-2 px-1">
+                      {g.emoji && <span className="mr-1">{g.emoji}</span>}
+                      {g.name} <span className="text-foreground/40 text-sm">({g.items.length})</span>
+                    </h3>
+                    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-2 scrollbar-hide">
+                      {g.items.map((p) => (
+                        <div key={p.id} className="snap-start shrink-0 w-40">
+                          <MFProductCard produto={p} lojaId={loja.id} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ))}
               </div>
             )}
           </>
