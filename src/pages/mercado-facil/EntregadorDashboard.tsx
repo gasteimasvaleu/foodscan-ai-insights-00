@@ -121,6 +121,12 @@ const EntregadorDashboard = () => {
           </div>
         </div>
 
+        {entregador.status === "pendente" && (
+          <div className="bg-[#FFD1E7] rounded-3xl p-4 text-sm">
+            Seu cadastro está em análise. Assim que aprovado, você poderá ativar a disponibilidade e receber entregas.
+          </div>
+        )}
+
 
         <Link
           to="/mercado-facil/entregador/entregas"
