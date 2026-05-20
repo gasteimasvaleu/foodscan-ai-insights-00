@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
@@ -18,6 +18,7 @@ const empty = {
   nome: "",
   descricao: "",
   preco_reais: "",
+  preco_promo_reais: "",
   unidade: "un",
   categoria_id: "",
   foto_url: "",
