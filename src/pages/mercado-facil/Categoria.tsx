@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
+import { MFCategoryHero } from "@/components/mercado-facil/MFCategoryHero";
 import type { MFCategoria, MFProduto } from "@/lib/mercado-facil/types";
 
 const Categoria = () => {
