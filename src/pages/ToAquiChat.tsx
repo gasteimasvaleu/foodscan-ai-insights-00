@@ -407,36 +407,53 @@ export default function ToAquiChat() {
     setNeedIdentity(false);
   };
 
-  const send = async (overrideText?: string) => {
+  const send = async (overrideText?: string, filesArg: File[] = []) => {
     const text = (overrideText ?? input).trim();
-    if (!text || !user || !venueId || sending) return;
+    const file = filesArg[0];
+    if ((!text && !file) || !user || !venueId || sending) return;
     if (text.length > 500) {
       toast({ title: "Mensagem muito longa", description: "Máximo 500 caracteres.", variant: "destructive" });
       return;
     }
     setSending(true);
-    const { data: inserted, error } = await supabase
-      .from("venue_messages")
-      .insert({ venue_id: venueId, user_id: user.id, content: text })
-      .select("id, user_id, content, created_at")
-      .single();
-    setSending(false);
-    if (error) {
-      const msg = error.message || "";
+    try {
+      let image_url: string | null = null;
+      let storage_path: string | null = null;
+      if (file) {
+        const base64 = await compressImage(file, 1200, 0.85);
+        const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+        const path = `${user.id}/${Date.now()}.jpg`;
+        const { error: upErr } = await supabase.storage
+          .from("venue-chat-media")
+          .upload(path, blob, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
+        const { data: urlData } = supabase.storage.from("venue-chat-media").getPublicUrl(path);
+        image_url = urlData.publicUrl;
+        storage_path = path;
+      }
+      const { data: inserted, error } = await supabase
+        .from("venue_messages")
+        .insert({ venue_id: venueId, user_id: user.id, content: text, image_url, storage_path })
+        .select("id, user_id, content, image_url, created_at")
+        .single();
+      if (error) throw error;
+      if (inserted) {
+        setMessages((prev) =>
+          prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as VenueMsg]
+        );
+        setTimeout(scrollToBottom, 50);
+      }
+      if (!overrideText) setInput("");
+    } catch (error: any) {
+      const msg = error?.message || "";
       let friendly = "Erro ao enviar mensagem";
       if (msg.includes("blocked_word")) friendly = "Sua mensagem contém termos não permitidos.";
       else if (msg.includes("blocked_content")) friendly = "Links, telefones e emails não são permitidos.";
       else if (msg.includes("rate_limit")) friendly = "Aguarde alguns segundos antes de enviar mais mensagens.";
       toast({ title: "Não foi possível enviar", description: friendly, variant: "destructive" });
-      return;
+    } finally {
+      setSending(false);
     }
-    if (inserted) {
-      setMessages((prev) =>
-        prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as VenueMsg]
-      );
-      setTimeout(scrollToBottom, 50);
-    }
-    if (!overrideText) setInput("");
   };
 
   const sendInteraction = async (type: InteractionType) => {
