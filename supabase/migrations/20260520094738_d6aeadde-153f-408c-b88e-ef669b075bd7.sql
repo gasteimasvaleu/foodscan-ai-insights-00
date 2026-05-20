@@ -1,0 +1,1 @@
+CREATE POLICY "Cliente cria entrega" ON public.mf_entregas FOR INSERT TO authenticated WITH CHECK (cliente_id = auth.uid() AND EXISTS (SELECT 1 FROM public.mf_lojas l WHERE l.id = mf_entregas.loja_id AND l.owner_id = mf_entregas.lojista_id));
