@@ -1,19 +1,26 @@
-## Filtro "Novidades" — últimos 7 dias
+## Padronizar fundo + bordas rosas no Mercado Fácil
 
-Atualizar a lógica do filtro em `src/pages/mercado-facil/Index.tsx` (bloco `useMemo` de `filtered`).
+### 1. Fundo das páginas
 
-### Mudança
+Trocar `bg-[#F7FAFB]` por `bg-gradient-primary` (padrão usado em FoodScan, FitTracker, About, etc.) em todas as 12 páginas e ecrãs de loading:
 
-No ramo `quickFilter === "novidades"`: filtrar produtos cujo `created_at` é maior ou igual a hoje menos 7 dias, mantendo a ordenação do mais recente para o mais antigo.
+- `Index.tsx`, `Carrinho.tsx`, `Categoria.tsx`, `Loja.tsx`, `Produto.tsx`
+- `LojistaDashboard.tsx`, `LojistaConfigLoja.tsx`, `LojistaProdutos.tsx`, `LojistaPedidos.tsx`
+- `EntregadorCadastro.tsx`, `EntregadorDashboard.tsx`, `EntregadorEntregas.tsx`
 
-```ts
-} else if (quickFilter === "novidades") {
-  const seteDiasAtras = new Date();
-  seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
-  arr = arr
-    .filter((p) => p.created_at && new Date(p.created_at) >= seteDiasAtras)
-    .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
-}
-```
+### 2. Borda rosa nos cards e botões brancos
 
-Sem mudanças em backend, schema ou outros filtros.
+Para todo elemento que use `bg-white rounded-3xl` (cards) ou `bg-white rounded-2xl/full` (botões/ícones), acrescentar `border border-[#FD46A1]/30` (sutil, no padrão glassmorphism do app).
+
+Aplica nos arquivos acima sempre que aparecer `bg-white rounded-...`. Especificamente:
+
+- Cards de pedidos, entregas, produtos, lojas, dashboards
+- Inputs internos do carrinho que usam `bg-[#F7FAFB]` também ganham `border border-[#FD46A1]/30` para legibilidade sobre o novo fundo gradient
+- Botões com fundo branco e texto rosa (ex.: `bg-white text-[#FD46A1]`) recebem `border-2 border-[#FD46A1]` (já existem em alguns lugares, padronizar)
+
+### Não incluído
+
+- Não vou mudar o header rosa (`MFHeader`).
+- Não vou tocar nos botões já rosa-preenchidos (`bg-[#FD46A1]`).
+- Não vou mexer em modais (já têm padrão glassmorphism).
+- Não vou ajustar paddings/sombras.
