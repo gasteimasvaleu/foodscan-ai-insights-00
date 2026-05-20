@@ -79,6 +79,8 @@ const LojistaConfigLoja = () => {
         setTelefone(l.telefone_whatsapp);
         setCidade(l.endereco?.cidade ?? "");
         setBairro(l.endereco?.bairro ?? "");
+        setRua(((l.endereco as any)?.rua ?? "").toString());
+        setNumero(((l.endereco as any)?.numero ?? "").toString());
         setUf(((l.endereco as any)?.uf ?? "").toString().toUpperCase());
         setFotoUrl(l.foto_url ?? "");
       });
