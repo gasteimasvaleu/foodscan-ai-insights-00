@@ -46,6 +46,10 @@ const MercadoFacilIndex = () => {
     })();
   }, []);
 
+  const lojaNomeById = useMemo(
+    () => Object.fromEntries(lojas.map((l) => [l.id, l.nome])) as Record<string, string>,
+    [lojas]
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
