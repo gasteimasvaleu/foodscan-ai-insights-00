@@ -62,6 +62,8 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const { subscriptionStatus } = useAuthContext()
+  const { isIOS, isNative } = useNativePlatform()
+  const liquidGlass = isNative && isIOS
   const isPro = !!subscriptionStatus?.subscribed
 
   const extrasItems = moreSheetItems.filter((i) => i.isExtra)
