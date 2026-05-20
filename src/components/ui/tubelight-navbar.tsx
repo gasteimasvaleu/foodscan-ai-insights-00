@@ -5,6 +5,8 @@ import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, Mes
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useAuthContext } from "@/contexts/AuthProvider"
+import { useNativePlatform } from "@/hooks/useNativePlatform"
+import { LiquidGlassFilter } from "@/components/ui/liquid-glass-filter"
 
 interface NavItem {
   name: string
