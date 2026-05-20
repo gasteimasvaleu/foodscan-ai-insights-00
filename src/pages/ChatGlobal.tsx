@@ -200,37 +200,55 @@ export default function ChatGlobal() {
     }, 1500);
   };
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || !user || sending) return;
+  const send = async (overrideText?: string, files: File[] = []) => {
+    const text = (overrideText ?? input).trim();
+    if ((!text && files.length === 0) || !user || sending) return;
     if (text.length > 500) {
       toast({ title: "Mensagem muito longa", description: "Máximo 500 caracteres.", variant: "destructive" });
       return;
     }
     setSending(true);
-    const { data: inserted, error } = await supabase
-      .from("chat_messages")
-      .insert({ user_id: user.id, content: text })
-      .select("id, user_id, content, created_at, is_deleted")
-      .single();
-    setSending(false);
-    if (error) {
-      const msg = error.message || "";
+    try {
+      let image_url: string | null = null;
+      let storage_path: string | null = null;
+      const file = files[0];
+      if (file) {
+        const base64 = await compressImage(file, 1200, 0.85);
+        const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+        const path = `${user.id}/${Date.now()}.jpg`;
+        const { error: upErr } = await supabase.storage
+          .from("community-images")
+          .upload(path, blob, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
+        const { data: urlData } = supabase.storage.from("community-images").getPublicUrl(path);
+        image_url = urlData.publicUrl;
+        storage_path = path;
+      }
+      const { data: inserted, error } = await supabase
+        .from("chat_messages")
+        .insert({ user_id: user.id, content: text, image_url, storage_path })
+        .select("id, user_id, content, image_url, created_at, is_deleted")
+        .single();
+      if (error) throw error;
+      if (inserted) {
+        await ensureProfile(user.id);
+        setMessages((prev) =>
+          prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as ChatMsg]
+        );
+        setTimeout(() => scrollToBottom(), 50);
+      }
+      if (!overrideText) setInput("");
+    } catch (e: any) {
+      const msg = e?.message || "";
       let friendly = "Erro ao enviar mensagem";
       if (msg.includes("blocked_word")) friendly = "Sua mensagem contém termos não permitidos.";
       else if (msg.includes("rate_limit")) friendly = "Aguarde alguns segundos antes de enviar mais mensagens.";
       toast({ title: "Não foi possível enviar", description: friendly, variant: "destructive" });
-      return;
+    } finally {
+      setSending(false);
     }
-    if (inserted) {
-      await ensureProfile(user.id);
-      setMessages((prev) =>
-        prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as ChatMsg]
-      );
-      setTimeout(() => scrollToBottom(), 50);
-    }
-    setInput("");
   };
+
 
   const handleReport = async (messageId: string) => {
     if (!user) return;
