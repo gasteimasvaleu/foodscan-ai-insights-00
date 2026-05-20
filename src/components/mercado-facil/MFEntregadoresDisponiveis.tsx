@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { VEICULO_LABEL, type MFEntregador } from "@/lib/mercado-facil/entregador-types";
 import { sendDeliveryRequestToWhatsApp } from "@/lib/mercado-facil/whatsapp";
+import { formatBRL } from "@/lib/mercado-facil/formatters";
 import type { MFCartItem, MFLoja } from "@/lib/mercado-facil/types";
+
+function faixaPreco(min: number, max: number): string {
+  if (!min && !max) return "Preço a combinar";
+  if (min && max && min !== max) return `${formatBRL(min)} – ${formatBRL(max)}`;
+  return formatBRL(min || max);
+}
 
 interface Props {
   loja: MFLoja;
