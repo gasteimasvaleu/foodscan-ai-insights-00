@@ -17,7 +17,11 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-gradient-to-br from-[#1a0a14]/95 via-[#FA1690]/30 to-[#1a0a14]/95 backdrop-blur-xl"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-white/95 backdrop-blur-xl"
+          style={{
+            backgroundImage:
+              'radial-gradient(ellipse at center, transparent 35%, rgba(253,70,161,0.18) 75%, rgba(253,70,161,0.35) 100%)',
+          }}
         >
           <div className="relative z-10 flex flex-col items-center gap-8 px-8 text-center">
             <AnimatedSpinner size="9rem" />
@@ -26,7 +30,7 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-2xl font-bold text-white drop-shadow-lg"
+              className="text-2xl font-bold text-[#FD46A1]"
             >
               {message}
             </motion.p>
@@ -36,7 +40,7 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.35 }}
-                className="text-white/80 text-sm drop-shadow max-w-xs"
+                className="text-foreground/60 text-sm max-w-xs"
               >
                 {subMessage}
               </motion.p>
