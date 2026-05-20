@@ -5,12 +5,29 @@ import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { Button } from "@/components/ui/button";
 import { useMFCart } from "@/hooks/mercado-facil/useMFCart";
 import { useAuthContext } from "@/contexts/AuthProvider";
+import { useSubscription } from "@/hooks/useSubscription";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
+import { ProfileHeaderCard } from "@/components/profile/ProfileHeaderCard";
 import type { MFLoja } from "@/lib/mercado-facil/types";
+
+interface FullProfile {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  cover_url: string | null;
+  bio: string | null;
+  email_public: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  created_at: string;
+  telefone_whatsapp?: string | null;
+}
 
 const ADDRESS_KEY = "mf_delivery_address_v1";
 
