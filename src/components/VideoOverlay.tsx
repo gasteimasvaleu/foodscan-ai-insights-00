@@ -17,10 +17,10 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-white/40 backdrop-blur-2xl"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-white/15 backdrop-blur-sm"
           style={{
             backgroundImage:
-              'radial-gradient(ellipse at center, transparent 35%, rgba(253,70,161,0.14) 75%, rgba(253,70,161,0.28) 100%)',
+              'radial-gradient(ellipse at center, transparent 35%, rgba(253,70,161,0.08) 75%, rgba(253,70,161,0.18) 100%)',
           }}
         >
           <div className="relative z-10 flex flex-col items-center gap-8 px-8 text-center">
