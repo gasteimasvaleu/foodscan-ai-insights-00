@@ -165,6 +165,16 @@ const LojistaConfigLoja = () => {
               </Select>
             </div>
           </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2 col-span-2">
+              <Label>Rua</Label>
+              <Input value={rua} onChange={(e) => setRua(e.target.value)} className="text-base" />
+            </div>
+            <div className="space-y-2">
+              <Label>Número</Label>
+              <Input value={numero} onChange={(e) => setNumero(e.target.value)} inputMode="numeric" className="text-base" />
+            </div>
+          </div>
           <div className="space-y-2">
             <Label>Bairro</Label>
             <Input value={bairro} onChange={(e) => setBairro(e.target.value)} className="text-base" />
