@@ -181,9 +181,9 @@ const LojistaProdutos = () => {
       </main>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="bg-white/90 backdrop-blur-md rounded-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-md w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? "Editar produto" : "Novo produto"}</DialogTitle>
+            <DialogTitle className="text-[#FD46A1]">{editing?.id ? "Editar produto" : "Novo produto"}</DialogTitle>
           </DialogHeader>
           {editing && (
             <div className="space-y-3">
@@ -218,6 +218,17 @@ const LojistaProdutos = () => {
                 </div>
               </div>
               <div className="space-y-1.5">
+                <Label>Preço promocional (R$)</Label>
+                <Input
+                  value={editing.preco_promo_reais}
+                  onChange={(e) => setEditing({ ...editing, preco_promo_reais: e.target.value })}
+                  inputMode="decimal"
+                  placeholder="Deixe em branco se não houver"
+                  className="text-base"
+                />
+                <p className="text-xs text-foreground/60">Se preenchido, o produto aparece no filtro Promoções.</p>
+              </div>
+              <div className="space-y-1.5">
                 <Label>Categoria</Label>
                 <Select
                   value={editing.categoria_id || "__none__"}
@@ -242,13 +253,44 @@ const LojistaProdutos = () => {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>URL da foto</Label>
-                <Input
-                  value={editing.foto_url}
-                  onChange={(e) => setEditing({ ...editing, foto_url: e.target.value })}
-                  placeholder="https://..."
-                  className="text-base"
-                />
+                <Label>Foto do produto</Label>
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl bg-[#FFD1E7] overflow-hidden shrink-0 flex items-center justify-center">
+                    {editing.foto_url ? (
+                      <img src={editing.foto_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImagePlus size={20} className="text-[#FD46A1]" />
+                    )}
+                  </div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUpload(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={uploading}
+                    className="flex-1 bg-white text-[#FD46A1] border-2 border-[#FD46A1] hover:bg-[#FFD1E7]/40 rounded-2xl h-10"
+                  >
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : editing.foto_url ? "Trocar foto" : "Enviar foto"}
+                  </Button>
+                  {editing.foto_url && (
+                    <Button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, foto_url: "" })}
+                      className="bg-red-100 text-red-600 hover:bg-red-200 rounded-2xl h-10 px-3"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
+                </div>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input
