@@ -54,7 +54,12 @@ const OfertaCard = ({ oferta }: { oferta: OfertaDestaque }) => (
 );
 
 export const OfertasDestaqueCarousel = () => {
-  const { data, isLoading } = useOfertasDestaque();
+  const { data, isLoading, isError, error } = useOfertasDestaque();
+
+  if (isError) {
+    console.warn("[OfertasDestaqueCarousel] erro ao carregar ofertas:", error);
+    return null;
+  }
 
   if (isLoading) {
     return (
