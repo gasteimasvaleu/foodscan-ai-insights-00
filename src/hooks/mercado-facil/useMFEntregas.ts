@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { MFEntrega, MFEntregaStatus } from "@/lib/mercado-facil/entregador-types";
+import { normalizeCidade } from "@/lib/mercado-facil/formatters";
 
 interface UseEntregasArgs {
   scope: "lojista" | "entregador-disponivel" | "entregador-ativa" | "entregador-historico";
@@ -20,7 +21,7 @@ export function useMFEntregas({ scope, userId, entregadorId, cidade }: UseEntreg
     if (scope === "lojista" && userId) {
       q = q.eq("lojista_id", userId);
     } else if (scope === "entregador-disponivel" && cidade) {
-      q = q.eq("status", "disponivel").eq("cidade", cidade);
+      q = q.eq("status", "disponivel").eq("cidade", normalizeCidade(cidade));
     } else if (scope === "entregador-ativa" && entregadorId) {
       q = q.eq("entregador_id", entregadorId).in("status", ["aceita", "coletada"]);
     } else if (scope === "entregador-historico" && entregadorId) {

@@ -1,6 +1,6 @@
 import { openExternalUrl } from "@/lib/openExternal";
 import { supabase } from "@/integrations/supabase/client";
-import { cleanPhone, formatBRL } from "./formatters";
+import { cleanPhone, formatBRL, normalizeCidade } from "./formatters";
 import type { MFCartItem, MFLoja } from "./types";
 import type { MFEntregador } from "./entregador-types";
 
@@ -27,7 +27,7 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     lojista_id: loja.owner_id,
     cliente_id: clienteId,
     endereco_entrega: endereco,
-    cidade,
+    cidade: normalizeCidade(cidade),
     taxa_centavos: taxa,
     status: "disponivel",
     telefone_cliente: telefoneCliente ?? null,
