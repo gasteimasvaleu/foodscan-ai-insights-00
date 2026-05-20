@@ -11,6 +11,7 @@ const Categoria = () => {
   const { slug } = useParams<{ slug: string }>();
   const [cat, setCat] = useState<MFCategoria | null>(null);
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
+  const [lojaNomeById, setLojaNomeById] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
 
@@ -26,7 +27,13 @@ const Categoria = () => {
           .eq("categoria_id", (c as MFCategoria).id)
           .eq("ativo", true)
           .order("nome");
-        setProdutos((p ?? []) as MFProduto[]);
+        const prods = (p ?? []) as MFProduto[];
+        setProdutos(prods);
+        const ids = Array.from(new Set(prods.map((x) => x.loja_id).filter(Boolean)));
+        if (ids.length > 0) {
+          const { data: ls } = await supabase.from("mf_lojas").select("id,nome").in("id", ids);
+          setLojaNomeById(Object.fromEntries((ls ?? []).map((l: any) => [l.id, l.nome])));
+        }
       }
       setLoading(false);
     })();
