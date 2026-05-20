@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
@@ -18,6 +18,7 @@ const empty = {
   nome: "",
   descricao: "",
   preco_reais: "",
+  preco_promo_reais: "",
   unidade: "un",
   categoria_id: "",
   foto_url: "",
@@ -56,17 +57,45 @@ const LojistaProdutos = () => {
     })();
   }, [user?.id]);
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (file: File) => {
+    if (!user || !editing) return;
+    if (file.size > 5 * 1024 * 1024) return toast({ title: "Imagem muito grande (máx 5MB)", variant: "destructive" });
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("mercado-facil-produtos").upload(path, file, { upsert: false });
+    if (error) {
+      setUploading(false);
+      return toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-produtos").getPublicUrl(path);
+    setEditing({ ...editing, foto_url: data.publicUrl });
+    setUploading(false);
+  };
+
   const handleSave = async () => {
     if (!editing || !loja) return;
     const preco = Math.round(parseFloat(editing.preco_reais.replace(",", ".")) * 100);
     if (!editing.nome.trim() || isNaN(preco) || preco < 0)
       return toast({ title: "Preencha nome e preço válidos", variant: "destructive" });
 
+    let precoPromo: number | null = null;
+    if (editing.preco_promo_reais.trim()) {
+      const pp = Math.round(parseFloat(editing.preco_promo_reais.replace(",", ".")) * 100);
+      if (isNaN(pp) || pp < 0) return toast({ title: "Preço promocional inválido", variant: "destructive" });
+      if (pp >= preco) return toast({ title: "Preço promocional deve ser menor que o preço normal", variant: "destructive" });
+      precoPromo = pp;
+    }
+
     const payload = {
       loja_id: loja.id,
       nome: editing.nome.trim(),
       descricao: editing.descricao.trim() || null,
       preco_centavos: preco,
+      preco_promo_centavos: precoPromo,
       unidade: editing.unidade,
       categoria_id: editing.categoria_id || null,
       foto_url: editing.foto_url.trim() || null,
@@ -126,6 +155,7 @@ const LojistaProdutos = () => {
                           nome: p.nome,
                           descricao: p.descricao ?? "",
                           preco_reais: (p.preco_centavos / 100).toFixed(2).replace(".", ","),
+                          preco_promo_reais: p.preco_promo_centavos != null ? (p.preco_promo_centavos / 100).toFixed(2).replace(".", ",") : "",
                           unidade: p.unidade,
                           categoria_id: p.categoria_id ?? "",
                           foto_url: p.foto_url ?? "",
@@ -151,9 +181,9 @@ const LojistaProdutos = () => {
       </main>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="bg-white/90 backdrop-blur-md rounded-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-md w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? "Editar produto" : "Novo produto"}</DialogTitle>
+            <DialogTitle className="text-[#FD46A1]">{editing?.id ? "Editar produto" : "Novo produto"}</DialogTitle>
           </DialogHeader>
           {editing && (
             <div className="space-y-3">
@@ -188,6 +218,17 @@ const LojistaProdutos = () => {
                 </div>
               </div>
               <div className="space-y-1.5">
+                <Label>Preço promocional (R$)</Label>
+                <Input
+                  value={editing.preco_promo_reais}
+                  onChange={(e) => setEditing({ ...editing, preco_promo_reais: e.target.value })}
+                  inputMode="decimal"
+                  placeholder="Deixe em branco se não houver"
+                  className="text-base"
+                />
+                <p className="text-xs text-foreground/60">Se preenchido, o produto aparece no filtro Promoções.</p>
+              </div>
+              <div className="space-y-1.5">
                 <Label>Categoria</Label>
                 <Select
                   value={editing.categoria_id || "__none__"}
@@ -212,13 +253,44 @@ const LojistaProdutos = () => {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>URL da foto</Label>
-                <Input
-                  value={editing.foto_url}
-                  onChange={(e) => setEditing({ ...editing, foto_url: e.target.value })}
-                  placeholder="https://..."
-                  className="text-base"
-                />
+                <Label>Foto do produto</Label>
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl bg-[#FFD1E7] overflow-hidden shrink-0 flex items-center justify-center">
+                    {editing.foto_url ? (
+                      <img src={editing.foto_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImagePlus size={20} className="text-[#FD46A1]" />
+                    )}
+                  </div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUpload(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={uploading}
+                    className="flex-1 bg-white text-[#FD46A1] border-2 border-[#FD46A1] hover:bg-[#FFD1E7]/40 rounded-2xl h-10"
+                  >
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : editing.foto_url ? "Trocar foto" : "Enviar foto"}
+                  </Button>
+                  {editing.foto_url && (
+                    <Button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, foto_url: "" })}
+                      className="bg-red-100 text-red-600 hover:bg-red-200 rounded-2xl h-10 px-3"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
+                </div>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input
