@@ -191,6 +191,30 @@ const EntregadorCadastro = () => {
             </div>
           </div>
           <div>
+            <Label>Faixa de preço por entrega</Label>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={taxaMin}
+                onChange={(e) => setTaxaMin(e.target.value)}
+                placeholder="Mín (R$)"
+                className="text-base"
+              />
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={taxaMax}
+                onChange={(e) => setTaxaMax(e.target.value)}
+                placeholder="Máx (R$)"
+                className="text-base"
+              />
+            </div>
+            <p className="text-[11px] text-foreground/60 mt-1">
+              Valor de referência mostrado ao cliente. O combinado final é fechado no WhatsApp.
+            </p>
+          </div>
+          <div>
             <Label>Foto (opcional)</Label>
             <div className="flex items-center gap-3 mt-1">
               {fotoUrl ? (
