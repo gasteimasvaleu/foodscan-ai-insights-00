@@ -75,6 +75,11 @@ const EntregadorCadastro = () => {
     if (!isValidWhatsApp(telefone)) return toast({ title: "WhatsApp inválido", variant: "destructive" });
     if (!cidade.trim() || !estado.trim()) return toast({ title: "Informe cidade e estado", variant: "destructive" });
 
+    const parseReais = (s: string) => Math.max(0, Math.round((Number((s || "").replace(",", ".")) || 0) * 100));
+    const tMin = parseReais(taxaMin);
+    let tMax = parseReais(taxaMax);
+    if (tMax > 0 && tMin > 0 && tMax < tMin) tMax = tMin;
+
     setSaving(true);
     const payload = {
       nome_completo: nome.trim(),
@@ -84,6 +89,8 @@ const EntregadorCadastro = () => {
       documento: documento.trim() || null,
       veiculo,
       raio_atendimento_km: Math.max(1, Number(raio) || 5),
+      taxa_min_centavos: tMin,
+      taxa_max_centavos: tMax,
       foto_url: fotoUrl.trim() || null,
     };
 
