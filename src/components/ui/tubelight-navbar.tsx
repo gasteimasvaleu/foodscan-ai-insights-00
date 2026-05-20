@@ -103,6 +103,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
 
   return (
     <>
+      {liquidGlass && <LiquidGlassFilter />}
       <div
         className={cn(
           "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
@@ -110,7 +111,42 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
         )}
       >
         <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
-        <div className="flex items-center gap-2 sm:gap-3 bg-[#FA1690]/85 border border-white/20 backdrop-blur-lg py-2 px-2 sm:px-3 rounded-2xl shadow-none">
+        <div
+          className={cn(
+            "relative flex items-center gap-2 sm:gap-3 backdrop-blur-2xl py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
+            "bg-[#FA1690]/40 border border-white/30",
+          )}
+          style={{
+            boxShadow:
+              "0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1), inset 1.5px 1.5px 0.5px rgba(255,255,255,0.55), inset -1px -1px 0.5px rgba(255,255,255,0.35)",
+          }}
+        >
+          {/* Liquid refraction layer (iOS native only) */}
+          {liquidGlass && (
+            <div
+              aria-hidden
+              className="absolute inset-0 rounded-2xl pointer-events-none"
+              style={{
+                backdropFilter: "blur(2px)",
+                WebkitBackdropFilter: "blur(2px)",
+                filter: "url(#liquid-glass)",
+                isolation: "isolate",
+              }}
+            />
+          )}
+
+          {/* Specular highlight (top sheen) */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-1/2 rounded-t-2xl pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 100%)",
+            }}
+          />
+
+          {/* Items */}
+          <div className="relative z-10 flex items-center gap-2 sm:gap-3">
           {items.map((item) => {
             const Icon = item.icon
             const isMore = item.url === "#more"
@@ -121,10 +157,12 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                 key={item.name}
                 onClick={(e) => handleItemClick(item, e)}
                 className={cn(
-                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
-                  "text-white/80 hover:text-white",
+                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "text-white/90 hover:text-white active:scale-110",
+                  "transition-all duration-500",
                   moreSheetOpen && "bg-white/20 text-white",
                 )}
+                style={{ transitionTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 2.2)" }}
               >
                 <span className="hidden md:inline">{item.name}</span>
                 <span className="md:hidden">
@@ -137,10 +175,12 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                 to={item.url}
                 onClick={(e) => handleItemClick(item, e)}
                 className={cn(
-                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center",
-                  "text-white/80 hover:text-white",
+                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "text-white/90 hover:text-white active:scale-110",
+                  "transition-all duration-500",
                   isActive && "bg-white/20 text-white",
                 )}
+                style={{ transitionTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 2.2)" }}
               >
                 <span className="hidden md:inline">{item.name}</span>
                 <span className="md:hidden">
@@ -153,8 +193,8 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                     initial={false}
                     transition={{
                       type: "spring",
-                      stiffness: 300,
-                      damping: 30,
+                      stiffness: 220,
+                      damping: 22,
                     }}
                   >
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-full">
@@ -167,8 +207,11 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               </Link>
             )
           })}
+          </div>
         </div>
       </div>
+
+
 
       <Sheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl border-t border-[#FA1690]/20 p-0">
