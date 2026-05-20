@@ -40,8 +40,8 @@ const Loja = () => {
                   <img src={loja.banner_url} alt="" className="w-full h-full object-cover" />
                 )}
               </div>
-              <div className="px-4 pb-4 -mt-10">
-                <div className="w-20 h-20 rounded-full border-4 border-white bg-[#FFD1E7] overflow-hidden shadow-sm">
+              <div className="px-4 pb-4 -mt-12 relative z-10">
+                <div className="w-24 h-24 rounded-full border-4 border-white bg-[#FFD1E7] overflow-hidden shadow-md">
                   {loja.foto_url ? (
                     <img src={loja.foto_url} alt={loja.nome} className="w-full h-full object-cover" />
                   ) : (
