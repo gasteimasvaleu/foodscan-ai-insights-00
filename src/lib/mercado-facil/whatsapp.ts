@@ -48,6 +48,13 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     ``,
     `Valor estimado do pedido: ${formatBRL(totalCentavos)}`,
     taxa > 0 ? `Taxa de entrega sugerida pela loja: ${formatBRL(taxa)}` : null,
+    entregador.taxa_min_centavos || entregador.taxa_max_centavos
+      ? `Sua faixa de entrega cadastrada: ${
+          entregador.taxa_min_centavos && entregador.taxa_max_centavos && entregador.taxa_min_centavos !== entregador.taxa_max_centavos
+            ? `${formatBRL(entregador.taxa_min_centavos)} – ${formatBRL(entregador.taxa_max_centavos)}`
+            : formatBRL(entregador.taxa_min_centavos || entregador.taxa_max_centavos)
+        }. Você confirma?`
+      : null,
     ``,
     `Você tem interesse em pegar essa entrega? Combina por aqui que eu te passo todos os detalhes.${clienteNome ? `\n\n— ${clienteNome}` : ""}`,
   ].filter(Boolean).join("\n");

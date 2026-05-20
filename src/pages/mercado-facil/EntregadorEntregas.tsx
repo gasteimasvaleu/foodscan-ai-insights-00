@@ -51,7 +51,7 @@ const EntregadorEntregas = () => {
                     <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
                       {ENTREGA_STATUS_LABEL[e.status]}
                     </span>
-                    <span className="text-[#FD46A1] font-bold">{formatBRL(e.taxa_centavos)}</span>
+                    <span className="text-[#FD46A1] font-bold">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</span>
                   </div>
                   <p className="text-sm">{e.endereco_entrega}</p>
                   <div className="flex gap-2">
@@ -107,7 +107,7 @@ const EntregadorEntregas = () => {
                   <div key={e.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm">{e.endereco_entrega}</p>
-                      <span className="text-[#FD46A1] font-bold">{formatBRL(e.taxa_centavos)}</span>
+                      <span className="text-[#FD46A1] font-bold">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</span>
                     </div>
                     <Button
                       onClick={() => aceitar(e.id, entregador.id)}

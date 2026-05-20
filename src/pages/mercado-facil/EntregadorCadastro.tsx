@@ -26,6 +26,8 @@ const EntregadorCadastro = () => {
   const [documento, setDocumento] = useState("");
   const [veiculo, setVeiculo] = useState<MFVeiculo>("moto");
   const [raio, setRaio] = useState("5");
+  const [taxaMin, setTaxaMin] = useState("");
+  const [taxaMax, setTaxaMax] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploadingFoto, setUploadingFoto] = useState(false);
@@ -61,6 +63,8 @@ const EntregadorCadastro = () => {
       setDocumento(entregador.documento ?? "");
       setVeiculo(entregador.veiculo);
       setRaio(String(entregador.raio_atendimento_km));
+      setTaxaMin(entregador.taxa_min_centavos ? (entregador.taxa_min_centavos / 100).toFixed(2) : "");
+      setTaxaMax(entregador.taxa_max_centavos ? (entregador.taxa_max_centavos / 100).toFixed(2) : "");
       setFotoUrl(entregador.foto_url ?? "");
     }
   }, [entregador?.id]);
@@ -71,6 +75,11 @@ const EntregadorCadastro = () => {
     if (!isValidWhatsApp(telefone)) return toast({ title: "WhatsApp inválido", variant: "destructive" });
     if (!cidade.trim() || !estado.trim()) return toast({ title: "Informe cidade e estado", variant: "destructive" });
 
+    const parseReais = (s: string) => Math.max(0, Math.round((Number((s || "").replace(",", ".")) || 0) * 100));
+    const tMin = parseReais(taxaMin);
+    let tMax = parseReais(taxaMax);
+    if (tMax > 0 && tMin > 0 && tMax < tMin) tMax = tMin;
+
     setSaving(true);
     const payload = {
       nome_completo: nome.trim(),
@@ -80,6 +89,8 @@ const EntregadorCadastro = () => {
       documento: documento.trim() || null,
       veiculo,
       raio_atendimento_km: Math.max(1, Number(raio) || 5),
+      taxa_min_centavos: tMin,
+      taxa_max_centavos: tMax,
       foto_url: fotoUrl.trim() || null,
     };
 
@@ -178,6 +189,30 @@ const EntregadorCadastro = () => {
                 className="text-base"
               />
             </div>
+          </div>
+          <div>
+            <Label>Faixa de preço por entrega</Label>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={taxaMin}
+                onChange={(e) => setTaxaMin(e.target.value)}
+                placeholder="Mín (R$)"
+                className="text-base"
+              />
+              <Input
+                type="text"
+                inputMode="decimal"
+                value={taxaMax}
+                onChange={(e) => setTaxaMax(e.target.value)}
+                placeholder="Máx (R$)"
+                className="text-base"
+              />
+            </div>
+            <p className="text-[11px] text-foreground/60 mt-1">
+              Valor de referência mostrado ao cliente. O combinado final é fechado no WhatsApp.
+            </p>
           </div>
           <div>
             <Label>Foto (opcional)</Label>

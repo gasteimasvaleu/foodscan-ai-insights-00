@@ -14,6 +14,8 @@ export interface MFEntregador {
   cnh_url: string | null;
   foto_url: string | null;
   raio_atendimento_km: number;
+  taxa_min_centavos: number;
+  taxa_max_centavos: number;
   status: MFEntregadorStatus;
   disponivel: boolean;
   avaliacao_media: number;
