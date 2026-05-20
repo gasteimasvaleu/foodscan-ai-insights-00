@@ -31,9 +31,15 @@ const Loja = () => {
     })();
   }, [id]);
 
+  const produtosFiltrados = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return produtos;
+    return produtos.filter((p) => p.nome.toLowerCase().includes(term));
+  }, [produtos, search]);
+
   const grupos = useMemo(() => {
     const byCat = new Map<string | null, MFProduto[]>();
-    for (const prod of produtos) {
+    for (const prod of produtosFiltrados) {
       const key = prod.categoria_id ?? null;
       if (!byCat.has(key)) byCat.set(key, []);
       byCat.get(key)!.push(prod);
@@ -46,7 +52,7 @@ const Loja = () => {
     const outros = byCat.get(null);
     if (outros?.length) ordered.push({ id: null, name: "Outros", emoji: "🛒", items: outros });
     return ordered;
-  }, [produtos, categorias]);
+  }, [produtosFiltrados, categorias]);
 
   return (
     <div className="min-h-screen bg-gradient-primary">
