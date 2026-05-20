@@ -236,7 +236,7 @@ const MercadoFacilIndex = () => {
                     <Link
                       key={l.id}
                       to={`/mercado-facil/loja/${l.id}`}
-                      className="relative block h-32 rounded-3xl overflow-hidden bg-white border border-[#FD46A1]/30 hover:shadow-md transition-shadow"
+                      className="relative block h-24 rounded-3xl overflow-hidden bg-white border border-[#FD46A1]/30 hover:shadow-md transition-shadow"
                     >
                       {/* Imagem com corte diagonal (metade esquerda) */}
                       <div
