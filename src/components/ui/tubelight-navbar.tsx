@@ -26,7 +26,7 @@ const moreSheetItems: Array<{
   isExtra?: boolean
 }> = [
   { name: "Registrar refeição", description: "Repetir refeição de ontem ou favoritos em 1 toque", url: "/adicionar-refeicao", icon: Repeat, isPro: false },
-  { name: "Alimentos brasileiros", description: "Busca em catálogo de arroz, feijão, açaí e mais", url: "/alimentos", icon: Apple, isPro: false },
+  
   { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false, isExtra: true },
   { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false, isExtra: true },
   { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
