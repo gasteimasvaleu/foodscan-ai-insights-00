@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
-import { isValidWhatsApp } from "@/lib/mercado-facil/formatters";
+import { isValidWhatsApp, normalizeCidade } from "@/lib/mercado-facil/formatters";
 import type { MFVeiculo } from "@/lib/mercado-facil/entregador-types";
 import { useMFEntregador } from "@/hooks/mercado-facil/useMFEntregador";
 
