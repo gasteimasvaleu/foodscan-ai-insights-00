@@ -68,11 +68,22 @@ export const QuickActions = () => {
     navigate(action.path);
   };
 
+  // Rotação inicial pseudo-aleatória mas estável por card
+  const initialRotateZ = [-8, 6, -4];
+
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
   return (
-    <div className="flex flex-col" style={{ marginBottom: '-64px' }}>
+    <div
+      className="flex flex-col"
+      style={{ marginBottom: '-64px', perspective: '1200px' }}
+    >
       {actions.map((action, index) => {
         const isLast = index === actions.length - 1;
         const showLock = isGatedUser && action.isPro;
+        const rotZ = initialRotateZ[index] ?? 0;
         return (
           <button
             key={index}
@@ -87,10 +98,18 @@ export const QuickActions = () => {
               paddingBottom: isLast ? '64px' : '16px',
               paddingLeft: '20px',
               paddingRight: '20px',
+              transformStyle: 'preserve-3d',
+              transformOrigin: 'center top',
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-              transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
-              transitionDelay: `${index * 80}ms`,
+              transform: isVisible
+                ? 'translate3d(0,0,0) rotateX(0deg) rotateZ(0deg)'
+                : prefersReducedMotion
+                  ? 'translate3d(0,0,0)'
+                  : `translate3d(0,-120px,-200px) rotateX(-25deg) rotateZ(${rotZ}deg)`,
+              transition: prefersReducedMotion
+                ? 'opacity 0.3s ease-out'
+                : 'opacity 0.5s ease-out, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transitionDelay: `${index * 150}ms`,
             }}
           >
             {showLock && (
