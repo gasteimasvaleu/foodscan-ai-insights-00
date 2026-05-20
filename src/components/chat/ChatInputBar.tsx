@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatInputBarProps {
   onSend: (text: string, files: File[]) => void | Promise<void>;
+  onTextChange?: (value: string) => void;
   placeholder?: string;
   isLoading?: boolean;
   enableAttachments?: boolean;
