@@ -87,6 +87,7 @@ import MFEntregadorDashboard from "./pages/mercado-facil/EntregadorDashboard";
 import MFEntregadorEntregas from "./pages/mercado-facil/EntregadorEntregas";
 import AdminMercadoFacil from "./pages/admin/AdminMercadoFacil";
 import AdminEntregadores from "./pages/admin/AdminEntregadores";
+import { MFRatingModal } from "@/components/mercado-facil/MFRatingModal";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -225,6 +226,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <MFRatingModal />
         </BrowserRouter>
         </CelebrationProvider>
       </AuthProvider>

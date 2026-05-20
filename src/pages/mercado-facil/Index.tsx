@@ -278,7 +278,7 @@ const MercadoFacilIndex = () => {
           </>
         )}
       </main>
-      <MFRatingModal />
+      
     </div>
   );
 };
