@@ -99,7 +99,6 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
 
   return (
     <>
-      {liquidGlass && <LiquidGlassFilter />}
       <div
         className={cn(
           "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
@@ -109,27 +108,15 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
         <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
         <div
           className={cn(
-            "relative flex items-center gap-2 sm:gap-3 backdrop-blur-2xl py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
-            "bg-[#FA1690]/40 border border-white/30",
+            "relative flex items-center gap-2 sm:gap-3 backdrop-blur-md py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
+            "bg-[#FA1690]/85 border border-white/20",
           )}
           style={{
             boxShadow:
               "0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1), inset 1.5px 1.5px 0.5px rgba(255,255,255,0.55), inset -1px -1px 0.5px rgba(255,255,255,0.35)",
           }}
         >
-          {/* Liquid refraction layer (iOS native only) */}
-          {liquidGlass && (
-            <div
-              aria-hidden
-              className="absolute inset-0 rounded-2xl pointer-events-none"
-              style={{
-                backdropFilter: "blur(2px)",
-                WebkitBackdropFilter: "blur(2px)",
-                filter: "url(#liquid-glass)",
-                isolation: "isolate",
-              }}
-            />
-          )}
+
 
           {/* Specular highlight (top sheen) */}
           <div
