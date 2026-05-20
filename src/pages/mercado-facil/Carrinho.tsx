@@ -60,11 +60,16 @@ const Carrinho = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name")
+      .select("name, whatsapp_phone")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => setProfileName((data as { name?: string } | null)?.name));
+      .then(({ data }) => {
+        const d = data as { name?: string; whatsapp_phone?: string } | null;
+        setProfileName(d?.name);
+        setProfilePhone(d?.whatsapp_phone);
+      });
   }, [user?.id]);
+
 
   const handleSend = async (lojaId: string) => {
     if (!user) {
