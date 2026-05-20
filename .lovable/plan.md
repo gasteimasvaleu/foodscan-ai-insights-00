@@ -1,26 +1,32 @@
-## Padronizar fundo + bordas rosas no Mercado Fácil
+## Editar entregador + redesenhar card do painel
 
-### 1. Fundo das páginas
+### 1. Tornar dados do entregador editáveis
 
-Trocar `bg-[#F7FAFB]` por `bg-gradient-primary` (padrão usado em FoodScan, FitTracker, About, etc.) em todas as 12 páginas e ecrãs de loading:
+Refatorar `EntregadorCadastro.tsx` para funcionar em dois modos:
 
-- `Index.tsx`, `Carrinho.tsx`, `Categoria.tsx`, `Loja.tsx`, `Produto.tsx`
-- `LojistaDashboard.tsx`, `LojistaConfigLoja.tsx`, `LojistaProdutos.tsx`, `LojistaPedidos.tsx`
-- `EntregadorCadastro.tsx`, `EntregadorDashboard.tsx`, `EntregadorEntregas.tsx`
+- **Modo cadastro** (sem entregador): comportamento atual (insert).
+- **Modo edição** (entregador existente): pré-preencher campos com dados atuais e fazer `update` em vez de `insert`. Remover o redirect que joga de volta pro dashboard quando já existe entregador.
 
-### 2. Borda rosa nos cards e botões brancos
+Adicionar campo opcional **Foto** (URL) — coluna `foto_url` já existe na tabela `mf_entregadores`.
 
-Para todo elemento que use `bg-white rounded-3xl` (cards) ou `bg-white rounded-2xl/full` (botões/ícones), acrescentar `border border-[#FD46A1]/30` (sutil, no padrão glassmorphism do app).
+Adicionar botão **"Editar meus dados"** no card do painel (`EntregadorDashboard.tsx`) levando para `/mercado-facil/entregador/cadastro`.
 
-Aplica nos arquivos acima sempre que aparecer `bg-white rounded-...`. Especificamente:
+### 2. Redesenhar o card do painel do entregador
 
-- Cards de pedidos, entregas, produtos, lojas, dashboards
-- Inputs internos do carrinho que usam `bg-[#F7FAFB]` também ganham `border border-[#FD46A1]/30` para legibilidade sobre o novo fundo gradient
-- Botões com fundo branco e texto rosa (ex.: `bg-white text-[#FD46A1]`) recebem `border-2 border-[#FD46A1]` (já existem em alguns lugares, padronizar)
+Seguindo o layout da referência (mesmo padrão da página da loja):
 
-### Não incluído
+- Banner rosa no topo (h-28) com gradient + foto do entregador como background, se houver.
+- Avatar circular 96px sobrepondo o banner (foto do entregador ou inicial do nome com bg `#FFD1E7`).
+- Nome em destaque (text-2xl font-bold) + linha "Cidade/UF · Raio Xkm".
+- Badge de status (Aprovado/Pendente/etc) no canto superior direito do banner.
+- Três stats em grid abaixo, padrão `bg-[#FFD1E7] rounded-2xl`:
+  - **ENTREGAS** (total_entregas)
+  - **AVALIAÇÃO** (avaliacao_media)
+  - **RAIO** (raio_atendimento_km km)
+- Switch "Disponível para entregas" continua dentro do card, abaixo das stats (só se aprovado).
 
-- Não vou mudar o header rosa (`MFHeader`).
-- Não vou tocar nos botões já rosa-preenchidos (`bg-[#FD46A1]`).
-- Não vou mexer em modais (já têm padrão glassmorphism).
-- Não vou ajustar paddings/sombras.
+### Fora de escopo
+
+- Não vou adicionar upload de imagem (mantém URL como na config de loja).
+- Não mexo nas listas de entregas abaixo do card.
+- Sem mudanças de schema (todas as colunas já existem).
