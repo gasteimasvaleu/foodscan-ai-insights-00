@@ -27,7 +27,7 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     lojista_id: loja.owner_id,
     cliente_id: clienteId,
     endereco_entrega: endereco,
-    cidade,
+    cidade: normalizeCidade(cidade),
     taxa_centavos: taxa,
     status: "disponivel",
     telefone_cliente: telefoneCliente ?? null,
