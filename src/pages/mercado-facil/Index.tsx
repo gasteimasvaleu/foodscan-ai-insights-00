@@ -13,6 +13,7 @@ const MercadoFacilIndex = () => {
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showAllCats, setShowAllCats] = useState(false);
 
   useEffect(() => {
     (async () => {
