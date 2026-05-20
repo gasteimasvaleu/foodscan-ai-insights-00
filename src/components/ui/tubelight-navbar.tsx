@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck, Lock, Crown, Instagram, MapPin, Store, Truck } from "lucide-react"
+import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, MessageCircle, Heart, Droplets, Timer, Target, Moon, ChefHat, Shirt, ShoppingBag, ShoppingCart, Repeat, Dumbbell, Baby, HelpCircle, Trophy, CalendarCheck, Lock, Crown, Instagram, MapPin, Store, Truck, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useAuthContext } from "@/contexts/AuthProvider"
@@ -23,16 +23,17 @@ const moreSheetItems: Array<{
   url: string
   icon: LucideIcon
   isPro: boolean
+  isExtra?: boolean
 }> = [
   { name: "Registrar refeição", description: "Repetir refeição de ontem ou favoritos em 1 toque", url: "/adicionar-refeicao", icon: Repeat, isPro: false },
   { name: "Alimentos brasileiros", description: "Busca em catálogo de arroz, feijão, açaí e mais", url: "/alimentos", icon: Apple, isPro: false },
-  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false },
-  { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false },
+  { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false, isExtra: true },
+  { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false, isExtra: true },
   { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
-  { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false },
+  { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false, isExtra: true },
   { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
   { name: "ServiNUTRI", description: "Rede de nutricionistas", url: "/servinutri", icon: Apple, isPro: false },
-  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false },
+  { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false, isExtra: true },
   { name: "Quiz", description: "Responda quizzes, ganhe pontos e dispute o ranking", url: "/quiz", icon: HelpCircle, isPro: false },
   { name: "Desafio 14 dias", description: "Cardápio, vídeos e checklist para 14 dias de transformação", url: "/desafio-14-dias", icon: CalendarCheck, isPro: false },
   { name: "Conquistas", description: "Sequência diária e medalhas desbloqueadas", url: "/conquistas", icon: Trophy, isPro: false },
@@ -41,7 +42,7 @@ const moreSheetItems: Array<{
   { name: "Gerar Cardápio", description: "Cardápios personalizados com IA (MasterCheFIT)", url: "/masterchef", icon: UtensilsCrossed, isPro: true },
   { name: "Receitas", description: "Buscar receitas e gerenciar suas próprias", url: "/receitas", icon: UtensilsCrossed, isPro: true },
   { name: "Faça em Casa", description: "Identifique pratos por foto e gere receitas caseiras", url: "/faca-em-casa", icon: ChefHat, isPro: true },
-  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true },
+  { name: "Provador Virtual", description: "Experimente looks com IA em fundo de estúdio", url: "/provador", icon: Shirt, isPro: true, isExtra: true },
   { name: "Gráficos e Progresso", description: "Acompanhe sua evolução", url: "/graficos-progresso", icon: BarChart3, isPro: true },
   { name: "Apple Health", description: "Dados detalhados de saúde e atividade", url: "/apple-health", icon: Heart, isPro: true },
   { name: "Hidratação", description: "Registre bebidas e acompanhe seu progresso", url: "/hidratacao", icon: Droplets, isPro: true },
@@ -49,7 +50,7 @@ const moreSheetItems: Array<{
   { name: "Objetivos", description: "Monitore suas metas semanais", url: "/objetivos", icon: Target, isPro: true },
   { name: "Sono", description: "Registre e acompanhe a qualidade do sono", url: "/sono", icon: Moon, isPro: true },
   { name: "Treinos", description: "Vídeos de treino e dicas em casa", url: "/treinos", icon: Dumbbell, isPro: true },
-  { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true },
+  { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true, isExtra: true },
 ]
 
 export function TubelightNavbar({ items, className }: NavBarProps) {
@@ -61,8 +62,9 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const { subscriptionStatus } = useAuthContext()
   const isPro = !!subscriptionStatus?.subscribed
 
-  const freeItems = moreSheetItems.filter((i) => !i.isPro)
-  const proItems = moreSheetItems.filter((i) => i.isPro)
+  const extrasItems = moreSheetItems.filter((i) => i.isExtra)
+  const freeItems = moreSheetItems.filter((i) => !i.isPro && !i.isExtra)
+  const proItems = moreSheetItems.filter((i) => i.isPro && !i.isExtra)
 
   useEffect(() => {
     const handleResize = () => {
@@ -172,8 +174,47 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           </div>
 
           <div className="px-4 pb-6 pt-2 space-y-4">
-            {/* Free section */}
+            {/* Recursos Extras (azul) */}
             <section className="space-y-3">
+              <div className="flex items-center gap-2 px-1">
+                <Sparkles size={18} className="text-[#2563EB]" />
+                <h3 className="text-lg font-bold text-[#2563EB]">Recursos Extras</h3>
+              </div>
+              {extrasItems.map((sheetItem) => {
+                const SheetIcon = sheetItem.icon
+                const locked = sheetItem.isPro && !isPro
+                return (
+                  <button
+                    key={sheetItem.url}
+                    onClick={() => handleSheetNavigate(sheetItem.url)}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-left"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                      <SheetIcon size={24} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-foreground">{sheetItem.name}</p>
+                        {sheetItem.isPro && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">
+                            Pro
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                    </div>
+                    {locked ? (
+                      <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
+                    ) : (
+                      <ChevronRight size={20} className="text-blue-600 flex-shrink-0" />
+                    )}
+                  </button>
+                )
+              })}
+            </section>
+
+            {/* Free section */}
+            <section className="space-y-3 pt-2">
               <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
               {freeItems.map((sheetItem) => {
                 const SheetIcon = sheetItem.icon
