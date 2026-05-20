@@ -32,13 +32,7 @@ export function MFEntregadoresDisponiveis({
     }
     setLoading(true);
     supabase
-      .from("mf_entregadores")
-      .select("*")
-      .eq("status", "aprovado")
-      .eq("disponivel", true)
-      .ilike("cidade", cidade.trim())
-      .order("avaliacao_media", { ascending: false })
-      .limit(10)
+      .rpc("mf_entregadores_disponiveis", { _cidade: cidade.trim() })
       .then(({ data }) => {
         setEntregadores((data as MFEntregador[]) ?? []);
         setLoading(false);
