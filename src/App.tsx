@@ -101,6 +101,7 @@ const navItems = [
   { name: 'Controle', url: '/controle-diario', icon: Calendar },
   { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
   { name: 'MasterChef', url: '/masterchef', icon: ChefHat },
+  { name: 'Alimentos', url: '/alimentos', icon: Apple },
   { name: 'Mais', url: '#more', icon: Plus }
 ];
 
