@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { MFEntrega, MFEntregaStatus } from "@/lib/mercado-facil/entregador-types";
+import { normalizeCidade } from "@/lib/mercado-facil/formatters";
 
 interface UseEntregasArgs {
   scope: "lojista" | "entregador-disponivel" | "entregador-ativa" | "entregador-historico";
