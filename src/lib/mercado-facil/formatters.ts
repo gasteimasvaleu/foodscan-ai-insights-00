@@ -9,3 +9,7 @@ export const isValidWhatsApp = (raw: string): boolean => {
   const d = cleanPhone(raw);
   return d.length >= 10 && d.length <= 15;
 };
+
+/** Normaliza cidade para comparação consistente (lower, sem acento, trim). */
+export const normalizeCidade = (s: string | null | undefined): string =>
+  (s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
