@@ -1530,6 +1530,8 @@ export type Database = {
           nome_completo: string
           raio_atendimento_km: number
           status: Database["public"]["Enums"]["mf_entregador_status"]
+          taxa_max_centavos: number
+          taxa_min_centavos: number
           telefone_whatsapp: string
           total_entregas: number
           updated_at: string
@@ -1549,6 +1551,8 @@ export type Database = {
           nome_completo: string
           raio_atendimento_km?: number
           status?: Database["public"]["Enums"]["mf_entregador_status"]
+          taxa_max_centavos?: number
+          taxa_min_centavos?: number
           telefone_whatsapp: string
           total_entregas?: number
           updated_at?: string
@@ -1568,6 +1572,8 @@ export type Database = {
           nome_completo?: string
           raio_atendimento_km?: number
           status?: Database["public"]["Enums"]["mf_entregador_status"]
+          taxa_max_centavos?: number
+          taxa_min_centavos?: number
           telefone_whatsapp?: string
           total_entregas?: number
           updated_at?: string
@@ -3644,6 +3650,8 @@ export type Database = {
           nome_completo: string
           raio_atendimento_km: number
           status: Database["public"]["Enums"]["mf_entregador_status"]
+          taxa_max_centavos: number
+          taxa_min_centavos: number
           telefone_whatsapp: string
           total_entregas: number
           updated_at: string
