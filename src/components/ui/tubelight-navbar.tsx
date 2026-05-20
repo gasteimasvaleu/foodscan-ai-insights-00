@@ -107,7 +107,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
       >
         <div
           className={cn(
-            "relative flex items-center gap-2 sm:gap-3 backdrop-blur-md py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
+            "relative flex items-center gap-0.5 sm:gap-2 backdrop-blur-md py-2 px-1.5 sm:px-2 rounded-2xl overflow-hidden",
             "bg-[#FA1690]/85 border border-white/30",
           )}
           style={{

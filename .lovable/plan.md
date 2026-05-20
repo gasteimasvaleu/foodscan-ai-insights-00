@@ -1,23 +1,10 @@
 ## Objetivo
-Substituir o `Loader` (loader-15) usado no splash do iOS nativo por um novo componente `KineticDotsLoader` — 4 bolinhas com bounce gravitacional, squash & stretch, ripple no impacto e sombra reativa.
+O botão "+" está vazando para fora da navbar inferior. Reduzir levemente o espaçamento entre os itens para que tudo caiba dentro da área.
 
-## Alterações
+## Alterações em `src/components/ui/tubelight-navbar.tsx`
 
-**1. Criar `src/components/ui/kinetic-dots-loader.tsx`**
-- Component default export `KineticDotsLoader`
-- Props opcionais: `color` (default branco para contrastar no splash preto) e `size`
-- 4 dots com `animation-delay` escalonado (0s, 0.15s, 0.3s, 0.45s)
-- Para cada dot, uma "cena" com:
-  - **Bola**: `gravity-bounce` (translateY) + camada interna `rubber-morph` (squash/stretch) + highlight especular
-  - **Ripple**: `ripple-expand` (círculo com borda que expande no impacto)
-  - **Sombra**: `shadow-breathe` (escala/opacidade conforme altura)
-- Keyframes definidos via `<style>` tag inline (exatamente os 4 keyframes que você passou: gravity-bounce, rubber-morph, shadow-breathe, ripple-expand) — duração comum ~1.2s, infinite
+1. **Container externo (linha 110)**: trocar `gap-2 sm:gap-3` por `gap-0.5 sm:gap-2` e reduzir padding lateral `px-2 sm:px-3` → `px-1.5 sm:px-2`.
+2. **Wrapper interno dos itens (linha 131)**: trocar `gap-2 sm:gap-3` por `gap-0.5 sm:gap-2`.
+3. **Botões/links (linhas 142 e 160)**: reduzir padding horizontal `px-3 sm:px-4` → `px-2 sm:px-3`, mantendo `min-h-[44px]` / `min-w-[44px]` para acessibilidade.
 
-**2. Editar `src/components/SplashScreen.tsx`**
-- Trocar `import Loader from '@/components/ui/loader-15'` por `import KineticDotsLoader from '@/components/ui/kinetic-dots-loader'`
-- Trocar `<Loader size={64} />` por `<KineticDotsLoader />` no `NativeIOSSplash` (linha ~108)
-
-## Fora de escopo
-- WebSplash (vídeo) permanece inalterado
-- Não removo o `loader-15` (pode estar em uso em outros lugares)
-- Outros loaders do app não mudam
+Sem alterações de lógica, ícones, ordem ou comportamento — apenas espaçamento.
