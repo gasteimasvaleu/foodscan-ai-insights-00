@@ -128,7 +128,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           />
 
           {/* Items */}
-          <div className="relative z-10 flex items-center gap-0.5 sm:gap-2">
+          <div className="relative z-10 flex items-center gap-1 sm:gap-2">
           {items.map((item) => {
             const Icon = item.icon
             const isMore = item.url === "#more"
