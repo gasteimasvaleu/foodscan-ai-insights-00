@@ -34,6 +34,12 @@ export const MFProductCard = ({ produto, lojaId, lojaNome }: Props) => {
       to={`/mercado-facil/produto/${produto.id}`}
       className="block bg-[#FFD1E7] rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
     >
+      {lojaNome && (
+        <div className="bg-white/60 backdrop-blur-sm px-2 py-1 flex items-center gap-1">
+          <Store size={10} className="text-[#FD46A1] shrink-0" />
+          <span className="text-[10px] font-medium text-foreground/80 truncate">{lojaNome}</span>
+        </div>
+      )}
       <div className="aspect-square bg-white/40 overflow-hidden">
         {produto.foto_url ? (
           <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" loading="lazy" />
