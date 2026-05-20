@@ -86,6 +86,7 @@ import MFEntregadorCadastro from "./pages/mercado-facil/EntregadorCadastro";
 import MFEntregadorDashboard from "./pages/mercado-facil/EntregadorDashboard";
 import MFEntregadorEntregas from "./pages/mercado-facil/EntregadorEntregas";
 import AdminMercadoFacil from "./pages/admin/AdminMercadoFacil";
+import AdminEntregadores from "./pages/admin/AdminEntregadores";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -213,6 +214,7 @@ const App = () => (
             <Route path="/mercado-facil/entregador/cadastro" element={<MFEntregadorCadastro />} />
             <Route path="/mercado-facil/entregador/entregas" element={<MFEntregadorEntregas />} />
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
+            <Route path="/admin/entregadores" element={<AdminEntregadores />} />
 
 
 

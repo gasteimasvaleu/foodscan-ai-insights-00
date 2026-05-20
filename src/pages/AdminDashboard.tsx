@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple, HelpCircle, MapPin } from 'lucide-react';
+import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple, HelpCircle, MapPin, Truck, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
@@ -95,6 +95,18 @@ const AdminDashboard = () => {
       description: 'Aprovar e moderar venues cadastrados',
       icon: MapPin,
       path: '/admin/to-aqui',
+    },
+    {
+      title: 'Mercado Fácil · Lojas',
+      description: 'Ativar/desativar lojas do marketplace',
+      icon: Store,
+      path: '/admin/mercado-facil',
+    },
+    {
+      title: 'Mercado Fácil · Entregadores',
+      description: 'Aprovar e moderar cadastros de entregadores',
+      icon: Truck,
+      path: '/admin/entregadores',
     },
     {
       title: 'Assinaturas Promocionais',
