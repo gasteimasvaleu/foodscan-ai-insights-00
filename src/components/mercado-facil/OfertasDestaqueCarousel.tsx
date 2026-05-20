@@ -39,10 +39,10 @@ const OfertaCard = ({ oferta }: { oferta: OfertaDestaque }) => (
       <div className="mt-2 flex items-end justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[11px] text-white/60 line-through">
-            {formatCentavos(oferta.preco_centavos)}
+            {formatBRL(oferta.preco_centavos)}
           </p>
           <p className="text-lg font-semibold text-[#FFD1E7] leading-tight">
-            {formatCentavos(oferta.preco_promo_centavos)}
+            {formatBRL(oferta.preco_promo_centavos)}
           </p>
         </div>
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FD46A1] text-white shadow-sm">
