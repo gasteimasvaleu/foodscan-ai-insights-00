@@ -81,7 +81,7 @@ export const QuickActions = () => {
           <button
             key={index}
             onClick={() => handleClick(action)}
-            className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl active:scale-[0.98]"
+            className="relative w-full rounded-2xl flex items-start text-white shadow-lg hover:shadow-xl active:scale-[0.98] overflow-hidden"
             style={{
               backgroundColor: action.color,
               zIndex: index,
@@ -105,11 +105,24 @@ export const QuickActions = () => {
               transitionDelay: `${index * 150}ms`,
             }}
           >
+            {!prefersReducedMotion && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/2 animate-shine"
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)',
+                  animationDelay: `${1.2 + index * 0.5}s`,
+                  animationDuration: '3.6s',
+                }}
+              />
+            )}
             {showLock && (
               <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
                 <Lock className="w-3.5 h-3.5" />
               </div>
             )}
+
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
