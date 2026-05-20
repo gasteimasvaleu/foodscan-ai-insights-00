@@ -24,7 +24,34 @@ const LojistaConfigLoja = () => {
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const handleFotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      return toast({ title: "Selecione uma imagem", variant: "destructive" });
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return toast({ title: "Imagem muito grande", description: "Máximo 5MB", variant: "destructive" });
+    }
+    setUploading(true);
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `lojas/${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("mercado-facil-produtos")
+      .upload(path, file, { upsert: false, contentType: file.type });
+    if (error) {
+      setUploading(false);
+      return toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-produtos").getPublicUrl(path);
+    setFotoUrl(data.publicUrl);
+    setUploading(false);
+    toast({ title: "Foto enviada" });
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -111,12 +138,37 @@ const LojistaConfigLoja = () => {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>URL da foto (opcional)</Label>
-          <Input value={fotoUrl} onChange={(e) => setFotoUrl(e.target.value)} placeholder="https://..." className="text-base" />
+          <Label>Foto da loja (opcional)</Label>
+          <div className="flex items-center gap-3">
+            {fotoUrl ? (
+              <img src={fotoUrl} alt="Foto da loja" className="w-20 h-20 rounded-2xl object-cover border border-white/40" />
+            ) : (
+              <div className="w-20 h-20 rounded-2xl bg-white/40 border border-white/40 flex items-center justify-center text-xs text-foreground/50">
+                Sem foto
+              </div>
+            )}
+            <div className="flex flex-col gap-2">
+              <label className="cursor-pointer">
+                <input type="file" accept="image/*" hidden onChange={handleFotoChange} disabled={uploading} />
+                <span className="inline-flex items-center justify-center px-4 h-10 rounded-2xl bg-[#FD46A1] text-white text-sm">
+                  {uploading ? "Enviando..." : fotoUrl ? "Trocar foto" : "Enviar foto"}
+                </span>
+              </label>
+              {fotoUrl && !uploading && (
+                <button
+                  type="button"
+                  onClick={() => setFotoUrl("")}
+                  className="text-xs text-foreground/60 underline self-start"
+                >
+                  Remover
+                </button>
+              )}
+            </div>
+          </div>
         </div>
         <Button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || uploading}
           className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12 text-base"
         >
           {saving ? "Salvando..." : "Salvar"}
