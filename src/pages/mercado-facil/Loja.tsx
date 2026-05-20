@@ -1,28 +1,50 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
 import type { MFLoja, MFProduto } from "@/lib/mercado-facil/types";
 
+type MFCategoria = { id: string; name: string; icon_emoji: string | null; order: number | null };
+
 const Loja = () => {
   const { id } = useParams<{ id: string }>();
   const [loja, setLoja] = useState<MFLoja | null>(null);
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
+  const [categorias, setCategorias] = useState<MFCategoria[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const [l, p] = await Promise.all([
+      const [l, p, c] = await Promise.all([
         supabase.from("mf_lojas").select("*").eq("id", id).maybeSingle(),
         supabase.from("mf_produtos").select("*").eq("loja_id", id).eq("ativo", true).order("nome"),
+        supabase.from("mf_categorias").select("id,name,icon_emoji,order").eq("ativo", true).order("order"),
       ]);
       setLoja((l.data as MFLoja) ?? null);
       setProdutos((p.data ?? []) as MFProduto[]);
+      setCategorias((c.data ?? []) as MFCategoria[]);
       setLoading(false);
     })();
   }, [id]);
+
+  const grupos = useMemo(() => {
+    const byCat = new Map<string | null, MFProduto[]>();
+    for (const prod of produtos) {
+      const key = prod.categoria_id ?? null;
+      if (!byCat.has(key)) byCat.set(key, []);
+      byCat.get(key)!.push(prod);
+    }
+    const ordered: { id: string | null; name: string; emoji: string | null; items: MFProduto[] }[] = [];
+    for (const cat of categorias) {
+      const items = byCat.get(cat.id);
+      if (items?.length) ordered.push({ id: cat.id, name: cat.name, emoji: cat.icon_emoji, items });
+    }
+    const outros = byCat.get(null);
+    if (outros?.length) ordered.push({ id: null, name: "Outros", emoji: "🛒", items: outros });
+    return ordered;
+  }, [produtos, categorias]);
 
   return (
     <div className="min-h-screen bg-gradient-primary">
