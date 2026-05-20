@@ -43,6 +43,7 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
       maxLength = 1000,
       className,
       fixedBottom = false,
+      leadingActions,
     },
     ref,
   ) => {
