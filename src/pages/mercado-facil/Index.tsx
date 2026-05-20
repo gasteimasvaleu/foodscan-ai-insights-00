@@ -13,6 +13,7 @@ const MercadoFacilIndex = () => {
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showAllCats, setShowAllCats] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -62,19 +63,32 @@ const MercadoFacilIndex = () => {
         ) : (
           <>
             <section>
-              <h2 className="text-base font-semibold mb-3">Categorias</h2>
-              <div className="grid grid-cols-4 gap-3">
-                {categorias.map((c) => (
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-bold">Explore Categorias</h2>
+                <p className="text-sm text-foreground/60 mt-1">
+                  Encontre exatamente o que precisa navegando pelas nossas categorias organizadas
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {(showAllCats ? categorias : categorias.slice(0, 12)).map((c) => (
                   <Link
                     key={c.id}
                     to={`/mercado-facil/categoria/${c.slug}`}
-                    className="bg-[#FFD1E7] rounded-3xl p-3 flex flex-col items-center justify-center gap-1 aspect-square hover:shadow-md transition-shadow"
+                    className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3 hover:shadow-md transition-shadow"
                   >
-                    <span className="text-2xl">{c.icon_emoji ?? "🛒"}</span>
-                    <span className="text-xs text-center text-foreground line-clamp-2">{c.name}</span>
+                    <span className="text-xl shrink-0">{c.icon_emoji ?? "🛒"}</span>
+                    <span className="text-base text-foreground truncate">{c.name}</span>
                   </Link>
                 ))}
               </div>
+              {categorias.length > 12 && (
+                <button
+                  onClick={() => setShowAllCats((v) => !v)}
+                  className="mt-3 w-full bg-[#FD46A1] text-white rounded-2xl py-3 text-base hover:opacity-90 transition-opacity"
+                >
+                  {showAllCats ? "Ver menos" : "Ver mais"}
+                </button>
+              )}
             </section>
 
             <section>
