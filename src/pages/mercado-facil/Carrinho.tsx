@@ -100,7 +100,7 @@ const Carrinho = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
         {totalItens === 0 ? (
@@ -109,7 +109,7 @@ const Carrinho = () => {
           </p>
         ) : (
           <>
-            <div className="bg-white rounded-3xl p-4 space-y-2">
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-2">
               <p className="text-sm font-medium text-foreground">Entrega</p>
               <input
                 type="text"
@@ -135,7 +135,7 @@ const Carrinho = () => {
             const itens = byLoja[lojaId];
             const total = itens.reduce((s, i) => s + i.preco_centavos * i.quantidade, 0);
             return (
-              <div key={lojaId} className="bg-white rounded-3xl p-4 space-y-3">
+              <div key={lojaId} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base font-semibold">{loja?.nome ?? "Loja"}</h2>
                   <button

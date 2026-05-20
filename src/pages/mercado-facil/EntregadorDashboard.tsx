@@ -31,7 +31,7 @@ const EntregadorDashboard = () => {
 
   if (loading || !entregador) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
         <Loader2 className="animate-spin text-[#FD46A1]" />
       </div>
     );
@@ -54,10 +54,10 @@ const EntregadorDashboard = () => {
       : "Suspenso";
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Painel do Entregador" backTo="/mercado-facil" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
-        <div className="bg-white rounded-3xl p-4 space-y-2">
+        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-foreground/60">Olá,</p>
@@ -103,7 +103,7 @@ const EntregadorDashboard = () => {
 
         <Link
           to="/mercado-facil/entregador/entregas"
-          className="flex items-center gap-3 bg-white rounded-3xl p-4 hover:shadow-md"
+          className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-4 hover:shadow-md"
         >
           <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center">
             <ListChecks size={22} className="text-[#FD46A1]" />
@@ -118,7 +118,7 @@ const EntregadorDashboard = () => {
           <section>
             <h3 className="text-base mb-2">Entregas disponíveis</h3>
             {disponiveis.length === 0 ? (
-              <div className="bg-white rounded-3xl p-6 text-center text-sm text-foreground/60">
+              <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
                 Nenhuma entrega disponível na sua cidade no momento.
               </div>
             ) : (
@@ -127,7 +127,7 @@ const EntregadorDashboard = () => {
                   <Link
                     key={e.id}
                     to="/mercado-facil/entregador/entregas"
-                    className="block bg-white rounded-3xl p-4 hover:shadow-md"
+                    className="block bg-white border border-[#FD46A1]/30 rounded-3xl p-4 hover:shadow-md"
                   >
                     <div className="flex items-center justify-between">
                       <div>

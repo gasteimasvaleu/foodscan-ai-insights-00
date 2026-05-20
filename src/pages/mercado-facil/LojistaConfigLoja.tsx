@@ -76,7 +76,7 @@ const LojistaConfigLoja = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={loja ? "Editar loja" : "Cadastrar loja"} backTo="/mercado-facil/lojista" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <div className="space-y-2">

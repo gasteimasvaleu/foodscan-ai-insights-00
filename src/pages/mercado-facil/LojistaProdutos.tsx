@@ -118,7 +118,7 @@ const LojistaProdutos = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Meus produtos" backTo="/mercado-facil/lojista" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-3">
         {loading ? (
@@ -138,7 +138,7 @@ const LojistaProdutos = () => {
             ) : (
               <ul className="space-y-2">
                 {produtos.map((p) => (
-                  <li key={p.id} className="flex items-center gap-3 bg-white rounded-3xl p-3">
+                  <li key={p.id} className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-3">
                     <div className="w-12 h-12 rounded-xl bg-[#FFD1E7] overflow-hidden shrink-0">
                       {p.foto_url && <img src={p.foto_url} alt="" className="w-full h-full object-cover" />}
                     </div>

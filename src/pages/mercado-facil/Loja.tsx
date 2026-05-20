@@ -25,7 +25,7 @@ const Loja = () => {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={loja?.nome ?? "Loja"} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
         {loading ? (
@@ -34,7 +34,7 @@ const Loja = () => {
           <p className="text-sm text-foreground/60">Loja não encontrada.</p>
         ) : (
           <>
-            <div className="bg-white rounded-3xl overflow-hidden">
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl overflow-hidden">
               {loja.banner_url && <img src={loja.banner_url} alt="" className="w-full h-32 object-cover" />}
               <div className="p-4 space-y-1">
                 <h2 className="text-base font-semibold">{loja.nome}</h2>

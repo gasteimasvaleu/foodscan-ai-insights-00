@@ -38,7 +38,7 @@ const LojistaDashboard = () => {
   }, [user?.id]);
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Painel do Lojista" backTo="/mercado-facil" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         {loading ? (
@@ -56,7 +56,7 @@ const LojistaDashboard = () => {
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-3xl p-4 space-y-1">
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-1">
               <p className="text-xs text-foreground/60">Sua loja</p>
               <h2 className="text-base font-semibold">{loja.nome}</h2>
               <p className="text-xs text-foreground/60">WhatsApp: {loja.telefone_whatsapp}</p>
@@ -78,7 +78,7 @@ const LojistaDashboard = () => {
 
             <Link
               to="/mercado-facil/lojista/produtos"
-              className="flex items-center gap-3 bg-white rounded-3xl p-4 hover:shadow-md"
+              className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-4 hover:shadow-md"
             >
               <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center">
                 <Package size={22} className="text-[#FD46A1]" />
@@ -91,7 +91,7 @@ const LojistaDashboard = () => {
 
             <Link
               to="/mercado-facil/lojista/pedidos"
-              className="flex items-center gap-3 bg-white rounded-3xl p-4 hover:shadow-md"
+              className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-4 hover:shadow-md"
             >
               <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center">
                 <ListOrdered size={22} className="text-[#FD46A1]" />
