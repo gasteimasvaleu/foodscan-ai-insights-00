@@ -3629,6 +3629,34 @@ export type Database = {
         Args: { _user_id: string; _venue_id: string }
         Returns: boolean
       }
+      mf_entregadores_disponiveis: {
+        Args: { _cidade: string }
+        Returns: {
+          avaliacao_media: number
+          cidade: string
+          cnh_url: string | null
+          created_at: string
+          disponivel: boolean
+          documento: string | null
+          estado: string
+          foto_url: string | null
+          id: string
+          nome_completo: string
+          raio_atendimento_km: number
+          status: Database["public"]["Enums"]["mf_entregador_status"]
+          telefone_whatsapp: string
+          total_entregas: number
+          updated_at: string
+          user_id: string
+          veiculo: Database["public"]["Enums"]["mf_entregador_veiculo"]
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "mf_entregadores"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       normalize_food_name: { Args: { _name: string }; Returns: string }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
