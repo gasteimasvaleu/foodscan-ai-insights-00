@@ -214,6 +214,7 @@ const App = () => (
             <Route path="/mercado-facil/entregador/cadastro" element={<MFEntregadorCadastro />} />
             <Route path="/mercado-facil/entregador/entregas" element={<MFEntregadorEntregas />} />
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
+            <Route path="/admin/entregadores" element={<AdminEntregadores />} />
 
 
 
