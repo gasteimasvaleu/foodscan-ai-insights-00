@@ -68,7 +68,7 @@ const Categoria = () => {
           </p>
         ) : (
           <div className="grid grid-cols-3 gap-2">
-            {filtrados.map((p) => <MFProductCard key={p.id} produto={p} />)}
+            {filtrados.map((p) => <MFProductCard key={p.id} produto={p} lojaNome={lojaNomeById[p.loja_id]} />)}
           </div>
         )}
       </main>
