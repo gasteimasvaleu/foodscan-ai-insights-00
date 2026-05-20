@@ -236,31 +236,38 @@ const MercadoFacilIndex = () => {
                     <Link
                       key={l.id}
                       to={`/mercado-facil/loja/${l.id}`}
-                      className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-3 hover:shadow-md transition-shadow"
+                      className="relative block h-32 rounded-3xl overflow-hidden bg-white border border-[#FD46A1]/30 hover:shadow-md transition-shadow"
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-[#FFD1E7] overflow-hidden shrink-0">
+                      {/* Imagem com corte diagonal (metade esquerda) */}
+                      <div
+                        className="absolute inset-0 bg-[#FFD1E7]"
+                        style={{ clipPath: "polygon(0 0, 60% 0, 40% 100%, 0 100%)" }}
+                      >
                         {l.foto_url ? (
                           <img src={l.foto_url} alt={l.nome} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-2xl">🏪</div>
+                          <div className="w-full h-full flex items-center justify-center text-4xl">🏪</div>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-base text-foreground truncate">{l.nome}</p>
+
+                      {/* Lado direito: nome, descrição, localização */}
+                      <div className="absolute inset-y-0 right-0 w-1/2 pl-2 pr-4 py-3 flex flex-col justify-center items-end text-right">
+                        <p className="text-base text-foreground truncate w-full">{l.nome}</p>
                         {l.descricao && (
-                          <p className="text-xs text-foreground/60 line-clamp-2">{l.descricao}</p>
+                          <p className="text-xs text-foreground/60 line-clamp-2 w-full mt-0.5">{l.descricao}</p>
                         )}
+                        {(() => {
+                          const partes = [l.endereco?.bairro, l.endereco?.cidade].filter(Boolean);
+                          if (partes.length === 0) return null;
+                          return (
+                            <p className="text-[11px] text-[#FD46A1] mt-1 line-clamp-1 w-full">
+                              {partes.join(" · ")}
+                            </p>
+                          );
+                        })()}
                       </div>
-                      {(() => {
-                        const partes = [l.endereco?.bairro, l.endereco?.cidade].filter(Boolean);
-                        if (partes.length === 0) return null;
-                        return (
-                          <p className="text-xs text-foreground/60 text-right shrink-0 max-w-[40%] line-clamp-2">
-                            {partes.join(" · ")}
-                          </p>
-                        );
-                      })()}
                     </Link>
+
 
                   ))}
                 </div>
