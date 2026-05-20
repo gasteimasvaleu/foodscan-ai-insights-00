@@ -34,11 +34,14 @@ const ADDRESS_KEY = "mf_delivery_address_v1";
 const Carrinho = () => {
   const { byLoja, setQty, clearLoja, totalItens } = useMFCart();
   const { user } = useAuthContext();
+  const subscriptionStatus = useSubscription(user);
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
-  const [profileName, setProfileName] = useState<string | undefined>();
-  const [profilePhone, setProfilePhone] = useState<string | undefined>();
+  const [profile, setProfile] = useState<FullProfile | null>(null);
   const [cidade, setCidade] = useState("");
   const [endereco, setEndereco] = useState("");
+
+  const profileName = profile?.name;
+  const profilePhone = profile?.telefone_whatsapp ?? undefined;
 
   useEffect(() => {
     try {
@@ -75,18 +78,18 @@ const Carrinho = () => {
   }, [lojaIds.join(",")]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setProfile(null);
+      return;
+    }
     supabase
       .from("profiles")
-      .select("name, telefone_whatsapp")
+      .select("id, name, avatar_url, cover_url, bio, email_public, phone, address, city, state, created_at, telefone_whatsapp")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        const d = data as { name?: string; telefone_whatsapp?: string } | null;
-        setProfileName(d?.name);
-        setProfilePhone(d?.telefone_whatsapp);
+        setProfile((data as FullProfile | null) ?? null);
       });
-
   }, [user?.id]);
 
 
