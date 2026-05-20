@@ -376,34 +376,16 @@ export default function ChatGlobal() {
         className="border-t bg-white p-3 shrink-0"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
       >
-        <div className="flex gap-2 items-end">
-          <textarea
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              handleTyping();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
-            }}
-            placeholder="Mensagem..."
-            rows={1}
-            maxLength={500}
-            className="flex-1 min-w-0 resize-none rounded-2xl border border-input bg-background px-4 py-2.5 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary max-h-28"
-            style={{ minHeight: "42px" }}
-          />
-          <Button
-            onClick={send}
-            disabled={!input.trim() || sending}
-            size="icon"
-            className="rounded-full h-11 w-11 shrink-0 bg-[#FD46A1] hover:bg-[#FD46A1]/90"
-          >
-            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
-        </div>
+        <ChatInputBar
+          onSend={(t, files) => send(t, files)}
+          onTextChange={(v) => {
+            setInput(v);
+            handleTyping();
+          }}
+          placeholder="Mensagem..."
+          isLoading={sending}
+          maxLength={500}
+        />
       </div>
     </div>
   );
