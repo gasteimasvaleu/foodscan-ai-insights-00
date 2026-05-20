@@ -208,6 +208,10 @@ const App = () => (
             <Route path="/mercado-facil/lojista" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaDashboard /></ProRoute>} />
             <Route path="/mercado-facil/lojista/loja" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaConfigLoja /></ProRoute>} />
             <Route path="/mercado-facil/lojista/produtos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaProdutos /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/pedidos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaPedidos /></ProRoute>} />
+            <Route path="/mercado-facil/entregador" element={<MFEntregadorDashboard />} />
+            <Route path="/mercado-facil/entregador/cadastro" element={<MFEntregadorCadastro />} />
+            <Route path="/mercado-facil/entregador/entregas" element={<MFEntregadorEntregas />} />
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
 
 
