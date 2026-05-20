@@ -1,37 +1,59 @@
-## Objetivo
+## Diagnóstico
 
-Adicionar um **card header de marketing** no topo da página individual de categoria (`/mercado-facil/categoria/:slug`), acima do buscador, no padrão visual do app.
+Existe 1 entregador cadastrado, aprovado e disponível:
 
-## Onde
+- `caio` — cidade salva como **"joao pessoa"** (sem acento), estado PB, status `aprovado`, `disponivel = true`.
 
-- `src/pages/mercado-facil/Categoria.tsx` — inserir o novo card logo abaixo do `MFHeader` e acima do input de busca.
+No `MFEntregadoresDisponiveis.tsx` a busca é feita com:
 
-## Componente novo
+```ts
+.ilike("cidade", cidade.trim())
+```
 
-`src/components/mercado-facil/MFCategoryHero.tsx`
+O `ilike` é case-insensitive, mas **não ignora acentos**. Quando o cliente digita "João Pessoa" no carrinho, o Postgres compara `"joao pessoa"` com `"João Pessoa"` e não encontra match — por isso o entregador não aparece.
 
-- Card no padrão do app: `rounded-3xl bg-[#FFD1E7]` com `p-4`.
-- Layout horizontal:
-  - Esquerda: título curto (`text-base`, peso normal, conforme regra de tipografia do app) + 1 linha de subtítulo de marketing (`text-xs text-foreground/70`).
-  - Direita: `icon_emoji` grande (`text-4xl`) dentro de um círculo `bg-white/60 backdrop-blur-md`.
-- Sem ícones decorativos no título (regra do design system).
-- Fallback de emoji "🛒" quando a categoria não tiver `icon_emoji`.
+O mesmo problema atinge o painel do entregador (`useMFEntregas` com `scope: "entregador-disponivel"`) e qualquer outra busca por cidade.
 
-## Conteúdo de marketing
+## Plano
 
-Como há ~120 categorias, não vamos criar copy manual para cada uma. Estratégia:
+### 1. Migração — função RPC que ignora acentos
 
-1. **Mapa pequeno** em `src/lib/mercado-facil/categoryCopy.ts` com taglines curtas para as categorias mais relevantes (ex.: `mercearia`, `bebidas`, `hortifruti`, `padaria`, `limpeza`, `higiene`, `pet`, `bebes`, `cafes`, `frutas-e-verduras`, `laticinios`, `carnes-e-aves`, `frios`, `congelados`, `doces`, `sorvetes`, `lanches`, `pizzas-salgadas`, `cervejas`, `vinhos`, `acai`, `agua`, `gas`, `cigarros`, `medicamentos`, `beleza`, `suplementos`).
-   - Formato: `{ slug: { title: string, subtitle: string } }`.
-   - Texto curto, tom de marketing leve (ex.: Mercearia → "O básico que não pode faltar" / "Arroz, feijão, óleo e mais perto de você").
-2. **Fallback genérico** quando o slug não estiver no mapa: usa `cat.name` como título e uma subtitle padrão tipo "Tudo que você precisa em {nome da categoria}, entregue rápido."
+Criar `public.mf_entregadores_disponiveis(_cidade text)` usando a extensão `unaccent` (já instalada no projeto):
 
-## Comportamento
+```sql
+create or replace function public.mf_entregadores_disponiveis(_cidade text)
+returns setof public.mf_entregadores
+language sql stable security definer set search_path = public
+as $$
+  select *
+  from public.mf_entregadores
+  where status = 'aprovado'
+    and disponivel = true
+    and lower(unaccent(cidade)) = lower(unaccent(coalesce(_cidade,'')))
+  order by avaliacao_media desc
+  limit 10;
+$$;
+```
 
-- Renderiza só após `cat` carregar (evita flash com "Categoria" placeholder).
-- Margem inferior `mb-3` para alinhar com o espaçamento atual do buscador.
+(`grant execute` para `anon, authenticated`.)
 
-## Fora de escopo
+Não altero dados existentes — apenas a forma de buscar.
 
-- Não edita imagens, banners reais ou campos novos no banco. Só copy local + emoji existente.
-- Não muda a página principal nem a página da loja.
+### 2. Frontend — `src/components/mercado-facil/MFEntregadoresDisponiveis.tsx`
+
+Trocar o `.from("mf_entregadores").select(...).ilike("cidade", ...)` por:
+
+```ts
+supabase.rpc("mf_entregadores_disponiveis", { _cidade: cidade.trim() })
+```
+
+Mantém o resto da UI igual.
+
+### 3. (Opcional, recomendado) Normalizar cidade ao cadastrar
+
+No `EntregadorCadastro.tsx`, ao salvar, capitalizar apenas para exibição mas manter compatível. Como o RPC já resolve, esta etapa é opcional — confirmo se quer incluir.
+
+## Fora do escopo
+
+- Não mexo no painel do entregador / `useMFEntregas` agora (mesma raiz, mas é outro fluxo). Posso aplicar a mesma normalização lá num passo seguinte se quiser.
+- Sem alterações em RLS, esquema das tabelas ou em dados existentes.
