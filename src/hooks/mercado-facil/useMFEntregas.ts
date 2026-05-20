@@ -27,7 +27,7 @@ export function useMFEntregas({ scope, userId, entregadorId, cidade }: UseEntreg
     } else if (scope === "entregador-historico" && entregadorId) {
       q = q.eq("entregador_id", entregadorId).in("status", ["entregue", "cancelada"]);
     } else if (scope === "cliente-ativas" && userId) {
-      q = q.eq("cliente_id", userId).in("status", ["disponivel", "aceita", "coletada"]);
+      q = q.eq("cliente_id", userId).in("status", ["disponivel", "aceita", "coletada", "entregue"]);
     } else {
       setEntregas([]);
       setLoading(false);
