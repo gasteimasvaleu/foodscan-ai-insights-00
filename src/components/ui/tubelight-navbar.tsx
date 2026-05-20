@@ -29,6 +29,7 @@ const moreSheetItems: Array<{
   { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false },
   { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false },
   { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
+  { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false },
   { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
   { name: "ServiNUTRI", description: "Rede de nutricionistas", url: "/servinutri", icon: Apple, isPro: false },
   { name: "Maternidade", description: "Tentantes, gestação, pós-parto e bebê", url: "/maternidade", icon: Baby, isPro: false },

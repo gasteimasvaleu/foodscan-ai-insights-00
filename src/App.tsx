@@ -73,6 +73,15 @@ import ToAquiNewVenue from "./pages/ToAquiNewVenue";
 import ToAquiEditVenue from "./pages/ToAquiEditVenue";
 import ToAquiChat from "./pages/ToAquiChat";
 import ToAquiActivity from "./pages/ToAquiActivity";
+import MercadoFacilIndex from "./pages/mercado-facil/Index";
+import MercadoFacilCategoria from "./pages/mercado-facil/Categoria";
+import MercadoFacilLoja from "./pages/mercado-facil/Loja";
+import MercadoFacilProduto from "./pages/mercado-facil/Produto";
+import MercadoFacilCarrinho from "./pages/mercado-facil/Carrinho";
+import MFLojistaDashboard from "./pages/mercado-facil/LojistaDashboard";
+import MFLojistaConfigLoja from "./pages/mercado-facil/LojistaConfigLoja";
+import MFLojistaProdutos from "./pages/mercado-facil/LojistaProdutos";
+import AdminMercadoFacil from "./pages/admin/AdminMercadoFacil";
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
 import { CelebrationProvider } from "@/contexts/CelebrationContext";
@@ -102,7 +111,7 @@ const AuthAwareNavbar = () => {
   useStreakMilestones(user?.id);
 
   // Hide navbar on /auth and fullscreen chat
-  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/chat$/.test(location.pathname)) return null;
+  if (location.pathname === '/auth' || location.pathname === '/comunidade/chat' || location.pathname.startsWith('/comunidade/dm/') || /^\/to-aqui\/venue\/[^/]+\/chat$/.test(location.pathname) || location.pathname.startsWith('/mercado-facil')) return null;
 
   // Don't render navbar until auth is ready
   if (!authReady || !user) return null;
@@ -186,6 +195,16 @@ const App = () => (
             <Route path="/to-aqui/owner" element={<ProRoute feature="to-aqui-owner"><ToAquiOwner /></ProRoute>} />
             <Route path="/to-aqui/owner/venue/new" element={<ProRoute feature="to-aqui-owner"><ToAquiNewVenue /></ProRoute>} />
             <Route path="/to-aqui/owner/venue/:id/edit" element={<ProRoute feature="to-aqui-owner"><ToAquiEditVenue /></ProRoute>} />
+
+            <Route path="/mercado-facil" element={<MercadoFacilIndex />} />
+            <Route path="/mercado-facil/categoria/:slug" element={<MercadoFacilCategoria />} />
+            <Route path="/mercado-facil/loja/:id" element={<MercadoFacilLoja />} />
+            <Route path="/mercado-facil/produto/:id" element={<MercadoFacilProduto />} />
+            <Route path="/mercado-facil/carrinho" element={<MercadoFacilCarrinho />} />
+            <Route path="/mercado-facil/lojista" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaDashboard /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/loja" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaConfigLoja /></ProRoute>} />
+            <Route path="/mercado-facil/lojista/produtos" element={<ProRoute feature="mercado-facil-lojista"><MFLojistaProdutos /></ProRoute>} />
+            <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
 
 
 

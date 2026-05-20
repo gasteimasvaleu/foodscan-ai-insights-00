@@ -1,0 +1,128 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
+import type { MFCategoria, MFLoja, MFProduto } from "@/lib/mercado-facil/types";
+
+const MercadoFacilIndex = () => {
+  const [categorias, setCategorias] = useState<MFCategoria[]>([]);
+  const [lojas, setLojas] = useState<MFLoja[]>([]);
+  const [produtos, setProdutos] = useState<MFProduto[]>([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const [c, l, p] = await Promise.all([
+        supabase.from("mf_categorias").select("*").eq("ativo", true).order("order"),
+        supabase.from("mf_lojas").select("*").eq("ativa", true).order("nome").limit(20),
+        supabase.from("mf_produtos").select("*").eq("ativo", true).order("created_at", { ascending: false }).limit(20),
+      ]);
+      setCategorias((c.data ?? []) as MFCategoria[]);
+      setLojas((l.data ?? []) as MFLoja[]);
+      setProdutos((p.data ?? []) as MFProduto[]);
+      setLoading(false);
+    })();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return produtos.filter((p) => p.nome.toLowerCase().includes(q));
+  }, [search, produtos]);
+
+  return (
+    <div className="min-h-screen bg-[#F7FAFB]">
+      <MFHeader title="Mercado Fácil" backTo="/" />
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" />
+          <Input
+            placeholder="Buscar produto..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 rounded-2xl bg-white text-base"
+          />
+        </div>
+
+        {search ? (
+          <section>
+            <h2 className="text-base font-semibold mb-3">Resultados</h2>
+            {filtered.length === 0 ? (
+              <p className="text-sm text-foreground/60">Nenhum produto encontrado.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {filtered.map((p) => <MFProductCard key={p.id} produto={p} />)}
+              </div>
+            )}
+          </section>
+        ) : (
+          <>
+            <section>
+              <h2 className="text-base font-semibold mb-3">Categorias</h2>
+              <div className="grid grid-cols-4 gap-3">
+                {categorias.map((c) => (
+                  <Link
+                    key={c.id}
+                    to={`/mercado-facil/categoria/${c.slug}`}
+                    className="bg-[#FFD1E7] rounded-3xl p-3 flex flex-col items-center justify-center gap-1 aspect-square hover:shadow-md transition-shadow"
+                  >
+                    <span className="text-2xl">{c.icon_emoji ?? "🛒"}</span>
+                    <span className="text-xs text-center text-foreground line-clamp-2">{c.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-base font-semibold mb-3">Lojas</h2>
+              {loading ? (
+                <p className="text-sm text-foreground/60">Carregando...</p>
+              ) : lojas.length === 0 ? (
+                <p className="text-sm text-foreground/60">Nenhuma loja disponível ainda.</p>
+              ) : (
+                <div className="space-y-3">
+                  {lojas.map((l) => (
+                    <Link
+                      key={l.id}
+                      to={`/mercado-facil/loja/${l.id}`}
+                      className="flex items-center gap-3 bg-white rounded-3xl p-3 hover:shadow-md transition-shadow"
+                    >
+                      <div className="w-14 h-14 rounded-2xl bg-[#FFD1E7] overflow-hidden shrink-0">
+                        {l.foto_url ? (
+                          <img src={l.foto_url} alt={l.nome} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl">🏪</div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-base text-foreground truncate">{l.nome}</p>
+                        {l.descricao && (
+                          <p className="text-xs text-foreground/60 line-clamp-2">{l.descricao}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {produtos.length > 0 && (
+              <section>
+                <h2 className="text-base font-semibold mb-3">Novidades</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {produtos.slice(0, 8).map((p) => <MFProductCard key={p.id} produto={p} />)}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default MercadoFacilIndex;

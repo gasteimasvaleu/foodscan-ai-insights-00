@@ -1394,6 +1394,255 @@ export type Database = {
         }
         Relationships: []
       }
+      mf_banners: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          image_url: string
+          link: string | null
+          order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          image_url: string
+          link?: string | null
+          order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          image_url?: string
+          link?: string | null
+          order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mf_categorias: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          icon_emoji: string | null
+          id: string
+          name: string
+          order: number
+          parent_id: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          icon_emoji?: string | null
+          id?: string
+          name: string
+          order?: number
+          parent_id?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          icon_emoji?: string | null
+          id?: string
+          name?: string
+          order?: number
+          parent_id?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_categorias_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "mf_categorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mf_favoritos: {
+        Row: {
+          created_at: string
+          id: string
+          produto_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          produto_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          produto_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_favoritos_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "mf_produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mf_lojas: {
+        Row: {
+          ativa: boolean
+          banner_url: string | null
+          created_at: string
+          descricao: string | null
+          endereco: Json | null
+          foto_url: string | null
+          horario_funcionamento: Json | null
+          id: string
+          nome: string
+          owner_id: string
+          slug: string
+          telefone_whatsapp: string
+          updated_at: string
+        }
+        Insert: {
+          ativa?: boolean
+          banner_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          endereco?: Json | null
+          foto_url?: string | null
+          horario_funcionamento?: Json | null
+          id?: string
+          nome: string
+          owner_id: string
+          slug: string
+          telefone_whatsapp: string
+          updated_at?: string
+        }
+        Update: {
+          ativa?: boolean
+          banner_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          endereco?: Json | null
+          foto_url?: string | null
+          horario_funcionamento?: Json | null
+          id?: string
+          nome?: string
+          owner_id?: string
+          slug?: string
+          telefone_whatsapp?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mf_order_log: {
+        Row: {
+          cliente_id: string
+          id: string
+          itens: Json
+          loja_id: string
+          sent_at: string
+          total_estimado_centavos: number
+        }
+        Insert: {
+          cliente_id: string
+          id?: string
+          itens?: Json
+          loja_id: string
+          sent_at?: string
+          total_estimado_centavos?: number
+        }
+        Update: {
+          cliente_id?: string
+          id?: string
+          itens?: Json
+          loja_id?: string
+          sent_at?: string
+          total_estimado_centavos?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_order_log_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "mf_lojas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mf_produtos: {
+        Row: {
+          ativo: boolean
+          categoria_id: string | null
+          created_at: string
+          descricao: string | null
+          foto_url: string | null
+          id: string
+          loja_id: string
+          nome: string
+          preco_centavos: number
+          preco_promo_centavos: number | null
+          unidade: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          foto_url?: string | null
+          id?: string
+          loja_id: string
+          nome: string
+          preco_centavos?: number
+          preco_promo_centavos?: number | null
+          unidade?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria_id?: string | null
+          created_at?: string
+          descricao?: string | null
+          foto_url?: string | null
+          id?: string
+          loja_id?: string
+          nome?: string
+          preco_centavos?: number
+          preco_promo_centavos?: number | null
+          unidade?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mf_produtos_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "mf_categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mf_produtos_loja_id_fkey"
+            columns: ["loja_id"]
+            isOneToOne: false
+            referencedRelation: "mf_lojas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications_sent: {
         Row: {
           created_at: string | null
