@@ -8,13 +8,35 @@ import { useAuthContext } from "@/contexts/AuthProvider";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
+import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import type { MFLoja } from "@/lib/mercado-facil/types";
+
+const ADDRESS_KEY = "mf_delivery_address_v1";
 
 const Carrinho = () => {
   const { byLoja, setQty, clearLoja, totalItens } = useMFCart();
   const { user } = useAuthContext();
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
   const [profileName, setProfileName] = useState<string | undefined>();
+  const [profilePhone, setProfilePhone] = useState<string | undefined>();
+  const [cidade, setCidade] = useState("");
+  const [endereco, setEndereco] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      if (raw) {
+        const v = JSON.parse(raw);
+        if (v.cidade) setCidade(v.cidade);
+        if (v.endereco) setEndereco(v.endereco);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(ADDRESS_KEY, JSON.stringify({ cidade, endereco }));
+  }, [cidade, endereco]);
+
 
   const lojaIds = Object.keys(byLoja);
 
