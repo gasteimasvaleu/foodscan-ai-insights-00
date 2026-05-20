@@ -1,35 +1,17 @@
-## Destaque do texto no hero card de /mercado-facil
+## Mover botões "Sou Lojista / Sou Entregador" para abaixo do card header
 
-Envolver o bloco de texto à direita ("Compare Preços e Economize" + subtítulo) em um card interno com efeito visual de destaque, mantendo a imagem `galegacomsacola.png` à esquerda.
+### Mudanças em `src/pages/mercado-facil/Index.tsx`
 
-### Mudanças em `src/pages/mercado-facil/Index.tsx` (linhas 100–107)
-
-- Trocar o `<div className="min-w-0">` que envolve o `<h2>` e `<p>` por um card interno:
-  - Fundo com gradiente suave rosa: `bg-gradient-to-br from-[#FFD1E7] via-white to-[#FFE9F3]`
-  - Borda: `border border-[#FD46A1]/40`
-  - `rounded-2xl p-3 shadow-sm`
-  - `relative overflow-hidden` para suportar o brilho
-- Adicionar um brilho animado (shine) por cima usando um `<span>` absoluto com `bg-gradient-to-r from-transparent via-white/60 to-transparent` e `animate-[shine_2.8s_ease-in-out_infinite]`
-- Manter `<h2>` em `text-[#FD46A1]` e `<p>` em `text-foreground/70` (leve ajuste de contraste sobre o fundo rosa claro)
-
-### Keyframe `shine`
-
-Adicionar em `tailwind.config.ts` (dentro de `theme.extend.keyframes` e `animation`):
-
-```ts
-keyframes: {
-  shine: {
-    '0%':   { transform: 'translateX(-120%)' },
-    '60%':  { transform: 'translateX(120%)' },
-    '100%': { transform: 'translateX(120%)' },
-  },
-},
-animation: {
-  shine: 'shine 2.8s ease-in-out infinite',
-},
-```
+1. **Remover** a `<section>` atual (linhas 244–261) que fica no final, dentro do bloco `else`.
+2. **Inserir** uma nova `<section>` logo após o card header (depois da linha 113, antes do card de busca na linha 115), assim os botões aparecem em ambos estados (com ou sem filtro).
+3. **Reduzir o tamanho** dos botões: layout horizontal compacto em vez de coluna.
+   - Container: `grid grid-cols-2 gap-2`
+   - Cada Link: `rounded-2xl px-3 py-2 flex items-center gap-2`
+   - Ícone: `size={16}`
+   - Label: `text-sm` (sem subtítulo)
+   - Remover o `<span>` de descrição (xs) — fica só ícone + nome
+4. **Estilo mantido**: primeiro continua `bg-[#FD46A1] text-white`, segundo `bg-white border border-[#FD46A1] text-[#FD46A1]`.
 
 ### Fora de escopo
-
-- Não alterar a imagem, o card externo, o buscador, nem qualquer lógica.
-- Sem novos textos ou CTA.
+- Sem novos textos ou rotas.
+- Não mexer no card header, busca, categorias ou listas.
