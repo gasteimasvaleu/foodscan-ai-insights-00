@@ -91,13 +91,13 @@ const MercadoFacilIndex = () => {
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Mercado Fácil" backTo="/" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
-        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 shadow-sm flex items-center gap-3">
+        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl pr-4 py-0 pl-0 shadow-sm flex items-stretch gap-3 overflow-hidden">
           <img
             src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/galegacomsacola.png"
             alt=""
-            className="w-24 h-24 object-contain shrink-0"
+            className="w-32 h-32 object-contain object-bottom self-end shrink-0"
           />
-          <div className="relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-[#FD46A1]/40 bg-gradient-to-br from-[#FFD1E7] via-white to-[#FFE9F3] p-3 shadow-sm">
+          <div className="relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-[#FD46A1]/40 bg-gradient-to-br from-[#FFD1E7] via-white to-[#FFE9F3] p-3 my-3 shadow-sm">
             <span
               aria-hidden
               className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/70 to-transparent animate-shine"
@@ -109,6 +109,7 @@ const MercadoFacilIndex = () => {
               Encontre os melhores preços em supermercados próximos a você
             </p>
           </div>
+
 
         </div>
 

@@ -1,17 +1,16 @@
-## Mover botões "Sou Lojista / Sou Entregador" para abaixo do card header
+## Aumentar imagem da mulher para encostar nas bordas do card
 
-### Mudanças em `src/pages/mercado-facil/Index.tsx`
+### Mudança em `src/pages/mercado-facil/Index.tsx`
 
-1. **Remover** a `<section>` atual (linhas 244–261) que fica no final, dentro do bloco `else`.
-2. **Inserir** uma nova `<section>` logo após o card header (depois da linha 113, antes do card de busca na linha 115), assim os botões aparecem em ambos estados (com ou sem filtro).
-3. **Reduzir o tamanho** dos botões: layout horizontal compacto em vez de coluna.
-   - Container: `grid grid-cols-2 gap-2`
-   - Cada Link: `rounded-2xl px-3 py-2 flex items-center gap-2`
-   - Ícone: `size={16}`
-   - Label: `text-sm` (sem subtítulo)
-   - Remover o `<span>` de descrição (xs) — fica só ícone + nome
-4. **Estilo mantido**: primeiro continua `bg-[#FD46A1] text-white`, segundo `bg-white border border-[#FD46A1] text-[#FD46A1]`.
+**Card externo (linha 94)** — remover padding esquerdo e vertical para a imagem encostar:
+- Trocar `p-4` por `pr-4 py-0 pl-0` (mantém só padding à direita)
+- Manter `overflow-hidden` para a imagem respeitar o `rounded-3xl`
+
+**Imagem (linhas 95–99)** — aumentar e encostar:
+- Trocar `w-24 h-24 object-contain` por `w-32 h-32 object-cover object-left self-stretch`
+- Assim a imagem fica maior (~128px), preenche a altura toda do card e encosta na borda esquerda/topo/baixo
+
+**Card interno do texto** — adicionar `my-3` para compensar a remoção do padding vertical do card externo e manter respiro do texto.
 
 ### Fora de escopo
-- Sem novos textos ou rotas.
-- Não mexer no card header, busca, categorias ou listas.
+- Não trocar a imagem, texto, busca ou botões.
