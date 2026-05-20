@@ -31,6 +31,7 @@ const MercadoFacilIndex = () => {
     } catch {}
   }, []);
 
+  useEffect(() => {
     (async () => {
       const [c, l, p] = await Promise.all([
         supabase.from("mf_categorias").select("*").eq("ativo", true).order("order"),
@@ -43,6 +44,7 @@ const MercadoFacilIndex = () => {
       setLoading(false);
     })();
   }, []);
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
