@@ -36,7 +36,7 @@ const MercadoFacilIndex = () => {
       const [c, l, p] = await Promise.all([
         supabase.from("mf_categorias").select("*").eq("ativo", true).order("order"),
         supabase.from("mf_lojas").select("*").eq("ativa", true).order("nome").limit(20),
-        supabase.from("mf_produtos").select("*").eq("ativo", true).order("created_at", { ascending: false }).limit(20),
+        supabase.from("mf_produtos").select("*").eq("ativo", true).order("created_at", { ascending: false }).limit(500),
       ]);
       setCategorias((c.data ?? []) as MFCategoria[]);
       setLojas((l.data ?? []) as MFLoja[]);
