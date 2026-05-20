@@ -214,29 +214,48 @@ const EntregadorCadastro = () => {
               Valor de referência mostrado ao cliente. O combinado final é fechado no WhatsApp.
             </p>
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Foto (opcional)</Label>
-            <div className="flex items-center gap-3 mt-1">
-              {fotoUrl ? (
-                <img src={fotoUrl} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-[#FD46A1]" />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-[#FFD1E7] flex items-center justify-center text-xs text-[#FD46A1]">
-                  Sem foto
-                </div>
-              )}
-              <label className="flex-1">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFotoUpload}
-                  disabled={uploadingFoto}
-                />
-                <div className="bg-[#FFD1E7] text-[#FD46A1] rounded-2xl h-11 flex items-center justify-center text-sm font-medium cursor-pointer hover:bg-[#FFD1E7]/80">
-                  {uploadingFoto ? <Loader2 className="animate-spin w-4 h-4" /> : fotoUrl ? "Trocar foto" : "Enviar foto"}
-                </div>
-              </label>
-            </div>
+            <label
+              className="relative block w-full h-40 rounded-2xl border-2 border-dashed border-[#FD46A1]/40 bg-white/40 hover:bg-white/60 transition cursor-pointer overflow-hidden"
+              style={fotoUrl ? { backgroundImage: `url(${fotoUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFotoUpload}
+                disabled={uploadingFoto}
+              />
+              <div
+                className={`absolute inset-0 flex flex-col items-center justify-center gap-2 ${
+                  fotoUrl ? "bg-black/40 text-white/90" : "text-foreground/70"
+                }`}
+              >
+                {uploadingFoto ? (
+                  <>
+                    <Loader2 className={`w-8 h-8 animate-spin ${fotoUrl ? "" : "text-[#FD46A1]/70"}`} />
+                    <span className="text-sm">Enviando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera className={`w-10 h-10 ${fotoUrl ? "opacity-90" : "text-[#FD46A1]/60"}`} />
+                    <span className={`text-sm ${fotoUrl ? "" : "opacity-70"}`}>
+                      {fotoUrl ? "Trocar foto" : "Toque para enviar sua foto"}
+                    </span>
+                  </>
+                )}
+              </div>
+            </label>
+            {fotoUrl && !uploadingFoto && (
+              <button
+                type="button"
+                onClick={() => setFotoUrl("")}
+                className="text-xs text-foreground/60 underline"
+              >
+                Remover foto
+              </button>
+            )}
           </div>
         </div>
 
