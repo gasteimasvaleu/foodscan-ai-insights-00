@@ -5,8 +5,6 @@ import { LucideIcon, Apple, UtensilsCrossed, Users, ChevronRight, BarChart3, Mes
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useAuthContext } from "@/contexts/AuthProvider"
-import { useNativePlatform } from "@/hooks/useNativePlatform"
-import { LiquidGlassFilter } from "@/components/ui/liquid-glass-filter"
 
 interface NavItem {
   name: string
@@ -62,8 +60,6 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const { subscriptionStatus } = useAuthContext()
-  const { isIOS, isNative } = useNativePlatform()
-  const liquidGlass = isNative && isIOS
   const isPro = !!subscriptionStatus?.subscribed
 
   const extrasItems = moreSheetItems.filter((i) => i.isExtra)

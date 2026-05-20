@@ -10,7 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { TubelightNavbar } from "@/components/ui/tubelight-navbar";
-import { Home, Scan, Calendar, Activity, Dumbbell, ChefHat, MessageCircle, Plus } from "lucide-react";
+import { Home, Scan, Calendar, Activity, ChefHat, MessageCircle, Plus } from "lucide-react";
 import Index from "./pages/Index";
 import FoodScan from "./pages/FoodScan";
 import DailyControl from "./pages/DailyControl";
@@ -100,7 +100,6 @@ const navItems = [
   { name: 'FoodScan', url: '/foodscan', icon: Scan },
   { name: 'Controle', url: '/controle-diario', icon: Calendar },
   { name: 'FitTracker', url: '/fit-tracker', icon: Activity },
-  { name: 'Treinos', url: '/treinos', icon: Dumbbell },
   { name: 'MasterChef', url: '/masterchef', icon: ChefHat },
   { name: 'Mais', url: '#more', icon: Plus }
 ];
