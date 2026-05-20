@@ -22,12 +22,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Send, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle, Search } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Users, Sparkles, Activity, HelpCircle, Search } from "lucide-react";
 import { useVenue } from "@/hooks/useVenues";
 import VenueChatOnboardingModal from "@/components/to-aqui/VenueChatOnboardingModal";
 import GuessIdentityDialog from "@/components/to-aqui/GuessIdentityDialog";
 import IncomingGuessDialog, { type IncomingGuess } from "@/components/to-aqui/IncomingGuessDialog";
 import MatchRevealBanner from "@/components/to-aqui/MatchRevealBanner";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
+import { compressImage } from "@/lib/imageCompression";
 
 const ONBOARDING_KEY = "toAquiChatOnboardingSeen";
 const MATCH_REVEAL_PREFIX = "__match_reveal__:";
@@ -36,6 +38,7 @@ interface VenueMsg {
   id: string;
   user_id: string;
   content: string;
+  image_url?: string | null;
   created_at: string;
 }
 
@@ -175,7 +178,7 @@ export default function ToAquiChat() {
       setLoading(true);
       const { data, error } = await supabase
         .from("venue_messages")
-        .select("id, user_id, content, created_at")
+        .select("id, user_id, content, image_url, created_at")
         .eq("venue_id", venueId)
         .order("created_at", { ascending: false })
         .limit(PAGE_SIZE);
@@ -404,36 +407,53 @@ export default function ToAquiChat() {
     setNeedIdentity(false);
   };
 
-  const send = async (overrideText?: string) => {
+  const send = async (overrideText?: string, filesArg: File[] = []) => {
     const text = (overrideText ?? input).trim();
-    if (!text || !user || !venueId || sending) return;
+    const file = filesArg[0];
+    if ((!text && !file) || !user || !venueId || sending) return;
     if (text.length > 500) {
       toast({ title: "Mensagem muito longa", description: "Máximo 500 caracteres.", variant: "destructive" });
       return;
     }
     setSending(true);
-    const { data: inserted, error } = await supabase
-      .from("venue_messages")
-      .insert({ venue_id: venueId, user_id: user.id, content: text })
-      .select("id, user_id, content, created_at")
-      .single();
-    setSending(false);
-    if (error) {
-      const msg = error.message || "";
+    try {
+      let image_url: string | null = null;
+      let storage_path: string | null = null;
+      if (file) {
+        const base64 = await compressImage(file, 1200, 0.85);
+        const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+        const path = `${user.id}/${Date.now()}.jpg`;
+        const { error: upErr } = await supabase.storage
+          .from("venue-chat-media")
+          .upload(path, blob, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
+        const { data: urlData } = supabase.storage.from("venue-chat-media").getPublicUrl(path);
+        image_url = urlData.publicUrl;
+        storage_path = path;
+      }
+      const { data: inserted, error } = await supabase
+        .from("venue_messages")
+        .insert({ venue_id: venueId, user_id: user.id, content: text, image_url, storage_path })
+        .select("id, user_id, content, image_url, created_at")
+        .single();
+      if (error) throw error;
+      if (inserted) {
+        setMessages((prev) =>
+          prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as VenueMsg]
+        );
+        setTimeout(scrollToBottom, 50);
+      }
+      if (!overrideText) setInput("");
+    } catch (error: any) {
+      const msg = error?.message || "";
       let friendly = "Erro ao enviar mensagem";
       if (msg.includes("blocked_word")) friendly = "Sua mensagem contém termos não permitidos.";
       else if (msg.includes("blocked_content")) friendly = "Links, telefones e emails não são permitidos.";
       else if (msg.includes("rate_limit")) friendly = "Aguarde alguns segundos antes de enviar mais mensagens.";
       toast({ title: "Não foi possível enviar", description: friendly, variant: "destructive" });
-      return;
+    } finally {
+      setSending(false);
     }
-    if (inserted) {
-      setMessages((prev) =>
-        prev.some((m) => m.id === inserted.id) ? prev : [...prev, inserted as VenueMsg]
-      );
-      setTimeout(scrollToBottom, 50);
-    }
-    if (!overrideText) setInput("");
   };
 
   const sendInteraction = async (type: InteractionType) => {
@@ -884,13 +904,16 @@ export default function ToAquiChat() {
                     )}
                     <div
                       onClick={() => !isMine && setInteractionTarget(m.user_id)}
-                      className={`rounded-2xl px-3 py-2 text-base break-words [overflow-wrap:anywhere] ${
+                      className={`rounded-2xl text-base break-words [overflow-wrap:anywhere] overflow-hidden ${
                         isMine
                           ? "bg-[#FD46A1] text-white rounded-br-md"
                           : "bg-[#FFD1E7] text-gray-800 rounded-bl-md cursor-pointer"
                       }`}
                     >
-                      {m.content}
+                      {m.image_url && (
+                        <img src={m.image_url} alt="" className="max-h-64 w-full object-cover" />
+                      )}
+                      {m.content && <div className="px-3 py-2">{m.content}</div>}
                     </div>
                   </div>
                 </div>
@@ -911,33 +934,20 @@ export default function ToAquiChat() {
               variant="outline"
               className="rounded-full h-11 w-11 shrink-0 border-[#FD46A1] text-[#FD46A1]"
               aria-label="Dica misteriosa via IA"
+              disabled={needIdentity}
             >
               <Sparkles className="w-4 h-4" />
             </Button>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  send();
-                }
-              }}
-              placeholder="Mensagem..."
-              rows={1}
-              maxLength={500}
-              disabled={needIdentity}
-              className="flex-1 min-w-0 resize-none rounded-2xl border border-input bg-background px-4 py-2.5 text-base placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FD46A1] max-h-28"
-              style={{ minHeight: "42px" }}
-            />
-            <Button
-              onClick={() => send()}
-              disabled={!input.trim() || sending || needIdentity}
-              size="icon"
-              className="rounded-full h-11 w-11 shrink-0 bg-[#FD46A1] hover:bg-[#FD46A1]/90"
-            >
-              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </Button>
+            <div className="flex-1 min-w-0">
+              <ChatInputBar
+                onSend={(t, files) => send(t, files)}
+                onTextChange={setInput}
+                placeholder="Mensagem..."
+                isLoading={sending}
+                disabled={needIdentity}
+                maxLength={500}
+              />
+            </div>
           </div>
         </div>
       </div>
