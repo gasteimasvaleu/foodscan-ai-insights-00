@@ -1,11 +1,11 @@
 import { Loader2, MessageCircle } from "lucide-react";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
 import { Button } from "@/components/ui/button";
 import { useMFEntregador } from "@/hooks/mercado-facil/useMFEntregador";
 import { useMFEntregas } from "@/hooks/mercado-facil/useMFEntregas";
 import { cleanPhone, formatBRL } from "@/lib/mercado-facil/formatters";
-import { ENTREGA_STATUS_LABEL } from "@/lib/mercado-facil/entregador-types";
 
 const EntregadorEntregas = () => {
   const { entregador, loading } = useMFEntregador();
@@ -48,12 +48,12 @@ const EntregadorEntregas = () => {
               {ativas.map((e) => (
                 <div key={e.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
-                      {ENTREGA_STATUS_LABEL[e.status]}
-                    </span>
-                    <span className="text-[#FD46A1] font-bold">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</span>
+                    <p className="text-sm flex-1 pr-2">{e.endereco_entrega}</p>
+                    <span className="text-[#FD46A1] font-bold whitespace-nowrap">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</span>
                   </div>
-                  <p className="text-sm">{e.endereco_entrega}</p>
+                  {(e.status === "aceita" || e.status === "coletada" || e.status === "entregue") && (
+                    <MFEntregaProgress status={e.status as "aceita" | "coletada" | "entregue"} />
+                  )}
                   <div className="flex gap-2">
                     <Button
                       variant="outline"

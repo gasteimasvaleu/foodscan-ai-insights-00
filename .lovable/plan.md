@@ -1,40 +1,43 @@
-## Problema
+## Objetivo
 
-O modal de avaliação do entregador (`MFRatingModal`) só é montado em `/mercado-facil` (Index do cliente) e só busca entregas no `useEffect` inicial. Hoje:
+Na seção "Em andamento" do entregador, mostrar visualmente o progresso da entrega (Aceita → Coletada → Entregue) com uma barra de etapas, no estilo "stepper", em vez de só um chip com o status atual.
 
-- O cliente vê o modal apenas se entrar/recarregar `/mercado-facil` *após* o entregador marcar como "entregue".
-- Se o cliente já estava com a aba aberta, nada acontece em tempo real.
-- Em outras rotas do app do cliente (carrinho, busca etc.) o modal nem existe.
+## Onde
 
-No banco existe a entrega `ab45…c5fc` com status `entregue` — ou seja, os dados estão certos; o problema é só de gatilho/montagem do modal.
+`src/pages/mercado-facil/EntregadorEntregas.tsx` — dentro de cada card da lista `ativas` (linhas ~49–91).
+
+Os status possíveis para uma entrega ativa são `aceita`, `coletada`, `entregue` (definidos em `entregador-types.ts`).
 
 ## Plano
 
-1. **Realtime no `useMFPendingRating`** — assinar `postgres_changes` em `mf_entregas` filtrado por `cliente_id=user.id`. Quando chegar um UPDATE com `status='entregue'`, chamar `load()` para abrir o modal imediatamente. Também reagir a INSERT/DELETE em `mf_entregador_avaliacoes` para sumir com o modal se já avaliada em outra aba. Limpar o canal no cleanup.
+1. **Novo componente** `src/components/mercado-facil/MFEntregaProgress.tsx`:
+   - Props: `status: "aceita" | "coletada" | "entregue"`.
+   - Renderiza 3 etapas: **Aceita**, **Coletada**, **Entregue**.
+   - Cada etapa = bolinha numerada + label curto abaixo, conectadas por uma trilha (track) cinza + faixa preenchida em `#FD46A1`.
+   - Estado por etapa:
+     - **Concluída**: bolinha sólida `#FD46A1` com ícone de check.
+     - **Atual**: bolinha sólida `#FD46A1` com leve `animate-pulse` (e a faixa preenchida termina nela com um shimmer/`animate-pulse` sutil para passar o feel de "loading").
+     - **Pendente**: bolinha branca com borda `#FD46A1/30`, número em cinza.
+   - Largura 100%, padding interno só vertical, sem fundo (encaixa dentro do card).
+   - Acessibilidade: `role="progressbar"`, `aria-valuemin=1`, `aria-valuemax=3`, `aria-valuenow` conforme status, `aria-label="Progresso da entrega"`.
 
-2. **Disponibilizar o modal globalmente para o cliente** — mover `<MFRatingModal />` de `src/pages/mercado-facil/Index.tsx` para um ponto compartilhado das rotas do cliente (ex.: dentro do layout/wrapper de `/mercado-facil/*` que NÃO seja entregador). Assim o modal aparece em qualquer página do Mercado Fácil onde o cliente esteja navegando.
+2. **Integração no card** (`EntregadorEntregas.tsx`):
+   - Manter o preço no canto direito.
+   - **Remover o chip de status** (o `<span>` com `ENTREGA_STATUS_LABEL[e.status]`) — a informação passa a vir do stepper, evitando ruído.
+   - Inserir `<MFEntregaProgress status={e.status} />` logo abaixo da linha de preço/endereço e acima dos botões de WhatsApp.
+   - Manter os botões "Marcar como coletada" / "Marcar como entregue" como ações principais.
 
-   - Verificar se existe um layout de rotas; se não, adicionar o componente nas páginas principais do fluxo do cliente (Index, busca, loja, carrinho). Não montar nas rotas `/mercado-facil/entregador/*`.
+3. **Sem mudanças** em hooks, tipos, banco ou no fluxo do cliente — é puramente visual/presentacional.
 
-3. **Polling leve de segurança** — além do realtime, fazer `reload()` quando a aba volta ao foco (`visibilitychange`) para cobrir cenários sem realtime (PWA suspenso, conexão caiu).
+## Detalhes de estilo (We Diet)
 
-4. **Sem mudanças no fluxo do entregador** — `EntregadorEntregas.tsx` continua marcando `status='entregue'` igual hoje; só o lado do cliente passa a reagir.
-
-## Detalhes técnicos
-
-- Em `useMFPendingRating.ts`:
-  - Após `useEffect(load)`, adicionar outro `useEffect` que cria `supabase.channel('mf-rating-' + user.id)` com dois `on('postgres_changes', …)`:
-    - `{ event: 'UPDATE', schema: 'public', table: 'mf_entregas', filter: 'cliente_id=eq.<uid>' }` → `load()`
-    - `{ event: 'INSERT', schema: 'public', table: 'mf_entregador_avaliacoes', filter: 'autor_id=eq.<uid>' }` → `load()`
-  - Adicionar listener `document.addEventListener('visibilitychange', …)` que chama `load()` quando `document.visibilityState === 'visible'`.
-  - Cleanup remove canal e listener.
-
-- Garantir que `mf_entregas` e `mf_entregador_avaliacoes` estão em `supabase_realtime` publication (rodar migration `ALTER PUBLICATION supabase_realtime ADD TABLE …` se ainda não estiverem; é idempotente via `DO $$ … EXCEPTION WHEN duplicate_object`).
-
-- Modal: trocar a montagem única em `Index.tsx` por montagem nas rotas do cliente do Mercado Fácil (ou um wrapper de layout se existir). Confirmar com `rg` quais páginas formam o app do cliente antes de editar.
+- Cores: trilha `bg-[#FFD1E7]`, preenchimento `bg-[#FD46A1]`, texto ativo `text-[#FD46A1]`, pendente `text-foreground/40`.
+- Tipografia: `text-base` no h3 mantido; labels do stepper `text-[11px]` para caber confortável em 390px.
+- Animação: `transition-all duration-500 ease-out` na largura da faixa preenchida; `animate-pulse` apenas na bolinha atual.
+- Sem ícones decorativos no h3, conforme padrão do projeto.
 
 ## Fora de escopo
 
-- Mudar UX do modal, copy, design.
-- Tocar no painel do entregador.
-- Permitir reabrir avaliações já enviadas.
+- Card de "Disponíveis para aceitar" (sem progresso, é só aceitar).
+- Telas do cliente / dashboard do entregador.
+- Persistência ou mudança nos timestamps `aceita_em`/`coletada_em`/`entregue_em`.
