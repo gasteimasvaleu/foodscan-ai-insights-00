@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Tag } from "lucide-react";
 import { useOfertasDestaque, type OfertaDestaque } from "@/hooks/mercado-facil/useOfertasDestaque";
-import { formatCentavos } from "@/lib/mercado-facil/formatters";
+import { formatBRL } from "@/lib/mercado-facil/formatters";
 
 const OfertaCard = ({ oferta }: { oferta: OfertaDestaque }) => (
   <Link
