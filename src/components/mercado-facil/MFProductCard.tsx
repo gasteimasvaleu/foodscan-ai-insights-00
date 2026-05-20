@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { useMFCart } from "@/hooks/mercado-facil/useMFCart";
 import { toast } from "@/components/ui/use-toast";
@@ -8,6 +8,7 @@ import type { MFProduto } from "@/lib/mercado-facil/types";
 interface Props {
   produto: MFProduto;
   lojaId?: string;
+  lojaNome?: string;
 }
 
 export const MFProductCard = ({ produto, lojaId }: Props) => {
