@@ -155,6 +155,7 @@ const LojistaProdutos = () => {
                           nome: p.nome,
                           descricao: p.descricao ?? "",
                           preco_reais: (p.preco_centavos / 100).toFixed(2).replace(".", ","),
+                          preco_promo_reais: p.preco_promo_centavos != null ? (p.preco_promo_centavos / 100).toFixed(2).replace(".", ",") : "",
                           unidade: p.unidade,
                           categoria_id: p.categoria_id ?? "",
                           foto_url: p.foto_url ?? "",
