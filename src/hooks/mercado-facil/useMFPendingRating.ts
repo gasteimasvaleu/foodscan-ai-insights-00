@@ -67,6 +67,33 @@ export function useMFPendingRating() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`mf-rating-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "mf_entregas", filter: `cliente_id=eq.${user.id}` },
+        () => load()
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "mf_entregador_avaliacoes", filter: `autor_id=eq.${user.id}` },
+        () => load()
+      )
+      .subscribe();
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      supabase.removeChannel(channel);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [user?.id, load]);
+
   const dismiss = () => {
     if (!entrega) return;
     const cur = getDismissed();
