@@ -105,15 +105,14 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           className,
         )}
       >
-        <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
         <div
           className={cn(
             "relative flex items-center gap-2 sm:gap-3 backdrop-blur-md py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
-            "bg-[#FA1690]/85 border border-white/20",
+            "bg-[#FA1690]/85 border border-white/30",
           )}
           style={{
             boxShadow:
-              "0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1), inset 1.5px 1.5px 0.5px rgba(255,255,255,0.55), inset -1px -1px 0.5px rgba(255,255,255,0.35)",
+              "0 0 0 1px rgba(255,255,255,0.5), 0 0 18px rgba(255,255,255,0.45), 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1), inset 1.5px 1.5px 0.5px rgba(255,255,255,0.55), inset -1px -1px 0.5px rgba(255,255,255,0.35)",
           }}
         >
 
