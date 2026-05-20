@@ -21,7 +21,7 @@ export function useMFEntregas({ scope, userId, entregadorId, cidade }: UseEntreg
     if (scope === "lojista" && userId) {
       q = q.eq("lojista_id", userId);
     } else if (scope === "entregador-disponivel" && cidade) {
-      q = q.eq("status", "disponivel").eq("cidade", cidade);
+      q = q.eq("status", "disponivel").eq("cidade", normalizeCidade(cidade));
     } else if (scope === "entregador-ativa" && entregadorId) {
       q = q.eq("entregador_id", entregadorId).in("status", ["aceita", "coletada"]);
     } else if (scope === "entregador-historico" && entregadorId) {
