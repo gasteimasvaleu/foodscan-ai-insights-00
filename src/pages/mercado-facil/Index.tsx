@@ -95,7 +95,7 @@ const MercadoFacilIndex = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Mercado Fácil" backTo="/" />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-40 px-4 max-w-2xl mx-auto space-y-6">
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl pr-4 py-0 pl-0 shadow-sm flex items-stretch gap-3 overflow-hidden">
           <img
             src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/galegacomsacola.png"
