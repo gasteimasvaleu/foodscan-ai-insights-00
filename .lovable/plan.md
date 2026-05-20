@@ -1,32 +1,22 @@
-## Editar entregador + redesenhar card do painel
+## Objetivo
+Na página individual da loja (`/mercado-facil/loja/:id`), agrupar os produtos por categoria e exibir cada grupo em um carrossel horizontal, em vez do grid 2 colunas atual.
 
-### 1. Tornar dados do entregador editáveis
+## Mudanças
 
-Refatorar `EntregadorCadastro.tsx` para funcionar em dois modos:
+**`src/pages/mercado-facil/Loja.tsx`**
+1. Buscar também `mf_categorias` (id, name, icon_emoji, order) junto com lojas/produtos.
+2. Agrupar `produtos` por `categoria_id`, ordenando categorias pelo campo `order`. Produtos sem categoria vão para um grupo "Outros" no final.
+3. Para cada categoria com produtos, renderizar:
+   - Cabeçalho com `icon_emoji` + nome + contador `(N)`
+   - Carrossel horizontal (`overflow-x-auto`, scroll snap, `scrollbar-hide`) com `MFProductCard` em largura fixa (~ `w-40`/`w-44` para caber 2,2 cards visíveis no viewport 390px)
+4. Remover o grid antigo `grid-cols-2`.
 
-- **Modo cadastro** (sem entregador): comportamento atual (insert).
-- **Modo edição** (entregador existente): pré-preencher campos com dados atuais e fazer `update` em vez de `insert`. Remover o redirect que joga de volta pro dashboard quando já existe entregador.
+## Detalhes técnicos
+- Carrossel: `flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-2` com cada item `snap-start shrink-0 w-40`.
+- `MFProductCard` precisa funcionar em largura fixa — verificar e ajustar caso esteja com `w-full` rígido (provavelmente já adapta ao container).
+- Sem mudanças de schema, sem novo componente — mantém tudo dentro de `Loja.tsx`.
 
-Adicionar campo opcional **Foto** (URL) — coluna `foto_url` já existe na tabela `mf_entregadores`.
-
-Adicionar botão **"Editar meus dados"** no card do painel (`EntregadorDashboard.tsx`) levando para `/mercado-facil/entregador/cadastro`.
-
-### 2. Redesenhar o card do painel do entregador
-
-Seguindo o layout da referência (mesmo padrão da página da loja):
-
-- Banner rosa no topo (h-28) com gradient + foto do entregador como background, se houver.
-- Avatar circular 96px sobrepondo o banner (foto do entregador ou inicial do nome com bg `#FFD1E7`).
-- Nome em destaque (text-2xl font-bold) + linha "Cidade/UF · Raio Xkm".
-- Badge de status (Aprovado/Pendente/etc) no canto superior direito do banner.
-- Três stats em grid abaixo, padrão `bg-[#FFD1E7] rounded-2xl`:
-  - **ENTREGAS** (total_entregas)
-  - **AVALIAÇÃO** (avaliacao_media)
-  - **RAIO** (raio_atendimento_km km)
-- Switch "Disponível para entregas" continua dentro do card, abaixo das stats (só se aprovado).
-
-### Fora de escopo
-
-- Não vou adicionar upload de imagem (mantém URL como na config de loja).
-- Não mexo nas listas de entregas abaixo do card.
-- Sem mudanças de schema (todas as colunas já existem).
+## Fora do escopo
+- Filtro/busca por categoria.
+- Mudanças no card do produto além de eventual ajuste de largura.
+- Mudanças no header/banner da loja.
