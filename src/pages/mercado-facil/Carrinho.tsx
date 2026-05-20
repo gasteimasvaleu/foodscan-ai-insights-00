@@ -124,6 +124,18 @@ const Carrinho = () => {
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
         <MFClientePedidosStatus />
+        {user && profile && (
+          <div className="[&>div]:mb-0">
+            <ProfileHeaderCard
+              profile={profile}
+              email={user.email || ""}
+              isPro={subscriptionStatus.subscribed}
+              onProfileUpdate={(updates) =>
+                setProfile((prev) => (prev ? { ...prev, ...updates } : prev))
+              }
+            />
+          </div>
+        )}
         {totalItens === 0 ? (
           <p className="text-sm text-foreground/60 text-center pt-12">
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
