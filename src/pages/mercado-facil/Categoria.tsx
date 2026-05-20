@@ -92,7 +92,7 @@ const Categoria = () => {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar nesta categoria..."
-              className="w-full h-10 pl-9 pr-3 rounded-full bg-white/70 backdrop-blur-md border border-white/60 text-base outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 pl-9 pr-3 rounded-full bg-white/70 backdrop-blur-md border border-[#FD46A1]/40 text-base outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
           <div className="relative">
