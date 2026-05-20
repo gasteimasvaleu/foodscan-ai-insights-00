@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { Send, Bot, User, Loader2, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Bot, User, Loader2, MessageCircle } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import ReactMarkdown from 'react-markdown';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { ChatInputBar } from '@/components/chat/ChatInputBar';
 
 type UserContext = {
   name?: string;
