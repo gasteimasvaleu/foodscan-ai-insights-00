@@ -33,7 +33,7 @@ const ADDRESS_KEY = "mf_delivery_address_v1";
 const Carrinho = () => {
   const { byLoja, setQty, clearLoja, totalItens } = useMFCart();
   const { user } = useAuthContext();
-  const subscriptionStatus = useSubscription(user);
+  const { subscriptionStatus } = useSubscription(user);
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
   const [profile, setProfile] = useState<FullProfile | null>(null);
   const [cidade, setCidade] = useState("");
