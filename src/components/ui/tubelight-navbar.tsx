@@ -108,7 +108,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
         <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
         <div
           className={cn(
-            "relative flex items-center gap-2 sm:gap-3 backdrop-blur-md py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
+            "relative flex items-center gap-1 sm:gap-2 backdrop-blur-md py-2 px-2 sm:px-3 rounded-2xl overflow-hidden",
             "bg-[#FA1690]/85 border border-white/20",
           )}
           style={{
@@ -129,7 +129,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           />
 
           {/* Items */}
-          <div className="relative z-10 flex items-center gap-2 sm:gap-3">
+          <div className="relative z-10 flex items-center gap-1 sm:gap-2">
           {items.map((item) => {
             const Icon = item.icon
             const isMore = item.url === "#more"
@@ -140,7 +140,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                 key={item.name}
                 onClick={(e) => handleItemClick(item, e)}
                 className={cn(
-                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "relative cursor-pointer text-sm font-semibold px-2 sm:px-3 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[40px] flex items-center justify-center",
                   "text-white/90 hover:text-white active:scale-110",
                   "transition-all duration-500",
                   moreSheetOpen && "bg-white/20 text-white",
@@ -149,7 +149,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               >
                 <span className="hidden md:inline">{item.name}</span>
                 <span className="md:hidden">
-                  <Icon size={26} strokeWidth={2.5} />
+                  <Icon size={24} strokeWidth={2.5} />
                 </span>
               </button>
             ) : (
@@ -158,7 +158,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
                 to={item.url}
                 onClick={(e) => handleItemClick(item, e)}
                 className={cn(
-                  "relative cursor-pointer text-sm font-semibold px-3 sm:px-4 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[44px] flex items-center justify-center",
+                  "relative cursor-pointer text-sm font-semibold px-2 sm:px-3 py-3 sm:py-2 rounded-2xl min-h-[44px] min-w-[40px] flex items-center justify-center",
                   "text-white/90 hover:text-white active:scale-110",
                   "transition-all duration-500",
                   isActive && "bg-white/20 text-white",
@@ -167,7 +167,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               >
                 <span className="hidden md:inline">{item.name}</span>
                 <span className="md:hidden">
-                  <Icon size={26} strokeWidth={2.5} />
+                  <Icon size={24} strokeWidth={2.5} />
                 </span>
                 {isActive && (
                   <motion.div

@@ -1,11 +1,20 @@
-## Deixar fundo do LoadingOverlay bem mais transparente
+## Mudanças
 
-O blur forte (`backdrop-blur-2xl`) estava mascarando a translucidez. Vou reduzir a opacidade e o blur.
+**1. `src/App.tsx`**
+Adicionar item "Alimentos" no array `navItems`, entre `MasterChef` e `Mais`:
+```ts
+{ name: 'Alimentos', url: '/alimentos', icon: Apple }
+```
+Importar `Apple` de `lucide-react`.
 
-### Mudança em `src/components/VideoOverlay.tsx`
+**2. `src/components/ui/tubelight-navbar.tsx`**
+Reduzir gaps e padding para acomodar 7 ícones em 390px:
+- `gap-2 sm:gap-3` → `gap-1 sm:gap-2`
+- `px-3 sm:px-4` nos itens → `px-2 sm:px-3`
+- Ícone `size={26}` → `size={24}` no mobile
 
-- `bg-white/40 backdrop-blur-2xl` → `bg-white/15 backdrop-blur-sm`
-- Vinheta rosa: reduzir mais ainda pra não compensar a transparência:
-  `rgba(253,70,161,0.14) 75%, rgba(253,70,161,0.28) 100%` → `rgba(253,70,161,0.08) 75%, rgba(253,70,161,0.18) 100%`
+Entrada antiga "Alimentos brasileiros" do `moreSheetItems` já foi removida na rodada anterior, então fica fora do menu +.
 
-Resultado: dá pra ver claramente a UI atrás, com leve véu branco e um toque de rosa nas bordas.
+## Fora de escopo
+- Botão "Buscar em alimentos brasileiros" em `/adicionar-refeicao` permanece.
+- Sem mudanças em rotas, lógica ou estilos de outras páginas.
