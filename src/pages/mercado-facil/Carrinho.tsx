@@ -26,7 +26,6 @@ interface FullProfile {
   city: string | null;
   state: string | null;
   created_at: string;
-  telefone_whatsapp?: string | null;
 }
 
 const ADDRESS_KEY = "mf_delivery_address_v1";
