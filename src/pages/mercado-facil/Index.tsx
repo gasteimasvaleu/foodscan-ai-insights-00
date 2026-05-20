@@ -91,6 +91,22 @@ const MercadoFacilIndex = () => {
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Mercado Fácil" backTo="/" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
+        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 shadow-sm flex items-center gap-3">
+          <img
+            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/galegacomsacola.png"
+            alt=""
+            className="w-24 h-24 object-contain shrink-0"
+          />
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-[#FD46A1] leading-tight">
+              Compare Preços e Economize
+            </h2>
+            <p className="text-xs text-foreground/60 mt-1">
+              Encontre os melhores preços em supermercados próximos a você
+            </p>
+          </div>
+        </div>
+
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 space-y-2 shadow-sm">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
