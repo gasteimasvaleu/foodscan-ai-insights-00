@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { useMFCart } from "@/hooks/mercado-facil/useMFCart";
 import { toast } from "@/components/ui/use-toast";
@@ -8,9 +8,10 @@ import type { MFProduto } from "@/lib/mercado-facil/types";
 interface Props {
   produto: MFProduto;
   lojaId?: string;
+  lojaNome?: string;
 }
 
-export const MFProductCard = ({ produto, lojaId }: Props) => {
+export const MFProductCard = ({ produto, lojaId, lojaNome }: Props) => {
   const { add } = useMFCart();
   const preco = produto.preco_promo_centavos ?? produto.preco_centavos;
 
@@ -33,6 +34,12 @@ export const MFProductCard = ({ produto, lojaId }: Props) => {
       to={`/mercado-facil/produto/${produto.id}`}
       className="block bg-[#FFD1E7] rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
     >
+      {lojaNome && (
+        <div className="bg-white/60 backdrop-blur-sm px-2 py-1 flex items-center gap-1">
+          <Store size={10} className="text-[#FD46A1] shrink-0" />
+          <span className="text-[10px] font-medium text-foreground/80 truncate">{lojaNome}</span>
+        </div>
+      )}
       <div className="aspect-square bg-white/40 overflow-hidden">
         {produto.foto_url ? (
           <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" loading="lazy" />
