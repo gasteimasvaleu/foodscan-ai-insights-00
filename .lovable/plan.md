@@ -1,10 +1,9 @@
-## Objetivo
-Evitar que o botão "Enviar cadastro" fique escondido atrás da Tubelight Navbar em iOS real.
+## Problema
+Em `/mercado-facil/entregador/cadastro`, o botão voltar usa `backTo="/mercado-facil/entregador"`. Se o usuário ainda não tem cadastro de entregador, essa página provavelmente redireciona de volta para o cadastro, criando um loop em que o botão nunca leva o usuário para fora.
 
 ## Mudança
-Em `src/pages/mercado-facil/EntregadorCadastro.tsx` (linha 125), aumentar o padding inferior do `<main>` e adicionar safe-area:
+Em `src/pages/mercado-facil/EntregadorCadastro.tsx` (linha 124), trocar:
 
-- De: `pb-28`
-- Para: `pb-[calc(env(safe-area-inset-bottom)+9rem)]`
+- `backTo="/mercado-facil/entregador"` → `backTo="/mercado-facil"`
 
-Isso garante espaço extra abaixo do botão respeitando o safe-area do iPhone.
+Assim o botão voltar do header retorna direto para a home do Mercado Fácil.
