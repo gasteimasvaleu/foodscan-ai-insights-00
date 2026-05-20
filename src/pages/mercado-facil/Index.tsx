@@ -260,24 +260,8 @@ const MercadoFacilIndex = () => {
               </section>
             )}
 
-            <section className="grid grid-cols-2 gap-3 pt-2">
-              <Link
-                to="/mercado-facil/lojista"
-                className="bg-[#FD46A1] text-white rounded-3xl p-4 flex flex-col items-start gap-2 hover:opacity-90 transition-opacity"
-              >
-                <Store size={22} />
-                <span className="text-base">Sou Lojista</span>
-                <span className="text-xs opacity-90">Cadastre sua loja e venda pelo WhatsApp</span>
-              </Link>
-              <Link
-                to="/mercado-facil/entregador"
-                className="bg-white border-2 border-[#FD46A1] text-[#FD46A1] rounded-3xl p-4 flex flex-col items-start gap-2 hover:bg-[#FFD1E7]/40 transition-colors"
-              >
-                <Truck size={22} />
-                <span className="text-base">Sou Entregador</span>
-                <span className="text-xs opacity-90">Faça entregas na sua cidade</span>
-              </Link>
-            </section>
+
+
           </>
         )}
       </main>
