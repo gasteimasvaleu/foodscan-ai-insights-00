@@ -750,10 +750,6 @@ export default function ToAquiChat() {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold text-[#FD46A1] truncate">{venue?.name ?? "Chat do venue"}</h1>
-            <p className="text-xs text-gray-500 flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {onlineCount} {onlineCount === 1 ? "pessoa online" : "pessoas online"}
-            </p>
           </div>
           <div className="relative">
             <Button
