@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Search, Store, Truck, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFRatingModal } from "@/components/mercado-facil/MFRatingModal";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
 import type { MFCategoria, MFLoja, MFProduto } from "@/lib/mercado-facil/types";
 
@@ -277,6 +278,7 @@ const MercadoFacilIndex = () => {
           </>
         )}
       </main>
+      <MFRatingModal />
     </div>
   );
 };
