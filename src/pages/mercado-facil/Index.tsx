@@ -265,8 +265,9 @@ const MercadoFacilIndex = () => {
             {produtos.length > 0 && (
               <section>
                 <h2 className="text-base font-semibold mb-3">Novidades</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {produtos.slice(0, 8).map((p) => <MFProductCard key={p.id} produto={p} />)}
+                <div className="grid grid-cols-3 gap-2">
+                  {produtos.slice(0, 12).map((p) => <MFProductCard key={p.id} produto={p} />)}
+
                 </div>
               </section>
             )}
