@@ -2,6 +2,59 @@ import { openExternalUrl } from "@/lib/openExternal";
 import { supabase } from "@/integrations/supabase/client";
 import { cleanPhone, formatBRL } from "./formatters";
 import type { MFCartItem, MFLoja } from "./types";
+import type { MFEntregador } from "./entregador-types";
+
+interface DeliveryRequestArgs {
+  entregador: MFEntregador;
+  loja: MFLoja;
+  clienteId: string;
+  clienteNome?: string;
+  telefoneCliente?: string;
+  endereco: string;
+  cidade: string;
+  itens: MFCartItem[];
+  totalCentavos: number;
+}
+
+export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): Promise<void> {
+  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos } = args;
+  const enderecoLoja = [loja.endereco?.rua, loja.endereco?.bairro, loja.endereco?.cidade].filter(Boolean).join(", ");
+  const taxa = (loja as any).taxa_entrega_padrao_centavos ?? 0;
+
+  // Cria mf_entrega (não bloqueia o WhatsApp se falhar)
+  const { error } = await supabase.from("mf_entregas").insert({
+    loja_id: loja.id,
+    lojista_id: loja.owner_id,
+    cliente_id: clienteId,
+    endereco_entrega: endereco,
+    cidade,
+    taxa_centavos: taxa,
+    status: "disponivel",
+    telefone_cliente: telefoneCliente ?? null,
+    telefone_lojista: loja.telefone_whatsapp ?? null,
+  });
+  if (error) console.warn("[mf_entregas] insert:", error.message);
+
+  const linhas = itens.slice(0, 8).map((i) => `• ${i.quantidade}x ${i.nome}`);
+  const msg = [
+    `🛵 Olá, ${entregador.nome_completo.split(" ")[0]}! Tudo bem?`,
+    ``,
+    `Tenho um pedido pronto na loja *${loja.nome}*${enderecoLoja ? ` (${enderecoLoja})` : ""}.`,
+    `Preciso entregar em: *${endereco}* — ${cidade}.`,
+    ``,
+    `Itens:`,
+    ...linhas,
+    itens.length > 8 ? `…e mais ${itens.length - 8} item(ns)` : null,
+    ``,
+    `Valor estimado do pedido: ${formatBRL(totalCentavos)}`,
+    taxa > 0 ? `Taxa de entrega sugerida pela loja: ${formatBRL(taxa)}` : null,
+    ``,
+    `Você tem interesse em pegar essa entrega? Combina por aqui que eu te passo todos os detalhes.${clienteNome ? `\n\n— ${clienteNome}` : ""}`,
+  ].filter(Boolean).join("\n");
+
+  const url = `https://wa.me/${cleanPhone(entregador.telefone_whatsapp)}?text=${encodeURIComponent(msg)}`;
+  await openExternalUrl(url);
+}
 
 interface SendArgs {
   loja: MFLoja;
