@@ -32,6 +32,7 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
   (
     {
       onSend,
+      onTextChange,
       placeholder = "Mensagem...",
       isLoading = false,
       enableAttachments = true,
@@ -43,7 +44,14 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
     },
     ref,
   ) => {
-    const [text, setText] = React.useState("");
+    const [text, _setText] = React.useState("");
+    const setText = (val: string | ((prev: string) => string)) => {
+      _setText((prev) => {
+        const next = typeof val === "function" ? (val as (p: string) => string)(prev) : val;
+        onTextChange?.(next);
+        return next;
+      });
+    };
     const [files, setFiles] = React.useState<File[]>([]);
     const [previews, setPreviews] = React.useState<Record<string, string>>({});
     const [isRecording, setIsRecording] = React.useState(false);
