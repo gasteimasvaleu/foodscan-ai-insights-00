@@ -64,10 +64,11 @@ const Carrinho = () => {
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        const d = data as { name?: string; whatsapp_phone?: string } | null;
+        const d = data as { name?: string; telefone_whatsapp?: string } | null;
         setProfileName(d?.name);
-        setProfilePhone(d?.whatsapp_phone);
+        setProfilePhone(d?.telefone_whatsapp);
       });
+
   }, [user?.id]);
 
 
