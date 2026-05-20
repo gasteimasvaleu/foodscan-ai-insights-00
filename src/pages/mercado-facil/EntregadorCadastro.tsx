@@ -75,7 +75,7 @@ const EntregadorCadastro = () => {
     const payload = {
       nome_completo: nome.trim(),
       telefone_whatsapp: telefone.trim(),
-      cidade: cidade.trim(),
+      cidade: normalizeCidade(cidade),
       estado: estado.trim().toUpperCase(),
       documento: documento.trim() || null,
       veiculo,
