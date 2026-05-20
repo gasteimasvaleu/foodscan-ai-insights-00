@@ -112,8 +112,30 @@ const Loja = () => {
               </div>
             </div>
 
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 flex items-center gap-2">
+              <Search className="w-5 h-5 text-[#FD46A1] shrink-0 ml-1" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar produtos..."
+                className="flex-1 bg-transparent outline-none text-base placeholder:text-foreground/40"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="w-7 h-7 rounded-full bg-[#FFD1E7] flex items-center justify-center text-[#FD46A1] shrink-0"
+                  aria-label="Limpar busca"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
             {produtos.length === 0 ? (
               <p className="text-sm text-foreground/60">Esta loja ainda não cadastrou produtos.</p>
+            ) : grupos.length === 0 ? (
+              <p className="text-sm text-foreground/60">Nenhum produto encontrado para "{search}".</p>
             ) : (
               <div className="space-y-5">
                 {grupos.map((g) => (
