@@ -926,29 +926,25 @@ export default function ToAquiChat() {
           className="border-t bg-white p-3 shrink-0"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
         >
-          <div className="flex gap-2 items-end">
-            <Button
-              type="button"
-              onClick={() => setHintOpen(true)}
-              size="icon"
-              variant="outline"
-              className="rounded-full h-11 w-11 shrink-0 border-[#FD46A1] text-[#FD46A1]"
-              aria-label="Dica misteriosa via IA"
-              disabled={needIdentity}
-            >
-              <Sparkles className="w-4 h-4" />
-            </Button>
-            <div className="flex-1 min-w-0">
-              <ChatInputBar
-                onSend={(t, files) => send(t, files)}
-                onTextChange={setInput}
-                placeholder="Mensagem..."
-                isLoading={sending}
+          <ChatInputBar
+            onSend={(t, files) => send(t, files)}
+            onTextChange={setInput}
+            placeholder="Mensagem..."
+            isLoading={sending}
+            disabled={needIdentity}
+            maxLength={500}
+            leadingActions={
+              <button
+                type="button"
+                onClick={() => setHintOpen(true)}
                 disabled={needIdentity}
-                maxLength={500}
-              />
-            </div>
-          </div>
+                className="h-9 w-9 rounded-full flex items-center justify-center text-[#FD46A1] hover:bg-[#FD46A1]/10 transition disabled:opacity-40"
+                aria-label="Dica misteriosa via IA"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
+            }
+          />
         </div>
       </div>
       <VenueChatOnboardingModal
