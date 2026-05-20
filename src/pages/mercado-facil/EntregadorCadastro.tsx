@@ -26,6 +26,8 @@ const EntregadorCadastro = () => {
   const [documento, setDocumento] = useState("");
   const [veiculo, setVeiculo] = useState<MFVeiculo>("moto");
   const [raio, setRaio] = useState("5");
+  const [taxaMin, setTaxaMin] = useState("");
+  const [taxaMax, setTaxaMax] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploadingFoto, setUploadingFoto] = useState(false);
