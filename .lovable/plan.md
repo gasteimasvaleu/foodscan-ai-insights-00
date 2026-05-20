@@ -1,60 +1,29 @@
-## Plano — Avaliação do entregador
+# Corrigir entrega que não aparece para o entregador
 
-Quando o entregador marcar a entrega como **`entregue`**, o cliente vê um modal pedindo nota (1–5 estrelas) + comentário opcional. A média e o total recalculam automaticamente no perfil do entregador.
+## Causa raiz
 
-### 1. Migração — tabela + trigger
+A entrega criada pelo cliente foi salva com `cidade = "Joao pessoa"`, mas o entregador está cadastrado como `cidade = "joao pessoa"`. A consulta em `useMFEntregas` (scope `entregador-disponivel`) compara com `.eq("cidade", cidade)`, que é sensível a maiúsculas e acentos. Resultado: a entrega existe (`status='disponivel'`, `entregador_id=null`) mas nunca casa com a cidade do entregador.
 
-```sql
-create table public.mf_entregador_avaliacoes (
-  id uuid primary key default gen_random_uuid(),
-  entrega_id uuid not null unique references public.mf_entregas(id) on delete cascade,
-  entregador_id uuid not null references public.mf_entregadores(id) on delete cascade,
-  cliente_id uuid not null,
-  nota int not null check (nota between 1 and 5),
-  comentario text,
-  created_at timestamptz not null default now()
-);
+## Solução
 
-alter table public.mf_entregador_avaliacoes enable row level security;
+Normalizar a cidade (trim + lower + remover acentos) em todos os pontos de escrita e leitura, e fazer backfill das linhas existentes.
 
--- Cliente vê e cria a própria avaliação; entregador vê as dele
-create policy "cliente_select_own" on public.mf_entregador_avaliacoes
-  for select using (auth.uid() = cliente_id or auth.uid() in (
-    select user_id from public.mf_entregadores where id = entregador_id
-  ));
-create policy "cliente_insert_own" on public.mf_entregador_avaliacoes
-  for insert with check (
-    auth.uid() = cliente_id
-    and exists (
-      select 1 from public.mf_entregas e
-      where e.id = entrega_id
-        and e.cliente_id = auth.uid()
-        and e.status = 'entregue'
-        and e.entregador_id = entregador_id
-    )
-  );
-```
+## Mudanças
 
-Trigger `after insert` que recalcula `avaliacao_media` (avg) e `total_entregas` (count) na linha do entregador.
+1. **`src/lib/mercado-facil/formatters.ts`** — adicionar helper `normalizeCidade(s)` (`s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()`).
 
-### 2. Hook — `useMFPendingRating`
+2. **`src/lib/mercado-facil/whatsapp.ts`** — aplicar `normalizeCidade(cidade)` no insert em `mf_entregas`.
 
-`src/hooks/mercado-facil/useMFPendingRating.ts` — para o cliente logado, busca a primeira `mf_entregas` com `status='entregue'`, `cliente_id = me`, sem avaliação correspondente (left join). Retorna `{ entrega, entregador, dismiss(), submit(nota, comentario) }`.
+3. **`src/pages/mercado-facil/EntregadorCadastro.tsx`** — aplicar `normalizeCidade` ao salvar a cidade do entregador.
 
-### 3. Modal — `MFRatingModal`
+4. **`src/hooks/mercado-facil/useMFEntregas.ts`** — aplicar `normalizeCidade` no filtro do scope `entregador-disponivel`.
 
-`src/components/mercado-facil/MFRatingModal.tsx` usando o `Dialog` padrão do shadcn, no padrão do app:
+5. **`src/pages/mercado-facil/EntregadorEntregas.tsx`** — passar `normalizeCidade(entregador.cidade)` ao hook.
 
-- `bg-white/70 backdrop-blur-md` (glassmorphism)
-- `rounded-3xl`, **`border-2 border-[#FD46A1]`** (borda rosa pedida)
-- `max-w-sm w-[calc(100%-2rem)] mx-auto` — **não ocupa toda a largura**, mantém respiro lateral em mobile
-- Conteúdo: foto + nome do entregador, "Como foi sua entrega?", 5 estrelas selecionáveis, textarea opcional, botão "Enviar avaliação" (bg `#FD46A1`) e "Avaliar depois" (ghost). Botão X fechar com `bg-[#FD46A1]` (padrão do app).
+6. **Migração SQL (backfill)** — `update mf_entregas set cidade = lower(unaccent(btrim(cidade)))` e o mesmo para `mf_entregadores`, garantindo que a entrega atual (`Joao pessoa`) passe a casar.
 
-### 4. Integração
+## Observações
 
-Montar `<MFRatingModal />` em `src/pages/mercado-facil/Index.tsx` (entrada do Mercado Fácil). Abre sozinho quando o hook devolver uma entrega pendente. "Avaliar depois" só fecha (volta a aparecer na próxima visita). Enviar grava a avaliação → trigger atualiza o entregador → modal fecha.
-
-### Fora do escopo
-
-- Não mexo no fluxo do entregador (`EntregadorEntregas`), nem em notificações push, nem em avaliação da loja.
-- Sem mudança visual nos cards existentes.
+- Apenas frontend + um backfill SQL pontual; nenhuma lógica de negócio nova.
+- Mantém compatibilidade com o RPC existente `mf_entregadores_disponiveis` (que já usa `lower(unaccent(...))`).
+- A mensagem de WhatsApp continua mostrando a cidade como o cliente digitou (uso a versão normalizada só no banco).
