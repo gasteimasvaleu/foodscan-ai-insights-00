@@ -99,7 +99,13 @@ const LojistaConfigLoja = () => {
       slug: loja?.slug ?? `${slugify(nome)}-${user.id.slice(0, 6)}`,
       descricao: descricao.trim() || null,
       telefone_whatsapp: cleanPhone(telefone),
-      endereco: { cidade: cidade.trim(), bairro: bairro.trim(), uf: uf || null },
+      endereco: {
+        rua: rua.trim() || null,
+        numero: numero.trim() || null,
+        bairro: bairro.trim(),
+        cidade: cidade.trim(),
+        uf: uf || null,
+      },
       foto_url: fotoUrl.trim() || null,
       ativa: true,
     };
