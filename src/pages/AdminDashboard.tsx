@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple, HelpCircle, MapPin } from 'lucide-react';
+import { Dumbbell, Tag, ArrowLeft, Shield, ImageIcon, ShoppingBag, MessageCircle, Apple, HelpCircle, MapPin, Truck, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
