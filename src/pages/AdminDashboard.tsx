@@ -97,6 +97,18 @@ const AdminDashboard = () => {
       path: '/admin/to-aqui',
     },
     {
+      title: 'Mercado Fácil · Lojas',
+      description: 'Ativar/desativar lojas do marketplace',
+      icon: Store,
+      path: '/admin/mercado-facil',
+    },
+    {
+      title: 'Mercado Fácil · Entregadores',
+      description: 'Aprovar e moderar cadastros de entregadores',
+      icon: Truck,
+      path: '/admin/entregadores',
+    },
+    {
       title: 'Assinaturas Promocionais',
       description: 'Enviar convites e tokens de acesso por email',
       icon: Tag,
