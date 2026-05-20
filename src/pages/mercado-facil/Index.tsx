@@ -17,8 +17,20 @@ const MercadoFacilIndex = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showAllCats, setShowAllCats] = useState(false);
+  const [localizacao, setLocalizacao] = useState("");
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>(null);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      if (raw) {
+        const v = JSON.parse(raw);
+        const parts = [v.cidade, v.endereco].filter(Boolean).join(" — ");
+        if (parts) setLocalizacao(parts);
+      }
+    } catch {}
+  }, []);
+
     (async () => {
       const [c, l, p] = await Promise.all([
         supabase.from("mf_categorias").select("*").eq("ativo", true).order("order"),
