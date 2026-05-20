@@ -1,16 +1,22 @@
-## Objetivo
+Refinar `src/components/ui/accordion.tsx` (componente global) com duas melhorias visuais. Afeta automaticamente FAQ, ExamsSection, WeekByWeekContent, e qualquer outro lugar que use o Accordion shadcn/Radix.
 
-Ajustar o visual da página de DM (`/comunidade/dm/:id`) para alinhar com o padrão do chat do venue (Tô Aqui).
+## Mudanças
 
-## Mudanças em `src/pages/DMThread.tsx`
+**1. Chevron rosa em pílula + easing suave**
+- Substituir o `ChevronDown` cinza (h-4 w-4) por um círculo de 28px com `bg-[#FD46A1]/10` e o chevron `text-[#FD46A1]` (h-4 w-4) dentro.
+- Quando aberto (`data-state=open`), o círculo vira `bg-[#FD46A1]` e o chevron `text-white`.
+- Rotação 180° ao abrir, com `transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]` (Apple-like).
+- Mantém o `transition-transform` que já existe para a rotação.
 
-1. **Background da página**: trocar `bg-background` por `bg-[#F7FAFB]` no container principal (linha 173), igual ao venue chat.
-
-2. **Header (linha 175)**:
-   - Trocar `bg-card` por `bg-white` para combinar com o header do venue.
-   - Reorganizar a ordem dos itens: avatar + nome à esquerda, **seta voltar à direita** (em vez de à esquerda).
-   - Nome do usuário (linha 186): cor `text-[#FD46A1]` em vez de `text-foreground`.
-   - Botão voltar (linha 176): mover para o fim do flex; envolver a seta num botão arredondado rosa — `bg-[#FD46A1] text-white rounded-full h-9 w-9 flex items-center justify-center`, com `<ArrowLeft className="w-5 h-5" />` branco dentro.
+**2. Fade-in do conteúdo ao abrir**
+- O `AccordionContent` hoje só anima altura (`accordion-down/up`).
+- Envolver o `children` interno em um `<div>` com `data-[state=open]:animate-fade-in` lendo o `data-state` do parent via group, OU simplesmente aplicar `animate-fade-in` no `<div className="pb-4 pt-0">` interno — só anima na montagem do conteúdo aberto, dá fade + slide-up de 10px que já existe no `tailwind.config`.
+- Zero JS, zero dep nova.
 
 ## Fora de escopo
-- Bolhas de mensagem, composer e demais elementos permanecem como estão.
+- Não muda nenhum consumidor (FAQSection, ExamsSection, etc.) — eles continuam passando as mesmas props.
+- Não mexe em cores de fundo dos cards (FFD1E7, white/60), padding, radius, ou tipografia.
+- Não toca em `Collapsible` (componente diferente).
+
+## Risco
+Baixo. Mudança puramente visual em um único arquivo (`src/components/ui/accordion.tsx`, ~50 linhas). Sem migração de API.
