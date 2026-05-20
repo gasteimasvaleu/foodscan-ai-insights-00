@@ -5,23 +5,42 @@ import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { Button } from "@/components/ui/button";
 import { useMFCart } from "@/hooks/mercado-facil/useMFCart";
 import { useAuthContext } from "@/contexts/AuthProvider";
+import { useSubscription } from "@/hooks/useSubscription";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
+import { ProfileHeaderCard } from "@/components/profile/ProfileHeaderCard";
 import type { MFLoja } from "@/lib/mercado-facil/types";
+
+interface FullProfile {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  cover_url: string | null;
+  bio: string | null;
+  email_public: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  created_at: string;
+}
 
 const ADDRESS_KEY = "mf_delivery_address_v1";
 
 const Carrinho = () => {
   const { byLoja, setQty, clearLoja, totalItens } = useMFCart();
   const { user } = useAuthContext();
+  const { subscriptionStatus } = useSubscription(user);
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
-  const [profileName, setProfileName] = useState<string | undefined>();
-  const [profilePhone, setProfilePhone] = useState<string | undefined>();
+  const [profile, setProfile] = useState<FullProfile | null>(null);
   const [cidade, setCidade] = useState("");
   const [endereco, setEndereco] = useState("");
+
+  const profileName = profile?.name;
+  const profilePhone = profile?.phone ?? undefined;
 
   useEffect(() => {
     try {
@@ -58,18 +77,18 @@ const Carrinho = () => {
   }, [lojaIds.join(",")]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setProfile(null);
+      return;
+    }
     supabase
       .from("profiles")
-      .select("name, telefone_whatsapp")
+      .select("id, name, avatar_url, cover_url, bio, email_public, phone, address, city, state, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        const d = data as { name?: string; telefone_whatsapp?: string } | null;
-        setProfileName(d?.name);
-        setProfilePhone(d?.telefone_whatsapp);
+        setProfile((data as FullProfile | null) ?? null);
       });
-
   }, [user?.id]);
 
 
@@ -105,6 +124,18 @@ const Carrinho = () => {
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
         <MFClientePedidosStatus />
+        {user && profile && (
+          <div className="[&>div]:mb-0">
+            <ProfileHeaderCard
+              profile={profile}
+              email={user.email || ""}
+              isPro={subscriptionStatus.subscribed}
+              onProfileUpdate={(updates) =>
+                setProfile((prev) => (prev ? { ...prev, ...updates } : prev))
+              }
+            />
+          </div>
+        )}
         {totalItens === 0 ? (
           <p className="text-sm text-foreground/60 text-center pt-12">
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
