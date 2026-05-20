@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import type { MFEntrega, MFEntregador } from "@/lib/mercado-facil/entregador-types";
 
 const DISMISS_KEY = "mf_rating_dismissed_v1";
+const POLL_INTERVAL_MS = 20_000;
 
 function getDismissed(): string[] {
   try {
@@ -15,6 +17,7 @@ function getDismissed(): string[] {
 
 export function useMFPendingRating() {
   const { user } = useAuthContext();
+  const location = useLocation();
   const [entrega, setEntrega] = useState<MFEntrega | null>(null);
   const [entregador, setEntregador] = useState<MFEntregador | null>(null);
 
@@ -36,6 +39,7 @@ export function useMFPendingRating() {
     const lista = (entregues ?? []) as MFEntrega[];
     if (lista.length === 0) {
       setEntrega(null);
+      console.debug("[mf_rating] load → sem entregas entregues");
       return;
     }
 
@@ -48,6 +52,7 @@ export function useMFPendingRating() {
     const dismissed = new Set(getDismissed());
 
     const pendente = lista.find((e) => !avaliadasSet.has(e.id) && !dismissed.has(e.id));
+    console.debug("[mf_rating] load → pendente?", !!pendente, pendente?.id);
     if (!pendente) {
       setEntrega(null);
       setEntregador(null);
@@ -63,13 +68,16 @@ export function useMFPendingRating() {
     setEntregador((ent as MFEntregador) ?? null);
   }, [user?.id]);
 
+  // Initial + on route change
   useEffect(() => {
     load();
-  }, [load]);
+  }, [load, location.pathname]);
 
+  // Realtime + focus/visibility + polling fallback
   useEffect(() => {
     if (!user) return;
-    const channel = supabase
+
+    let channel = supabase
       .channel(`mf-rating-${user.id}`)
       .on(
         "postgres_changes",
@@ -83,14 +91,48 @@ export function useMFPendingRating() {
       )
       .subscribe();
 
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") load();
+    const reassina = () => {
+      try {
+        supabase.removeChannel(channel);
+      } catch {}
+      channel = supabase
+        .channel(`mf-rating-${user.id}-${Date.now()}`)
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "mf_entregas", filter: `cliente_id=eq.${user.id}` },
+          () => load()
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "mf_entregador_avaliacoes", filter: `autor_id=eq.${user.id}` },
+          () => load()
+        )
+        .subscribe();
     };
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        load();
+        reassina();
+      }
+    };
+    const onFocus = () => load();
+
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onFocus);
+
+    // Polling leve, só quando visível
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, POLL_INTERVAL_MS);
 
     return () => {
-      supabase.removeChannel(channel);
+      try {
+        supabase.removeChannel(channel);
+      } catch {}
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onFocus);
+      clearInterval(interval);
     };
   }, [user?.id, load]);
 
