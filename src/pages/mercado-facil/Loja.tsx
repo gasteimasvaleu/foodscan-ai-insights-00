@@ -14,6 +14,7 @@ const Loja = () => {
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
   const [categorias, setCategorias] = useState<MFCategoria[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!id) return;
