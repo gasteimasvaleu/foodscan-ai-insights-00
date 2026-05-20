@@ -121,14 +121,17 @@ export default function DMThread() {
     setPreview(URL.createObjectURL(f));
   };
 
-  const send = async () => {
+  const send = async (overrideText?: string, filesArg?: File[]) => {
     if (!user || !convId) return;
-    if (!text.trim() && !file) return;
+    const sendText = (overrideText ?? text).trim();
+    const sendFile = filesArg?.[0] ?? file;
+    if (!sendText && !sendFile) return;
     setSending(true);
     try {
       let imageUrl: string | null = null;
-      if (file) {
-        const base64 = await compressImage(file, 1200, 0.85);
+      let storagePath: string | null = null;
+      if (sendFile) {
+        const base64 = await compressImage(sendFile, 1200, 0.85);
         const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
         const path = `${user.id}/${Date.now()}.jpg`;
         const { error: upErr } = await supabase.storage
@@ -137,15 +140,17 @@ export default function DMThread() {
         if (upErr) throw upErr;
         const { data: urlData } = supabase.storage.from("dm-media").getPublicUrl(path);
         imageUrl = urlData.publicUrl;
+        storagePath = path;
       }
       const { error } = await supabase.from("dm_messages").insert({
         conversation_id: convId,
         sender_id: user.id,
-        content: text.trim() || null,
+        content: sendText || null,
         image_url: imageUrl,
+        storage_path: storagePath,
       });
       if (error) throw error;
-      setText("");
+      if (overrideText === undefined) setText("");
       setFile(null);
       setPreview(null);
     } catch (e: any) {
@@ -154,6 +159,7 @@ export default function DMThread() {
       setSending(false);
     }
   };
+
 
   if (authLoading || !user) {
     return (
