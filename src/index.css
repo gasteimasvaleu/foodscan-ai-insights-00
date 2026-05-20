@@ -241,3 +241,62 @@
     display: none;
   }
 }
+@property --spinner-deg {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@property --spinner-p {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: true;
+}
+
+@property --spinner-line-width {
+  syntax: "<length>";
+  initial-value: 1rem;
+  inherits: true;
+}
+
+.animated-spinner {
+  --size: 10rem;
+  --spinner-color: #FD46A1;
+  --spinner-color-2: #FA1690;
+  --spinner-color-3: #FFD1E7;
+  width: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from var(--spinner-deg),
+    var(--spinner-color),
+    var(--spinner-color-2),
+    var(--spinner-color-3),
+    transparent var(--spinner-p)
+  );
+  -webkit-mask: radial-gradient(
+    circle,
+    transparent calc(var(--size) / 2 - var(--spinner-line-width, 1rem)),
+    black calc(var(--size) / 2 - var(--spinner-line-width, 1rem))
+  );
+  mask: radial-gradient(
+    circle,
+    transparent calc(var(--size) / 2 - var(--spinner-line-width, 1rem)),
+    black calc(var(--size) / 2 - var(--spinner-line-width, 1rem))
+  );
+  filter: drop-shadow(0 0 1.5rem rgba(253, 70, 161, 0.55));
+  animation: spinner-rotate 1.1s ease infinite, spinner-line-width 3.3s ease infinite;
+}
+
+@keyframes spinner-rotate {
+  from { --spinner-p: 20%; --spinner-deg: 0deg; }
+  50%  { --spinner-p: 50%; }
+  70%  { --spinner-p: 30%; }
+  90%  { --spinner-p: 10%; }
+  to   { --spinner-p: 20%; --spinner-deg: -360deg; }
+}
+
+@keyframes spinner-line-width {
+  from, 20%, 70%, to { --spinner-line-width: 1rem; }
+  50% { --spinner-line-width: 0.1rem; }
+}

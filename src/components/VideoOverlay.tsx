@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatedSpinner } from '@/components/ui/animated-spinner';
 
 interface VideoOverlayProps {
   isVisible: boolean;
@@ -15,28 +16,16 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center"
+          transition={{ duration: 0.35 }}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-gradient-to-br from-[#1a0a14]/95 via-[#FA1690]/30 to-[#1a0a14]/95 backdrop-blur-xl"
         >
-          {/* Video background */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/openart-video_172ff066_1774432172784.mp4"
-          />
+          <div className="relative z-10 flex flex-col items-center gap-8 px-8 text-center">
+            <AnimatedSpinner size="9rem" />
 
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/60" />
-
-          {/* Content */}
-          <div className="relative z-10 flex flex-col items-center gap-6 px-8 text-center">
             <motion.p
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
               className="text-2xl font-bold text-white drop-shadow-lg"
             >
               {message}
@@ -46,27 +35,12 @@ const VideoOverlay: React.FC<VideoOverlayProps> = ({ isVisible, message, subMess
               <motion.p
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-white/80 text-sm drop-shadow"
+                transition={{ delay: 0.35 }}
+                className="text-white/80 text-sm drop-shadow max-w-xs"
               >
                 {subMessage}
               </motion.p>
             )}
-
-            {/* Animated progress bar */}
-            <div className="w-64 h-1.5 rounded-full bg-white/20 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.5,
-                  ease: 'easeInOut',
-                }}
-                style={{ width: '50%' }}
-              />
-            </div>
           </div>
         </motion.div>
       )}
