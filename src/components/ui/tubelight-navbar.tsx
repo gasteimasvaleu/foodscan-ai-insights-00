@@ -174,8 +174,47 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           </div>
 
           <div className="px-4 pb-6 pt-2 space-y-4">
-            {/* Free section */}
+            {/* Recursos Extras (azul) */}
             <section className="space-y-3">
+              <div className="flex items-center gap-2 px-1">
+                <Sparkles size={18} className="text-[#2563EB]" />
+                <h3 className="text-lg font-bold text-[#2563EB]">Recursos Extras</h3>
+              </div>
+              {extrasItems.map((sheetItem) => {
+                const SheetIcon = sheetItem.icon
+                const locked = sheetItem.isPro && !isPro
+                return (
+                  <button
+                    key={sheetItem.url}
+                    onClick={() => handleSheetNavigate(sheetItem.url)}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-left"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                      <SheetIcon size={24} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-foreground">{sheetItem.name}</p>
+                        {sheetItem.isPro && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">
+                            Pro
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                    </div>
+                    {locked ? (
+                      <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
+                    ) : (
+                      <ChevronRight size={20} className="text-blue-600 flex-shrink-0" />
+                    )}
+                  </button>
+                )
+              })}
+            </section>
+
+            {/* Free section */}
+            <section className="space-y-3 pt-2">
               <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
               {freeItems.map((sheetItem) => {
                 const SheetIcon = sheetItem.icon
