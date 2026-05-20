@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Loader2, Send, ImagePlus, X } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { compressImage } from "@/lib/imageCompression";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { ChatInputBar } from "@/components/chat/ChatInputBar";
 
 interface Message {
   id: string;
