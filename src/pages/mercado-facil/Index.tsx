@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Store, Truck } from "lucide-react";
+import { Search, Store, Truck, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
 import type { MFCategoria, MFLoja, MFProduto } from "@/lib/mercado-facil/types";
+
+type QuickFilter = "ofertas" | "menor_preco" | "promocoes" | "novidades" | null;
+const ADDRESS_KEY = "mf_delivery_address_v1";
+
 
 const MercadoFacilIndex = () => {
   const [categorias, setCategorias] = useState<MFCategoria[]>([]);
@@ -14,6 +17,19 @@ const MercadoFacilIndex = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showAllCats, setShowAllCats] = useState(false);
+  const [localizacao, setLocalizacao] = useState("");
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      if (raw) {
+        const v = JSON.parse(raw);
+        const parts = [v.cidade, v.endereco].filter(Boolean).join(" — ");
+        if (parts) setLocalizacao(parts);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -29,29 +45,92 @@ const MercadoFacilIndex = () => {
     })();
   }, []);
 
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return [];
-    return produtos.filter((p) => p.nome.toLowerCase().includes(q));
-  }, [search, produtos]);
+    let arr = produtos;
+    if (q) arr = arr.filter((p) => p.nome.toLowerCase().includes(q));
+    if (quickFilter === "ofertas" || quickFilter === "promocoes") {
+      arr = arr.filter((p) => p.preco_promo_centavos != null);
+    } else if (quickFilter === "menor_preco") {
+      arr = [...arr].sort((a, b) => (a.preco_promo_centavos ?? a.preco_centavos) - (b.preco_promo_centavos ?? b.preco_centavos));
+    } else if (quickFilter === "novidades") {
+      arr = [...arr].sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+    }
+    return arr;
+  }, [search, produtos, quickFilter]);
+
+  const quickButtons: { id: Exclude<QuickFilter, null>; label: string }[] = [
+    { id: "ofertas", label: "Ofertas do Dia" },
+    { id: "menor_preco", label: "Menor Preço" },
+    { id: "promocoes", label: "Promoções" },
+    { id: "novidades", label: "Novidades" },
+  ];
+
+  const handleSaveLocalizacao = (val: string) => {
+    setLocalizacao(val);
+    try {
+      const raw = localStorage.getItem(ADDRESS_KEY);
+      const cur = raw ? JSON.parse(raw) : {};
+      const [cidade, ...rest] = val.split(" — ");
+      localStorage.setItem(ADDRESS_KEY, JSON.stringify({ ...cur, cidade: cidade ?? val, endereco: rest.join(" — ") || cur.endereco || "" }));
+    } catch {}
+  };
+
+  const showFiltered = !!search.trim() || quickFilter !== null;
+
 
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
       <MFHeader title="Mercado Fácil" backTo="/" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
-        <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50" />
-          <Input
-            placeholder="Buscar produto..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 rounded-2xl bg-white text-base"
-          />
+        <div className="bg-white rounded-3xl p-3 space-y-2 shadow-sm">
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+            <input
+              type="text"
+              placeholder="Buscar produtos, marcas ou lojas..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-11 pl-10 pr-3 rounded-2xl bg-[#F4F6F8] text-base outline-none placeholder:text-foreground/40"
+            />
+          </div>
+          <div className="relative">
+            <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+            <input
+              type="text"
+              placeholder="Sua localização..."
+              value={localizacao}
+              onChange={(e) => handleSaveLocalizacao(e.target.value)}
+              className="w-full h-11 pl-10 pr-3 rounded-2xl bg-[#F4F6F8] text-base outline-none placeholder:text-foreground/40"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            {quickButtons.map((b) => {
+              const active = quickFilter === b.id;
+              return (
+                <button
+                  key={b.id}
+                  onClick={() => setQuickFilter(active ? null : b.id)}
+                  className={`h-11 rounded-2xl text-base transition-colors ${active ? "bg-[#FD46A1] text-white" : "bg-[#FD46A1]/90 text-white hover:bg-[#FD46A1]"}`}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {search ? (
+        {showFiltered ? (
           <section>
-            <h2 className="text-base font-semibold mb-3">Resultados</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold">
+                {quickFilter ? quickButtons.find((q) => q.id === quickFilter)?.label : "Resultados"}
+              </h2>
+              {quickFilter && (
+                <button onClick={() => setQuickFilter(null)} className="text-xs text-[#FD46A1]">limpar</button>
+              )}
+            </div>
             {filtered.length === 0 ? (
               <p className="text-sm text-foreground/60">Nenhum produto encontrado.</p>
             ) : (
@@ -61,6 +140,7 @@ const MercadoFacilIndex = () => {
             )}
           </section>
         ) : (
+
           <>
             <section>
               <div className="text-center mb-4">
