@@ -16,7 +16,7 @@ export const MercadoFacilPromoCard = () => {
       <div className="absolute bottom-0 left-0 right-0 bg-black/55 backdrop-blur-sm px-4 py-3">
         <p className="text-[#FFD1E7] text-xs font-bold uppercase tracking-wider">Mercado Fácil</p>
         <p className="text-white text-sm leading-snug">
-          Tem um bar, conveniência ou mercado? Cansado de pagar comissão pro iFood? Cadastre sua loja aqui 🛒
+          Cansado de pagar comissão pro iFood? Cadastre sua loja aqui 🛒
         </p>
       </div>
     </Link>
