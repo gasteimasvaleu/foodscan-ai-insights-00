@@ -170,12 +170,9 @@ export default function DMThread() {
   }
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col">
+    <div className="fixed inset-0 bg-[#F7FAFB] flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-2 px-2 py-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] border-b bg-card">
-        <button onClick={() => navigate("/comunidade/dm")} className="p-2" aria-label="Voltar">
-          <ArrowLeft size={22} className="text-foreground" />
-        </button>
+      <div className="flex items-center gap-2 px-2 py-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] border-b bg-white">
         <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary overflow-hidden flex-shrink-0">
           {other?.avatar_url ? (
             <img src={other.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -183,7 +180,14 @@ export default function DMThread() {
             (other?.name || "?").charAt(0).toUpperCase()
           )}
         </div>
-        <p className="font-semibold text-foreground truncate flex-1">{other?.name || "Usuário"}</p>
+        <p className="font-semibold text-[#FD46A1] truncate flex-1">{other?.name || "Usuário"}</p>
+        <button
+          onClick={() => navigate("/comunidade/dm")}
+          className="h-9 w-9 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shrink-0"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={20} />
+        </button>
       </div>
 
       {/* Messages */}
