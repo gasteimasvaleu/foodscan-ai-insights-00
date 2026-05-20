@@ -1,14 +1,23 @@
-## Mudanças em `src/components/ui/tubelight-navbar.tsx`
+## Objetivo
+Remover a faixa branca atrás da navbar tubelight para que ela pareça flutuante, e adicionar uma sombra branca sutil ao redor para destaque.
 
-Reverter as reduções de padding/gaps/ícone, mantendo os 7 itens:
+## Alterações
 
-- `gap-1 sm:gap-2` no container → voltar para `gap-2 sm:gap-3` (linha 111)
-- `gap-1 sm:gap-2` no wrapper de items → voltar para `gap-2 sm:gap-3` (linha 132)
-- Botão "Mais": `px-2 sm:px-3 ... min-w-[40px]` → voltar para `px-3 sm:px-4 ... min-w-[44px]` (linha 143)
-- Ícone do "Mais": `size={24}` → voltar para `size={26}` (linha 152)
-- Link de itens normais: `px-2 sm:px-3 ... min-w-[40px]` → voltar para `px-3 sm:px-4 ... min-w-[44px]` (linha 161)
-- Ícone dos itens: `size={24}` → voltar para `size={26}` (linha 170)
+**Arquivo:** `src/components/ui/tubelight-navbar.tsx`
+
+1. **Remover a faixa branca** (linha 108):
+   ```tsx
+   <div className="absolute inset-x-0 -top-3 -bottom-2 bg-white -z-10" />
+   ```
+   Esta div cria o fundo branco sólido atrás da navbar.
+
+2. **Adicionar halo/sombra branca sutil** no container da navbar (linha ~117, no `style.boxShadow`):
+   - Manter as sombras existentes (profundidade + inset highlights)
+   - Adicionar um glow branco externo fino, ex.:
+     `0 0 0 1px rgba(255,255,255,0.6), 0 0 16px rgba(255,255,255,0.45)`
+   - Resultado: contorno branco delicado + brilho suave ao redor, mantendo o visual glassmorphism rosa.
 
 ## Fora de escopo
-- Lista de items em `App.tsx` (mantém os 7 com Alimentos).
-- Estilos visuais (cores, sombras, animações).
+- Cores, ícones, items da navbar
+- Layout interno da navbar
+- Outras páginas/componentes
