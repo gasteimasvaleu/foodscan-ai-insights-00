@@ -1,33 +1,24 @@
-## Objetivo
+## Igualar header do Mercado Fácil ao da WeDiet
 
-Adicionar o spinner SVG animado (`loader-15`, gradiente rosa→laranja) sobre o `splash-frame.png` no splash iOS nativo, **posicionado abaixo da logo** (não no centro), pra não cobrir o logotipo da imagem nativa.
+O usuário está se referindo ao header superior rosa do Mercado Fácil (`MFHeader`), que aparece mais "grosso" que a navbar superior da WeDiet (`Navbar`).
 
-## Escopo
+### Diferenças atuais
 
-- **Onde aparece:** sobre `splash-frame.png` no branch `NativeIOSSplash` de `src/components/SplashScreen.tsx`.
-- **Onde NÃO aparece:** `LaunchScreen.storyboard` (continua imagem estática pura) e `WebSplash` (mantém vídeo/fallback como está).
+| | WeDiet `Navbar` | Mercado Fácil `MFHeader` |
+|---|---|---|
+| Altura | `h-12` (48px) | `h-14` (56px) |
+| Padding lateral | `container mx-auto px-4` | `px-3` |
+| Safe area top | `pt-[calc(env(safe-area-inset-top)*0.6)]` | `paddingTop: env(safe-area-inset-top)` |
+| Cor de fundo | `bg-[#FA1690]/85` + `backdrop-blur-md` | `bg-[#FD46A1]` sólido |
 
-## Posicionamento
+### Mudança
 
-- `position: absolute`, centralizado horizontalmente (`left-1/2 -translate-x-1/2`).
-- Verticalmente: **~70% da altura da tela** (`top-[70%]`), bem abaixo da logo centralizada do splash.
-- Tamanho: ~64px (escalando o SVG 200×200 do snippet via `width/height`).
-- Respeita safe area inferior pra não colidir com home indicator.
+Em `src/components/mercado-facil/MFHeader.tsx`:
 
-## Decisões técnicas
+1. Trocar `h-14` por `h-12` na barra interna para igualar a altura da WeDiet.
+2. Trocar `px-3` por `container mx-auto px-4` para alinhar com a largura/padding internos.
+3. Ajustar o `paddingTop` do safe area para `calc(env(safe-area-inset-top)*0.6)`, igual à WeDiet (deixa o header mais compacto em iOS).
+4. Manter cor `#FD46A1` (identidade do Mercado Fácil) — não muda para rosa da WeDiet.
+5. Reduzir os botões redondos de voltar/carrinho de `w-10 h-10` para `w-9 h-9` (e ícones de 26/22 → 22/20) para caberem bem em 48px de altura.
 
-1. **NÃO instalar `styled-components`** — projeto é Tailwind puro. Vou portar o snippet pra React + CSS-in-JSX com `<style>` inline contendo os `@keyframes Snurra1` e classes (`.halvan`, `.strecken`, `.skugga`, gradient stops). SVG (linearGradient + filter blur) fica idêntico ao original.
-2. **Arquivo novo:** `src/components/ui/loader-15.tsx` — componente `<Loader />` default, sem props, aceita opcionalmente `className` pra controlar tamanho/posição.
-3. **Integração:** importar `Loader` em `SplashScreen.tsx` e renderizar dentro do `<motion.div>` do `NativeIOSSplash`, depois do `<img>`, com classes de posicionamento absolute.
-
-## Arquivos afetados
-
-- **Novo:** `src/components/ui/loader-15.tsx`
-- **Editar:** `src/components/SplashScreen.tsx` (apenas o branch `NativeIOSSplash`)
-
-## Não vou fazer
-
-- Não instalar `styled-components`.
-- Não mexer no `LaunchScreen.storyboard` nem em arquivos iOS nativos.
-- Não alterar timers, `handleEnd` ou lógica de detecção de plataforma.
-- Não adicionar o spinner no `WebSplash`.
+Resultado: header do Mercado Fácil com mesma altura e padding interno do header da WeDiet, mantendo a cor rosa sólida e o ícone de carrinho.
