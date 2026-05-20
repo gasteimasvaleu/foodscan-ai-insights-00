@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 
 import { MFProductCard } from "@/components/mercado-facil/MFProductCard";
+import { OfertasDestaqueCarousel } from "@/components/mercado-facil/OfertasDestaqueCarousel";
 import type { MFCategoria, MFLoja, MFProduto } from "@/lib/mercado-facil/types";
 
 type QuickFilter = "ofertas" | "menor_preco" | "promocoes" | "novidades" | null;
@@ -223,6 +224,8 @@ const MercadoFacilIndex = () => {
                 </button>
               )}
             </section>
+
+            <OfertasDestaqueCarousel />
 
             <section>
               <h2 className="text-base font-semibold mb-3">Lojas</h2>
