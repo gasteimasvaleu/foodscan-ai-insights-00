@@ -180,13 +180,28 @@ const EntregadorCadastro = () => {
             </div>
           </div>
           <div>
-            <Label>URL da foto (opcional)</Label>
-            <Input
-              value={fotoUrl}
-              onChange={(e) => setFotoUrl(e.target.value)}
-              placeholder="https://..."
-              className="text-base"
-            />
+            <Label>Foto (opcional)</Label>
+            <div className="flex items-center gap-3 mt-1">
+              {fotoUrl ? (
+                <img src={fotoUrl} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-[#FD46A1]" />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-[#FFD1E7] flex items-center justify-center text-xs text-[#FD46A1]">
+                  Sem foto
+                </div>
+              )}
+              <label className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFotoUpload}
+                  disabled={uploadingFoto}
+                />
+                <div className="bg-[#FFD1E7] text-[#FD46A1] rounded-2xl h-11 flex items-center justify-center text-sm font-medium cursor-pointer hover:bg-[#FFD1E7]/80">
+                  {uploadingFoto ? <Loader2 className="animate-spin w-4 h-4" /> : fotoUrl ? "Trocar foto" : "Enviar foto"}
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
