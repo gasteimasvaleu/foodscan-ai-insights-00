@@ -35,9 +35,13 @@ const Loja = () => {
         ) : (
           <>
             <div className="bg-white border border-[#FD46A1]/30 rounded-3xl overflow-hidden shadow-sm">
-              <div className="relative h-28 bg-gradient-to-r from-[#FD46A1] to-[#FF8FC4]">
-                {loja.banner_url && (
-                  <img src={loja.banner_url} alt="" className="w-full h-full object-cover" />
+              <div className="relative h-28 bg-gradient-to-r from-[#FD46A1] to-[#FF8FC4] overflow-hidden">
+                {(loja.banner_url || loja.foto_url) && (
+                  <img
+                    src={loja.banner_url || loja.foto_url!}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 )}
               </div>
               <div className="px-4 pb-4 -mt-12 relative z-10">
