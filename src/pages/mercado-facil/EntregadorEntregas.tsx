@@ -109,10 +109,10 @@ const EntregadorEntregas = () => {
 
         {entregador.status === "aprovado" && entregador.disponivel && (
           <section>
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-base">Disponíveis para aceitar</h3>
+            <div className="bg-[#FFD1E7] rounded-2xl px-3 py-2 mb-2 flex items-center gap-2">
+              <h3 className="text-base text-[#FD46A1]">Disponíveis para aceitar</h3>
               {disponiveis.length > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/70 text-[#FD46A1]">
                   {disponiveis.length}
                 </span>
               )}
