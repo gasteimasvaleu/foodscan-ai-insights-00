@@ -49,7 +49,9 @@ const EntregadorEntregas = () => {
       <MFHeader title="Minhas Entregas" backTo="/mercado-facil/entregador" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <section>
-          <h3 className="text-base mb-2">Em andamento</h3>
+          <div className="bg-[#FFD1E7] rounded-2xl px-3 py-2 mb-2">
+            <h3 className="text-base text-[#FD46A1]">Em andamento</h3>
+          </div>
           {ativas.length === 0 ? (
             <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
               Você não tem entregas em andamento.
