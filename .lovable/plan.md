@@ -1,35 +1,33 @@
-## Mudança
+## Objetivo
 
-No bottom sheet do Menu "+", criar uma nova seção **Recursos Extras** no topo, com tema azul, contendo:
+Adicionar o spinner SVG animado (`loader-15`, gradiente rosa→laranja) sobre o `splash-frame.png` no splash iOS nativo, **posicionado abaixo da logo** (não no centro), pra não cobrir o logotipo da imagem nativa.
 
-- Comunidade
-- Tô Aqui
-- Mercado Fácil
-- Maternidade
-- Provador Virtual (Pro)
-- Nutricionista que Vende (Pro)
+## Escopo
 
-Esses 6 itens saem das seções atuais (Mais opções / Premium) e passam a viver apenas no grupo Recursos Extras.
+- **Onde aparece:** sobre `splash-frame.png` no branch `NativeIOSSplash` de `src/components/SplashScreen.tsx`.
+- **Onde NÃO aparece:** `LaunchScreen.storyboard` (continua imagem estática pura) e `WebSplash` (mantém vídeo/fallback como está).
 
-## Como fica a ordem do sheet
+## Posicionamento
 
-1. **Recursos Extras** (azul, topo) — os 6 itens acima
-2. **Mais opções** (rosa, atual) — sem os 4 free movidos
-3. **Premium** (rosa, atual) — sem Provador e Nutricionista que Vende
+- `position: absolute`, centralizado horizontalmente (`left-1/2 -translate-x-1/2`).
+- Verticalmente: **~70% da altura da tela** (`top-[70%]`), bem abaixo da logo centralizada do splash.
+- Tamanho: ~64px (escalando o SVG 200×200 do snippet via `width/height`).
+- Respeita safe area inferior pra não colidir com home indicator.
 
-## Detalhes visuais (Recursos Extras)
+## Decisões técnicas
 
-- Header: ícone `Sparkles` + título "Recursos Extras" em azul `#2563EB`
-- Cards: fundo `bg-blue-50`, borda `border-blue-200`, ícone redondo `bg-blue-500/15` com cor `text-blue-600`, chevron azul
-- Provador Virtual e Nutricionista que Vende mantêm badge **Pro** e ícone de cadeado quando o usuário não é Pro (mesma lógica atual), apenas dentro do tema azul
+1. **NÃO instalar `styled-components`** — projeto é Tailwind puro. Vou portar o snippet pra React + CSS-in-JSX com `<style>` inline contendo os `@keyframes Snurra1` e classes (`.halvan`, `.strecken`, `.skugga`, gradient stops). SVG (linearGradient + filter blur) fica idêntico ao original.
+2. **Arquivo novo:** `src/components/ui/loader-15.tsx` — componente `<Loader />` default, sem props, aceita opcionalmente `className` pra controlar tamanho/posição.
+3. **Integração:** importar `Loader` em `SplashScreen.tsx` e renderizar dentro do `<motion.div>` do `NativeIOSSplash`, depois do `<img>`, com classes de posicionamento absolute.
 
-## Arquivo
+## Arquivos afetados
 
-Apenas `src/components/ui/tubelight-navbar.tsx`:
+- **Novo:** `src/components/ui/loader-15.tsx`
+- **Editar:** `src/components/SplashScreen.tsx` (apenas o branch `NativeIOSSplash`)
 
-- Adicionar campo `isExtra: boolean` no array `moreSheetItems` (marcar os 6)
-- Derivar `extrasItems`, `freeItems` (sem extras), `proItems` (sem extras)
-- Renderizar `<section>` "Recursos Extras" antes das outras duas seções
-- Importar `Sparkles` do `lucide-react`
+## Não vou fazer
 
-Sem mudança de rotas, navegação ou regras de Pro.
+- Não instalar `styled-components`.
+- Não mexer no `LaunchScreen.storyboard` nem em arquivos iOS nativos.
+- Não alterar timers, `handleEnd` ou lógica de detecção de plataforma.
+- Não adicionar o spinner no `WebSplash`.
