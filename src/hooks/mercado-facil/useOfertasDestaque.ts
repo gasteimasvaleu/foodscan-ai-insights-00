@@ -18,7 +18,9 @@ export interface OfertaDestaque {
 export function useOfertasDestaque() {
   return useQuery({
     queryKey: ["mf-ofertas-destaque"],
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 1000,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     queryFn: async (): Promise<OfertaDestaque[]> => {
       const { data, error } = await supabase
         .from("mf_produtos")

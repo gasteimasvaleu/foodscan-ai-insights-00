@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ImagePlus, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
@@ -27,6 +28,7 @@ const empty = {
 
 const LojistaProdutos = () => {
   const { user } = useAuthContext();
+  const queryClient = useQueryClient();
   const [loja, setLoja] = useState<MFLoja | null>(null);
   const [categorias, setCategorias] = useState<MFCategoria[]>([]);
   const [produtos, setProdutos] = useState<MFProduto[]>([]);
@@ -108,6 +110,7 @@ const LojistaProdutos = () => {
     toast({ title: "Produto salvo" });
     setEditing(null);
     await reload(loja.id);
+    queryClient.invalidateQueries({ queryKey: ["mf-ofertas-destaque"] });
   };
 
   const handleDelete = async (id: string) => {
@@ -115,6 +118,7 @@ const LojistaProdutos = () => {
     const { error } = await supabase.from("mf_produtos").delete().eq("id", id);
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
     if (loja) await reload(loja.id);
+    queryClient.invalidateQueries({ queryKey: ["mf-ofertas-destaque"] });
   };
 
   return (
