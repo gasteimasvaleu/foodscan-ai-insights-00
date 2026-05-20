@@ -30,7 +30,7 @@ const Categoria = () => {
   }, [slug]);
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={cat?.name ?? "Categoria"} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
         {loading ? (

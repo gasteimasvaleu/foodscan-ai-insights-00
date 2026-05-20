@@ -91,14 +91,14 @@ const LojistaPedidos = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
         <Loader2 className="animate-spin text-[#FD46A1]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Pedidos" backTo="/mercado-facil/lojista" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-3">
         {!loja ? (
@@ -106,12 +106,12 @@ const LojistaPedidos = () => {
             Cadastre sua loja primeiro para começar a receber pedidos.
           </div>
         ) : pedidos.length === 0 ? (
-          <div className="bg-white rounded-3xl p-6 text-center text-sm text-foreground/60">
+          <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
             Nenhum pedido registrado ainda.
           </div>
         ) : (
           pedidos.map((p) => (
-            <div key={p.id} className="bg-white rounded-3xl p-4 space-y-2">
+            <div key={p.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-2">
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-xs text-foreground/60">

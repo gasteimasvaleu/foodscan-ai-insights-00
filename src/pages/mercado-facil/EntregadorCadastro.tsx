@@ -61,14 +61,14 @@ const EntregadorCadastro = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
         <Loader2 className="animate-spin text-[#FD46A1]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Cadastro de Entregador" backTo="/mercado-facil" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <div className="bg-[#FFD1E7] rounded-3xl p-4">
@@ -78,7 +78,7 @@ const EntregadorCadastro = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-4 space-y-3">
+        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
           <div>
             <Label>Nome completo</Label>
             <Input value={nome} onChange={(e) => setNome(e.target.value)} className="text-base" />

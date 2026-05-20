@@ -29,7 +29,7 @@ const Produto = () => {
 
   if (!produto) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB]">
+      <div className="min-h-screen bg-gradient-primary">
         <MFHeader title="Produto" />
         <main className="pt-[calc(env(safe-area-inset-top)+4rem)] px-4">Carregando...</main>
       </div>
@@ -52,7 +52,7 @@ const Produto = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={produto.nome} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <div className="aspect-square bg-[#FFD1E7] rounded-3xl overflow-hidden">

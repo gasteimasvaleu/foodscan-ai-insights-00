@@ -88,10 +88,10 @@ const MercadoFacilIndex = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Mercado Fácil" backTo="/" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-6">
-        <div className="bg-white rounded-3xl p-3 space-y-2 shadow-sm">
+        <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-3 space-y-2 shadow-sm">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
             <input
@@ -161,7 +161,7 @@ const MercadoFacilIndex = () => {
                   <Link
                     key={c.id}
                     to={`/mercado-facil/categoria/${c.slug}`}
-                    className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3 hover:shadow-md transition-shadow"
+                    className="bg-white border border-[#FD46A1]/30 rounded-2xl px-4 py-3 flex items-center gap-3 hover:shadow-md transition-shadow"
                   >
                     <span className="text-xl shrink-0">{c.icon_emoji ?? "🛒"}</span>
                     <span className="text-base text-foreground truncate">{c.name}</span>
@@ -190,7 +190,7 @@ const MercadoFacilIndex = () => {
                     <Link
                       key={l.id}
                       to={`/mercado-facil/loja/${l.id}`}
-                      className="flex items-center gap-3 bg-white rounded-3xl p-3 hover:shadow-md transition-shadow"
+                      className="flex items-center gap-3 bg-white border border-[#FD46A1]/30 rounded-3xl p-3 hover:shadow-md transition-shadow"
                     >
                       <div className="w-14 h-14 rounded-2xl bg-[#FFD1E7] overflow-hidden shrink-0">
                         {l.foto_url ? (

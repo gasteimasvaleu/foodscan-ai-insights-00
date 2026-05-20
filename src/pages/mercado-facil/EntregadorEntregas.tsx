@@ -22,7 +22,7 @@ const EntregadorEntregas = () => {
 
   if (loading || !entregador) {
     return (
-      <div className="min-h-screen bg-[#F7FAFB] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center">
         <Loader2 className="animate-spin text-[#FD46A1]" />
       </div>
     );
@@ -34,19 +34,19 @@ const EntregadorEntregas = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7FAFB]">
+    <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Minhas Entregas" backTo="/mercado-facil/entregador" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
         <section>
           <h3 className="text-base mb-2">Em andamento</h3>
           {ativas.length === 0 ? (
-            <div className="bg-white rounded-3xl p-6 text-center text-sm text-foreground/60">
+            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
               Você não tem entregas em andamento.
             </div>
           ) : (
             <div className="space-y-3">
               {ativas.map((e) => (
-                <div key={e.id} className="bg-white rounded-3xl p-4 space-y-3">
+                <div key={e.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
                       {ENTREGA_STATUS_LABEL[e.status]}
@@ -98,13 +98,13 @@ const EntregadorEntregas = () => {
           <section>
             <h3 className="text-base mb-2">Disponíveis para aceitar</h3>
             {disponiveis.length === 0 ? (
-              <div className="bg-white rounded-3xl p-6 text-center text-sm text-foreground/60">
+              <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
                 Nenhuma entrega disponível.
               </div>
             ) : (
               <div className="space-y-3">
                 {disponiveis.map((e) => (
-                  <div key={e.id} className="bg-white rounded-3xl p-4 space-y-3">
+                  <div key={e.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm">{e.endereco_entrega}</p>
                       <span className="text-[#FD46A1] font-bold">{formatBRL(e.taxa_centavos)}</span>
