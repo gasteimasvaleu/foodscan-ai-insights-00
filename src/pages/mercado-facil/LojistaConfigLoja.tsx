@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
@@ -181,32 +182,40 @@ const LojistaConfigLoja = () => {
           </div>
           <div className="space-y-2">
             <Label>Foto da loja (opcional)</Label>
-            <div className="flex items-center gap-3">
-              {fotoUrl ? (
-                <img src={fotoUrl} alt="Foto da loja" className="w-20 h-20 rounded-2xl object-cover border border-white/40" />
-              ) : (
-                <div className="w-20 h-20 rounded-2xl bg-white/40 border border-white/40 flex items-center justify-center text-xs text-foreground/50">
-                  Sem foto
-                </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <label className="cursor-pointer">
-                  <input type="file" accept="image/*" hidden onChange={handleFotoChange} disabled={uploading} />
-                  <span className="inline-flex items-center justify-center px-4 h-10 rounded-2xl bg-[#FD46A1] text-white text-sm">
-                    {uploading ? "Enviando..." : fotoUrl ? "Trocar foto" : "Enviar foto"}
-                  </span>
-                </label>
-                {fotoUrl && !uploading && (
-                  <button
-                    type="button"
-                    onClick={() => setFotoUrl("")}
-                    className="text-xs text-foreground/60 underline self-start"
-                  >
-                    Remover
-                  </button>
+            <label
+              className="relative block w-full h-40 rounded-2xl border-2 border-dashed border-[#FD46A1]/40 bg-white/40 hover:bg-white/60 transition cursor-pointer overflow-hidden"
+              style={fotoUrl ? { backgroundImage: `url(${fotoUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+            >
+              <input type="file" accept="image/*" hidden onChange={handleFotoChange} disabled={uploading} />
+              <div
+                className={`absolute inset-0 flex flex-col items-center justify-center gap-2 ${
+                  fotoUrl ? "bg-black/40 text-white/90" : "text-foreground/70"
+                }`}
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className={`w-8 h-8 animate-spin ${fotoUrl ? "" : "text-[#FD46A1]/70"}`} />
+                    <span className="text-sm">Enviando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera className={`w-10 h-10 ${fotoUrl ? "opacity-90" : "text-[#FD46A1]/60"}`} />
+                    <span className={`text-sm ${fotoUrl ? "" : "opacity-70"}`}>
+                      {fotoUrl ? "Trocar foto" : "Toque para enviar a foto da loja"}
+                    </span>
+                  </>
                 )}
               </div>
-            </div>
+            </label>
+            {fotoUrl && !uploading && (
+              <button
+                type="button"
+                onClick={() => setFotoUrl("")}
+                className="text-xs text-foreground/60 underline"
+              >
+                Remover foto
+              </button>
+            )}
           </div>
         </div>
         <Button
