@@ -456,68 +456,54 @@ const FoodScan = () => {
 
     } catch (error: any) {
       console.error("Erro na análise por código de barras:", error);
-      
-      // Tentar extrair informações do erro da resposta
-      let errorInfo = { canRetry: false, suggestAI: false };
+
+      // Ler o body real do erro (Supabase Functions v2 expõe Response em error.context)
+      let status = 0;
+      let payload: any = {};
       try {
-        if (error.message) {
-          const errorData = JSON.parse(error.message);
-          errorInfo = {
-            canRetry: errorData.canRetry || false,
-            suggestAI: errorData.suggestAI || false
-          };
+        if (error?.context && typeof error.context.clone === 'function') {
+          status = error.context.status ?? 0;
+          payload = await error.context.clone().json().catch(() => ({}));
         }
-      } catch {
-        // Se não conseguir parsear, manter valores padrão
+      } catch (e) {
+        console.warn("Não foi possível ler error.context:", e);
       }
-      
-      // Armazenar código de barras para retry
+      console.log("Barcode error status:", status, "payload:", payload);
+
       const barcodeForRetry = barcode;
-      
-      // Tratar diferentes tipos de erro
-      if (error.message?.includes('404')) {
+
+      if (status === 404 || payload?.error === 'Produto não encontrado') {
         toast({
           title: "Produto não encontrado",
-          description: "Este código de barras não está na nossa base de dados. Que tal tentar uma análise por foto?",
+          description: "Este código não está na base. Use a aba Fresca (foto) ou Manual para analisar.",
           variant: "destructive",
         });
-      } else if (error.message?.includes('503') || error.message?.includes('Erro de conectividade') || error.message?.includes('504')) {
+      } else if (status === 503 || status === 504) {
         toast({
           title: "Problemas de conectividade",
-          description: "Problemas temporários com o servidor. Tente novamente em alguns momentos.",
+          description: "Servidor temporariamente indisponível. Tente novamente em instantes.",
           variant: "destructive",
           action: (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => {
-                setTimeout(() => handleBarcodeAnalysis(barcodeForRetry), 2000);
-              }}
-            >
-              Tentar novamente
-            </Button>
-          )
-        });
-      } else if (error.message?.includes('Código de barras inválido')) {
-        toast({
-          title: "Código inválido",
-          description: "O código de barras escaneado não é válido. Tente escanear novamente.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Erro na análise",
-          description: "Ocorreu um erro inesperado. Tente novamente ou use análise por foto.",
-          variant: "destructive",
-          action: (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => handleBarcodeAnalysis(barcodeForRetry)}
             >
               Tentar novamente
             </Button>
           )
+        });
+      } else if (status === 400 || payload?.error === 'Código de barras inválido') {
+        toast({
+          title: "Código inválido",
+          description: "O código escaneado não é válido. Tente escanear novamente.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro na análise",
+          description: "Ocorreu um erro inesperado. Use a análise por foto ou manual.",
+          variant: "destructive",
         });
       }
     } finally {
