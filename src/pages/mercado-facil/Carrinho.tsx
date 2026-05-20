@@ -9,6 +9,7 @@ import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
+import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
 const ADDRESS_KEY = "mf_delivery_address_v1";
@@ -103,6 +104,7 @@ const Carrinho = () => {
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
+        <MFClientePedidosStatus />
         {totalItens === 0 ? (
           <p className="text-sm text-foreground/60 text-center pt-12">
             Seu carrinho está vazio. Adicione produtos para enviar o pedido pelo WhatsApp do lojista.
