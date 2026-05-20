@@ -189,11 +189,27 @@ const Carrinho = () => {
                 <p className="text-[11px] text-center text-foreground/60">
                   Você combina disponibilidade, frete e pagamento direto com a loja.
                 </p>
+                {loja && user && (
+                  <div className="pt-3 border-t">
+                    <MFEntregadoresDisponiveis
+                      loja={loja}
+                      cidade={cidade}
+                      endereco={endereco}
+                      clienteId={user.id}
+                      clienteNome={profileName}
+                      telefoneCliente={profilePhone}
+                      itens={itens}
+                      totalCentavos={total}
+                    />
+                  </div>
+                )}
               </div>
             );
-          })
+          })}
+          </>
         )}
       </main>
+
     </div>
   );
 };
