@@ -16,7 +16,8 @@ import { useMFEntregador } from "@/hooks/mercado-facil/useMFEntregador";
 const EntregadorCadastro = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const { entregador, loading } = useMFEntregador();
+  const { entregador, loading, reload } = useMFEntregador();
+  const isEdit = !!entregador;
 
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -25,13 +26,21 @@ const EntregadorCadastro = () => {
   const [documento, setDocumento] = useState("");
   const [veiculo, setVeiculo] = useState<MFVeiculo>("moto");
   const [raio, setRaio] = useState("5");
+  const [fotoUrl, setFotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!loading && entregador) {
-      navigate("/mercado-facil/entregador", { replace: true });
+    if (entregador) {
+      setNome(entregador.nome_completo);
+      setTelefone(entregador.telefone_whatsapp);
+      setCidade(entregador.cidade);
+      setEstado(entregador.estado);
+      setDocumento(entregador.documento ?? "");
+      setVeiculo(entregador.veiculo);
+      setRaio(String(entregador.raio_atendimento_km));
+      setFotoUrl(entregador.foto_url ?? "");
     }
-  }, [loading, entregador, navigate]);
+  }, [entregador?.id]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -40,8 +49,7 @@ const EntregadorCadastro = () => {
     if (!cidade.trim() || !estado.trim()) return toast({ title: "Informe cidade e estado", variant: "destructive" });
 
     setSaving(true);
-    const { error } = await supabase.from("mf_entregadores").insert({
-      user_id: user.id,
+    const payload = {
       nome_completo: nome.trim(),
       telefone_whatsapp: telefone.trim(),
       cidade: cidade.trim(),
@@ -49,13 +57,23 @@ const EntregadorCadastro = () => {
       documento: documento.trim() || null,
       veiculo,
       raio_atendimento_km: Math.max(1, Number(raio) || 5),
-    });
+      foto_url: fotoUrl.trim() || null,
+    };
+
+    const { error } = isEdit
+      ? await supabase.from("mf_entregadores").update(payload).eq("id", entregador!.id)
+      : await supabase.from("mf_entregadores").insert({ ...payload, user_id: user.id });
+
     setSaving(false);
     if (error) {
-      toast({ title: "Erro ao enviar cadastro", description: error.message, variant: "destructive" });
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Cadastro enviado!", description: "Aguarde aprovação da equipe." });
+    toast({
+      title: isEdit ? "Dados atualizados" : "Cadastro enviado!",
+      description: isEdit ? undefined : "Aguarde aprovação da equipe.",
+    });
+    await reload();
     navigate("/mercado-facil/entregador", { replace: true });
   };
 
@@ -69,14 +87,16 @@ const EntregadorCadastro = () => {
 
   return (
     <div className="min-h-screen bg-gradient-primary">
-      <MFHeader title="Cadastro de Entregador" backTo="/mercado-facil" showCart={false} />
+      <MFHeader title={isEdit ? "Editar entregador" : "Cadastro de Entregador"} backTo="/mercado-facil/entregador" showCart={false} />
       <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
-        <div className="bg-[#FFD1E7] rounded-3xl p-4">
-          <p className="text-sm">
-            Cadastre-se como entregador do Mercado Fácil. Após análise da equipe, você poderá receber entregas
-            próximas a você.
-          </p>
-        </div>
+        {!isEdit && (
+          <div className="bg-[#FFD1E7] rounded-3xl p-4">
+            <p className="text-sm">
+              Cadastre-se como entregador do Mercado Fácil. Após análise da equipe, você poderá receber entregas
+              próximas a você.
+            </p>
+          </div>
+        )}
 
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
           <div>
@@ -136,6 +156,15 @@ const EntregadorCadastro = () => {
               />
             </div>
           </div>
+          <div>
+            <Label>URL da foto (opcional)</Label>
+            <Input
+              value={fotoUrl}
+              onChange={(e) => setFotoUrl(e.target.value)}
+              placeholder="https://..."
+              className="text-base"
+            />
+          </div>
         </div>
 
         <Button
@@ -143,7 +172,7 @@ const EntregadorCadastro = () => {
           disabled={saving}
           className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12 text-base"
         >
-          {saving ? <Loader2 className="animate-spin" /> : "Enviar cadastro"}
+          {saving ? <Loader2 className="animate-spin" /> : isEdit ? "Salvar alterações" : "Enviar cadastro"}
         </Button>
       </main>
     </div>
