@@ -1,0 +1,2 @@
+update storage.buckets set public = true where id = 'mercado-facil-entregadores';
+create policy "Entregador foto pública leitura" on storage.objects for select using (bucket_id = 'mercado-facil-entregadores');

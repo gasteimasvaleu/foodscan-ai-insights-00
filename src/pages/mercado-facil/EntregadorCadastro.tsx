@@ -28,6 +28,29 @@ const EntregadorCadastro = () => {
   const [raio, setRaio] = useState("5");
   const [fotoUrl, setFotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadingFoto, setUploadingFoto] = useState(false);
+
+  const handleFotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      return toast({ title: "Imagem muito grande", description: "Máx 5MB", variant: "destructive" });
+    }
+    setUploadingFoto(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/foto-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("mercado-facil-entregadores")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setUploadingFoto(false);
+      return toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+    }
+    const { data } = supabase.storage.from("mercado-facil-entregadores").getPublicUrl(path);
+    setFotoUrl(data.publicUrl);
+    setUploadingFoto(false);
+    toast({ title: "Foto enviada!" });
+  };
 
   useEffect(() => {
     if (entregador) {
@@ -157,13 +180,28 @@ const EntregadorCadastro = () => {
             </div>
           </div>
           <div>
-            <Label>URL da foto (opcional)</Label>
-            <Input
-              value={fotoUrl}
-              onChange={(e) => setFotoUrl(e.target.value)}
-              placeholder="https://..."
-              className="text-base"
-            />
+            <Label>Foto (opcional)</Label>
+            <div className="flex items-center gap-3 mt-1">
+              {fotoUrl ? (
+                <img src={fotoUrl} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-[#FD46A1]" />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-[#FFD1E7] flex items-center justify-center text-xs text-[#FD46A1]">
+                  Sem foto
+                </div>
+              )}
+              <label className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFotoUpload}
+                  disabled={uploadingFoto}
+                />
+                <div className="bg-[#FFD1E7] text-[#FD46A1] rounded-2xl h-11 flex items-center justify-center text-sm font-medium cursor-pointer hover:bg-[#FFD1E7]/80">
+                  {uploadingFoto ? <Loader2 className="animate-spin w-4 h-4" /> : fotoUrl ? "Trocar foto" : "Enviar foto"}
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
