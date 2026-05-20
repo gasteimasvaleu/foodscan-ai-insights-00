@@ -1,4 +1,4 @@
-import { Loader2, MessageCircle } from "lucide-react";
+import { Loader2, MapPin, MessageCircle, Sparkles } from "lucide-react";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
@@ -31,6 +31,17 @@ const EntregadorEntregas = () => {
   const openWA = (phone: string | null) => {
     if (!phone) return;
     openExternalUrl(`https://wa.me/${cleanPhone(phone)}`);
+  };
+
+  const tempoRelativo = (iso: string) => {
+    const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return "agora";
+    if (min < 60) return `há ${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24) return `há ${h} h`;
+    const d = Math.floor(h / 24);
+    return `há ${d} d`;
   };
 
   return (
@@ -96,27 +107,56 @@ const EntregadorEntregas = () => {
 
         {entregador.status === "aprovado" && entregador.disponivel && (
           <section>
-            <h3 className="text-base mb-2">Disponíveis para aceitar</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-base">Disponíveis para aceitar</h3>
+              {disponiveis.length > 0 && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
+                  {disponiveis.length}
+                </span>
+              )}
+            </div>
             {disponiveis.length === 0 ? (
               <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-6 text-center text-sm text-foreground/60">
-                Nenhuma entrega disponível.
+                Nenhuma entrega disponível agora. Assim que aparecer, ela cai aqui.
               </div>
             ) : (
               <div className="space-y-3">
-                {disponiveis.map((e) => (
-                  <div key={e.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm">{e.endereco_entrega}</p>
-                      <span className="text-[#FD46A1] font-bold">{e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}</span>
-                    </div>
-                    <Button
-                      onClick={() => aceitar(e.id, entregador.id)}
-                      className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                {disponiveis.map((e) => {
+                  const isNova = Date.now() - new Date(e.created_at).getTime() < 2 * 60 * 1000;
+                  return (
+                    <div
+                      key={e.id}
+                      className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-3 transition-shadow hover:shadow-md"
                     >
-                      Aceitar entrega
-                    </Button>
-                  </div>
-                ))}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {isNova && (
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1] flex items-center gap-1">
+                              <Sparkles size={10} /> Nova
+                            </span>
+                          )}
+                          <span className="text-xs text-foreground/60">{tempoRelativo(e.created_at)}</span>
+                        </div>
+                        <span className="text-lg font-bold text-[#FD46A1] whitespace-nowrap">
+                          {e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-start gap-2">
+                          <MapPin size={14} className="text-[#FD46A1] mt-0.5 shrink-0" />
+                          <p className="text-sm">{e.endereco_entrega}</p>
+                        </div>
+                        <p className="text-xs text-foreground/60 pl-6">{e.cidade}</p>
+                      </div>
+                      <Button
+                        onClick={() => aceitar(e.id, entregador.id)}
+                        className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                      >
+                        Aceitar entrega
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>
