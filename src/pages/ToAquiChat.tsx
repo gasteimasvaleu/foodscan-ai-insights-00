@@ -178,7 +178,7 @@ export default function ToAquiChat() {
       setLoading(true);
       const { data, error } = await supabase
         .from("venue_messages")
-        .select("id, user_id, content, created_at")
+        .select("id, user_id, content, image_url, created_at")
         .eq("venue_id", venueId)
         .order("created_at", { ascending: false })
         .limit(PAGE_SIZE);
