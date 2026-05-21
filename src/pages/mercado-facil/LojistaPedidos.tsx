@@ -23,6 +23,10 @@ interface OrderLog {
   itens: Array<{ nome: string; quantidade: number; preco_centavos: number }>;
   total_estimado_centavos: number;
   sent_at: string;
+  cliente_nome: string | null;
+  cliente_endereco: string | null;
+  cliente_cidade: string | null;
+  cliente_telefone: string | null;
 }
 
 const LojistaPedidos = () => {
