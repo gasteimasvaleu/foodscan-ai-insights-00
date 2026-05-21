@@ -27,14 +27,21 @@ interface Props {
   onSaved: (updated: ProfileFields) => void;
 }
 
+const optStr = (max: number) =>
+  z.string().trim().max(max).nullable().optional().or(z.literal(""));
+
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(50),
-  bio: z.string().trim().max(160, "Máx. 160 caracteres").optional().nullable(),
-  email_public: z.string().trim().email("Email inválido").max(255).optional().or(z.literal("")),
-  phone: z.string().trim().max(20).optional().or(z.literal("")),
-  address: z.string().trim().max(200).optional().or(z.literal("")),
-  city: z.string().trim().max(80).optional().or(z.literal("")),
-  state: z.string().trim().max(40).optional().or(z.literal("")),
+  bio: z.string().trim().max(160, "Máx. 160 caracteres").nullable().optional().or(z.literal("")),
+  email_public: z.union([
+    z.string().trim().email("Email inválido").max(255),
+    z.literal(""),
+    z.null(),
+  ]).optional(),
+  phone: optStr(20),
+  address: optStr(200),
+  city: optStr(80),
+  state: optStr(40),
 });
 
 export function EditProfileDialog({ open, onOpenChange, userId, initial, onSaved }: Props) {
