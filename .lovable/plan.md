@@ -1,37 +1,46 @@
 ## Objetivo
 
-Permitir que o lojista exclua pedidos da lista em `/mercado-facil/lojista/pedidos`.
+Substituir o card simples "Sua loja" no `LojistaDashboard` por um header visual no estilo da imagem de referência (card do perfil), reutilizando os campos já existentes em `mf_lojas` (`banner_url`, `foto_url`, `nome`, `telefone_whatsapp`).
 
-## 1. Banco — RLS de DELETE em `mf_order_log`
+## Mudanças (apenas `src/pages/mercado-facil/LojistaDashboard.tsx`)
 
-Hoje só existem policies de SELECT e INSERT. Adicionar policy de DELETE permitindo apenas:
+Substituir o bloco atual (linhas 59–66 + grid 68–77) por um único card branco com `rounded-3xl overflow-hidden shadow-sm`:
 
-- o lojista dono da loja do pedido, OU
-- admin.
-
-```sql
-CREATE POLICY mf_order_log_delete_lojista ON public.mf_order_log FOR DELETE
-  USING (
-    EXISTS (SELECT 1 FROM public.mf_lojas l WHERE l.id = loja_id AND l.owner_id = auth.uid())
-    OR public.has_role(auth.uid(), 'admin')
-  );
+```
+┌─────────────────────────────────────┐
+│  [banner rosa/imagem]      [📷]     │  ← cover h-28, gradient #FD46A1 se sem banner_url
+│   ◯ avatar                          │  ← foto_url ou inicial do nome, -mt-10, border-4 white
+│   (sobreposto ao banner)            │
+│                          [✏ Editar] │  ← link p/ /mercado-facil/lojista/loja, outline rosa pill
+│  Nome da Loja                       │  ← text-2xl font-bold
+│  WhatsApp: 5583...                  │  ← text-sm text-foreground/60
+│  ┌──────┐ ┌──────┐ ┌──────┐         │
+│  │ 📦   │ │ 🧾   │ │ 🏪   │         │  ← 3 mini-cards bg-[#FFD1E7] rounded-2xl
+│  │  12  │ │  34  │ │ Ativa│         │
+│  │PROD. │ │PEDID.│ │STATUS│         │
+│  └──────┘ └──────┘ └──────┘         │
+└─────────────────────────────────────┘
 ```
 
-A FK `mf_entregas.order_log_id` já tem `ON DELETE SET NULL`, então excluir o pedido não apaga histórico de entrega — só desvincula. (Não vou mudar esse comportamento.)
+### Detalhes técnicos
 
-## 2. UI — `src/pages/mercado-facil/LojistaPedidos.tsx`
+- **Banner**: `div` h-28 usando `loja.banner_url` via `background-image` ou fallback `bg-gradient-to-r from-[#FD46A1] to-[#FF7AB8]`. Ícone câmera (Camera) opcional no canto sup. dir. apenas decorativo (sem upload novo — link p/ página de edição).
+- **Avatar**: `w-20 h-20 rounded-full border-4 border-white -mt-10 ml-4` com `loja.foto_url` ou inicial.
+- **Botão Editar**: pill outline `border-[#FD46A1] text-[#FD46A1]` posicionado à direita, alinhado com avatar, linkando p/ `/mercado-facil/lojista/loja`. Ícone `Pencil`.
+- **Nome + WhatsApp**: abaixo do avatar (px-4).
+- **Stats grid**: 3 colunas (`grid-cols-3 gap-2 px-4 pb-4`) usando os 3 mini-cards rosa:
+  - Produtos (`produtosCount`) — ícone `Package`
+  - Pedidos (`pedidosCount`) — ícone `ListOrdered`
+  - Status (`loja.ativa ? "Ativa" : "Inativa"`) — ícone `Store`
+- Remover a `grid grid-cols-2` separada de Produtos/Pedidos (linhas 68–77), pois passa a viver dentro do header.
+- Manter intactos os dois links de "Gerenciar produtos" e "Pedidos recebidos" abaixo.
 
-No card de cada pedido (linha ~161), adicionar um botão sutil de excluir (ícone `Trash2`) no canto superior direito, ao lado do total. Ao clicar:
+### Imports a adicionar
 
-1. Abrir `AlertDialog` (shadcn) de confirmação: "Excluir este pedido? Esta ação não pode ser desfeita."
-2. Se confirmado: `supabase.from("mf_order_log").delete().eq("id", p.id)`.
-3. Em sucesso: remover do state local `pedidos` e toast "Pedido excluído".
-4. Em erro: toast destrutivo com mensagem.
+`Camera`, `Pencil` de `lucide-react` (já temos `Package`, `Store`, `ListOrdered`).
 
-Estado de loading por pedido (`deletingId`) desabilita o botão durante a operação.
+### Fora de escopo
 
-## Fora de escopo
-
-- Não alterar a entrega vinculada (`mf_entregas`) — continua existindo com `order_log_id = null`.
-- Não adicionar exclusão em massa.
-- Não permitir que o cliente apague o próprio pedido (escopo é o painel do lojista).
+- Upload de banner/avatar (botão da câmera é apenas visual e leva à página de edição).
+- Mudanças em `LojistaLoja.tsx` ou no schema do DB.
+- Tema dark/light tokens — manter as cores fixas atuais (`#FD46A1`, `#FFD1E7`) para consistência com o resto do Mercado Fácil.

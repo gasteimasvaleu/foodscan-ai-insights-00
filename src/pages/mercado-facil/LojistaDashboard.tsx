@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, Store, ListOrdered } from "lucide-react";
+import { Package, Store, ListOrdered, Camera, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
@@ -56,25 +56,80 @@ const LojistaDashboard = () => {
           </div>
         ) : (
           <>
-            <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-1">
-              <p className="text-xs text-foreground/60">Sua loja</p>
-              <h2 className="text-base font-semibold">{loja.nome}</h2>
-              <p className="text-xs text-foreground/60">WhatsApp: {loja.telefone_whatsapp}</p>
-              <Link to="/mercado-facil/lojista/loja" className="text-xs text-[#FD46A1] font-semibold">
-                Editar dados da loja
-              </Link>
+            <div className="bg-white rounded-3xl overflow-hidden shadow-sm">
+              {/* Banner */}
+              <div
+                className="relative h-28 bg-gradient-to-r from-[#FD46A1] to-[#FF7AB8]"
+                style={
+                  loja.banner_url
+                    ? { backgroundImage: `url(${loja.banner_url})`, backgroundSize: "cover", backgroundPosition: "center" }
+                    : undefined
+                }
+              >
+                <Link
+                  to="/mercado-facil/lojista/loja"
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white"
+                  aria-label="Editar banner"
+                >
+                  <Camera size={18} />
+                </Link>
+              </div>
+
+              {/* Avatar + Editar */}
+              <div className="flex items-end justify-between px-4">
+                <div className="relative -mt-10">
+                  <div className="w-20 h-20 rounded-full border-4 border-white bg-[#FFD1E7] overflow-hidden flex items-center justify-center">
+                    {loja.foto_url ? (
+                      <img src={loja.foto_url} alt={loja.nome} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl font-bold text-[#FD46A1]">
+                        {loja.nome.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <Link
+                    to="/mercado-facil/lojista/loja"
+                    className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#FD46A1] border-2 border-white flex items-center justify-center text-white"
+                    aria-label="Editar foto"
+                  >
+                    <Camera size={12} />
+                  </Link>
+                </div>
+                <Link
+                  to="/mercado-facil/lojista/loja"
+                  className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#FD46A1] text-[#FD46A1] text-sm font-semibold"
+                >
+                  <Pencil size={14} />
+                  Editar
+                </Link>
+              </div>
+
+              {/* Nome + WhatsApp */}
+              <div className="px-4 mt-2">
+                <h2 className="text-2xl font-bold text-foreground">{loja.nome}</h2>
+                <p className="text-sm text-foreground/60">WhatsApp: {loja.telefone_whatsapp}</p>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-2 px-4 py-4 mt-2">
+                <div className="bg-[#FFD1E7] rounded-2xl py-3 flex flex-col items-center">
+                  <Package size={18} className="text-[#FD46A1]" />
+                  <p className="text-lg font-bold mt-1">{produtosCount}</p>
+                  <p className="text-[10px] tracking-wider text-foreground/60 uppercase">Produtos</p>
+                </div>
+                <div className="bg-[#FFD1E7] rounded-2xl py-3 flex flex-col items-center">
+                  <ListOrdered size={18} className="text-[#FD46A1]" />
+                  <p className="text-lg font-bold mt-1">{pedidosCount}</p>
+                  <p className="text-[10px] tracking-wider text-foreground/60 uppercase">Pedidos</p>
+                </div>
+                <div className="bg-[#FFD1E7] rounded-2xl py-3 flex flex-col items-center">
+                  <Store size={18} className="text-[#FD46A1]" />
+                  <p className="text-sm font-bold mt-1">{loja.ativa ? "Ativa" : "Inativa"}</p>
+                  <p className="text-[10px] tracking-wider text-foreground/60 uppercase">Status</p>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#FFD1E7] rounded-3xl p-4">
-                <p className="text-xs text-foreground/60">Produtos</p>
-                <p className="text-2xl font-bold text-[#FD46A1]">{produtosCount}</p>
-              </div>
-              <div className="bg-[#FFD1E7] rounded-3xl p-4">
-                <p className="text-xs text-foreground/60">Pedidos via WA</p>
-                <p className="text-2xl font-bold text-[#FD46A1]">{pedidosCount}</p>
-              </div>
-            </div>
 
             <Link
               to="/mercado-facil/lojista/produtos"
