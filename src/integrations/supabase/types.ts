@@ -2052,6 +2052,48 @@ export type Database = {
         }
         Relationships: []
       }
+      playlists_musicas: {
+        Row: {
+          categoria: string
+          created_at: string
+          descricao: string | null
+          id: string
+          is_active: boolean
+          ordem: number
+          thumbnail_url: string | null
+          titulo: string
+          updated_at: string
+          youtube_id: string
+          youtube_type: string
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          is_active?: boolean
+          ordem?: number
+          thumbnail_url?: string | null
+          titulo: string
+          updated_at?: string
+          youtube_id: string
+          youtube_type?: string
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          is_active?: boolean
+          ordem?: number
+          thumbnail_url?: string | null
+          titulo?: string
+          updated_at?: string
+          youtube_id?: string
+          youtube_type?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           comment: string
