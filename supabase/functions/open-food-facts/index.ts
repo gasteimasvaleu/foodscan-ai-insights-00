@@ -37,8 +37,8 @@ async function enforceFoodscanQuota(req: Request): Promise<QuotaResult> {
     Deno.env.get('SUPABASE_ANON_KEY')!,
     { global: { headers: { Authorization: authHeader } } },
   );
-  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-  if (claimsError || !claimsData?.claims?.sub) {
+  const { data: userData, error: userError } = await userClient.auth.getUser(token);
+  if (userError || !userData?.user?.id) {
     return {
       ok: false,
       response: new Response(JSON.stringify({ error: 'unauthorized' }), {
@@ -47,7 +47,7 @@ async function enforceFoodscanQuota(req: Request): Promise<QuotaResult> {
       }),
     };
   }
-  const userId = claimsData.claims.sub as string;
+  const userId = userData.user.id;
   const { data: sub } = await supabaseAdmin
     .from('subscribers')
     .select('subscribed')
