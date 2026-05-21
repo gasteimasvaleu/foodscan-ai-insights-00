@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Truck, MessageCircle, ChevronDown, Package, MapPin } from "lucide-react";
+import { Loader2, Truck, MessageCircle, ChevronDown, Package, MapPin, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
@@ -11,6 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
 import { cleanPhone, formatBRL } from "@/lib/mercado-facil/formatters";
 import { ENTREGA_STATUS_LABEL } from "@/lib/mercado-facil/entregador-types";
@@ -43,6 +53,8 @@ const LojistaPedidos = () => {
   const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
   const [updatingEntrega, setUpdatingEntrega] = useState<string | null>(null);
   const [openStatusId, setOpenStatusId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
   const entregasPorPedido = useMemo(() => {
@@ -136,6 +148,21 @@ const LojistaPedidos = () => {
     }
   };
 
+  const excluirPedido = async (pedidoId: string) => {
+    setDeletingId(pedidoId);
+    const { error } = await supabase.from("mf_order_log").delete().eq("id", pedidoId);
+    setDeletingId(null);
+    setConfirmDeleteId(null);
+    if (error) {
+      toast({ title: "Erro ao excluir pedido", description: error.message, variant: "destructive" });
+      return;
+    }
+    setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+    toast({ title: "Pedido excluído" });
+  };
+
+
+
 
   if (loading) {
     return (
@@ -172,7 +199,22 @@ const LojistaPedidos = () => {
                   </p>
                   <p className="text-base font-semibold">{p.itens.length} itens</p>
                 </div>
-                <p className="text-[#FD46A1] font-bold">{formatBRL(p.total_estimado_centavos)}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[#FD46A1] font-bold">{formatBRL(p.total_estimado_centavos)}</p>
+                  <button
+                    type="button"
+                    aria-label="Excluir pedido"
+                    disabled={deletingId === p.id}
+                    onClick={() => setConfirmDeleteId(p.id)}
+                    className="p-1.5 rounded-full text-foreground/40 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/60 transition-colors disabled:opacity-50"
+                  >
+                    {deletingId === p.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
+                  </button>
+                </div>
               </div>
               <ul className="text-xs text-foreground/70 space-y-0.5">
                 {p.itens.slice(0, 3).map((i, idx) => (
@@ -426,6 +468,26 @@ const LojistaPedidos = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="bg-white/90 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-sm w-[calc(100%-2rem)]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pedido?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido será removido da sua lista.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-2xl">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDeleteId && excluirPedido(confirmDeleteId)}
+              className="rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
