@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, MapPin, Users, Settings, Crown, ChevronRight, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -14,7 +14,6 @@ import {
 import { WheelPicker } from "@/components/ui/wheel-picker";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState as useStateReact } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ALL_VALUE = "__all__";
