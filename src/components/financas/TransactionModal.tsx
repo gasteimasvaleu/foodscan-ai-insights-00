@@ -22,8 +22,9 @@ import { parseBRLToCents } from "@/lib/financas/formatters";
 import type { FinanceTx } from "@/hooks/useFinanceTransactions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { ImagePlus, X, Loader2 } from "lucide-react";
+import { ImagePlus, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+
 
 interface Props {
   open: boolean;
@@ -55,6 +56,7 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
   const [category, setCategory] = useState("Outros");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   // Receipt state
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null); // já salvo
@@ -115,6 +117,59 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
     setPreviewUrl(null);
     setReceiptUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleAiScan = async () => {
+    if (!user) {
+      toast.error("Faça login para usar a IA");
+      return;
+    }
+    setScanning(true);
+    try {
+      let imageUrl = receiptUrl;
+      // Se ainda é arquivo local, faz upload primeiro
+      if (receiptFile && !imageUrl) {
+        const ext = (receiptFile.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("finance-receipts")
+          .upload(path, receiptFile, { upsert: false, contentType: receiptFile.type });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("finance-receipts").getPublicUrl(path);
+        imageUrl = pub.publicUrl;
+        setReceiptUrl(imageUrl);
+        setReceiptFile(null);
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      if (!imageUrl) {
+        toast.error("Adicione uma foto primeiro");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("scan-receipt", {
+        body: { imageUrl },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const list = categoriesForKind("despesa");
+      if (typeof data.amount === "number" && data.amount > 0) {
+        setAmount(data.amount.toFixed(2).replace(".", ","));
+      }
+      if (data.description) setDescription(data.description);
+      if (data.suggested_category && list.includes(data.suggested_category)) {
+        setCategory(data.suggested_category);
+      }
+
+      const merchant = data.merchant ? ` — ${data.merchant}` : "";
+      toast.success(`Conta lida com sucesso${merchant}`);
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e?.message || "Não foi possível ler a conta");
+    } finally {
+      setScanning(false);
+    }
   };
 
   const handleSave = async () => {
@@ -250,21 +305,41 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
                 onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
               />
               {displayedReceipt ? (
-                <div className="relative rounded-2xl overflow-hidden border border-[#FFD1E7] bg-white">
-                  <img
-                    src={displayedReceipt}
-                    alt="Comprovante"
-                    className="w-full aspect-video object-cover"
-                  />
+                <>
+                  <div className="relative rounded-2xl overflow-hidden border border-[#FFD1E7] bg-white">
+                    <img
+                      src={displayedReceipt}
+                      alt="Comprovante"
+                      className="w-full aspect-video object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveReceipt}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shadow-md hover:bg-[#FD46A1]/90"
+                      aria-label="Remover comprovante"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    onClick={handleRemoveReceipt}
-                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shadow-md hover:bg-[#FD46A1]/90"
-                    aria-label="Remover comprovante"
+                    onClick={handleAiScan}
+                    disabled={scanning || saving}
+                    className="w-full mt-2 h-11 rounded-xl bg-gradient-to-r from-[#FD46A1] to-[#FF6FB5] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-95 disabled:opacity-60"
                   >
-                    <X className="h-4 w-4" />
+                    {scanning ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Lendo sua conta...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        Preencher com IA
+                      </>
+                    )}
                   </button>
-                </div>
+                </>
               ) : (
                 <button
                   type="button"
