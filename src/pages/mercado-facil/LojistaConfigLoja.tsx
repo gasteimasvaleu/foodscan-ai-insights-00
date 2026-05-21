@@ -87,6 +87,12 @@ const LojistaConfigLoja = () => {
         setNumero(((l.endereco as any)?.numero ?? "").toString());
         setUf(((l.endereco as any)?.uf ?? "").toString().toUpperCase());
         setFotoUrl(l.foto_url ?? "");
+        setAceitaEntregador(!!l.aceita_entregador);
+        setTaxaEntregaReais(
+          l.taxa_entrega_padrao_centavos
+            ? (l.taxa_entrega_padrao_centavos / 100).toFixed(2).replace(".", ",")
+            : ""
+        );
       });
   }, [user?.id]);
 
