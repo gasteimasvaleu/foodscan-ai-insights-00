@@ -21,9 +21,11 @@ interface DeliveryRequestArgs {
 
 
 export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): Promise<void> {
-  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
+  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, estado, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
   const enderecoLoja = [loja.endereco?.rua, loja.endereco?.bairro, loja.endereco?.cidade].filter(Boolean).join(", ");
   const taxa = taxaOverrideCentavos ?? (loja as any).taxa_entrega_padrao_centavos ?? 0;
+  const uf = estado?.trim().toUpperCase() || null;
+  const cidadeUf = uf ? `${cidade} - ${uf}` : cidade;
 
   // Cria mf_entrega (não bloqueia o WhatsApp se falhar)
   const { error } = await supabase.from("mf_entregas").insert({
@@ -32,6 +34,7 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     cliente_id: clienteId,
     endereco_entrega: endereco,
     cidade: normalizeCidade(cidade),
+    estado: uf,
     taxa_centavos: taxa,
     status: "disponivel",
     tipo: "app",
@@ -46,7 +49,8 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     `🛵 Olá, ${entregador.nome_completo.split(" ")[0]}! Tudo bem?`,
     ``,
     `Tenho um pedido pronto na loja *${loja.nome}*${enderecoLoja ? ` (${enderecoLoja})` : ""}.`,
-    `Preciso entregar em: *${endereco}* — ${cidade}.`,
+    `Preciso entregar em: *${endereco}* — ${cidadeUf}.`,
+
     ``,
     `Itens:`,
     ...linhas,
