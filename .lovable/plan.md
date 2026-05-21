@@ -1,45 +1,63 @@
-## Diagnóstico
+# Migrar Músicas do YouTube para Upload de MP3
 
-Erro 153 acontece porque, no iOS nativo (Capacitor/WKWebView), o app é servido de `capacitor://localhost`. Quando o iframe do YouTube é embedado direto, ele lê esse origin/referrer e bloqueia o playback (sobretudo de playlists e clipes musicais). Não tem combinação de parâmetros (`playsinline`, `rel`, `origin=…`) que conserte isso quando o origin é `capacitor://`.
+Trocar o player do YouTube por um player nativo que toca arquivos MP3 enviados pelo admin. Cada playlist passa a ter N faixas em sequência.
 
-## Solução: iframe-em-iframe via página intermediária no nosso domínio
+## Mudanças no banco
 
-Em vez de abrir o YouTube no navegador externo, vamos servir uma página HTML estática no **nosso próprio domínio HTTPS** (`https://app.dietainteligente.app/youtube-embed.html`) que contém o iframe do YouTube. O YouTubePlayer no app carrega essa página como iframe.
+**Novo bucket `musicas-audio` (público)** para os MP3.
 
-Resultado: o iframe interno do YouTube enxerga como página-pai um documento servido de `https://app.dietainteligente.app` (origin válido e já autorizado), e o playback funciona normalmente — **tudo dentro do app**, sem abrir Safari nem app externo.
+**Nova tabela `musicas_faixas`** (faixas dentro de uma playlist):
+- `id uuid pk`
+- `playlist_id uuid` → `playlists_musicas(id) on delete cascade`
+- `titulo text`
+- `audio_url text` (URL pública no bucket)
+- `duracao_segundos int null` (opcional, preenchido no upload via `<audio>.duration`)
+- `ordem int default 0`
+- `created_at timestamptz default now()`
+- RLS: SELECT público (is_active da playlist), INSERT/UPDATE/DELETE só admin via `has_role`.
 
-```text
-[App WKWebView (capacitor://localhost)]
-  └── <iframe src="https://app.dietainteligente.app/youtube-embed.html?...">
-        └── <iframe src="https://www.youtube.com/embed/..."> ← parent agora é nosso domínio
-```
+**`playlists_musicas`**: manter a tabela e os campos `titulo`, `descricao`, `categoria`, `thumbnail_url`, `ordem`, `is_active`. Os campos `youtube_id` e `youtube_type` ficam como nullable (legado, não usados mais na UI). Sem migração destrutiva.
 
-## Mudanças
+## Admin (`/admin/musicas`)
 
-### 1. Novo arquivo `public/youtube-embed.html`
-Página minimalista, fundo preto, ocupando 100% do viewport, que lê `?id=…&type=video|playlist&autoplay=1` da URL e monta o iframe do YouTube com:
-- `playsinline=1`, `rel=0`, `autoplay=1`
-- `origin=https://app.dietainteligente.app`
-- `allow="autoplay; encrypted-media; picture-in-picture"`
-- `allowfullscreen`
+Reformular `AdminMusicas.tsx`:
+- Form da playlist mantém: título, descrição, categoria, capa (upload no bucket `musicas-capas`), ordem, ativa. Remove campos `youtube_id` e `youtube_type` e o seletor de tipo.
+- Após salvar a playlist, abre uma seção **"Faixas"** dentro do mesmo dialog (ou um segundo dialog) com:
+  - Lista das faixas existentes (título + duração + botões reordenar ↑↓ + apagar).
+  - Botão **"Adicionar faixas"** que aceita múltiplos MP3 de uma vez. Para cada arquivo:
+    - upload pra `musicas-audio/{playlist_id}/{timestamp}-{rand}.mp3`
+    - lê duração via `new Audio(url).onloadedmetadata`
+    - insere em `musicas_faixas` com `titulo = nome do arquivo sem extensão`, `ordem = max+1`
+  - Cada faixa pode ter o título editado inline.
+- Card da listagem mostra contagem de faixas em vez de "Playlist/Vídeo".
 
-Como fica em `public/`, vai automaticamente servida em `https://app.dietainteligente.app/youtube-embed.html` (e também em web/preview, sem problema).
+## UI do usuário (`/musicas`)
 
-### 2. `src/components/musicas/YouTubePlayer.tsx`
-- Detectar `isIOS && isNative` via `useNativePlatform()`.
-- **iOS nativo**: `src = "https://app.dietainteligente.app/youtube-embed.html?id=…&type=…&autoplay=1"`.
-- **Web/Android**: manter URL atual `https://www.youtube.com/embed/...` (já funciona).
-- O resto do componente (`aspect-video`, `rounded-2xl`, allow flags) fica igual.
+- `PlaylistCard` continua igual (usa `thumbnail_url`; sem fallback de thumb do YouTube — se vazio, ícone Music).
+- Ao abrir o modal de player, substituir o `VinylPlayer` baseado em YouTube por um **AudioPlayer nativo** (`<audio>` HTML5):
+  - Visual mantém o disco de vinil girando enquanto toca (animação CSS atual).
+  - Controles: play/pause grande, prev/next, barra de progresso scrubável, tempo atual / total, volume opcional.
+  - Lista de faixas embaixo (clicável pra pular).
+  - Autoplay da próxima faixa ao terminar.
+  - Funciona 100% offline-do-YouTube → resolve o problema do iOS nativo de uma vez. WKWebView toca MP3 inline sem restrição (já temos `allowsInlineMediaPlayback`).
 
-### 3. Sem mudanças em `VinylPlayer.tsx`, sem `@capacitor/browser`, sem nada externo
-O fluxo do disco continua: clica → toca inline → mostra iframe. Só muda a URL de origem no iOS nativo.
+## Arquivos afetados
 
-## Plano B (se mesmo assim falhar em alguma playlist)
-
-Algumas playlists têm `embed disabled` no próprio YouTube — nesses casos, nem essa técnica resolve, porque é restrição do dono do vídeo. Para esses, adicionar tratamento de erro do IFrame API (postMessage `onError`) e mostrar dentro do mesmo card um botão "Tocar mesmo assim" que aí sim cai pro `@capacitor/browser`. Não implementamos agora — só se aparecer.
+- **Migration**: criar bucket `musicas-audio` + tabela `musicas_faixas` + policies.
+- **`src/pages/AdminMusicas.tsx`**: remover campos YouTube, adicionar gerenciador de faixas com upload múltiplo.
+- **`src/components/musicas/PlaylistCard.tsx`**: remover `getYouTubeThumb`, simplificar pra usar só `thumbnail_url`.
+- **`src/components/musicas/VinylPlayer.tsx`**: trocar iframe YouTube por `<audio>` + UI de player, mantendo a animação do disco.
+- **`src/components/musicas/YouTubePlayer.tsx`**: deletar (não usado mais).
+- **`public/youtube-embed.html`**: deletar (não usado mais).
+- **`src/pages/Musicas.tsx`**: nenhuma mudança estrutural, só passar as faixas pro player.
 
 ## Detalhes técnicos
 
-- O arquivo `public/youtube-embed.html` é servido pelo Vite em dev e copiado pro `dist/` em build, então fica disponível tanto no preview Lovable quanto na build de produção que vira o app. O domínio precisa ser o **publicado** (`app.dietainteligente.app`), porque o build do iOS aponta pra ele.
-- Não mexer no `capacitor.config.ts` trocando `server.hostname`/`iosScheme` — isso quebraria sessão do Supabase, OAuth, RevenueCat e widget compartilhado, que dependem do origin atual.
-- `allowsInlineMediaPlayback: true` e `mediaTypesRequiringUserActionForPlayback: 'none'` já estão configurados no `capacitor.config.ts`, então o autoplay vai funcionar.
+- Upload com `supabase.storage.from('musicas-audio').upload(...)` com `contentType: 'audio/mpeg'`.
+- Aceita `audio/mpeg, audio/mp3` no `<input accept>`. Sem limite de tamanho explícito (Supabase default é 50MB por arquivo — se precisar maior, ajustar no painel).
+- Reordenar faixas = update em batch do campo `ordem`.
+- Player usa `useRef<HTMLAudioElement>` e estado React pra `currentTime`, `duration`, `isPlaying`, `currentIndex`.
+
+## Memória
+
+Atualizar `mem://features/musicas/core` pra refletir: agora é upload de MP3 com player nativo, não mais YouTube.
