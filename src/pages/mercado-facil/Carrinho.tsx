@@ -107,6 +107,9 @@ const Carrinho = () => {
         itens,
         clienteId: user.id,
         clienteNome: profileName,
+        endereco,
+        cidade,
+        telefone: profilePhone,
       });
       clearLoja(lojaId);
       toast({
