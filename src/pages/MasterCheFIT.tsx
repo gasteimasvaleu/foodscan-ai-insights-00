@@ -510,50 +510,66 @@ const MasterCheFIT = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {savedMenuPlans.map((savedMenu, index) => (
-                      <div
-                        key={savedMenu.id}
-                        className="p-4 border border-white/20 rounded-xl bg-[#F9FAFB] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        <div className="flex flex-col gap-4">
-                          <div>
-                             <h3 className="font-semibold text-lg text-gray-800">
-                               Cardápio de {new Date(savedMenu.created_at).toLocaleDateString('pt-BR')}
-                             </h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-primary"></div>
-                                <span>Total:</span>
-                                <span className="font-semibold text-primary">
-                                  {Object.values(savedMenu.menu_data).reduce((total, meal) => total + meal.calories, 0)} kcal
-                                </span>
+                    {savedMenuPlans.map((savedMenu, index) => {
+                      const totalKcal = Object.values(savedMenu.menu_data).reduce(
+                        (total, meal) => total + meal.calories,
+                        0,
+                      );
+                      const mealsCount = Object.values(savedMenu.menu_data).length;
+                      const dateLabel = new Date(savedMenu.created_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      });
+                      return (
+                        <div
+                          key={savedMenu.id}
+                          className="relative p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-white/40 shadow-[0_4px_20px_-4px_rgba(253,70,161,0.15)] transition-all duration-300 hover:shadow-[0_8px_24px_-4px_rgba(253,70,161,0.25)]"
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[11px] uppercase tracking-wide text-[#FD46A1] font-medium">
+                                  Cardápio
+                                </p>
+                                <h3 className="text-base text-gray-900 truncate">{dateLabel}</h3>
+                              </div>
+                              <div className="shrink-0 rounded-xl bg-[#FFD1E7]/60 border border-[#FD46A1]/15 px-3 py-1.5 text-right">
+                                <p className="text-[10px] uppercase tracking-wide text-[#FD46A1]/80 leading-none">Total</p>
+                                <p className="text-sm font-semibold text-[#FD46A1] leading-tight">{totalKcal} kcal</p>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex gap-2 w-full">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => loadSavedMenu(savedMenu)}
-                              className="flex-1 justify-center flex items-center gap-1 bg-white/10 backdrop-blur border-white/20 hover:bg-[#FA449F]/20 hover:border-[#FA449F]/50 transition-all duration-300"
-                            >
-                              <Eye className="w-3 h-3" />
-                              Ver
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => deleteSavedMenu(savedMenu.id)}
-                              className="flex-1 justify-center flex items-center gap-1 hover:scale-105 transition-transform duration-200"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                              Excluir
-                            </Button>
+
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[#FD46A1]/5 border border-[#FD46A1]/15 px-2 py-0.5">
+                                {mealsCount} refeições
+                              </span>
+                            </div>
+
+                            <div className="flex gap-2 w-full pt-1">
+                              <Button
+                                size="sm"
+                                onClick={() => loadSavedMenu(savedMenu)}
+                                className="flex-1 justify-center flex items-center gap-1.5 bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white rounded-xl h-9 shadow-sm"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                Ver
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteSavedMenu(savedMenu.id)}
+                                className="flex-1 justify-center flex items-center gap-1.5 rounded-xl h-9 border-[#FD46A1]/20 text-[#FD46A1] hover:bg-[#FD46A1]/5 hover:text-[#FD46A1]"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Excluir
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
