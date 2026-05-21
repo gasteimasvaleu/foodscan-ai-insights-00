@@ -12,7 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectValue } from '@/components/ui/select';
+import { GlassSelectTrigger as SelectTrigger, GlassSelectContent as SelectContent, GlassSelectItem as SelectItem } from '@/components/maternidade/GlassSelect';
+
 import { MatDatePicker } from '@/components/maternidade/MatDatePicker';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';

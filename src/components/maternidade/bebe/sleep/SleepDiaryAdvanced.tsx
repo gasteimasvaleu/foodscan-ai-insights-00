@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectValue } from '@/components/ui/select';
+import { GlassSelectTrigger as SelectTrigger, GlassSelectContent as SelectContent, GlassSelectItem as SelectItem } from '@/components/maternidade/GlassSelect';
+
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MatDateTimePicker } from '@/components/maternidade/MatDatePicker';
 import { Star, Trash2, Play, Square } from 'lucide-react';
