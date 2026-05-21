@@ -137,9 +137,11 @@ const LojistaPedidos = () => {
     });
     setOpenEntrega(null);
     setEndereco("");
+    setEstadoEntrega("");
     setTelCliente("");
     setTaxaReais("");
     setModoEntrega("app");
+
   };
 
   const avancarEntrega = async (entregaId: string, novoStatus: "coletada" | "entregue" | "cancelada") => {
