@@ -89,7 +89,7 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-white/80 backdrop-blur-xl border-[#FFD1E7] rounded-3xl">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm bg-white/70 backdrop-blur-md border-2 border-[#FD46A1]/30 rounded-3xl shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-foreground">
             {initial ? "Editar lançamento" : "Novo lançamento"}
