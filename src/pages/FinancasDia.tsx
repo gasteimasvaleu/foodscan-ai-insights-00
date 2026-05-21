@@ -80,15 +80,7 @@ export default function FinancasDia() {
         {/* Header */}
         <div className="mb-2">
           <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-4 py-3 flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/financas")}
-              className="h-9 w-9 rounded-full hover:bg-white/30"
-            >
-              <ArrowLeft className="h-5 w-5 text-primary" />
-            </Button>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h1 className="text-base font-bold text-primary leading-tight capitalize">
                 {DOW[dateObj.getDay()]}
               </h1>
@@ -96,6 +88,14 @@ export default function FinancasDia() {
                 {dateObj.getDate()} de {MONTHS[dateObj.getMonth()]} de {dateObj.getFullYear()}
               </p>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/financas")}
+              className="h-9 w-9 rounded-full hover:bg-white/30 ml-auto shrink-0"
+            >
+              <ArrowLeft className="h-5 w-5 text-primary" />
+            </Button>
           </div>
         </div>
 
