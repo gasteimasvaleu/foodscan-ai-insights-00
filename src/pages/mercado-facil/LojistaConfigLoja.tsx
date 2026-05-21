@@ -36,6 +36,7 @@ const LojistaConfigLoja = () => {
   const [uf, setUf] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [aceitaEntregador, setAceitaEntregador] = useState(false);
+  const [quemAciona, setQuemAciona] = useState<"loja" | "cliente">("loja");
   const [taxaEntregaReais, setTaxaEntregaReais] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
