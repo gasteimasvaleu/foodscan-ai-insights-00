@@ -275,7 +275,7 @@ const LojistaPedidos = () => {
               <button
                 type="button"
                 onClick={() => setModoEntrega("app")}
-                disabled={!loja?.aceita_entregador}
+                disabled={!loja?.aceita_entregador || loja?.quem_aciona_entregador === "cliente"}
                 className={`h-10 rounded-xl text-sm transition-colors ${
                   modoEntrega === "app"
                     ? "bg-[#FD46A1] text-white"
@@ -294,7 +294,12 @@ const LojistaPedidos = () => {
                 Entrega própria
               </button>
             </div>
-            {modoEntrega === "propria" && (
+            {loja?.quem_aciona_entregador === "cliente" && (
+              <p className="text-xs text-foreground/60 leading-snug">
+                O entregador é chamado pelo cliente no carrinho. Use "Entrega própria" para registrar o status aqui.
+              </p>
+            )}
+            {modoEntrega === "propria" && loja?.quem_aciona_entregador !== "cliente" && (
               <p className="text-xs text-foreground/60 leading-snug">
                 Você fará a entrega por conta própria (motoboy fixo, terceirizado, retirada etc.). Atualize o status no card do pedido conforme o pedido sai e é entregue.
               </p>
