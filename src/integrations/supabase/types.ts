@@ -1057,6 +1057,42 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_transactions: {
+        Row: {
+          amount_cents: number
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          occurred_on: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          occurred_on?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          occurred_on?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       food_catalog: {
         Row: {
           calories_per_100g: number
