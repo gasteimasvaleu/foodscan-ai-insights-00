@@ -1761,7 +1761,11 @@ export type Database = {
       }
       mf_order_log: {
         Row: {
+          cliente_cidade: string | null
+          cliente_endereco: string | null
           cliente_id: string
+          cliente_nome: string | null
+          cliente_telefone: string | null
           id: string
           itens: Json
           loja_id: string
@@ -1769,7 +1773,11 @@ export type Database = {
           total_estimado_centavos: number
         }
         Insert: {
+          cliente_cidade?: string | null
+          cliente_endereco?: string | null
           cliente_id: string
+          cliente_nome?: string | null
+          cliente_telefone?: string | null
           id?: string
           itens?: Json
           loja_id: string
@@ -1777,7 +1785,11 @@ export type Database = {
           total_estimado_centavos?: number
         }
         Update: {
+          cliente_cidade?: string | null
+          cliente_endereco?: string | null
           cliente_id?: string
+          cliente_nome?: string | null
+          cliente_telefone?: string | null
           id?: string
           itens?: Json
           loja_id?: string
