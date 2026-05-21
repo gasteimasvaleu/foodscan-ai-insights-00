@@ -33,8 +33,8 @@ const STEPS = [
 export default function VenueChatOnboardingModal({ open, onClose }: Props) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] shadow-xl">
-        <DialogHeader>
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] shadow-xl max-h-[80vh] flex flex-col p-4 sm:p-5">
+        <DialogHeader className="shrink-0">
           <DialogTitle className="text-[#FD46A1] text-xl text-center">
             Como funciona o chat do local
           </DialogTitle>
@@ -43,7 +43,7 @@ export default function VenueChatOnboardingModal({ open, onClose }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 mt-2">
+        <div className="overflow-y-auto flex-1 min-h-0 space-y-3 mt-2">
           {STEPS.map((s, i) => (
             <div
               key={i}
@@ -56,15 +56,15 @@ export default function VenueChatOnboardingModal({ open, onClose }: Props) {
               </div>
             </div>
           ))}
-        </div>
 
-        <p className="text-xs text-gray-500 text-center mt-2 px-2">
-          Respeite quem disser não. Comportamentos abusivos resultam em banimento.
-        </p>
+          <p className="text-xs text-gray-500 text-center px-2 pb-1">
+            Respeite quem disser não. Comportamentos abusivos resultam em banimento.
+          </p>
+        </div>
 
         <Button
           onClick={onClose}
-          className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-full h-11 mt-2"
+          className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-full h-11 mt-3 shrink-0"
         >
           Entendi
         </Button>
