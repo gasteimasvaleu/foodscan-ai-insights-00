@@ -199,7 +199,22 @@ const LojistaPedidos = () => {
                   </p>
                   <p className="text-base font-semibold">{p.itens.length} itens</p>
                 </div>
-                <p className="text-[#FD46A1] font-bold">{formatBRL(p.total_estimado_centavos)}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[#FD46A1] font-bold">{formatBRL(p.total_estimado_centavos)}</p>
+                  <button
+                    type="button"
+                    aria-label="Excluir pedido"
+                    disabled={deletingId === p.id}
+                    onClick={() => setConfirmDeleteId(p.id)}
+                    className="p-1.5 rounded-full text-foreground/40 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/60 transition-colors disabled:opacity-50"
+                  >
+                    {deletingId === p.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
+                  </button>
+                </div>
               </div>
               <ul className="text-xs text-foreground/70 space-y-0.5">
                 {p.itens.slice(0, 3).map((i, idx) => (
