@@ -468,6 +468,26 @@ const LojistaPedidos = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="bg-white/90 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-sm w-[calc(100%-2rem)]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pedido?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido será removido da sua lista.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-2xl">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDeleteId && excluirPedido(confirmDeleteId)}
+              className="rounded-2xl bg-[#FD46A1] hover:bg-[#FD46A1]/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
