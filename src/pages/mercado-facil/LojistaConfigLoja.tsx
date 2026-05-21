@@ -35,6 +35,8 @@ const LojistaConfigLoja = () => {
   const [numero, setNumero] = useState("");
   const [uf, setUf] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [aceitaEntregador, setAceitaEntregador] = useState(false);
+  const [taxaEntregaReais, setTaxaEntregaReais] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
