@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import { VEICULO_LABEL, type MFEntregador } from "@/lib/mercado-facil/entregador-types";
 import { sendDeliveryRequestToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
+import { MFAddressConfirmDialog } from "@/components/mercado-facil/MFAddressConfirmDialog";
 import type { MFCartItem, MFLoja } from "@/lib/mercado-facil/types";
 
 function faixaPreco(min: number, max: number): string {
