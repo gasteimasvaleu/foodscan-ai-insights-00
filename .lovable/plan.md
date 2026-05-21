@@ -1,44 +1,73 @@
-# Resolver impasse do entregador: loja decide quem aciona
+## Mudança em `src/pages/mercado-facil/LojistaPedidos.tsx`
 
-## Decisão
-A loja define no cadastro **quem aciona o entregador**:
-- **"Eu (loja) aciono"** (padrão) — cliente não vê lista de entregadores no Carrinho; loja resolve no painel.
-- **"Cliente aciona"** — cliente vê lista no Carrinho e chama direto; loja não vê o modal "Entregador do app" (mas continua podendo registrar entrega própria).
+Apenas UI. Trocar o bloco de status atualmente sempre visível (linhas 178-234) por um acordeon controlado por um novo botão full-width, replicando o visual de `MFClientePedidosStatus`.
 
-## Banco
+### Estado
 
-### Migração: nova coluna em `mf_lojas`
-```sql
-ALTER TABLE public.mf_lojas
-  ADD COLUMN IF NOT EXISTS quem_aciona_entregador text NOT NULL DEFAULT 'loja'
-  CHECK (quem_aciona_entregador IN ('loja','cliente'));
+Adicionar `const [openStatusId, setOpenStatusId] = useState<string | null>(null);` para controlar qual card está expandido (um por vez).
+
+### Botão acionador
+
+Abaixo da linha de botões "WhatsApp" + "Entrega" (linha 236-260), adicionar um botão full-width com o mesmo visual do trigger do `MFClientePedidosStatus`:
+
+```tsx
+<button
+  type="button"
+  onClick={() => setOpenStatusId(openStatusId === p.id ? null : p.id)}
+  aria-expanded={openStatusId === p.id}
+  className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-[#FD46A1]/30 bg-white text-left"
+>
+  <span className="flex items-center gap-2 text-base text-foreground">
+    <Package size={16} className="text-[#FD46A1]" />
+    Ver status do pedido
+    {entrega && (
+      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
+        {ENTREGA_STATUS_LABEL[entrega.status]}
+      </span>
+    )}
+  </span>
+  <ChevronDown
+    size={18}
+    className={`text-[#FD46A1] transition-transform duration-300 ${openStatusId === p.id ? "rotate-180" : ""}`}
+  />
+</button>
 ```
 
-`aceita_entregador` continua existindo e significa "esta loja trabalha com entregador do app" (false = só entrega própria/retirada). O novo campo só é relevante quando `aceita_entregador = true`.
+Imports adicionais: `ChevronDown`, `Package` de `lucide-react`.
 
-## Frontend
+### Conteúdo do acordeon
 
-### `src/pages/mercado-facil/LojistaConfigLoja.tsx`
-Dentro da seção "Entrega", quando `aceitaEntregador` estiver ligado, mostrar um **radio/segmented** abaixo da taxa:
-- **Eu (loja) chamo o entregador** (default)
-- **Cliente chama o entregador no carrinho**
+Wrapper com mesma transição usada no componente do cliente:
 
-Texto de apoio explicando que isso muda quem vê a lista. Persistir como `quem_aciona_entregador` no save.
+```tsx
+<div className={`transition-all duration-300 ease-out overflow-hidden ${openStatusId === p.id ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}>
+  <div className="pt-3">
+    {/* bloco atual de status, com layout do cliente */}
+  </div>
+</div>
+```
 
-### `src/pages/mercado-facil/Carrinho.tsx`
-Renderizar `<MFEntregadoresDisponiveis>` **somente quando** `loja.aceita_entregador === true && loja.quem_aciona_entregador === 'cliente'`. Caso contrário, esconder a lista e mostrar um aviso curto: *"A loja se encarregará da entrega."*
+Dentro do wrapper, renderizar bloco com o mesmo visual do `MFClientePedidosStatus` (caixa `bg-[#FFD1E7]/40 rounded-2xl p-3 space-y-2`):
 
-### `src/pages/mercado-facil/LojistaPedidos.tsx`
-No modal "Acionar entrega":
-- Se `loja.quem_aciona_entregador === 'cliente'`, **desabilitar** o botão "Entregador do app" (já desabilita quando `aceita_entregador=false`) e forçar `modoEntrega='propria'`, com nota: *"O entregador foi chamado pelo cliente; use 'Entrega própria' para registrar status."*
-- Se `loja.quem_aciona_entregador === 'loja'`, fluxo atual (app ou própria, à escolha).
+- Linha com `MapPin` + `endereco_entrega` + valor da taxa à direita
+- `tipo === "propria"` → "Entrega feita pela loja"
+- `status === "disponivel"` → spinner + "Buscando entregador…"
+- `status === "cancelada"` → "Entrega cancelada."
+- demais → `<MFEntregaProgress status={...} />`
 
-### `src/lib/mercado-facil/types.ts`
-Adicionar `quem_aciona_entregador: 'loja' | 'cliente'` em `MFLoja`.
+Sem o bloco de avaliação por estrelas (é exclusivo do cliente).
+
+Se `!entrega`, mostrar dentro do acordeon: `<p className="text-sm text-foreground/60">Nenhuma entrega registrada ainda. Use o botão "Entrega" acima para registrar.</p>`
+
+### Botões de ação do lojista (avançar/cancelar entrega própria)
+
+Mantidos, mas movidos para dentro do acordeon, logo abaixo do `MFEntregaProgress`, exatamente como hoje (linhas 200-232). Só são exibidos quando `entrega.tipo === "propria" && ["aceita","coletada"].includes(entrega.status)`.
+
+### Limpeza
+
+Remover o bloco antigo `{entrega && (...)}` (linhas 178-234) — todo o conteúdo passa a viver dentro do acordeon.
 
 ## Fora de escopo
-- Não unifica `mf_entregas` com a "chamada" do cliente (cliente continua só abrindo WhatsApp do entregador, sem criar registro).
-- Não muda RLS nem a função `mf_entregadores_disponiveis`.
 
-## Após implementação
-Lojista escolhe o modelo uma vez no cadastro; o impasse some — só um lado vê a opção de acionar.
+- Sem mudanças em backend, hooks, tipos ou outros arquivos.
+- Sem alteração no fluxo de criação/avanço de entrega.
