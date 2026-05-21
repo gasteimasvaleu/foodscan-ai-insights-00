@@ -36,8 +36,10 @@ interface OrderLog {
   cliente_nome: string | null;
   cliente_endereco: string | null;
   cliente_cidade: string | null;
+  cliente_estado: string | null;
   cliente_telefone: string | null;
 }
+
 
 const LojistaPedidos = () => {
   const { user } = useAuthContext();
@@ -47,7 +49,9 @@ const LojistaPedidos = () => {
   const [openEntrega, setOpenEntrega] = useState<OrderLog | null>(null);
   const [endereco, setEndereco] = useState("");
   const [cidadeEntrega, setCidadeEntrega] = useState("");
+  const [estadoEntrega, setEstadoEntrega] = useState("");
   const [taxaReais, setTaxaReais] = useState("");
+
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
   const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
@@ -111,6 +115,7 @@ const LojistaPedidos = () => {
       cliente_id: openEntrega.cliente_id,
       endereco_entrega: endereco.trim(),
       cidade: cidadeEntrega.trim(),
+      estado: estadoEntrega.trim().toUpperCase() || null,
       taxa_centavos: taxa,
       telefone_cliente: telCliente.trim() || null,
       telefone_lojista: loja.telefone_whatsapp,
@@ -118,6 +123,7 @@ const LojistaPedidos = () => {
       status: ehPropria ? "aceita" : "disponivel",
       aceita_em: ehPropria ? new Date().toISOString() : null,
     });
+
     setCreating(false);
     if (error) {
       toast({ title: "Erro ao criar entrega", description: error.message, variant: "destructive" });
@@ -131,9 +137,11 @@ const LojistaPedidos = () => {
     });
     setOpenEntrega(null);
     setEndereco("");
+    setEstadoEntrega("");
     setTelCliente("");
     setTaxaReais("");
     setModoEntrega("app");
+
   };
 
   const avancarEntrega = async (entregaId: string, novoStatus: "coletada" | "entregue" | "cancelada") => {
@@ -200,7 +208,13 @@ const LojistaPedidos = () => {
                   {p.cliente_nome && (
                     <p className="text-sm font-semibold text-foreground">{p.cliente_nome}</p>
                   )}
+                  {(p.cliente_cidade || p.cliente_estado) && (
+                    <p className="text-xs text-foreground/60">
+                      {p.cliente_cidade}{p.cliente_cidade && p.cliente_estado ? " - " : ""}{p.cliente_estado}
+                    </p>
+                  )}
                   <p className="text-base font-semibold">{p.itens.length} itens</p>
+
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -248,8 +262,10 @@ const LojistaPedidos = () => {
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
                       setEndereco(p.cliente_endereco ?? "");
                       setCidadeEntrega(p.cliente_cidade ?? loja.endereco?.cidade ?? "");
+                      setEstadoEntrega(p.cliente_estado ?? "");
                       setTelCliente(p.cliente_telefone ?? "");
                     }}
+
                   >
                     <Truck size={14} className="mr-1" /> Entrega
                   </Button>
@@ -409,10 +425,23 @@ const LojistaPedidos = () => {
                   className="text-base"
                 />
               </div>
-              <div>
-                <Label>Cidade</Label>
-                <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
+              <div className="grid grid-cols-[1fr_88px] gap-2">
+                <div>
+                  <Label>Cidade</Label>
+                  <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
+                </div>
+                <div>
+                  <Label>UF</Label>
+                  <Input
+                    value={estadoEntrega}
+                    onChange={(e) => setEstadoEntrega(e.target.value.toUpperCase().slice(0, 2))}
+                    maxLength={2}
+                    placeholder="GO"
+                    className="text-base uppercase text-center"
+                  />
+                </div>
               </div>
+
               <div>
                 <Label>{modoEntrega === "app" ? "Taxa sugerida ao entregador (R$)" : "Taxa cobrada do cliente (R$)"}</Label>
                 <Input

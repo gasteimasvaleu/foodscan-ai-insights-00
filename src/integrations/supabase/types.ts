@@ -1598,6 +1598,7 @@ export type Database = {
           endereco_entrega: string
           entregador_id: string | null
           entregue_em: string | null
+          estado: string | null
           id: string
           loja_id: string
           lojista_id: string
@@ -1618,6 +1619,7 @@ export type Database = {
           endereco_entrega: string
           entregador_id?: string | null
           entregue_em?: string | null
+          estado?: string | null
           id?: string
           loja_id: string
           lojista_id: string
@@ -1638,6 +1640,7 @@ export type Database = {
           endereco_entrega?: string
           entregador_id?: string | null
           entregue_em?: string | null
+          estado?: string | null
           id?: string
           loja_id?: string
           lojista_id?: string
@@ -1763,6 +1766,7 @@ export type Database = {
         Row: {
           cliente_cidade: string | null
           cliente_endereco: string | null
+          cliente_estado: string | null
           cliente_id: string
           cliente_nome: string | null
           cliente_telefone: string | null
@@ -1775,6 +1779,7 @@ export type Database = {
         Insert: {
           cliente_cidade?: string | null
           cliente_endereco?: string | null
+          cliente_estado?: string | null
           cliente_id: string
           cliente_nome?: string | null
           cliente_telefone?: string | null
@@ -1787,6 +1792,7 @@ export type Database = {
         Update: {
           cliente_cidade?: string | null
           cliente_endereco?: string | null
+          cliente_estado?: string | null
           cliente_id?: string
           cliente_nome?: string | null
           cliente_telefone?: string | null

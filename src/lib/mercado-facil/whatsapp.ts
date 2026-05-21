@@ -12,16 +12,20 @@ interface DeliveryRequestArgs {
   telefoneCliente?: string;
   endereco: string;
   cidade: string;
+  estado?: string;
   itens: MFCartItem[];
   totalCentavos: number;
   orderLogId?: string;
   taxaOverrideCentavos?: number;
 }
 
+
 export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): Promise<void> {
-  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
+  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, estado, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
   const enderecoLoja = [loja.endereco?.rua, loja.endereco?.bairro, loja.endereco?.cidade].filter(Boolean).join(", ");
   const taxa = taxaOverrideCentavos ?? (loja as any).taxa_entrega_padrao_centavos ?? 0;
+  const uf = estado?.trim().toUpperCase() || null;
+  const cidadeUf = uf ? `${cidade} - ${uf}` : cidade;
 
   // Cria mf_entrega (não bloqueia o WhatsApp se falhar)
   const { error } = await supabase.from("mf_entregas").insert({
@@ -30,6 +34,7 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     cliente_id: clienteId,
     endereco_entrega: endereco,
     cidade: normalizeCidade(cidade),
+    estado: uf,
     taxa_centavos: taxa,
     status: "disponivel",
     tipo: "app",
@@ -44,7 +49,8 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     `🛵 Olá, ${entregador.nome_completo.split(" ")[0]}! Tudo bem?`,
     ``,
     `Tenho um pedido pronto na loja *${loja.nome}*${enderecoLoja ? ` (${enderecoLoja})` : ""}.`,
-    `Preciso entregar em: *${endereco}* — ${cidade}.`,
+    `Preciso entregar em: *${endereco}* — ${cidadeUf}.`,
+
     ``,
     `Itens:`,
     ...linhas,
@@ -75,8 +81,10 @@ interface SendArgs {
   clienteLocal?: string;
   endereco?: string;
   cidade?: string;
+  estado?: string;
   telefone?: string;
 }
+
 
 export function buildOrderMessage({ loja, itens, clienteNome, clienteLocal }: SendArgs): string {
   const linhas = itens.map(
@@ -123,8 +131,10 @@ export async function sendOrderToWhatsApp(args: SendArgs): Promise<void> {
       cliente_nome: args.clienteNome ?? null,
       cliente_endereco: args.endereco?.trim() || null,
       cliente_cidade: args.cidade?.trim() || null,
+      cliente_estado: args.estado?.trim().toUpperCase() || null,
       cliente_telefone: args.telefone?.trim() || null,
     })
+
     .then(({ error }) => {
       if (error) console.warn("[mf_order_log] insert error:", error.message);
     });
