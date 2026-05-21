@@ -219,6 +219,10 @@ const App = () => (
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
             <Route path="/admin/entregadores" element={<AdminEntregadores />} />
 
+            <Route path="/financas" element={<Financas />} />
+            <Route path="/financas/:date" element={<FinancasDia />} />
+
+
 
 
 
