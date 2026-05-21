@@ -97,10 +97,6 @@ const AdminMusicas = () => {
       toast({ title: "Arquivo inválido", description: "Envie uma imagem.", variant: "destructive" });
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast({ title: "Imagem muito grande", description: "Máximo de 2 MB.", variant: "destructive" });
-      return;
-    }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
@@ -445,7 +441,7 @@ const AdminMusicas = () => {
                   <span className="text-sm text-muted-foreground">
                     {uploading ? "Enviando..." : "Enviar imagem"}
                   </span>
-                  <span className="text-xs text-muted-foreground/70 mt-1">PNG/JPG até 2 MB</span>
+                  <span className="text-xs text-muted-foreground/70 mt-1">PNG/JPG</span>
                   <input
                     type="file"
                     accept="image/*"
