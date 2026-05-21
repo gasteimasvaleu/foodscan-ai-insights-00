@@ -103,6 +103,9 @@ const LojistaConfigLoja = () => {
       return toast({ title: "WhatsApp inválido", description: "Use o formato +55 11 99999-9999", variant: "destructive" });
 
     setSaving(true);
+    const taxaCentavos = aceitaEntregador
+      ? Math.max(0, Math.round(parseFloat(taxaEntregaReais.replace(",", ".") || "0") * 100))
+      : 0;
     const payload = {
       owner_id: user.id,
       nome: nome.trim(),
@@ -117,6 +120,8 @@ const LojistaConfigLoja = () => {
         uf: uf || null,
       },
       foto_url: fotoUrl.trim() || null,
+      aceita_entregador: aceitaEntregador,
+      taxa_entrega_padrao_centavos: taxaCentavos,
       ativa: true,
     };
 
