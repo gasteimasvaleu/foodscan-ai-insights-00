@@ -136,14 +136,14 @@ export function GrowthSleep() {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="flex-row items-center justify-between pb-2">
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5 flex-row items-center justify-between pb-2">
           <CardTitle className="text-base font-semibold">Sono</CardTitle>
           <Button size="sm" onClick={() => setOpenS(true)} className="bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white">
             Registrar
           </Button>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="pl-5 space-y-3">
           <p className="text-sm text-gray-700">
             Hoje: <span className="text-gray-900">{Math.floor(todayTotal / 60)}h {todayTotal % 60}min</span>
           </p>
