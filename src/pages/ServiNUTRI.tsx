@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Search, MapPin, Phone, Stethoscope, Upload, Image as ImageIcon, MessageCircle, Trash2, DollarSign, Mail } from 'lucide-react';
@@ -640,16 +640,14 @@ const ServiNUTRI = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="state">Estado</Label>
-                    <Select value={formData.state} onValueChange={handleStateChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brazilianStates.map(state => <SelectItem key={state.value} value={state.value}>
-                            {state.label}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <SectionPicker
+                      title="Estado"
+                      placeholder="Selecione um estado"
+                      value={formData.state}
+                      onChange={handleStateChange}
+                      options={brazilianStates.map(s => ({ id: s.value, label: s.label }))}
+                    />
+
                   </div>
                   <div>
                     <Label htmlFor="city">Cidade</Label>
@@ -675,19 +673,14 @@ const ServiNUTRI = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="ddd">DDD</Label>
-                    <Select value={formData.phone_ddd} onValueChange={value => setFormData({
-                  ...formData,
-                  phone_ddd: value
-                })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="DDD" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {dddOptions.map(ddd => <SelectItem key={ddd} value={ddd}>
-                            {ddd}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <SectionPicker
+                      title="DDD"
+                      placeholder="DDD"
+                      value={formData.phone_ddd}
+                      onChange={(value) => setFormData({ ...formData, phone_ddd: value })}
+                      options={dddOptions.map(ddd => ({ id: ddd, label: ddd }))}
+                    />
+
                   </div>
                   <div className="md:col-span-2">
                     <Label htmlFor="phone">Telefone</Label>

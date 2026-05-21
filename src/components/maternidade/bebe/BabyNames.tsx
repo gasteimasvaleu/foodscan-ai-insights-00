@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { Heart, Loader2, Search, Sparkles, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -190,15 +190,16 @@ function Field({ label, value, onChange, options }: { label: string; value: stri
   return (
     <div className="space-y-2">
       <Label className="text-sm text-gray-700">{label}</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="text-base h-12 rounded-xl"><SelectValue /></SelectTrigger>
-        <SelectContent>
-          {options.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
-        </SelectContent>
-      </Select>
+      <SectionPicker
+        title={label}
+        value={value}
+        onChange={onChange}
+        options={options.map(([v, l]) => ({ id: v, label: l }))}
+      />
     </div>
   );
 }
+
 
 function NameCard({ item, onFav }: { item: Suggestion | SearchResult; onFav: () => void }) {
   return (
