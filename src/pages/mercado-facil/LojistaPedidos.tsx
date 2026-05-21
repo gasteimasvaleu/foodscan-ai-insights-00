@@ -35,6 +35,8 @@ const LojistaPedidos = () => {
   const [taxaReais, setTaxaReais] = useState("");
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
+  const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
+  const [updatingEntrega, setUpdatingEntrega] = useState<string | null>(null);
 
   const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
   const entregasPorPedido = useMemo(() => {
@@ -83,6 +85,7 @@ const LojistaPedidos = () => {
     }
     setCreating(true);
     const taxa = Math.round((Number(taxaReais.replace(",", ".")) || 0) * 100);
+    const ehPropria = modoEntrega === "propria";
     const { error } = await supabase.from("mf_entregas").insert({
       order_log_id: openEntrega.id,
       loja_id: loja.id,
@@ -93,18 +96,40 @@ const LojistaPedidos = () => {
       taxa_centavos: taxa,
       telefone_cliente: telCliente.trim() || null,
       telefone_lojista: loja.telefone_whatsapp,
+      tipo: ehPropria ? "propria" : "app",
+      status: ehPropria ? "aceita" : "disponivel",
+      aceita_em: ehPropria ? new Date().toISOString() : null,
     });
     setCreating(false);
     if (error) {
       toast({ title: "Erro ao criar entrega", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Entrega criada", description: "Entregadores próximos foram notificados." });
+    toast({
+      title: ehPropria ? "Entrega registrada" : "Entrega criada",
+      description: ehPropria
+        ? "Agora atualize o status conforme a entrega avança."
+        : "Entregadores próximos foram notificados.",
+    });
     setOpenEntrega(null);
     setEndereco("");
     setTelCliente("");
     setTaxaReais("");
+    setModoEntrega("app");
   };
+
+  const avancarEntrega = async (entregaId: string, novoStatus: "coletada" | "entregue" | "cancelada") => {
+    setUpdatingEntrega(entregaId);
+    const patch: Record<string, unknown> = { status: novoStatus };
+    if (novoStatus === "coletada") patch.coletada_em = new Date().toISOString();
+    if (novoStatus === "entregue") patch.entregue_em = new Date().toISOString();
+    const { error } = await supabase.from("mf_entregas").update(patch).eq("id", entregaId);
+    setUpdatingEntrega(null);
+    if (error) {
+      toast({ title: "Erro ao atualizar status", description: error.message, variant: "destructive" });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -152,9 +177,10 @@ const LojistaPedidos = () => {
 
               {entrega && (
                 <div className="rounded-2xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-sm text-foreground">
-                      <Truck size={14} className="text-[#FD46A1]" /> Entrega
+                      <Truck size={14} className="text-[#FD46A1]" />
+                      {entrega.tipo === "propria" ? "Entrega pela loja" : "Entrega"}
                     </span>
                     <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#FD46A1] text-white">
                       {ENTREGA_STATUS_LABEL[entrega.status]}
@@ -170,6 +196,40 @@ const LojistaPedidos = () => {
                   ) : (
                     <MFEntregaProgress status={entrega.status as "aceita" | "coletada" | "entregue"} />
                   )}
+
+                  {entrega.tipo === "propria" && ["aceita", "coletada"].includes(entrega.status) && (
+                    <div className="flex gap-2 pt-1">
+                      {entrega.status === "aceita" && (
+                        <Button
+                          size="sm"
+                          disabled={updatingEntrega === entrega.id}
+                          className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                          onClick={() => avancarEntrega(entrega.id, "coletada")}
+                        >
+                          {updatingEntrega === entrega.id ? <Loader2 size={14} className="animate-spin" /> : "Saiu para entrega"}
+                        </Button>
+                      )}
+                      {entrega.status === "coletada" && (
+                        <Button
+                          size="sm"
+                          disabled={updatingEntrega === entrega.id}
+                          className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                          onClick={() => avancarEntrega(entrega.id, "entregue")}
+                        >
+                          {updatingEntrega === entrega.id ? <Loader2 size={14} className="animate-spin" /> : "Marcar entregue"}
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={updatingEntrega === entrega.id}
+                        className="rounded-2xl"
+                        onClick={() => avancarEntrega(entrega.id, "cancelada")}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -182,16 +242,17 @@ const LojistaPedidos = () => {
                 >
                   <MessageCircle size={14} className="mr-1" /> WhatsApp
                 </Button>
-                {loja.aceita_entregador && !entregaAtiva && (
+                {!entregaAtiva && (
                   <Button
                     size="sm"
                     className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
                     onClick={() => {
                       setOpenEntrega(p);
+                      setModoEntrega(loja.aceita_entregador ? "app" : "propria");
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
                     }}
                   >
-                    <Truck size={14} className="mr-1" /> Entregador
+                    <Truck size={14} className="mr-1" /> Entrega
                   </Button>
                 )}
               </div>
@@ -204,10 +265,38 @@ const LojistaPedidos = () => {
       <Dialog open={!!openEntrega} onOpenChange={(o) => !o && setOpenEntrega(null)}>
         <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Acionar entregador</DialogTitle>
-            <DialogDescription>Informe o endereço e a taxa de entrega.</DialogDescription>
+            <DialogTitle>Acionar entrega</DialogTitle>
+            <DialogDescription>Escolha quem fará a entrega deste pedido.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[#FFD1E7]/40">
+              <button
+                type="button"
+                onClick={() => setModoEntrega("app")}
+                disabled={!loja?.aceita_entregador}
+                className={`h-10 rounded-xl text-sm transition-colors ${
+                  modoEntrega === "app"
+                    ? "bg-[#FD46A1] text-white"
+                    : "text-foreground/70 disabled:opacity-40"
+                }`}
+              >
+                Entregador do app
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoEntrega("propria")}
+                className={`h-10 rounded-xl text-sm transition-colors ${
+                  modoEntrega === "propria" ? "bg-[#FD46A1] text-white" : "text-foreground/70"
+                }`}
+              >
+                Entrega própria
+              </button>
+            </div>
+            {modoEntrega === "propria" && (
+              <p className="text-xs text-foreground/60 leading-snug">
+                Você fará a entrega por conta própria (motoboy fixo, terceirizado, retirada etc.). Atualize o status no card do pedido conforme o pedido sai e é entregue.
+              </p>
+            )}
             <div>
               <Label>Endereço completo</Label>
               <Input
@@ -246,7 +335,13 @@ const LojistaPedidos = () => {
               disabled={creating}
               className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12"
             >
-              {creating ? <Loader2 className="animate-spin" /> : "Publicar entrega"}
+              {creating ? (
+                <Loader2 className="animate-spin" />
+              ) : modoEntrega === "propria" ? (
+                "Registrar entrega própria"
+              ) : (
+                "Publicar entrega"
+              )}
             </Button>
           </div>
         </DialogContent>
