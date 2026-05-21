@@ -90,9 +90,16 @@ const Carrinho = () => {
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        setProfile((data as FullProfile | null) ?? null);
+        const p = (data as FullProfile | null) ?? null;
+        setProfile(p);
+        if (p) {
+          setCidade((cur) => cur || p.city || "");
+          setEstado((cur) => cur || p.state || "");
+          setEndereco((cur) => cur || p.address || "");
+        }
       });
   }, [user?.id]);
+
 
 
   const handleSend = async (lojaId: string) => {
