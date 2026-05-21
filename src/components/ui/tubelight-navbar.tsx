@@ -148,7 +148,7 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
               >
                 <span className="hidden md:inline">{item.name}</span>
                 <span className="md:hidden">
-                  <Icon size={26} strokeWidth={2.5} />
+                  <Icon size={30} strokeWidth={2.5} />
                 </span>
               </button>
             ) : (
