@@ -14,7 +14,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { PlaylistCard, PlaylistMusica } from "@/components/musicas/PlaylistCard";
-import { YouTubePlayer } from "@/components/musicas/YouTubePlayer";
+import { VinylPlayer } from "@/components/musicas/VinylPlayer";
 import { MUSIC_CATEGORIES } from "@/data/musicCategories";
 
 const Musicas = () => {
@@ -130,13 +130,7 @@ const Musicas = () => {
             </Button>
           </div>
 
-          {active && (
-            <YouTubePlayer
-              youtubeId={active.youtube_id}
-              type={active.youtube_type}
-              title={active.titulo}
-            />
-          )}
+          {active && <VinylPlayer playlist={active} />}
         </DialogContent>
       </Dialog>
     </div>
