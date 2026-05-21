@@ -22,7 +22,7 @@ const ToAqui = () => {
   const navigate = useNavigate();
   const { user, subscriptionStatus } = useAuth();
   const isPro = subscriptionStatus?.subscribed;
-  const [isAdmin, setIsAdmin] = useStateReact(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     if (!user) { setIsAdmin(false); return; }
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
