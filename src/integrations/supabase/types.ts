@@ -1606,6 +1606,7 @@ export type Database = {
           taxa_centavos: number
           telefone_cliente: string | null
           telefone_lojista: string | null
+          tipo: string
           updated_at: string
         }
         Insert: {
@@ -1625,6 +1626,7 @@ export type Database = {
           taxa_centavos?: number
           telefone_cliente?: string | null
           telefone_lojista?: string | null
+          tipo?: string
           updated_at?: string
         }
         Update: {
@@ -1644,6 +1646,7 @@ export type Database = {
           taxa_centavos?: number
           telefone_cliente?: string | null
           telefone_lojista?: string | null
+          tipo?: string
           updated_at?: string
         }
         Relationships: [

@@ -35,6 +35,7 @@ export interface MFEntrega {
   cidade: string;
   taxa_centavos: number;
   status: MFEntregaStatus;
+  tipo: "app" | "propria";
   telefone_cliente: string | null;
   telefone_lojista: string | null;
   aceita_em: string | null;
