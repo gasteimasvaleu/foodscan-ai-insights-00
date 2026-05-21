@@ -1,16 +1,19 @@
-O DialogContent do shadcn já possui um botão X nativo (`bg-primary`, `absolute right-4 top-4`). Em `Musicas.tsx`, existe um segundo X adicionado manualmente dentro do header, gerando duplicação e desalinhamento.
+Envolver disco + equalizer em um card preto translúcido, com as ondas ocupando toda a largura interna do card.
 
-## Mudanças
+## Mudanças em `src/components/musicas/VinylPlayer.tsx`
 
-### 1. Remover botão X duplicado — `src/pages/Musicas.tsx`
-- Excluir o `<Button>` com ícone X e sua função `onClick={() => setActive(null)}` (linhas 123-130).
-- Remover o wrapper `flex items-start justify-between gap-3` que existia apenas para acomodar o X ao lado do título.
-- Deixar o título/descrição como bloco simples com `mb-3` e `pr-8` para evitar sobreposição com o X nativo do DialogContent.
+1. **Card wrapper preto translúcido** envolvendo o disco e o equalizer:
+   - `bg-black/70 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl p-6 w-full flex flex-col items-center gap-5`
+   - Adiciona um brilho radial sutil rosa atrás do disco (`radial-gradient` com `#FD46A1` em baixa opacidade) para reforçar o efeito.
 
-### 2. Ajustar formato do X nativo — `src/components/ui/dialog.tsx`
-- Alterar `rounded-lg` para `rounded-full` no `<DialogPrimitive.Close>` (linha 45), alinhando ao padrão do projeto ([Refined Buttons](mem://style/ui-buttons-refined)).
+2. **Equalizer ocupando toda a largura**:
+   - Substituir `gap-1 h-8` + 10 barras de `w-1` por: `w-full h-16 flex items-end justify-between gap-[2px]` com ~32-40 barras `flex-1`.
+   - Aumentar amplitude do keyframe `eq-bar` (ex.: `0%, 100% { height: 8%; } 50% { height: 100%; }`) usando porcentagem para escalar com o container.
+   - Cor das barras: `bg-gradient-to-t from-primary via-primary to-primary/40` para dar profundidade.
+   - Delays variados (`${i * 0.05}s`) para um efeito mais orgânico.
 
-## Resultado
-- Apenas 1 botão X visível, posicionado corretamente no canto superior direito do modal.
-- X mantém o fundo rosa `#FD46A1` e formato circular do projeto.
-- Sem impacto em outras telas — o ajuste em `dialog.tsx` é apenas arredondamento global de botões close.
+3. **Track info** (categoria + título) fica **fora** do card preto, abaixo dele, mantendo legibilidade no fundo branco do modal.
+
+4. **Iframe do YouTube** permanece fora do card, abaixo do track info.
+
+Nenhuma mudança em `Musicas.tsx`, no `Dialog` ou em lógica de play/pause.
