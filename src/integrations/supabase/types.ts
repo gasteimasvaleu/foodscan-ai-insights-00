@@ -1715,6 +1715,7 @@ export type Database = {
           id: string
           nome: string
           owner_id: string
+          quem_aciona_entregador: string
           slug: string
           taxa_entrega_padrao_centavos: number
           telefone_whatsapp: string
@@ -1732,6 +1733,7 @@ export type Database = {
           id?: string
           nome: string
           owner_id: string
+          quem_aciona_entregador?: string
           slug: string
           taxa_entrega_padrao_centavos?: number
           telefone_whatsapp: string
@@ -1749,6 +1751,7 @@ export type Database = {
           id?: string
           nome?: string
           owner_id?: string
+          quem_aciona_entregador?: string
           slug?: string
           taxa_entrega_padrao_centavos?: number
           telefone_whatsapp?: string
