@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, Store, ListOrdered } from "lucide-react";
+import { Package, Store, ListOrdered, Camera, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
