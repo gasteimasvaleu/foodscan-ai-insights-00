@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { TransactionModal } from "@/components/financas/TransactionModal";
+import { FinanceTimeline } from "@/components/financas/FinanceTimeline";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,9 +45,6 @@ export default function FinancasDia() {
     });
     return { receita: r, despesa: d, saldo: r - d };
   }, [data]);
-
-  const receitas = data.filter((t) => t.kind === "receita");
-  const despesas = data.filter((t) => t.kind === "despesa");
 
   if (!authLoading && !user) {
     navigate("/auth");
@@ -119,30 +117,18 @@ export default function FinancasDia() {
           Adicionar lançamento
         </Button>
 
-        {/* Lista */}
+        {/* Timeline */}
         {loading ? (
           <p className="text-center text-xs text-muted-foreground py-4">Carregando…</p>
-        ) : data.length === 0 ? (
-          <div className="rounded-3xl bg-[#FFD1E7]/30 border border-[#FFD1E7] p-8 text-center">
-            <p className="text-sm text-muted-foreground">Nenhum lançamento neste dia.</p>
-          </div>
         ) : (
-          <div className="space-y-4">
-            {receitas.length > 0 && (
-              <Section title="Receitas">
-                {receitas.map((t) => (
-                  <TxRow key={t.id} tx={t} onEdit={() => openEdit(t)} onDelete={() => setConfirmDelete(t)} />
-                ))}
-              </Section>
-            )}
-            {despesas.length > 0 && (
-              <Section title="Despesas">
-                {despesas.map((t) => (
-                  <TxRow key={t.id} tx={t} onEdit={() => openEdit(t)} onDelete={() => setConfirmDelete(t)} />
-                ))}
-              </Section>
-            )}
-          </div>
+          <FinanceTimeline
+            items={data}
+            showDate={false}
+            onItemClick={(tx) => openEdit(tx)}
+            onEdit={(tx) => openEdit(tx)}
+            onDelete={(tx) => setConfirmDelete(tx)}
+            emptyLabel="Nenhum lançamento neste dia."
+          />
         )}
       </div>
 
@@ -205,46 +191,3 @@ function Mini({ label, value, tone }: { label: string; value: string; tone: "gre
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h3 className="text-base text-foreground mb-2 px-1">{title}</h3>
-      <div className="space-y-2">{children}</div>
-    </div>
-  );
-}
-
-function TxRow({ tx, onEdit, onDelete }: { tx: FinanceTx; onEdit: () => void; onDelete: () => void }) {
-  const isReceita = tx.kind === "receita";
-  return (
-    <div className="rounded-2xl bg-white border border-[#FFD1E7] p-3 flex items-center gap-3">
-      <div
-        className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-          isReceita ? "bg-emerald-100" : "bg-[#FFD1E7]"
-        )}
-      >
-        <span className={cn("text-lg font-bold", isReceita ? "text-emerald-600" : "text-[#FD46A1]")}>
-          {isReceita ? "+" : "−"}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm text-foreground truncate">{tx.category}</div>
-        {tx.description && (
-          <div className="text-xs text-muted-foreground truncate">{tx.description}</div>
-        )}
-      </div>
-      <div className={cn("text-sm font-semibold whitespace-nowrap", isReceita ? "text-emerald-600" : "text-[#FD46A1]")}>
-        {formatBRL(tx.amount_cents)}
-      </div>
-      <div className="flex gap-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
-          <Pencil className="h-4 w-4 text-muted-foreground" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onDelete}>
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </Button>
-      </div>
-    </div>
-  );
-}

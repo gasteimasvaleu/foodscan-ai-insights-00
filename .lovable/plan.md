@@ -1,64 +1,37 @@
-## Página Finanças
+## Timeline de Lançamentos
 
-Nova área para o usuário controlar receitas e despesas pessoais. Free no Menu + → Recursos Extras.
+Adicionar um componente de timeline vertical com nós luminosos e cards glassmorphism, exibindo receitas e despesas cadastradas.
 
-### Banco (Supabase)
-Nova tabela `finance_transactions`:
-- `user_id` (uuid)
-- `kind` ('receita' | 'despesa')
-- `amount_cents` (int)
-- `category` (text) — presets: Mercado, Transporte, Lazer, Saúde, Casa, Contas, Trabalho, Outros
-- `description` (text, opcional)
-- `occurred_on` (date)
-- `created_at`, `updated_at`
+### Novo componente
 
-RLS: cada usuário só vê/edita/apaga os próprios registros. Índices em `(user_id, occurred_on)`.
+`src/components/financas/FinanceTimeline.tsx`
+- Props: `items: FinanceTx[]`, `onItemClick?: (date: string) => void`
+- Linha vertical à esquerda com gradiente rosa (`from-[#FD46A1]/40 via-[#FD46A1]/20 to-transparent`)
+- Cada nó é um círculo com glow (`shadow-[0_0_12px]`) — verde esmeralda para receita, rosa #FD46A1 para despesa
+- Card glassmorphism (`bg-white/70 backdrop-blur-md border border-white/40 rounded-2xl`) com:
+  - Data formatada ("21 mai") como destaque pequeno
+  - Categoria como título (`text-base`, sem ícones — segue padrão de cards)
+  - Descrição em `text-xs text-foreground/70` (oculta se vazia)
+  - Valor formatado em BRL alinhado à direita, colorido pelo tipo
+- Clicável: navega para `/financas/{occurred_on}` via callback
 
-### Rotas
-- `/financas` — calendário mensal + gráfico + resumo do mês
-- `/financas/:date` — detalhes do dia (lista, adicionar, editar, excluir)
+### Integração em /financas (Financas.tsx)
 
-### `/financas` — layout
-1. Header padrão "Finanças" (gradiente rosa, estilo Page Headers).
-2. Cards resumo do mês: Receitas, Despesas, Saldo (cores semânticas, sem ícones decorativos no título).
-3. **Calendário mensal** custom (não shadcn Calendar — precisa de badges) baseado em `date-fns`:
-   - Grid 7×6, navegação ◀ mês ▶.
-   - Cada dia mostra ponto verde (receita) e/ou rosa (despesa) quando há lançamentos.
-   - Tap no dia → navega para `/financas/:date` (YYYY-MM-DD).
-   - Dia atual destacado com anel `#FD46A1`.
-4. **Gráfico Receita × Despesa do mês atual** (Recharts, já no projeto):
-   - `ComposedChart` com barras agrupadas por dia (1..N), receita verde e despesa rosa, mais linha de saldo acumulado.
-   - Tooltip custom em pt-BR formatado em R$, grid suave, sem eixo Y poluído.
-   - Card branco arredondado, glassmorphism leve.
+- Abaixo do `FinanceChart`, nova seção "Lançamentos do mês"
+- Usa as transações já carregadas do mês, ordenadas por `occurred_on` desc e `created_at` desc (mais recentes primeiro)
+- Clique no nó navega para o dia
+- Estado vazio: mensagem discreta "Nenhum lançamento neste mês"
 
-### `/financas/:date` — layout
-1. Header com data formatada ("Quinta, 21 mai").
-2. Botão flutuante "+ Adicionar" abre modal (glassmorphism) com:
-   - Toggle Receita/Despesa
-   - Valor (input numérico R$, `text-base` para evitar zoom iOS)
-   - Categoria (Select com presets)
-   - Descrição (opcional)
-   - Salvar (bg `#FD46A1`)
-3. Lista de lançamentos do dia agrupados (Receitas / Despesas), com swipe-like actions: editar / excluir (confirmação).
-4. Totais do dia no topo da lista.
+### Integração em /financas/:date (FinancasDia.tsx)
 
-### Menu +
-Adicionar em `src/components/ui/tubelight-navbar.tsx` na lista `moreSheetItems` como `isExtra: true, isPro: false`:
-- Nome: "Finanças"
-- Descrição: "Controle suas receitas, despesas e o saldo do mês"
-- Ícone: `Wallet` (lucide)
-- Rota: `/financas`
+- Substitui a lista atual de transações pelo `FinanceTimeline`
+- Items ordenados por `created_at` desc
+- Clique abre o modal de edição (mantém comportamento atual — passamos `onItemClick` que dispara `openEdit` em vez de navegação)
+- Mantém os botões de delete/edit por swipe ou ação rápida no card
 
-### Arquivos novos
-- `supabase/migrations/...sql` (tabela + RLS + trigger updated_at)
-- `src/pages/Financas.tsx`
-- `src/pages/FinancasDia.tsx`
-- `src/components/financas/FinanceCalendar.tsx`
-- `src/components/financas/FinanceChart.tsx`
-- `src/components/financas/TransactionModal.tsx`
-- `src/hooks/useFinanceTransactions.ts`
-- `src/lib/financas/categories.ts` + `formatters.ts`
-- Rotas registradas em `src/App.tsx`
-- Item adicionado em `tubelight-navbar.tsx`
+### Detalhes técnicos
 
-Nada de pagamento/Stripe envolvido. Apenas dados locais por usuário no Supabase.
+- Reusa `formatBRL` e `toDateKey` de `src/lib/financas/formatters.ts`
+- Para data curta no dashboard: `new Date(occurred_on).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })`
+- Sem alterações no banco — apenas UI sobre `finance_transactions`
+- Sem novas dependências
