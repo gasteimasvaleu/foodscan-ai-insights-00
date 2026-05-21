@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, MapPin, Users, Settings, Crown, ChevronRight, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -14,18 +14,26 @@ import {
 import { WheelPicker } from "@/components/ui/wheel-picker";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const ALL_VALUE = "__all__";
 
 const ToAqui = () => {
   const navigate = useNavigate();
-  const { subscriptionStatus } = useAuth();
+  const { user, subscriptionStatus } = useAuth();
   const isPro = subscriptionStatus?.subscribed;
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
+  const canManage = isPro || isAdmin;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<VenueCategory | null>(null);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
   const { data: venues = [], isLoading } = useVenues({ search, category });
+
 
   const currentCat = VENUE_CATEGORIES.find((c) => c.value === category);
   const currentLabel = currentCat ? `${currentCat.emoji} ${currentCat.label}` : "Todas as categorias";
@@ -48,7 +56,7 @@ const ToAqui = () => {
 
         <button
           onClick={() =>
-            navigate(isPro ? '/to-aqui/owner' : '/assinar?reason=to_aqui_owner_upsell')
+            navigate(canManage ? '/to-aqui/owner' : '/assinar?reason=to_aqui_owner_upsell')
           }
           className="w-full text-left rounded-3xl shadow-xl border border-white/20 overflow-hidden bg-gradient-to-br from-[#FD46A1] to-[#FF6FB5] active:scale-[0.99] transition-all animate-fade-in"
         >
@@ -57,7 +65,7 @@ const ToAqui = () => {
               <Crown className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0 text-white">
-              {isPro ? (
+              {canManage ? (
                 <>
                   <p className="text-base">Meus venues</p>
                   <p className="text-sm text-white/85">Cadastre e administre seus locais</p>
@@ -72,6 +80,7 @@ const ToAqui = () => {
             <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
           </div>
         </button>
+
 
 
 
