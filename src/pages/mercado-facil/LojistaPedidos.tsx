@@ -197,8 +197,12 @@ const LojistaPedidos = () => {
                       day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
                     })}
                   </p>
+                  {p.cliente_nome && (
+                    <p className="text-sm font-semibold text-foreground">{p.cliente_nome}</p>
+                  )}
                   <p className="text-base font-semibold">{p.itens.length} itens</p>
                 </div>
+
                 <div className="flex items-center gap-2">
                   <p className="text-[#FD46A1] font-bold">{formatBRL(p.total_estimado_centavos)}</p>
                   <button
