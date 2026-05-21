@@ -277,6 +277,17 @@ const Carrinho = () => {
         )}
       </main>
 
+      <MFAddressConfirmDialog
+        open={!!confirmLojaId}
+        onOpenChange={(o) => { if (!o) setConfirmLojaId(null); }}
+        cidade={cidade}
+        estado={estado}
+        endereco={endereco}
+        telefone={profilePhone}
+        contextLabel={confirmLojaId ? lojas[confirmLojaId]?.nome : undefined}
+        confirmLabel="Confirmar e enviar"
+        onConfirm={() => { if (confirmLojaId) handleSend(confirmLojaId); }}
+      />
     </div>
   );
 };
