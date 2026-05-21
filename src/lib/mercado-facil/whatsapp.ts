@@ -81,8 +81,10 @@ interface SendArgs {
   clienteLocal?: string;
   endereco?: string;
   cidade?: string;
+  estado?: string;
   telefone?: string;
 }
+
 
 export function buildOrderMessage({ loja, itens, clienteNome, clienteLocal }: SendArgs): string {
   const linhas = itens.map(
