@@ -129,7 +129,7 @@ export function MFEntregadoresDisponiveis({
                 {faixaPreco(e.taxa_min_centavos ?? 0, e.taxa_max_centavos ?? 0)}
               </span>
               <Button
-                onClick={() => handleChamar(e)}
+                onClick={() => setConfirmEntregador(e)}
                 disabled={enviando === e.id || !endereco.trim()}
                 className="bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-9 px-5 text-sm text-white"
               >
@@ -139,6 +139,18 @@ export function MFEntregadoresDisponiveis({
           </li>
         ))}
       </ul>
+
+      <MFAddressConfirmDialog
+        open={!!confirmEntregador}
+        onOpenChange={(o) => { if (!o) setConfirmEntregador(null); }}
+        cidade={cidade}
+        estado={estado}
+        endereco={endereco}
+        telefone={telefoneCliente}
+        contextLabel={confirmEntregador ? `${confirmEntregador.nome_completo} — ${VEICULO_LABEL[confirmEntregador.veiculo]}` : undefined}
+        confirmLabel="Confirmar e chamar"
+        onConfirm={() => { if (confirmEntregador) handleChamar(confirmEntregador); }}
+      />
     </div>
   );
 }
