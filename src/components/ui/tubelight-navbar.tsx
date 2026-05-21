@@ -101,13 +101,13 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
     <>
       <div
         className={cn(
-          "fixed bottom-2 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
+          "fixed bottom-0 left-1/2 -translate-x-1/2 z-40 max-w-[98vw] md:max-w-none pb-[env(safe-area-inset-bottom)]",
           className,
         )}
       >
         <div
           className={cn(
-            "relative flex items-center gap-1 sm:gap-2 backdrop-blur-md py-2 px-2 sm:px-2.5 rounded-2xl overflow-hidden",
+            "relative flex items-center gap-1.5 sm:gap-2.5 backdrop-blur-md py-2.5 px-2.5 sm:px-3 rounded-2xl overflow-hidden",
             "bg-[#FA1690]/85 border border-white/30",
           )}
           style={{
