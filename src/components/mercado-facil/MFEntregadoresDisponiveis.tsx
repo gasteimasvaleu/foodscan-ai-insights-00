@@ -18,6 +18,7 @@ function faixaPreco(min: number, max: number): string {
 interface Props {
   loja: MFLoja;
   cidade: string;
+  estado?: string;
   endereco: string;
   clienteId: string;
   clienteNome?: string;
@@ -30,12 +31,13 @@ interface Props {
 }
 
 export function MFEntregadoresDisponiveis({
-  loja, cidade, endereco, clienteId, clienteNome, telefoneCliente, itens, totalCentavos,
+  loja, cidade, estado = "", endereco, clienteId, clienteNome, telefoneCliente, itens, totalCentavos,
   orderLogId, taxaOverrideCentavos, onCalled,
 }: Props) {
   const [entregadores, setEntregadores] = useState<MFEntregador[]>([]);
   const [loading, setLoading] = useState(false);
   const [enviando, setEnviando] = useState<string | null>(null);
+  const [confirmEntregador, setConfirmEntregador] = useState<MFEntregador | null>(null);
 
   useEffect(() => {
     if (!cidade.trim()) {
