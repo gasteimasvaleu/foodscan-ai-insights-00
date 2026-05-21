@@ -107,6 +107,9 @@ export function MFClientePedidosStatus() {
                     {e.taxa_centavos > 0 ? formatBRL(e.taxa_centavos) : "A combinar"}
                   </span>
                 </div>
+                {e.tipo === "propria" && (
+                  <p className="text-[11px] pl-6 text-[#FD46A1]">Entrega feita pela loja</p>
+                )}
 
                 {e.status === "disponivel" ? (
                   <div className="flex items-center gap-2 text-xs text-foreground/70 pl-6">
