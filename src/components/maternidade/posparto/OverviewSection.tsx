@@ -44,20 +44,20 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.whatIs.title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <p className="text-sm text-gray-700 leading-relaxed">{content.whatIs.content}</p>
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.babyBlues.title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200">
               <h4 className="text-sm text-blue-700 mb-2 flex items-center gap-2">
@@ -89,11 +89,11 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.riskFactors.title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <div className="flex flex-wrap gap-2">
             {content.riskFactors.items.map((f, i) => (
               <Badge key={i} variant="outline" className="py-1 px-3 text-xs">{f}</Badge>
@@ -103,11 +103,11 @@ export function OverviewSection({ content }: OverviewSectionProps) {
       </Card>
 
       {content.spectrum && (
-        <Card className="bg-white/70 backdrop-blur-md border-white/40">
-          <CardHeader>
+        <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+          <CardHeader className="pl-5">
             <CardTitle className="text-base font-semibold">{content.spectrum.title}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pl-5">
             <p className="text-sm text-gray-700 mb-3">{content.spectrum.intro}</p>
             <Accordion type="single" collapsible>
               {content.spectrum.conditions.map((c) => {
@@ -151,11 +151,11 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </Card>
       )}
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.myths.title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <Accordion type="single" collapsible>
             {content.myths.items.map((item, i) => (
               <AccordionItem key={i} value={`m-${i}`}>

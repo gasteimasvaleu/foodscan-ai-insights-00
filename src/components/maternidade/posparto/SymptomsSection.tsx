@@ -118,8 +118,8 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       </Card>
 
       {/* Checklist resumo do dia */}
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="pb-2">
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5 pb-2">
           <CardTitle className="text-base flex items-center justify-between font-semibold">
             <span>Como você está hoje?</span>
             <Badge className="bg-[#FFD1E7] text-[#FD46A1] border-0">
@@ -127,7 +127,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <p className="text-xs text-gray-600">
             Marque os sintomas que está sentindo. Salvamos automaticamente para você acompanhar a evolução.
           </p>
@@ -165,8 +165,8 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
           const Icon = iconMap[cat.icon] || Heart;
           const selected = todayEntry[key];
           return (
-            <Card key={key} className="bg-white/70 backdrop-blur-md border-white/40">
-              <CardHeader className="pb-2">
+            <Card key={key} className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+              <CardHeader className="pl-5 pb-2">
                 <CardTitle className="flex items-center justify-between text-base font-semibold">
                   <span>{cat.title}</span>
                   {selected.length > 0 && (
@@ -174,7 +174,7 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
                   )}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pl-5">
                 <div className="flex flex-wrap gap-2 justify-start">
                   {cat.items.map((item) => {
                     const active = selected.includes(item);
@@ -244,11 +244,11 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       </div>
 
       {/* Histórico 7 dias */}
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader className="pb-2">
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5 pb-2">
           <CardTitle className="text-base font-semibold">Últimos 7 dias</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <div className="space-y-2">
             {lastDays.map(({ date, entry }) => {
               const total = totalCount(entry);
@@ -282,11 +282,11 @@ export function SymptomsSection({ content, onGoToEpds }: SymptomsSectionProps) {
       </Card>
 
       {/* Timeline informativa */}
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.timeline.title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           <div className="space-y-3">
             {content.timeline.items.map((it, i) => (
               <div key={i} className="flex items-start gap-3">
