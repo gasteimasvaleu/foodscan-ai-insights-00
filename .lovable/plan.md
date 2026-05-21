@@ -1,30 +1,48 @@
 ## Objetivo
-Melhorar a UX da página individual do produto (`/mercado-facil/produto/:id`) agrupando as informações em cards glassmorphism e fixando o botão "Adicionar ao carrinho" no rodapé, seguindo a direção visual escolhida (Glass + selo vendedor).
 
-## Mudanças em `src/pages/mercado-facil/Produto.tsx`
+Capturar e exibir o **Estado (UF)** do cliente no fluxo do Mercado Fácil, do Carrinho até o card de acionar entrega — visível tanto no modo "Entregador do app" quanto "Entrega própria".
 
-1. **Imagem hero**
-   - Manter `aspect-square`, trocar `rounded-3xl` por `rounded-[2rem]` para casar com o protótipo. Fundo `#FFD1E7` mantido para fallback.
+## 1. DB (migration)
 
-2. **Card principal (nome + preço)**
-   - `bg-[#FFD1E7]/40 backdrop-blur-md rounded-3xl p-6 border border-[#FFD1E7]`
-   - Nome do produto em destaque + linha com preço grande (`text-3xl font-extrabold text-[#FD46A1]`) e unidade ao lado (`/ por un`).
-   - Mostrar preço promocional em destaque e, se houver `preco_promo_centavos`, exibir o `preco_centavos` original riscado ao lado.
+Adicionar colunas opcionais:
 
-3. **Card de descrição** (renderizado só se `produto.descricao`)
-   - `bg-[#FFD1E7]/20 rounded-3xl p-6 border border-[#FFD1E7]/40`
-   - Título "Descrição" em caps pequeno `text-xs font-bold text-[#FD46A1] uppercase tracking-[0.15em]` + corpo do texto.
+```sql
+ALTER TABLE public.mf_order_log ADD COLUMN cliente_estado text;
+ALTER TABLE public.mf_entregas  ADD COLUMN estado text;
+```
 
-4. **Selo do vendedor** (clicável, navega para a loja)
-   - Linha com avatar quadrado arredondado `w-12 h-12 bg-[#FFD1E7] rounded-2xl` com a inicial do nome em `#FD46A1` (ou `loja.logo_url` se existir).
-   - Label "Vendido por" pequeno + nome da loja em destaque.
-   - `onClick` navega para `/mercado-facil/loja/:loja_id` (rota já existente no marketplace).
+Nulos para registros antigos. Sem mudanças em RLS.
 
-5. **CTA fixo no rodapé**
-   - Wrapper `fixed bottom-0 inset-x-0 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-gradient-to-t from-background via-background/95 to-transparent z-40`.
-   - Botão `w-full bg-[#FD46A1] rounded-2xl h-14 text-base font-bold shadow-lg shadow-[#FD46A1]/30`.
-   - Aumentar `pb-` do `<main>` para `pb-40` para não sobrepor.
+## 2. `src/lib/mercado-facil/whatsapp.ts`
 
-## Fora do escopo
-- Quantidade/stepper, avaliações, badges de estoque, edição de dados do produto, mudanças no header global ou no carrinho.
-- Sem mudanças de banco, tipos ou lógica de carrinho.
+- `SendArgs`: adicionar `estado?: string`.
+- `DeliveryRequestArgs`: adicionar `estado?: string`.
+- `sendOrderToWhatsApp`: gravar `cliente_estado: args.estado?.trim() || null`.
+- `sendDeliveryRequestToWhatsApp`: gravar `estado: estado ?? null` no insert de `mf_entregas`. Incluir `— UF` na linha do endereço da mensagem.
+
+## 3. `src/pages/mercado-facil/Carrinho.tsx`
+
+- Novo `estado` state, persistido junto com cidade/endereco no `ADDRESS_KEY` (localStorage).
+- Pré-preencher com `profile.state` quando vazio.
+- Input compacto ao lado de Cidade (grid 2 col) com maxLength 2, uppercase.
+- Passar `estado` para `sendOrderToWhatsApp` e para `MFEntregadoresDisponiveis` (se necessário, em prop futura — fora de escopo agora).
+
+## 4. `src/pages/mercado-facil/LojistaPedidos.tsx`
+
+- Adicionar `cliente_estado: string | null` em `OrderLog`.
+- Novo state `estadoEntrega`.
+- No `onClick` do botão "Entrega" (linha ~239), pré-preencher: `setEstadoEntrega(p.cliente_estado ?? loja.endereco?.estado ?? "")` (campo `estado` do endereço da loja não existe hoje no tipo — usar só `p.cliente_estado ?? ""`).
+- No dialog (linha ~412), trocar o `div` único de Cidade por um `grid grid-cols-[1fr_80px] gap-2` com Cidade + Estado (UF, maxLength 2, uppercase). Aparece em **ambos** os modos pois fica na seção compartilhada.
+- `criarEntrega`: incluir `estado: estadoEntrega.trim().toUpperCase() || null` no insert de `mf_entregas`.
+- Passar `estado` quando chamar `MFEntregadoresDisponiveis` via prop futura (apenas se já aceitar — verificar; senão, fora de escopo).
+
+## 5. Card do pedido (linha ~200)
+
+Exibir UF junto da cidade no header do card, se presente:
+- Logo abaixo do nome do cliente, adicionar `{p.cliente_cidade && <p className="text-xs text-foreground/60">{p.cliente_cidade}{p.cliente_estado ? ` - ${p.cliente_estado}` : ""}</p>}`.
+
+## Fora de escopo
+
+- CEP, bairro estruturado.
+- Validação de UF contra lista fixa (apenas uppercase + maxLength 2).
+- Atualização de `MFEntregadoresDisponiveis` para usar `estado` no filtro (segue usando cidade).
