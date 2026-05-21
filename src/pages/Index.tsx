@@ -8,6 +8,7 @@ import { QuickActions } from '@/components/QuickActions';
 import { HeroDeckRow } from '@/components/HeroDeckRow';
 import { SecondaryDeckRow } from '@/components/SecondaryDeckRow';
 import { TertiaryDeckRow } from '@/components/TertiaryDeckRow';
+import { StreakBadge } from '@/components/StreakBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { useNativePlatform } from '@/hooks/useNativePlatform';
 
@@ -110,6 +111,7 @@ const Index = () => {
       <div className={`min-h-screen bg-gradient-primary font-inter pb-28 pt-[calc(env(safe-area-inset-top)+2.5rem)]`}>
         <div className="container mx-auto py-0 px-[13px]">
           <div className="max-w-4xl mx-auto space-y-6">
+            <StreakBadge />
             <AuthCard />
             <ToAquiPromoCard />
             <NoveltyCard />

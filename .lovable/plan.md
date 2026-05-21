@@ -1,63 +1,29 @@
-# Migrar Músicas do YouTube para Upload de MP3
+# Streak badge na Home
 
-Trocar o player do YouTube por um player nativo que toca arquivos MP3 enviados pelo admin. Cada playlist passa a ter N faixas em sequência.
+Adicionar um indicador visível da sequência diária (🔥 N) no topo da Home, trazendo a gamificação que hoje fica escondida em `/conquistas`.
 
-## Mudanças no banco
+## Onde
 
-**Novo bucket `musicas-audio` (público)** para os MP3.
+`src/pages/Index.tsx`, dentro do bloco já logado, como primeiro filho do `space-y-6` (acima do `AuthCard`). Renderiza só quando `user` existe.
 
-**Nova tabela `musicas_faixas`** (faixas dentro de uma playlist):
-- `id uuid pk`
-- `playlist_id uuid` → `playlists_musicas(id) on delete cascade`
-- `titulo text`
-- `audio_url text` (URL pública no bucket)
-- `duracao_segundos int null` (opcional, preenchido no upload via `<audio>.duration`)
-- `ordem int default 0`
-- `created_at timestamptz default now()`
-- RLS: SELECT público (is_active da playlist), INSERT/UPDATE/DELETE só admin via `has_role`.
+## Componente novo
 
-**`playlists_musicas`**: manter a tabela e os campos `titulo`, `descricao`, `categoria`, `thumbnail_url`, `ordem`, `is_active`. Os campos `youtube_id` e `youtube_type` ficam como nullable (legado, não usados mais na UI). Sem migração destrutiva.
+`src/components/StreakBadge.tsx`:
 
-## Admin (`/admin/musicas`)
+- Lê `user_streaks.current_streak` e `longest_streak` para o `user.id`.
+- Subscription realtime (`postgres_changes` em `user_streaks`) para atualizar ao vivo quando o trigger de `meal_records` incrementar — com cleanup correto via `removeChannel`.
+- Animação pop (scale 1 → 1.3 → 1, 400ms) ao detectar incremento.
+- Clica → navega para `/conquistas`.
+- Estados visuais:
+  - `current_streak > 0`: pill com 🔥 + número + texto "dias seguidos".
+  - `current_streak === 0`: pill discreta com 🔥 + "Comece sua sequência hoje".
+- Estilo: glassmorphism (bg-white/70, backdrop-blur-md, rounded-full), borda sutil em `#FD46A1/20`, altura compacta (~44px), full-width com conteúdo centralizado-esquerda.
+- Não renderiza nada enquanto está carregando (evita flicker).
 
-Reformular `AdminMusicas.tsx`:
-- Form da playlist mantém: título, descrição, categoria, capa (upload no bucket `musicas-capas`), ordem, ativa. Remove campos `youtube_id` e `youtube_type` e o seletor de tipo.
-- Após salvar a playlist, abre uma seção **"Faixas"** dentro do mesmo dialog (ou um segundo dialog) com:
-  - Lista das faixas existentes (título + duração + botões reordenar ↑↓ + apagar).
-  - Botão **"Adicionar faixas"** que aceita múltiplos MP3 de uma vez. Para cada arquivo:
-    - upload pra `musicas-audio/{playlist_id}/{timestamp}-{rand}.mp3`
-    - lê duração via `new Audio(url).onloadedmetadata`
-    - insere em `musicas_faixas` com `titulo = nome do arquivo sem extensão`, `ordem = max+1`
-  - Cada faixa pode ter o título editado inline.
-- Card da listagem mostra contagem de faixas em vez de "Playlist/Vídeo".
+## Sem mudanças de DB
 
-## UI do usuário (`/musicas`)
+Tabela `user_streaks` já existe (memória `mem://features/gamification/streaks-badges`). Trigger em `meal_records` já popula.
 
-- `PlaylistCard` continua igual (usa `thumbnail_url`; sem fallback de thumb do YouTube — se vazio, ícone Music).
-- Ao abrir o modal de player, substituir o `VinylPlayer` baseado em YouTube por um **AudioPlayer nativo** (`<audio>` HTML5):
-  - Visual mantém o disco de vinil girando enquanto toca (animação CSS atual).
-  - Controles: play/pause grande, prev/next, barra de progresso scrubável, tempo atual / total, volume opcional.
-  - Lista de faixas embaixo (clicável pra pular).
-  - Autoplay da próxima faixa ao terminar.
-  - Funciona 100% offline-do-YouTube → resolve o problema do iOS nativo de uma vez. WKWebView toca MP3 inline sem restrição (já temos `allowsInlineMediaPlayback`).
+## Esforço
 
-## Arquivos afetados
-
-- **Migration**: criar bucket `musicas-audio` + tabela `musicas_faixas` + policies.
-- **`src/pages/AdminMusicas.tsx`**: remover campos YouTube, adicionar gerenciador de faixas com upload múltiplo.
-- **`src/components/musicas/PlaylistCard.tsx`**: remover `getYouTubeThumb`, simplificar pra usar só `thumbnail_url`.
-- **`src/components/musicas/VinylPlayer.tsx`**: trocar iframe YouTube por `<audio>` + UI de player, mantendo a animação do disco.
-- **`src/components/musicas/YouTubePlayer.tsx`**: deletar (não usado mais).
-- **`public/youtube-embed.html`**: deletar (não usado mais).
-- **`src/pages/Musicas.tsx`**: nenhuma mudança estrutural, só passar as faixas pro player.
-
-## Detalhes técnicos
-
-- Upload com `supabase.storage.from('musicas-audio').upload(...)` com `contentType: 'audio/mpeg'`.
-- Aceita `audio/mpeg, audio/mp3` no `<input accept>`. Sem limite de tamanho explícito (Supabase default é 50MB por arquivo — se precisar maior, ajustar no painel).
-- Reordenar faixas = update em batch do campo `ordem`.
-- Player usa `useRef<HTMLAudioElement>` e estado React pra `currentTime`, `duration`, `isPlaying`, `currentIndex`.
-
-## Memória
-
-Atualizar `mem://features/musicas/core` pra refletir: agora é upload de MP3 com player nativo, não mais YouTube.
+~30min, 2 arquivos (novo `StreakBadge.tsx` + edit em `Index.tsx`).
