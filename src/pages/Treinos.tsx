@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Play, Clock, Flame, Search, Filter, Activity, Dumbbell, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -179,32 +179,33 @@ const Treinos = () => {
                 
                 {/* Filters Row */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Select value={contentTypeFilter} onValueChange={setContentTypeFilter}>
-                    <SelectTrigger className="w-full sm:w-40 border-primary/20">
-                      <Filter className="w-4 h-4 mr-2 text-primary" />
-                      <SelectValue placeholder="Tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos os Tipos</SelectItem>
-                      <SelectItem value="workout">Treinos</SelectItem>
-                      <SelectItem value="tip">Dicas</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="w-full sm:w-40">
+                    <SectionPicker
+                      title="Tipo"
+                      placeholder="Tipo"
+                      value={contentTypeFilter}
+                      onChange={setContentTypeFilter}
+                      options={[
+                        { id: 'all', label: 'Todos os Tipos' },
+                        { id: 'workout', label: 'Treinos' },
+                        { id: 'tip', label: 'Dicas' },
+                      ]}
+                    />
+                  </div>
 
-                  <Select value={activityTypeFilter} onValueChange={setActivityTypeFilter}>
-                    <SelectTrigger className="w-full sm:w-40 border-primary/20">
-                      <Activity className="w-4 h-4 mr-2 text-primary" />
-                      <SelectValue placeholder="Atividade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas as Atividades</SelectItem>
-                      {getUniqueActivityTypes().map(type => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="w-full sm:w-40">
+                    <SectionPicker
+                      title="Atividade"
+                      placeholder="Atividade"
+                      value={activityTypeFilter}
+                      onChange={setActivityTypeFilter}
+                      options={[
+                        { id: 'all', label: 'Todas as Atividades' },
+                        ...getUniqueActivityTypes().map((type) => ({ id: type, label: type })),
+                      ]}
+                    />
+                  </div>
+
 
                   <Button 
                     variant="outline" 

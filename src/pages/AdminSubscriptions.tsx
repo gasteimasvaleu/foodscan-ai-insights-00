@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Send, Shield, Loader2, MessageCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -176,15 +176,16 @@ const AdminSubscriptions = () => {
               </div>
               <div className="space-y-2">
                 <Label>Tipo de Plano</Label>
-                <Select value={planType} onValueChange={setPlanType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monthly">Mensal</SelectItem>
-                    <SelectItem value="annual">Anual</SelectItem>
-                  </SelectContent>
-                </Select>
+                <SectionPicker
+                  title="Tipo de Plano"
+                  value={planType}
+                  onChange={setPlanType}
+                  options={[
+                    { id: 'monthly', label: 'Mensal' },
+                    { id: 'annual', label: 'Anual' },
+                  ]}
+                />
+
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox

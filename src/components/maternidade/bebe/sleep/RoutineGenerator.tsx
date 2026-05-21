@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 import { toast } from 'sonner';
 
 type Item = { time: string; activity: string; note: string };
@@ -66,14 +66,14 @@ export function RoutineGenerator() {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label className="text-sm text-gray-700">Idade</Label>
-          <Select value={age} onValueChange={(v) => setAge(v as AgeKey)}>
-            <SelectTrigger className="text-base h-12 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>
-              {(Object.keys(AGE) as AgeKey[]).map((k) => (
-                <SelectItem key={k} value={k}>{AGE[k].label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SectionPicker
+            title="Idade"
+            placeholder="Selecione"
+            value={age}
+            onChange={(v) => setAge(v as AgeKey)}
+            options={(Object.keys(AGE) as AgeKey[]).map((k) => ({ id: k, label: AGE[k].label }))}
+          />
+
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
@@ -87,12 +87,14 @@ export function RoutineGenerator() {
         </div>
         <div className="space-y-2">
           <Label className="text-sm text-gray-700">Sonecas (opcional)</Label>
-          <Select value={naps} onValueChange={setNaps}>
-            <SelectTrigger className="text-base h-12 rounded-xl"><SelectValue placeholder="Sugerido p/ idade" /></SelectTrigger>
-            <SelectContent>
-              {['0','1','2','3','4','5'].map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <SectionPicker
+            title="Sonecas"
+            placeholder="Sugerido p/ idade"
+            value={naps}
+            onChange={setNaps}
+            options={['0','1','2','3','4','5'].map((n) => ({ id: n, label: n }))}
+          />
+
         </div>
         <Button onClick={generate} className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 text-white h-12 rounded-xl">
           Gerar rotina

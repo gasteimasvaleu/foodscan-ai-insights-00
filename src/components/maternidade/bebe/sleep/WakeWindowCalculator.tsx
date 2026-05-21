@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SectionPicker } from '@/components/maternidade/SectionPicker';
 
 type Data = { range: string; min: number; max: number; naps: number; tips: string[] };
 
@@ -58,14 +58,14 @@ export function WakeWindowCalculator() {
         </p>
         <div className="space-y-2">
           <Label className="text-sm text-gray-700">Idade do bebê</Label>
-          <Select value={age} onValueChange={setAge}>
-            <SelectTrigger className="text-base h-12 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent>
-              {Object.entries(DATA).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v.range}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SectionPicker
+            title="Idade do bebê"
+            placeholder="Selecione"
+            value={age}
+            onChange={setAge}
+            options={Object.entries(DATA).map(([k, v]) => ({ id: k, label: v.range }))}
+          />
+
         </div>
 
         {d && (
