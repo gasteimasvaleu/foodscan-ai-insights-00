@@ -132,8 +132,3 @@ export async function sendOrderToWhatsApp(args: SendArgs): Promise<void> {
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   await openExternalUrl(url);
 }
-
-
-  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-  await openExternalUrl(url);
-}
