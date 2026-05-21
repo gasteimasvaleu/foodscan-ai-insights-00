@@ -208,7 +208,13 @@ const LojistaPedidos = () => {
                   {p.cliente_nome && (
                     <p className="text-sm font-semibold text-foreground">{p.cliente_nome}</p>
                   )}
+                  {(p.cliente_cidade || p.cliente_estado) && (
+                    <p className="text-xs text-foreground/60">
+                      {p.cliente_cidade}{p.cliente_cidade && p.cliente_estado ? " - " : ""}{p.cliente_estado}
+                    </p>
+                  )}
                   <p className="text-base font-semibold">{p.itens.length} itens</p>
+
                 </div>
 
                 <div className="flex items-center gap-2">
