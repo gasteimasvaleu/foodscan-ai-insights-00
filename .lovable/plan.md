@@ -1,47 +1,37 @@
-## Problema
+## Objetivo
 
-Ao tocar em **Entrega** num pedido (página do Lojista), o modal "Acionar entrega" abre com os campos **Endereço completo**, **Cidade** e **WhatsApp do cliente** vazios. O lojista precisa digitar tudo manualmente, mesmo o cliente já tendo informado esses dados ao montar o pedido no carrinho.
+Permitir que o lojista exclua pedidos da lista em `/mercado-facil/lojista/pedidos`.
 
-Hoje a tabela `mf_order_log` guarda apenas `cliente_id`, `loja_id`, `itens`, `total_estimado_centavos` e `sent_at` — não persiste o snapshot do nome/endereço/telefone que o cliente usou no checkout, então o lojista não tem como recuperar.
+## 1. Banco — RLS de DELETE em `mf_order_log`
 
-## Solução
+Hoje só existem policies de SELECT e INSERT. Adicionar policy de DELETE permitindo apenas:
 
-Persistir o snapshot do cliente em cada pedido enviado e usá-lo para pré-preencher o modal.
+- o lojista dono da loja do pedido, OU
+- admin.
 
-### 1. Banco — migração em `mf_order_log`
+```sql
+CREATE POLICY mf_order_log_delete_lojista ON public.mf_order_log FOR DELETE
+  USING (
+    EXISTS (SELECT 1 FROM public.mf_lojas l WHERE l.id = loja_id AND l.owner_id = auth.uid())
+    OR public.has_role(auth.uid(), 'admin')
+  );
+```
 
-Adicionar colunas nullable (mantém compatibilidade com pedidos antigos):
+A FK `mf_entregas.order_log_id` já tem `ON DELETE SET NULL`, então excluir o pedido não apaga histórico de entrega — só desvincula. (Não vou mudar esse comportamento.)
 
-- `cliente_nome text`
-- `cliente_endereco text`
-- `cliente_cidade text`
-- `cliente_telefone text`
+## 2. UI — `src/pages/mercado-facil/LojistaPedidos.tsx`
 
-Sem mudanças em RLS: a policy `mf_order_log_select` já libera lojista dono da loja + próprio cliente.
+No card de cada pedido (linha ~161), adicionar um botão sutil de excluir (ícone `Trash2`) no canto superior direito, ao lado do total. Ao clicar:
 
-### 2. Captura no checkout — `src/lib/mercado-facil/whatsapp.ts`
+1. Abrir `AlertDialog` (shadcn) de confirmação: "Excluir este pedido? Esta ação não pode ser desfeita."
+2. Se confirmado: `supabase.from("mf_order_log").delete().eq("id", p.id)`.
+3. Em sucesso: remover do state local `pedidos` e toast "Pedido excluído".
+4. Em erro: toast destrutivo com mensagem.
 
-Estender a interface `SendArgs` com `endereco?`, `cidade?`, `telefone?`. O `sendOrderToWhatsApp` passa esses campos para o `insert` em `mf_order_log` (mapeados para as novas colunas).
-
-### 3. Carrinho — `src/pages/mercado-facil/Carrinho.tsx`
-
-No `handleSend`, passar para `sendOrderToWhatsApp`:
-- `endereco` (state já existente)
-- `cidade` (state já existente)
-- `telefone: profilePhone`
-- `clienteNome: profileName` (já passa)
-
-### 4. Lojista — `src/pages/mercado-facil/LojistaPedidos.tsx`
-
-- Adicionar os campos novos à interface `OrderLog`.
-- Ao abrir o modal (no `onClick` do botão **Entrega**, linha ~193), pré-preencher:
-  - `setEndereco(p.cliente_endereco ?? "")`
-  - `setCidadeEntrega(p.cliente_cidade ?? loja.endereco?.cidade ?? "")`
-  - `setTelCliente(p.cliente_telefone ?? "")`
-- Opcional: mostrar o nome do cliente (`p.cliente_nome`) no topo do bloco do formulário como contexto ("Pedido de: João Silva"), para o lojista saber para quem é a entrega.
+Estado de loading por pedido (`deletingId`) desabilita o botão durante a operação.
 
 ## Fora de escopo
 
-- Não mexer no layout/estilo do modal (já foi ajustado).
-- Não alterar a tabela `profiles` nem o fluxo de cadastro.
-- Não migrar pedidos antigos — eles continuarão exibindo campos vazios (comportamento atual).
+- Não alterar a entrega vinculada (`mf_entregas`) — continua existindo com `order_log_id = null`.
+- Não adicionar exclusão em massa.
+- Não permitir que o cliente apague o próprio pedido (escopo é o painel do lojista).
