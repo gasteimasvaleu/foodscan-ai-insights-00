@@ -1911,6 +1911,44 @@ export type Database = {
           },
         ]
       }
+      musicas_faixas: {
+        Row: {
+          audio_url: string
+          created_at: string
+          duracao_segundos: number | null
+          id: string
+          ordem: number
+          playlist_id: string
+          titulo: string
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          duracao_segundos?: number | null
+          id?: string
+          ordem?: number
+          playlist_id: string
+          titulo: string
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          duracao_segundos?: number | null
+          id?: string
+          ordem?: number
+          playlist_id?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "musicas_faixas_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "playlists_musicas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications_sent: {
         Row: {
           created_at: string | null
