@@ -22,12 +22,16 @@ export function SectionPicker({ options, value, onChange, title = 'Selecionar se
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="w-full h-12 px-4 rounded-xl bg-white/70 backdrop-blur-md flex items-center justify-between text-base"
+        className={`w-full h-12 px-4 rounded-xl bg-white/70 backdrop-blur-md flex items-center justify-between text-base ${className ?? ''}`}
       >
-        <span className="text-[#FD46A1] font-medium">{activeLabel}</span>
+        <span className={active ? 'text-[#FD46A1] font-medium' : 'text-gray-500'}>
+          {active ? activeLabel : placeholder}
+        </span>
         <ChevronDown className="h-4 w-4 text-[#FD46A1]" />
       </button>
+
 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="w-[calc(100%-2rem)] max-w-md mx-auto rounded-t-2xl bg-white/70 backdrop-blur-md border-2 border-primary shadow-xl">
