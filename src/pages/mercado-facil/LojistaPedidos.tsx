@@ -248,7 +248,9 @@ const LojistaPedidos = () => {
                     className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
                     onClick={() => {
                       setOpenEntrega(p);
-                      setModoEntrega(loja.aceita_entregador ? "app" : "propria");
+                      const lojaUsaApp =
+                        loja.aceita_entregador && loja.quem_aciona_entregador !== "cliente";
+                      setModoEntrega(lojaUsaApp ? "app" : "propria");
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
                     }}
                   >
