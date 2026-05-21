@@ -1,21 +1,12 @@
-## Problema
+## Ajuste do menu Tubelight
 
-Quando a loja exclui um pedido em `/mercado-facil/lojista/pedidos`, o registro em `mf_order_log` é apagado, mas a `mf_entrega` vinculada (via `order_log_id`) continua existindo. Por isso o card "Ver status do pedido" no carrinho do cliente continua mostrando aquele pedido.
+No `src/components/ui/tubelight-navbar.tsx`, no container fixo:
 
-## Solução
+1. **Posição mais baixa**: trocar `bottom-2` por `bottom-0` (ou `-bottom-1`) — encosta mais na base, aproveitando a safe-area do iPhone real.
+2. **Tamanho maior dos ícones e toques**:
+   - Ícones de `size={26}` → `size={30}`, `strokeWidth` mantido em `2.5`.
+   - Botões: `px-2.5 sm:px-3 py-3 sm:py-2` → `px-3 sm:px-3.5 py-3.5 sm:py-2.5`, `min-h-[44px] min-w-[44px]` → `min-h-[52px] min-w-[52px]`.
+   - Container: `py-2 px-2 sm:px-2.5` → `py-2.5 px-2.5 sm:px-3`, `rounded-2xl` mantido.
+   - Gap entre itens: `gap-1 sm:gap-2` → `gap-1.5 sm:gap-2.5`.
 
-Apagar (ou cancelar) a entrega correspondente quando o pedido for excluído pela loja. Vou no nível do banco, para garantir consistência mesmo se o delete vier de outro lugar no futuro.
-
-### Mudanças
-
-1. **Migration**: criar trigger `AFTER DELETE` em `public.mf_order_log` que deleta `public.mf_entregas WHERE order_log_id = OLD.id`.
-   - Trigger `SECURITY DEFINER` com `search_path=public`.
-   - Como o componente `MFClientePedidosStatus` já escuta realtime em `mf_entregas` (`postgres_changes` event `*`), o card some sozinho assim que o delete propaga.
-
-2. **Nenhuma mudança de frontend necessária** — o hook `useMFEntregas` já refaz fetch no realtime DELETE.
-
-### Fora de escopo
-
-- Mudar a lógica de exclusão da loja (continua deletando `mf_order_log`).
-- Avaliação de entregas já feitas (não afetado).
-- UI do card de status (sem alterações visuais).
+Nada mais é alterado — só ajustes visuais de tamanho/posição.
