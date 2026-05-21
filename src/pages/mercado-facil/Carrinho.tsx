@@ -159,13 +159,24 @@ const Carrinho = () => {
           <>
             <div className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-2">
               <p className="text-sm font-medium text-foreground">Entrega</p>
-              <input
-                type="text"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                placeholder="Cidade (ex: Goiânia)"
-                className="w-full h-11 rounded-2xl bg-[#F7FAFB] border border-[#FD46A1]/30 px-4 text-base outline-none"
-              />
+              <div className="grid grid-cols-[1fr_88px] gap-2">
+                <input
+                  type="text"
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                  placeholder="Cidade (ex: Goiânia)"
+                  className="w-full h-11 rounded-2xl bg-[#F7FAFB] border border-[#FD46A1]/30 px-4 text-base outline-none"
+                />
+                <input
+                  type="text"
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value.toUpperCase().slice(0, 2))}
+                  placeholder="UF"
+                  maxLength={2}
+                  className="w-full h-11 rounded-2xl bg-[#F7FAFB] border border-[#FD46A1]/30 px-4 text-base outline-none uppercase text-center"
+                />
+              </div>
+
               <input
                 type="text"
                 value={endereco}
