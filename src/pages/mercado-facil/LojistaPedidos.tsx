@@ -53,6 +53,8 @@ const LojistaPedidos = () => {
   const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
   const [updatingEntrega, setUpdatingEntrega] = useState<string | null>(null);
   const [openStatusId, setOpenStatusId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
   const entregasPorPedido = useMemo(() => {
