@@ -1,24 +1,34 @@
-## Reorganizar card de entregador disponível
+## Corrigir "Invalid input" ao salvar perfil
 
-O card atual (`MFEntregadoresDisponiveis.tsx`, linhas 103–131) tem foto + nome/veículo/estrela + badge de preço + botão "Chamar" todos numa única linha horizontal — fica espremido no mobile (390px), principalmente o badge da faixa de preço encavalando o botão.
-
-### Nova estrutura (2 linhas dentro do card)
+### Causa raiz
+Em `src/components/profile/EditProfileDialog.tsx` (linhas 30–38), o schema Zod dos campos opcionais (`bio`, `email_public`, `phone`, `address`, `city`, `state`) é:
 
 ```
-┌──────────────────────────────────────────┐
-│  [foto]  Nome do entregador              │
-│          🛵 Moto  •  ⭐ 0.0              │
-│  ────────────────────────────────────────│
-│  [badge faixa de preço]    [  Chamar  ]  │
-└──────────────────────────────────────────┘
+z.string().trim().email(...).max(255).optional().or(z.literal(""))
 ```
 
-- Aumentar foto de `w-10 h-10` para `w-12 h-12`.
-- Topo (`flex items-center gap-3`): foto + bloco com nome (text-sm font-medium) e linha secundária com veículo • estrela (text-xs).
-- Divider sutil (`border-t border-white/60`) ou apenas `pt-2 mt-1`.
-- Rodapé (`flex items-center justify-between gap-2`): badge da faixa de preço à esquerda + botão "Chamar" à direita, ambos com mais respiro.
-- Padding do card sobe para `p-3.5` e `space-y-2` interno.
-- Botão "Chamar" mantém verde WhatsApp `#25D366`, `h-9 px-5 rounded-2xl`.
+Isso aceita apenas `string`, `undefined` ou `""`, mas **não aceita `null`**. Os dados vindos do Supabase chegam como `null` (e o `initial` é tipado como `string | null`). Resultado: ao abrir o modal e clicar em "Salvar Alterações" sem editar esses campos, o Zod falha e dispara o toast com a mensagem padrão "Invalid input".
+
+### Correção
+Tornar todos os campos opcionais do schema `nullable`, aceitando `null` além de `""`/`undefined`:
+
+```ts
+const schema = z.object({
+  name: z.string().trim().min(2, "Nome muito curto").max(50),
+  bio: z.string().trim().max(160, "Máx. 160 caracteres").nullable().optional(),
+  email_public: z.union([
+    z.string().trim().email("Email inválido").max(255),
+    z.literal(""),
+    z.null(),
+  ]).optional(),
+  phone: z.string().trim().max(20).nullable().optional().or(z.literal("")),
+  address: z.string().trim().max(200).nullable().optional().or(z.literal("")),
+  city: z.string().trim().max(80).nullable().optional().or(z.literal("")),
+  state: z.string().trim().max(40).nullable().optional().or(z.literal("")),
+});
+```
+
+(O cuidado especial com `email_public` é porque `.email()` rejeita `""`; mantemos a união explícita com `z.literal("")` e `z.null()`.)
 
 ### Fora de escopo
-Apenas o layout do `<li>`. Sem mudanças em dados, props, lógica de chamada ou outros componentes.
+Sem alterações em DB, RLS, payload de update ou layout do modal.
