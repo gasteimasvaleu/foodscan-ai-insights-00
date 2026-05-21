@@ -206,43 +206,57 @@ const MasterCheFIT = () => {
     }
 
     setIsGenerating(true);
-    
+
     try {
-      const { data, error } = await supabase.functions.invoke('generate-menu', {
-        body: {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-menu`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+          Authorization: `Bearer ${accessToken ?? (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string)}`,
+        },
+        body: JSON.stringify({
           favoriteIngredients: preferences.favoriteIngredients,
           specificRequirements: preferences.specificRequirements,
-          maxCalories: preferences.maxCalories
-        }
+          maxCalories: preferences.maxCalories,
+        }),
       });
 
-      if (error) {
-        throw error;
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const message = (data && (data.error || data.message)) || `Erro ${response.status} ao gerar cardápio.`;
+        throw new Error(message);
       }
 
       setMenuPlan(data);
 
-      // Save the generated menu plan to database - convertendo UserPreferences para Json
       await supabase
         .from('user_menu_plans')
         .insert({
           user_id: user.id,
-          menu_data: data as any, // Cast para Json
-          preferences_snapshot: preferences as any // Cast para Json
+          menu_data: data as any,
+          preferences_snapshot: preferences as any,
         });
 
-      // Reload menu history
       loadMenuHistory();
-      
+
       toast({
         title: "Cardápio Gerado!",
         description: "Seu cardápio personalizado foi criado pela IA."
       });
     } catch (error) {
       console.error('Erro ao gerar cardápio:', error);
+      const description = error instanceof Error && error.message
+        ? error.message
+        : "Não foi possível gerar o cardápio. Tente novamente.";
       toast({
         title: "Erro",
-        description: "Não foi possível gerar o cardápio. Tente novamente.",
+        description,
         variant: "destructive"
       });
     } finally {

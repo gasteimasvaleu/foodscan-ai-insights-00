@@ -68,3 +68,6 @@ verify_jwt = true
 
 [functions.venue-mystery-hint]
 verify_jwt = false
+
+[functions.generate-menu]
+verify_jwt = true
