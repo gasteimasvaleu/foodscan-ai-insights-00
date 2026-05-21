@@ -57,7 +57,7 @@ const ToAqui = () => {
 
         <button
           onClick={() =>
-            navigate(isPro ? '/to-aqui/owner' : '/assinar?reason=to_aqui_owner_upsell')
+            navigate(canManage ? '/to-aqui/owner' : '/assinar?reason=to_aqui_owner_upsell')
           }
           className="w-full text-left rounded-3xl shadow-xl border border-white/20 overflow-hidden bg-gradient-to-br from-[#FD46A1] to-[#FF6FB5] active:scale-[0.99] transition-all animate-fade-in"
         >
@@ -66,7 +66,7 @@ const ToAqui = () => {
               <Crown className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0 text-white">
-              {isPro ? (
+              {canManage ? (
                 <>
                   <p className="text-base">Meus venues</p>
                   <p className="text-sm text-white/85">Cadastre e administre seus locais</p>
@@ -81,6 +81,7 @@ const ToAqui = () => {
             <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
           </div>
         </button>
+
 
 
 
