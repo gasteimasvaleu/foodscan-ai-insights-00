@@ -115,6 +115,7 @@ const LojistaPedidos = () => {
       cliente_id: openEntrega.cliente_id,
       endereco_entrega: endereco.trim(),
       cidade: cidadeEntrega.trim(),
+      estado: estadoEntrega.trim().toUpperCase() || null,
       taxa_centavos: taxa,
       telefone_cliente: telCliente.trim() || null,
       telefone_lojista: loja.telefone_whatsapp,
@@ -122,6 +123,7 @@ const LojistaPedidos = () => {
       status: ehPropria ? "aceita" : "disponivel",
       aceita_em: ehPropria ? new Date().toISOString() : null,
     });
+
     setCreating(false);
     if (error) {
       toast({ title: "Erro ao criar entrega", description: error.message, variant: "destructive" });
