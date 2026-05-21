@@ -200,6 +200,9 @@ const LojistaPedidos = () => {
                         loja.aceita_entregador && loja.quem_aciona_entregador !== "cliente";
                       setModoEntrega(lojaUsaApp ? "app" : "propria");
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
+                      setEndereco(p.cliente_endereco ?? "");
+                      setCidadeEntrega(p.cliente_cidade ?? loja.endereco?.cidade ?? "");
+                      setTelCliente(p.cliente_telefone ?? "");
                     }}
                   >
                     <Truck size={14} className="mr-1" /> Entrega
