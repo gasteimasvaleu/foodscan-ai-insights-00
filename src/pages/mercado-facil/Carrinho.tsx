@@ -37,6 +37,7 @@ const Carrinho = () => {
   const [lojas, setLojas] = useState<Record<string, MFLoja>>({});
   const [profile, setProfile] = useState<FullProfile | null>(null);
   const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
   const [endereco, setEndereco] = useState("");
 
   const profileName = profile?.name;
@@ -48,14 +49,16 @@ const Carrinho = () => {
       if (raw) {
         const v = JSON.parse(raw);
         if (v.cidade) setCidade(v.cidade);
+        if (v.estado) setEstado(v.estado);
         if (v.endereco) setEndereco(v.endereco);
       }
     } catch {}
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(ADDRESS_KEY, JSON.stringify({ cidade, endereco }));
-  }, [cidade, endereco]);
+    localStorage.setItem(ADDRESS_KEY, JSON.stringify({ cidade, estado, endereco }));
+  }, [cidade, estado, endereco]);
+
 
 
   const lojaIds = Object.keys(byLoja);
