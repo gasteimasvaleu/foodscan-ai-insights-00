@@ -30,6 +30,7 @@ const moreSheetItems: Array<{
   { name: "Comunidade", description: "Compartilhe sua jornada fitness", url: "/comunidade", icon: Users, isPro: false, isExtra: true },
   { name: "Tô Aqui", description: "Bares, restaurantes e festas com chat ao vivo no local", url: "/to-aqui", icon: MapPin, isPro: false, isExtra: true },
   { name: "Loja", description: "Produtos selecionados de parceiros", url: "/loja", icon: ShoppingBag, isPro: false },
+  { name: "Músicas", description: "Playlists para foco, treino, relaxar e mais", url: "/musicas", icon: Music, isPro: false, isExtra: true },
   { name: "Mercado Fácil", description: "Mercado, hortifrúti e padaria com pedido pelo WhatsApp", url: "/mercado-facil", icon: ShoppingCart, isPro: false, isExtra: true },
   { name: "Finanças", description: "Controle suas receitas, despesas e o saldo do mês", url: "/financas", icon: Wallet, isPro: false, isExtra: true },
   { name: "Lista de Compras", description: "Organize suas compras de mercado por categoria", url: "/lista-de-compras", icon: ShoppingCart, isPro: false },
