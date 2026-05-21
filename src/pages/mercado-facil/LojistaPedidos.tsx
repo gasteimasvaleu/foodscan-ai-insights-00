@@ -419,10 +419,23 @@ const LojistaPedidos = () => {
                   className="text-base"
                 />
               </div>
-              <div>
-                <Label>Cidade</Label>
-                <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
+              <div className="grid grid-cols-[1fr_88px] gap-2">
+                <div>
+                  <Label>Cidade</Label>
+                  <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
+                </div>
+                <div>
+                  <Label>UF</Label>
+                  <Input
+                    value={estadoEntrega}
+                    onChange={(e) => setEstadoEntrega(e.target.value.toUpperCase().slice(0, 2))}
+                    maxLength={2}
+                    placeholder="GO"
+                    className="text-base uppercase text-center"
+                  />
+                </div>
               </div>
+
               <div>
                 <Label>{modoEntrega === "app" ? "Taxa sugerida ao entregador (R$)" : "Taxa cobrada do cliente (R$)"}</Label>
                 <Input
