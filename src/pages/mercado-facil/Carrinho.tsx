@@ -119,8 +119,10 @@ const Carrinho = () => {
         clienteNome: profileName,
         endereco,
         cidade,
+        estado,
         telefone: profilePhone,
       });
+
       clearLoja(lojaId);
       toast({
         title: "Pedido enviado",
