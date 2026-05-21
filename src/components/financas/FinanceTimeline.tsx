@@ -87,6 +87,14 @@ export function FinanceTimeline({
                   clickable && "cursor-pointer hover:bg-white/90 hover:shadow-md active:scale-[0.99]"
                 )}
               >
+                {tx.receipt_url && (
+                  <img
+                    src={tx.receipt_url}
+                    alt="Comprovante"
+                    loading="lazy"
+                    className="w-10 h-10 rounded-lg object-cover border border-[#FFD1E7] shrink-0"
+                  />
+                )}
                 <div className="flex-1 min-w-0">
                   {showDate && (
                     <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">

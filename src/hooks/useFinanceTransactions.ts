@@ -11,6 +11,7 @@ export interface FinanceTx {
   category: string;
   description: string | null;
   occurred_on: string;
+  receipt_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -21,6 +22,7 @@ export interface NewTxInput {
   category: string;
   description?: string | null;
   occurred_on: string;
+  receipt_url?: string | null;
 }
 
 export function useFinanceTransactions(opts: { startDate?: string; endDate?: string; date?: string }) {
@@ -79,8 +81,23 @@ export function useFinanceTransactions(opts: { startDate?: string; endDate?: str
 
   const remove = useCallback(
     async (id: string) => {
+      // Busca a tx para poder limpar o arquivo do storage, se existir
+      const { data: existing } = await supabase
+        .from("finance_transactions")
+        .select("receipt_url")
+        .eq("id", id)
+        .maybeSingle();
       const { error } = await supabase.from("finance_transactions").delete().eq("id", id);
       if (error) throw error;
+      const url = (existing as { receipt_url?: string | null } | null)?.receipt_url;
+      if (url) {
+        const marker = "/finance-receipts/";
+        const idx = url.indexOf(marker);
+        if (idx !== -1) {
+          const path = url.slice(idx + marker.length);
+          await supabase.storage.from("finance-receipts").remove([path]);
+        }
+      }
       await fetchData();
     },
     [fetchData]
