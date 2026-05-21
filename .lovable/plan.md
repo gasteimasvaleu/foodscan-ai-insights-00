@@ -1,53 +1,58 @@
-# Migração de Selects → Drawer (SectionPicker)
+# Restilizar Select shadcn (look glass/rosa) — só nos 4 Dialogs Maternidade
 
-## Descoberta importante
+## Objetivo
+Os Selects dentro dos Dialogs do Maternidade hoje têm aparência neutra (cinza) que destoa do `SectionPicker` (rosa + glassmorphism). Vamos aplicar o mesmo look — **sem trocar a primitiva** (Select shadcn continua, mantendo semântica de form, keyboard nav e Portal que funciona dentro de Dialog).
 
-Ao verificar o contexto de cada `Select` encontrado, descobri que **vários estão dentro de `Dialog`** — e a regra core do projeto diz **"Never use Drawer-based pickers inside Dialogs"** (problema de stacking no iOS). Esses precisam **permanecer como Select/Popover**.
+## Arquivos afetados (4)
 
-## Classificação
+1. `src/components/maternidade/bebe/BabyProfileCard.tsx`
+2. `src/components/maternidade/bebe/GrowthSleep.tsx`
+3. `src/components/maternidade/bebe/sleep/SleepDiaryAdvanced.tsx`
+4. `src/components/maternidade/tentantes/CycleTracker.tsx`
 
-### ✅ Migrar para Drawer (6 arquivos — fora de Dialog)
+## Abordagem
 
-Páginas inteiras (sem Dialog ao redor):
-1. `src/pages/AdminSubscriptions.tsx` — filtro de status
-2. `src/pages/ServiNUTRI.tsx` — seletor(es) de filtro
-3. `src/pages/Treinos.tsx` — seletor(es) de filtro
+Criar **dois pequenos wrappers locais** em `src/components/maternidade/GlassSelect.tsx`:
 
-Componentes Maternidade sem Dialog:
-4. `src/components/maternidade/bebe/BabyNames.tsx`
-5. `src/components/maternidade/bebe/sleep/WakeWindowCalculator.tsx`
-6. `src/components/maternidade/bebe/sleep/RoutineGenerator.tsx`
+- `GlassSelectTrigger` — re-exporta `SelectTrigger` com classes:
+  - `h-12 rounded-xl bg-white/70 backdrop-blur-md border-0 text-base text-[#FD46A1] font-medium`
+  - chevron rosa (herda `text-[#FD46A1]`)
+- `GlassSelectContent` — re-exporta `SelectContent` com classes:
+  - `bg-white/90 backdrop-blur-md border-2 border-primary rounded-2xl shadow-xl`
+- `GlassSelectItem` — re-exporta `SelectItem` com:
+  - `text-base rounded-xl my-1 focus:bg-[#FD46A1] focus:text-white data-[state=checked]:bg-[#FD46A1] data-[state=checked]:text-white`
 
-### 🚫 Manter como está (não migrar)
+Os componentes base (`Select`, `SelectValue`) continuam vindo de `@/components/ui/select`. O wrapper só padroniza o visual.
 
-**Dentro de Dialog (violaria regra de stacking):**
-- `src/components/maternidade/bebe/BabyProfileCard.tsx`
-- `src/components/maternidade/bebe/GrowthSleep.tsx`
-- `src/components/maternidade/bebe/sleep/SleepDiaryAdvanced.tsx`
-- `src/components/maternidade/tentantes/CycleTracker.tsx`
+## Migração nos 4 arquivos
 
-**Dentro de modais (FoodScan):**
-- `src/components/PortionSelector.tsx`
-- `src/components/MultipleElementsPortionSelector.tsx`
+Em cada arquivo, trocar imports:
 
-**Casos especiais (não cabem em Drawer simples):**
-- `src/components/maternidade/MatDatePicker.tsx` — é calendário, Popover faz sentido
-- `src/components/AIGoalsWizard.tsx` — Popover dentro de wizard
+```ts
+// antes
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-## Abordagem técnica
+// depois
+import { Select, SelectValue } from '@/components/ui/select';
+import {
+  GlassSelectTrigger as SelectTrigger,
+  GlassSelectContent as SelectContent,
+  GlassSelectItem as SelectItem,
+} from '@/components/maternidade/GlassSelect';
+```
 
-Reutilizar o componente existente `src/components/maternidade/SectionPicker.tsx` (Drawer com glassmorphism, fundo `bg-white/70 backdrop-blur-md`, accent `#FD46A1`, check no selecionado). Ele já segue 100% o design system.
-
-Para cada Select migrado:
-1. Substituir `<Select>` + `<SelectTrigger>` + `<SelectContent>` + `<SelectItem>` por `<SectionPicker options={...} value={...} onChange={...} title="..." />`
-2. Converter a lista de itens em `{ id, label }[]`
-3. Remover imports não utilizados de `@/components/ui/select`
-
-Se algum Select tiver agrupamento ou conteúdo customizado (ícone + label), avalio caso a caso e — se necessário — estendo o `SectionPicker` para aceitar um `renderOption` opcional (em vez de criar um novo componente).
+Assim **o JSX dos 4 arquivos não muda** — só os imports. Zero risco de regredir lógica.
 
 ## Fora do escopo
 
-- Não tocar nos Selects dentro de Dialog
-- Não tocar nos PortionSelectors
-- Não mexer em date pickers nem no AIGoalsWizard
-- Sem mudanças de lógica/dados — apenas troca visual do controle
+- Não toca em PortionSelector / MultipleElementsPortionSelector / AIGoalsWizard / MatDatePicker.
+- Não mexe nos Selects já migrados pra `SectionPicker`.
+- Sem mudança de API, sem mudança de lógica/dados.
+- Não altera o `Select` global do projeto (outros lugares continuam com o look neutro).
+
+## Resultado visual
+
+Selects dentro dos modais de Maternidade passam a ter:
+- Trigger rosa com fundo translúcido (igual ao SectionPicker)
+- Content em card glass com borda rosa
+- Item selecionado em fundo `#FD46A1` branco
