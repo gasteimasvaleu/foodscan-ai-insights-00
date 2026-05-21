@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
+import { useMFEntregas } from "@/hooks/mercado-facil/useMFEntregas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { cleanPhone, formatBRL } from "@/lib/mercado-facil/formatters";
+import { ENTREGA_STATUS_LABEL } from "@/lib/mercado-facil/entregador-types";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
 interface OrderLog {
