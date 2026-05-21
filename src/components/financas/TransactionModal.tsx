@@ -320,6 +320,27 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
                     <X className="h-4 w-4" />
                   </button>
                 </div>
+              )}
+              {displayedReceipt && (
+                <button
+                  type="button"
+                  onClick={handleAiScan}
+                  disabled={scanning || saving}
+                  className="w-full mt-2 h-11 rounded-xl bg-gradient-to-r from-[#FD46A1] to-[#FF6FB5] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-95 disabled:opacity-60"
+                >
+                  {scanning ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Lendo sua conta...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      Preencher com IA
+                    </>
+                  )}
+                </button>
+              )}
               ) : (
                 <button
                   type="button"
