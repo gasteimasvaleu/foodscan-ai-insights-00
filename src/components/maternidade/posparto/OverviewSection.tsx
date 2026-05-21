@@ -44,8 +44,8 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.whatIs.title}</CardTitle>
         </CardHeader>
         <CardContent>
@@ -53,8 +53,8 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.babyBlues.title}</CardTitle>
         </CardHeader>
         <CardContent>
@@ -89,8 +89,8 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.riskFactors.title}</CardTitle>
         </CardHeader>
         <CardContent>
@@ -103,7 +103,7 @@ export function OverviewSection({ content }: OverviewSectionProps) {
       </Card>
 
       {content.spectrum && (
-        <Card className="bg-white/70 backdrop-blur-md border-white/40">
+        <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
           <CardHeader>
             <CardTitle className="text-base font-semibold">{content.spectrum.title}</CardTitle>
           </CardHeader>
@@ -151,8 +151,8 @@ export function OverviewSection({ content }: OverviewSectionProps) {
         </Card>
       )}
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">{content.myths.title}</CardTitle>
         </CardHeader>
         <CardContent>
