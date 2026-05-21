@@ -1,36 +1,81 @@
-## Problema
+## Página de Músicas (`/musicas`) com YouTube
 
-A análise por código de barras está quebrada porque a edge function `open-food-facts` lança erro 500 no início de toda requisição:
+Nova página dedicada estilo "Spotify-like" dentro do We Diet, com playlists curadas por categoria (Foco, Relaxar, Treino, Refeição Consciente, Sono) tocando via **YouTube IFrame Player API** — gratuito, sem login, funciona web + iOS nativo.
 
-```
-TypeError: userClient.auth.getClaims is not a function
-  at enforceFoodscanQuota (open-food-facts/index.ts:40)
-```
+## Por que YouTube e não Spotify
 
-O método `auth.getClaims()` não existe na versão do `@supabase/supabase-js@2.45.0` importada na função. Como `enforceFoodscanQuota` é chamado no início do handler, nenhuma análise (iOS ou web) consegue concluir.
+- Spotify Web Playback SDK só toca música completa para usuários **Premium logados** — exclui a maioria dos seus usuários.
+- YouTube IFrame é gratuito, sem login, e tem praticamente qualquer música/playlist (lo-fi, meditação, treino).
+- Sem custo de API enquanto não usarmos busca dinâmica (playlists ficam pré-cadastradas).
 
-## Correção
+## Estrutura
 
-Substituir `userClient.auth.getClaims(token)` por `userClient.auth.getUser(token)`, que é o método estável e disponível na versão usada — mesmo padrão que outras edge functions do projeto usam para validar o JWT.
+### Banco de dados (nova tabela `playlists_musicas`)
 
-### Mudanças em `supabase/functions/open-food-facts/index.ts` (linhas 40–50)
+Cadastrada e gerenciada pelo admin (você), igual ao padrão de `/admin/loja` e `/admin/alimentos-comunidade`.
 
-- Trocar:
-  ```ts
-  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-  if (claimsError || !claimsData?.claims?.sub) { ... }
-  const userId = claimsData.claims.sub as string;
-  ```
-  por:
-  ```ts
-  const { data: userData, error: userError } = await userClient.auth.getUser(token);
-  if (userError || !userData?.user?.id) { ... }
-  const userId = userData.user.id;
-  ```
+Campos:
+- `id`, `created_at`, `updated_at`
+- `titulo` (text) — ex.: "Lo-fi para focar no trabalho"
+- `descricao` (text, nullable)
+- `categoria` (text) — ex.: 'foco', 'relaxar', 'treino', 'refeicao', 'sono'
+- `youtube_playlist_id` (text) ou `youtube_video_id` (text) — um dos dois
+- `thumbnail_url` (text, nullable) — capa custom; default usa thumb do YouTube
+- `ordem` (int, default 0) — para ordenação dentro da categoria
+- `is_active` (bool, default true)
 
-Nenhuma outra alteração necessária — o resto da quota e a chamada ao OpenFoodFacts continuam iguais.
+RLS:
+- SELECT público (qualquer usuário autenticado vê playlists ativas)
+- INSERT/UPDATE/DELETE só para `has_role(auth.uid(), 'admin')`
+
+### Rotas
+
+- **`/musicas`** — página do usuário: carrosséis por categoria (mesma vibe do `/loja`), cada card mostra capa + título. Clicou → abre modal/tela com player do YouTube embedded tocando a playlist.
+- **`/admin/musicas`** — CRUD para você cadastrar playlists (ID do YouTube, categoria, ordem).
+
+### Entrada no app
+
+Item no **Menu +** (bottom plus menu), seguindo o padrão de Loja, Mercado Fácil, Quiz, etc.
+
+### Componentes
+
+- `src/pages/Musicas.tsx` — listagem por categoria com carrosséis
+- `src/pages/admin/AdminMusicas.tsx` — CRUD
+- `src/components/musicas/YouTubePlayer.tsx` — wrapper do IFrame Player API (carrega script, controla play/pause/próxima)
+- `src/components/musicas/PlaylistCard.tsx` — card com capa, título, badge da categoria
+
+### Player
+
+- Modal fullscreen com IFrame YouTube embedado, autoplay ao abrir.
+- Controles nativos do YouTube (play/pause, próxima, volume).
+- Header da modal mostra título da playlist + botão fechar (rosa #FD46A1, padrão do app).
+- No iOS Capacitor: o player roda na WebView normalmente; sem precisar de plugin extra.
+
+### Design
+
+- Página `/musicas` segue padrão visual do `/loja`:
+  - Header rosa compacto com título
+  - Carrosséis horizontais por categoria
+  - Cards `bg-[#FFD1E7] rounded-3xl`, título `text-base` sem ícones
+- Categorias com ícones sutis no header de cada seção (lucide-react: Brain, Heart, Dumbbell, Utensils, Moon).
+
+## Limitações conhecidas
+
+- **Termos do YouTube**: precisa exibir o player oficial do YouTube (não pode mascarar como player próprio). O IFrame já cuida disso.
+- **Anúncios**: vídeos podem ter ads (depende do criador). Usuário com YouTube Premium não vê. Sem solução nossa.
+- **Background play no iOS**: WebView não toca em background quando o app é minimizado. Para tocar com tela bloqueada precisaria de um plugin nativo — fica como evolução futura, não no MVP.
+
+## Fora do escopo deste MVP
+
+- Busca dinâmica no YouTube (precisaria YouTube Data API key + cota).
+- Favoritar playlist por usuário.
+- Histórico de reprodução.
+- Background play no iOS nativo.
+- Integração com Spotify (pode ser adicionado depois como botão "Abrir no Spotify").
 
 ## Validação
 
-1. Após o deploy, testar leitura de um código de barras válido (ex.: 7891000100103) no `/foodscan` web → deve retornar dados nutricionais.
-2. Conferir `edge function logs` de `open-food-facts` para garantir ausência do `TypeError`.
+1. Cadastrar 2-3 playlists em `/admin/musicas` por categoria.
+2. Acessar `/musicas`, ver carrosséis.
+3. Tocar uma playlist no modal — confirmar autoplay, controles e fechar.
+4. Testar em viewport mobile (390x650) e em iOS nativo.
