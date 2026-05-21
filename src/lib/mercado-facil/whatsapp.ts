@@ -12,11 +12,13 @@ interface DeliveryRequestArgs {
   telefoneCliente?: string;
   endereco: string;
   cidade: string;
+  estado?: string;
   itens: MFCartItem[];
   totalCentavos: number;
   orderLogId?: string;
   taxaOverrideCentavos?: number;
 }
+
 
 export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): Promise<void> {
   const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
