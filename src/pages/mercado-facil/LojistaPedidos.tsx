@@ -35,6 +35,8 @@ const LojistaPedidos = () => {
   const [taxaReais, setTaxaReais] = useState("");
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
+  const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
+  const [updatingEntrega, setUpdatingEntrega] = useState<string | null>(null);
 
   const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
   const entregasPorPedido = useMemo(() => {
