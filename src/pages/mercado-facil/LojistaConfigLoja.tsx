@@ -123,6 +123,7 @@ const LojistaConfigLoja = () => {
       },
       foto_url: fotoUrl.trim() || null,
       aceita_entregador: aceitaEntregador,
+      quem_aciona_entregador: aceitaEntregador ? quemAciona : "loja",
       taxa_entrega_padrao_centavos: taxaCentavos,
       ativa: true,
     };
