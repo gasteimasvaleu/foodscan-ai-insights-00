@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Truck, MessageCircle } from "lucide-react";
+import { Loader2, Truck, MessageCircle, ChevronDown, Package, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
