@@ -36,8 +36,10 @@ interface OrderLog {
   cliente_nome: string | null;
   cliente_endereco: string | null;
   cliente_cidade: string | null;
+  cliente_estado: string | null;
   cliente_telefone: string | null;
 }
+
 
 const LojistaPedidos = () => {
   const { user } = useAuthContext();
