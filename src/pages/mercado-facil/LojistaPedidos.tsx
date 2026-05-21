@@ -349,6 +349,11 @@ const LojistaPedidos = () => {
             </p>
 
             <div className="bg-[#FFD1E7]/40 rounded-2xl p-3 space-y-2">
+              {openEntrega?.cliente_nome && (
+                <p className="text-xs text-foreground/70">
+                  Pedido de <span className="font-medium text-foreground">{openEntrega.cliente_nome}</span>
+                </p>
+              )}
               <div>
                 <Label>Endereço completo</Label>
                 <Input
