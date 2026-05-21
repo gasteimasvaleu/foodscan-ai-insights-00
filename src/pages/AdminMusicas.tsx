@@ -31,6 +31,8 @@ import {
   Plus,
   Pencil,
   Music,
+  Upload,
+  X,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { MUSIC_CATEGORIES, getMusicCategory } from "@/data/musicCategories";
@@ -88,6 +90,34 @@ const AdminMusicas = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadCapa = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Envie uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande", description: "Máximo de 2 MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("musicas-capas")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("musicas-capas").getPublicUrl(path);
+      setForm((f) => ({ ...f, thumbnail_url: data.publicUrl }));
+      toast({ title: "Capa enviada" });
+    } catch (e: any) {
+      toast({ title: "Erro no upload", description: e.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -396,15 +426,56 @@ const AdminMusicas = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="thumbnail_url">Capa custom (URL)</Label>
-              <Input
-                id="thumbnail_url"
-                value={form.thumbnail_url}
-                onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })}
-                placeholder="Opcional — usa thumb do YouTube se vazio"
-                className="text-base"
-              />
+              <Label>Capa custom</Label>
+              {form.thumbnail_url ? (
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-muted">
+                  <img src={form.thumbnail_url} alt="Capa" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, thumbnail_url: "" })}
+                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shadow-md"
+                    aria-label="Remover capa"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full aspect-video rounded-xl border-2 border-dashed border-muted-foreground/30 cursor-pointer hover:border-[#FD46A1] transition-colors bg-muted/40">
+                  <Upload className="w-6 h-6 text-muted-foreground mb-2" />
+                  <span className="text-sm text-muted-foreground">
+                    {uploading ? "Enviando..." : "Enviar imagem"}
+                  </span>
+                  <span className="text-xs text-muted-foreground/70 mt-1">PNG/JPG até 2 MB</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleUploadCapa(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+              <details className="text-xs">
+                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                  Ou usar URL externa
+                </summary>
+                <Input
+                  id="thumbnail_url"
+                  value={form.thumbnail_url}
+                  onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })}
+                  placeholder="https://..."
+                  className="text-base mt-2"
+                />
+              </details>
+              <p className="text-xs text-muted-foreground">
+                Opcional — usa thumb do YouTube se vazio.
+              </p>
             </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="ordem">Ordem</Label>
@@ -427,7 +498,7 @@ const AdminMusicas = () => {
               />
             </div>
 
-            <Button onClick={handleSave} disabled={saving} className="w-full">
+            <Button onClick={handleSave} disabled={saving || uploading} className="w-full">
               {saving ? "Salvando..." : form.id ? "Salvar alterações" : "Criar playlist"}
             </Button>
           </div>
