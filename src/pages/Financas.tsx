@@ -84,6 +84,20 @@ export default function Financas() {
         {/* Gráfico */}
         <FinanceChart month={month} transactions={data} />
 
+        {/* Timeline de lançamentos */}
+        <div>
+          <h2 className="text-base text-foreground mb-2 px-1">Lançamentos do mês</h2>
+          <FinanceTimeline
+            items={[...data].sort((a, b) =>
+              a.occurred_on === b.occurred_on
+                ? b.created_at.localeCompare(a.created_at)
+                : b.occurred_on.localeCompare(a.occurred_on)
+            )}
+            onItemClick={(tx) => navigate(`/financas/${tx.occurred_on}`)}
+            emptyLabel="Nenhum lançamento neste mês."
+          />
+        </div>
+
         {loading && <p className="text-center text-xs text-muted-foreground">Carregando…</p>}
       </div>
     </div>
