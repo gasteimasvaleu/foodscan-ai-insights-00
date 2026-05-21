@@ -265,10 +265,38 @@ const LojistaPedidos = () => {
       <Dialog open={!!openEntrega} onOpenChange={(o) => !o && setOpenEntrega(null)}>
         <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Acionar entregador</DialogTitle>
-            <DialogDescription>Informe o endereço e a taxa de entrega.</DialogDescription>
+            <DialogTitle>Acionar entrega</DialogTitle>
+            <DialogDescription>Escolha quem fará a entrega deste pedido.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[#FFD1E7]/40">
+              <button
+                type="button"
+                onClick={() => setModoEntrega("app")}
+                disabled={!loja?.aceita_entregador}
+                className={`h-10 rounded-xl text-sm transition-colors ${
+                  modoEntrega === "app"
+                    ? "bg-[#FD46A1] text-white"
+                    : "text-foreground/70 disabled:opacity-40"
+                }`}
+              >
+                Entregador do app
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoEntrega("propria")}
+                className={`h-10 rounded-xl text-sm transition-colors ${
+                  modoEntrega === "propria" ? "bg-[#FD46A1] text-white" : "text-foreground/70"
+                }`}
+              >
+                Entrega própria
+              </button>
+            </div>
+            {modoEntrega === "propria" && (
+              <p className="text-xs text-foreground/60 leading-snug">
+                Você fará a entrega por conta própria (motoboy fixo, terceirizado, retirada etc.). Atualize o status no card do pedido conforme o pedido sai e é entregue.
+              </p>
+            )}
             <div>
               <Label>Endereço completo</Label>
               <Input
@@ -307,7 +335,13 @@ const LojistaPedidos = () => {
               disabled={creating}
               className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12"
             >
-              {creating ? <Loader2 className="animate-spin" /> : "Publicar entrega"}
+              {creating ? (
+                <Loader2 className="animate-spin" />
+              ) : modoEntrega === "propria" ? (
+                "Registrar entrega própria"
+              ) : (
+                "Publicar entrega"
+              )}
             </Button>
           </div>
         </DialogContent>
