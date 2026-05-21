@@ -9,11 +9,15 @@ type Props = {
   value: string;
   onChange: (v: string) => void;
   title?: string;
+  placeholder?: string;
+  className?: string;
 };
 
-export function SectionPicker({ options, value, onChange, title = 'Selecionar seção' }: Props) {
+export function SectionPicker({ options, value, onChange, title = 'Selecionar seção', placeholder = 'Selecione', className }: Props) {
   const [open, setOpen] = useState(false);
-  const activeLabel = options.find((o) => o.id === value)?.label ?? '';
+  const active = options.find((o) => o.id === value);
+  const activeLabel = active?.label ?? '';
+
 
   return (
     <>
