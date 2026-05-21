@@ -262,6 +262,36 @@ const LojistaConfigLoja = () => {
               </p>
             </div>
           )}
+          {aceitaEntregador && (
+            <div className="space-y-2">
+              <Label className="text-base">Quem chama o entregador?</Label>
+              <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[#FFD1E7]/40">
+                <button
+                  type="button"
+                  onClick={() => setQuemAciona("loja")}
+                  className={`h-10 rounded-xl text-sm transition-colors ${
+                    quemAciona === "loja" ? "bg-[#FD46A1] text-white" : "text-foreground/70"
+                  }`}
+                >
+                  Eu (loja) chamo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuemAciona("cliente")}
+                  className={`h-10 rounded-xl text-sm transition-colors ${
+                    quemAciona === "cliente" ? "bg-[#FD46A1] text-white" : "text-foreground/70"
+                  }`}
+                >
+                  Cliente chama
+                </button>
+              </div>
+              <p className="text-xs text-foreground/60 leading-snug">
+                {quemAciona === "loja"
+                  ? "Você decide qual entregador acionar no painel de pedidos. O cliente não vê a lista no carrinho."
+                  : "O cliente vê a lista de entregadores no carrinho e fala direto com eles. Você só prepara o pedido."}
+              </p>
+            </div>
+          )}
         </div>
         <Button
           onClick={handleSave}
