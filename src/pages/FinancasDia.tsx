@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { TransactionModal } from "@/components/financas/TransactionModal";
+import { FinanceTimeline } from "@/components/financas/FinanceTimeline";
 import {
   AlertDialog,
   AlertDialogAction,
