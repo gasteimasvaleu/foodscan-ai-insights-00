@@ -1,23 +1,44 @@
-# Expor configurações de entrega na página da loja
+# Resolver impasse do entregador: loja decide quem aciona
 
-## Problema
-Os campos `aceita_entregador` (boolean) e `taxa_entrega_padrao_centavos` (int) já existem em `mf_lojas` e são usados em `LojistaPedidos.tsx` para decidir se o botão "Entregador do app" fica ativo e qual taxa pré-preencher. Mas a página `LojistaConfigLoja.tsx` não tem UI para o lojista alterar esses valores — todas as lojas ficam travadas em `false` / `0`.
+## Decisão
+A loja define no cadastro **quem aciona o entregador**:
+- **"Eu (loja) aciono"** (padrão) — cliente não vê lista de entregadores no Carrinho; loja resolve no painel.
+- **"Cliente aciona"** — cliente vê lista no Carrinho e chama direto; loja não vê o modal "Entregador do app" (mas continua podendo registrar entrega própria).
 
-## Mudança
+## Banco
+
+### Migração: nova coluna em `mf_lojas`
+```sql
+ALTER TABLE public.mf_lojas
+  ADD COLUMN IF NOT EXISTS quem_aciona_entregador text NOT NULL DEFAULT 'loja'
+  CHECK (quem_aciona_entregador IN ('loja','cliente'));
+```
+
+`aceita_entregador` continua existindo e significa "esta loja trabalha com entregador do app" (false = só entrega própria/retirada). O novo campo só é relevante quando `aceita_entregador = true`.
+
+## Frontend
 
 ### `src/pages/mercado-facil/LojistaConfigLoja.tsx`
-Adicionar dois campos no formulário de edição da loja, dentro de uma seção **"Entrega"**:
+Dentro da seção "Entrega", quando `aceitaEntregador` estiver ligado, mostrar um **radio/segmented** abaixo da taxa:
+- **Eu (loja) chamo o entregador** (default)
+- **Cliente chama o entregador no carrinho**
 
-1. **Switch "Aceitar entregador do app"** — controla `aceita_entregador`. Texto auxiliar: *"Permite acionar entregadores cadastrados na sua cidade. Se desligado, você fará a entrega por conta própria."*
+Texto de apoio explicando que isso muda quem vê a lista. Persistir como `quem_aciona_entregador` no save.
 
-2. **Input "Taxa de entrega padrão (R$)"** — controla `taxa_entrega_padrao_centavos`. Exibido em reais (ex: `12,50`), convertido para centavos no save. Só aparece quando o switch está ligado.
+### `src/pages/mercado-facil/Carrinho.tsx`
+Renderizar `<MFEntregadoresDisponiveis>` **somente quando** `loja.aceita_entregador === true && loja.quem_aciona_entregador === 'cliente'`. Caso contrário, esconder a lista e mostrar um aviso curto: *"A loja se encarregará da entrega."*
 
-Persistir junto com o restante do form (mesmo `update` em `mf_lojas`). Usar padrões visuais do projeto (card `#FFD1E7`, switch e botões `#FD46A1`, input `text-base`).
+### `src/pages/mercado-facil/LojistaPedidos.tsx`
+No modal "Acionar entrega":
+- Se `loja.quem_aciona_entregador === 'cliente'`, **desabilitar** o botão "Entregador do app" (já desabilita quando `aceita_entregador=false`) e forçar `modoEntrega='propria'`, com nota: *"O entregador foi chamado pelo cliente; use 'Entrega própria' para registrar status."*
+- Se `loja.quem_aciona_entregador === 'loja'`, fluxo atual (app ou própria, à escolha).
+
+### `src/lib/mercado-facil/types.ts`
+Adicionar `quem_aciona_entregador: 'loja' | 'cliente'` em `MFLoja`.
 
 ## Fora de escopo
-- Não muda schema (campos já existem).
-- Não muda `LojistaPedidos.tsx`.
-- Não muda a função `mf_entregadores_disponiveis`.
+- Não unifica `mf_entregas` com a "chamada" do cliente (cliente continua só abrindo WhatsApp do entregador, sem criar registro).
+- Não muda RLS nem a função `mf_entregadores_disponiveis`.
 
 ## Após implementação
-O lojista vai em `/mercado-facil/lojista/loja`, liga "Aceitar entregador do app", define a taxa, salva — e o botão "Entregador do app" no modal de pedidos passa a ficar ativo.
+Lojista escolhe o modelo uma vez no cadastro; o impasse some — só um lado vê a opção de acionar.
