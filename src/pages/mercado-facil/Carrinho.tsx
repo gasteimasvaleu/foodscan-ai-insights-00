@@ -222,7 +222,7 @@ const Carrinho = () => {
                 <p className="text-[11px] text-center text-foreground/60">
                   Você combina disponibilidade, frete e pagamento direto com a loja.
                 </p>
-                {loja && user && (
+                {loja && user && loja.aceita_entregador && loja.quem_aciona_entregador === "cliente" && (
                   <div className="pt-3 border-t">
                     <MFEntregadoresDisponiveis
                       loja={loja}
@@ -235,6 +235,11 @@ const Carrinho = () => {
                       totalCentavos={total}
                     />
                   </div>
+                )}
+                {loja && loja.quem_aciona_entregador !== "cliente" && (
+                  <p className="text-[11px] text-center text-foreground/60 pt-2 border-t">
+                    A loja se encarregará da entrega.
+                  </p>
                 )}
               </div>
             );
