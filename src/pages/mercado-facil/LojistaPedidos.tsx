@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
 import { useMFEntregas } from "@/hooks/mercado-facil/useMFEntregas";
 import { Button } from "@/components/ui/button";
