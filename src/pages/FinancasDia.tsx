@@ -46,9 +46,6 @@ export default function FinancasDia() {
     return { receita: r, despesa: d, saldo: r - d };
   }, [data]);
 
-  const receitas = data.filter((t) => t.kind === "receita");
-  const despesas = data.filter((t) => t.kind === "despesa");
-
   if (!authLoading && !user) {
     navigate("/auth");
     return null;
