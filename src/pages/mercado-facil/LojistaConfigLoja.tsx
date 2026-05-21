@@ -89,6 +89,7 @@ const LojistaConfigLoja = () => {
         setUf(((l.endereco as any)?.uf ?? "").toString().toUpperCase());
         setFotoUrl(l.foto_url ?? "");
         setAceitaEntregador(!!l.aceita_entregador);
+        setQuemAciona(l.quem_aciona_entregador === "cliente" ? "cliente" : "loja");
         setTaxaEntregaReais(
           l.taxa_entrega_padrao_centavos
             ? (l.taxa_entrega_padrao_centavos / 100).toFixed(2).replace(".", ",")
