@@ -1,36 +1,21 @@
-## Diagnóstico
+## Problema
 
-O erro atual no `/masterchef` é `FunctionsFetchError: Failed to send a request to the Edge Function`, ou seja: o navegador não está conseguindo completar a chamada para `generate-menu`.
+Quando a loja exclui um pedido em `/mercado-facil/lojista/pedidos`, o registro em `mf_order_log` é apagado, mas a `mf_entrega` vinculada (via `order_log_id`) continua existindo. Por isso o card "Ver status do pedido" no carrinho do cliente continua mostrando aquele pedido.
 
-A função em si responde corretamente quando chamada diretamente pelo backend, então o problema mais provável não é a IA nem o JSON do cardápio. A correção anterior resolveu a execução da função, mas ainda precisamos ajustar a chamada/implantação para o app web.
+## Solução
 
-## Plano de correção
+Apagar (ou cancelar) a entrega correspondente quando o pedido for excluído pela loja. Vou no nível do banco, para garantir consistência mesmo se o delete vier de outro lugar no futuro.
 
-1. **Registrar `generate-menu` no `supabase/config.toml`**
-   - Adicionar uma seção explícita para a função.
-   - Como a página já exige usuário logado/Pro antes de abrir o MasterCheFIT, manter a função protegida com JWT (`verify_jwt = true`).
+### Mudanças
 
-2. **Tornar a chamada frontend mais robusta**
-   - Buscar a sessão atual antes de chamar a função.
-   - Enviar explicitamente o `Authorization: Bearer <access_token>` no `supabase.functions.invoke('generate-menu')`.
-   - Isso evita falhas intermitentes do client ao não anexar o token corretamente.
+1. **Migration**: criar trigger `AFTER DELETE` em `public.mf_order_log` que deleta `public.mf_entregas WHERE order_log_id = OLD.id`.
+   - Trigger `SECURITY DEFINER` com `search_path=public`.
+   - Como o componente `MFClientePedidosStatus` já escuta realtime em `mf_entregas` (`postgres_changes` event `*`), o card some sozinho assim que o delete propaga.
 
-3. **Mostrar erro real no toast**
-   - Quando a função retornar erro específico, exibir a mensagem real em vez do texto genérico “Não foi possível gerar...”.
-   - Assim, se for limite de IA, créditos, autenticação ou CORS, o usuário verá a causa correta.
+2. **Nenhuma mudança de frontend necessária** — o hook `useMFEntregas` já refaz fetch no realtime DELETE.
 
-4. **Validar após implementar**
-   - Fazer deploy/teste da edge function `generate-menu`.
-   - Testar uma chamada real com ingredientes e requisitos semelhantes aos do print.
-   - Confirmar que a função retorna o cardápio e que o frontend não cai mais no toast genérico.
+### Fora de escopo
 
-## Arquivos a alterar
-
-- `supabase/config.toml`
-- `src/pages/MasterCheFIT.tsx`
-
-## Fora do escopo
-
-- Não vou alterar o visual da página.
-- Não vou mexer nas regras Pro/subscription.
-- Não vou alterar outras funções de IA.
+- Mudar a lógica de exclusão da loja (continua deletando `mf_order_log`).
+- Avaliação de entregas já feitas (não afetado).
+- UI do card de status (sem alterações visuais).
