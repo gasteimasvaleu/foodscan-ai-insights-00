@@ -241,7 +241,7 @@ const Carrinho = () => {
                   <span className="text-base font-bold text-[#FD46A1]">{formatBRL(total)}</span>
                 </div>
                 <Button
-                  onClick={() => handleSend(lojaId)}
+                  onClick={() => setConfirmLojaId(lojaId)}
                   disabled={!loja}
                   className="w-full bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-12 text-base text-white"
                 >
