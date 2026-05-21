@@ -232,6 +232,34 @@ const LojistaConfigLoja = () => {
             )}
           </div>
         </div>
+
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 space-y-4 shadow-sm border-2 border-[#FD46A1]/60">
+          <h2 className="text-base">Entrega</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <Label className="text-base">Aceitar entregador do app</Label>
+              <p className="text-xs text-foreground/60 leading-snug mt-1">
+                Permite acionar entregadores cadastrados na sua cidade. Se desligado, você fará a entrega por conta própria.
+              </p>
+            </div>
+            <Switch checked={aceitaEntregador} onCheckedChange={setAceitaEntregador} />
+          </div>
+          {aceitaEntregador && (
+            <div className="space-y-2">
+              <Label>Taxa de entrega padrão (R$)</Label>
+              <Input
+                value={taxaEntregaReais}
+                onChange={(e) => setTaxaEntregaReais(e.target.value.replace(/[^0-9.,]/g, ""))}
+                placeholder="12,50"
+                inputMode="decimal"
+                className="text-base"
+              />
+              <p className="text-xs text-foreground/60">
+                Valor sugerido ao acionar a entrega. Você pode ajustar caso a caso.
+              </p>
+            </div>
+          )}
+        </div>
         <Button
           onClick={handleSave}
           disabled={saving || uploading}
