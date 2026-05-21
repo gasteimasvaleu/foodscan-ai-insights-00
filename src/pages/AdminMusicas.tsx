@@ -498,7 +498,7 @@ const AdminMusicas = () => {
               />
             </div>
 
-            <Button onClick={handleSave} disabled={saving} className="w-full">
+            <Button onClick={handleSave} disabled={saving || uploading} className="w-full">
               {saving ? "Salvando..." : form.id ? "Salvar alterações" : "Criar playlist"}
             </Button>
           </div>
