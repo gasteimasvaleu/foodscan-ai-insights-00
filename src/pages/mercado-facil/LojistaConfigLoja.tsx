@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { cleanPhone, isValidWhatsApp } from "@/lib/mercado-facil/formatters";
 import type { MFLoja } from "@/lib/mercado-facil/types";
@@ -34,6 +35,8 @@ const LojistaConfigLoja = () => {
   const [numero, setNumero] = useState("");
   const [uf, setUf] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [aceitaEntregador, setAceitaEntregador] = useState(false);
+  const [taxaEntregaReais, setTaxaEntregaReais] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -84,6 +87,12 @@ const LojistaConfigLoja = () => {
         setNumero(((l.endereco as any)?.numero ?? "").toString());
         setUf(((l.endereco as any)?.uf ?? "").toString().toUpperCase());
         setFotoUrl(l.foto_url ?? "");
+        setAceitaEntregador(!!l.aceita_entregador);
+        setTaxaEntregaReais(
+          l.taxa_entrega_padrao_centavos
+            ? (l.taxa_entrega_padrao_centavos / 100).toFixed(2).replace(".", ",")
+            : ""
+        );
       });
   }, [user?.id]);
 
@@ -94,6 +103,9 @@ const LojistaConfigLoja = () => {
       return toast({ title: "WhatsApp inválido", description: "Use o formato +55 11 99999-9999", variant: "destructive" });
 
     setSaving(true);
+    const taxaCentavos = aceitaEntregador
+      ? Math.max(0, Math.round(parseFloat(taxaEntregaReais.replace(",", ".") || "0") * 100))
+      : 0;
     const payload = {
       owner_id: user.id,
       nome: nome.trim(),
@@ -108,6 +120,8 @@ const LojistaConfigLoja = () => {
         uf: uf || null,
       },
       foto_url: fotoUrl.trim() || null,
+      aceita_entregador: aceitaEntregador,
+      taxa_entrega_padrao_centavos: taxaCentavos,
       ativa: true,
     };
 
@@ -217,6 +231,34 @@ const LojistaConfigLoja = () => {
               </button>
             )}
           </div>
+        </div>
+
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 space-y-4 shadow-sm border-2 border-[#FD46A1]/60">
+          <h2 className="text-base">Entrega</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <Label className="text-base">Aceitar entregador do app</Label>
+              <p className="text-xs text-foreground/60 leading-snug mt-1">
+                Permite acionar entregadores cadastrados na sua cidade. Se desligado, você fará a entrega por conta própria.
+              </p>
+            </div>
+            <Switch checked={aceitaEntregador} onCheckedChange={setAceitaEntregador} />
+          </div>
+          {aceitaEntregador && (
+            <div className="space-y-2">
+              <Label>Taxa de entrega padrão (R$)</Label>
+              <Input
+                value={taxaEntregaReais}
+                onChange={(e) => setTaxaEntregaReais(e.target.value.replace(/[^0-9.,]/g, ""))}
+                placeholder="12,50"
+                inputMode="decimal"
+                className="text-base"
+              />
+              <p className="text-xs text-foreground/60">
+                Valor sugerido ao acionar a entrega. Você pode ajustar caso a caso.
+              </p>
+            </div>
+          )}
         </div>
         <Button
           onClick={handleSave}
