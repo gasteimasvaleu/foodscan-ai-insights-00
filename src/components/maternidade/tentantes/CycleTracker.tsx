@@ -138,49 +138,78 @@ export function CycleTracker() {
         Registrar novo ciclo
       </Button>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">Histórico</CardTitle>
+          <CardDescription>Últimos ciclos registrados</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pl-5">
           {cycles.length === 0 ? (
-            <p className="text-sm text-gray-500">Nenhum ciclo registrado ainda.</p>
+            <div className="rounded-xl border border-dashed border-[#FD46A1]/20 bg-[#FFD1E7]/20 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Nenhum ciclo registrado ainda.</p>
+            </div>
           ) : (
-            <div className="space-y-2">
-              {cycles.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex items-start justify-between gap-3 p-3 rounded-2xl bg-[#FFD1E7]"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-800">{fmtDate(c.cycle_start_date)}</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      <Badge variant="secondary" className="bg-white text-gray-700 text-[10px]">
-                        Ciclo {c.cycle_length_days}d
-                      </Badge>
-                      {c.flow && (
-                        <Badge variant="secondary" className="bg-white text-gray-700 text-[10px] capitalize">
-                          {c.flow}
-                        </Badge>
-                      )}
-                      {c.symptoms?.slice(0, 3).map((s) => (
-                        <Badge key={s} variant="secondary" className="bg-white text-gray-700 text-[10px]">
-                          {s}
-                        </Badge>
-                      ))}
-                    </div>
-                    {c.notes && <p className="text-xs text-gray-600 mt-1">{c.notes}</p>}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => remove(c.id)}
-                    className="text-xs text-gray-500 hover:text-red-600"
+            <div className="space-y-3">
+              {cycles.map((c) => {
+                const visibleSymptoms = c.symptoms?.slice(0, 4) ?? [];
+                const extraSymptoms = (c.symptoms?.length ?? 0) - visibleSymptoms.length;
+                return (
+                  <div
+                    key={c.id}
+                    className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-4 space-y-3"
                   >
-                    Excluir
-                  </Button>
-                </div>
-              ))}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-sm">{fmtDate(c.cycle_start_date)}</span>
+                          <Badge className="text-[10px] px-1.5 py-0 bg-[#FFD1E7]/60 text-[#FD46A1] border border-[#FD46A1]/20 hover:bg-[#FFD1E7]/60">
+                            Ciclo {c.cycle_length_days}d
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                          <span>{c.period_length_days} dias de menstruação</span>
+                          {c.flow && (
+                            <>
+                              <span>·</span>
+                              <span className="capitalize">{c.flow}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => remove(c.id)}
+                        className="shrink-0 h-8 w-8 text-[#FD46A1]/70 hover:text-[#FD46A1] hover:bg-[#FFD1E7]/40"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {visibleSymptoms.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {visibleSymptoms.map((s) => (
+                          <Badge key={s} variant="secondary" className="bg-white text-gray-700 text-[10px]">
+                            {s}
+                          </Badge>
+                        ))}
+                        {extraSymptoms > 0 && (
+                          <Badge variant="secondary" className="bg-white text-gray-700 text-[10px]">
+                            +{extraSymptoms}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+
+                    {c.notes && (
+                      <div className="flex gap-2 rounded-lg bg-primary/5 border border-primary/10 p-2">
+                        <Info className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">{c.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>
