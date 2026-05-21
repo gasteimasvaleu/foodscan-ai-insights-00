@@ -1,29 +1,10 @@
-# Streak badge na Home
+## Bump de versão iOS para envio à Apple
 
-Adicionar um indicador visível da sequência diária (🔥 N) no topo da Home, trazendo a gamificação que hoje fica escondida em `/conquistas`.
+**Alvo:** `ios/App/App.xcodeproj/project.pbxproj`
 
-## Onde
+- `MARKETING_VERSION`: `1.0.8` → `1.0.9` (em todas as ocorrências: Debug + Release do target App e do WeDietWidget, se houver)
+- `CURRENT_PROJECT_VERSION`: `22` → `23` (idem)
 
-`src/pages/Index.tsx`, dentro do bloco já logado, como primeiro filho do `space-y-6` (acima do `AuthCard`). Renderiza só quando `user` existe.
-
-## Componente novo
-
-`src/components/StreakBadge.tsx`:
-
-- Lê `user_streaks.current_streak` e `longest_streak` para o `user.id`.
-- Subscription realtime (`postgres_changes` em `user_streaks`) para atualizar ao vivo quando o trigger de `meal_records` incrementar — com cleanup correto via `removeChannel`.
-- Animação pop (scale 1 → 1.3 → 1, 400ms) ao detectar incremento.
-- Clica → navega para `/conquistas`.
-- Estados visuais:
-  - `current_streak > 0`: pill com 🔥 + número + texto "dias seguidos".
-  - `current_streak === 0`: pill discreta com 🔥 + "Comece sua sequência hoje".
-- Estilo: glassmorphism (bg-white/70, backdrop-blur-md, rounded-full), borda sutil em `#FD46A1/20`, altura compacta (~44px), full-width com conteúdo centralizado-esquerda.
-- Não renderiza nada enquanto está carregando (evita flicker).
-
-## Sem mudanças de DB
-
-Tabela `user_streaks` já existe (memória `mem://features/gamification/streaks-badges`). Trigger em `meal_records` já popula.
-
-## Esforço
-
-~30min, 2 arquivos (novo `StreakBadge.tsx` + edit em `Index.tsx`).
+**Pós-bump:**
+- Não rodar `npx cap sync` (poderia mexer no pbxproj). A edição é só nos build settings de versão.
+- Usuário faz pull no Mac e faz Archive no Xcode (ou sobe via Appflow) para enviar pra Apple.
