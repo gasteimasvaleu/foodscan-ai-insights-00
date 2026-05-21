@@ -36,6 +36,20 @@ const LojistaPedidos = () => {
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
 
+  const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
+  const entregasPorPedido = useMemo(() => {
+    const m = new Map<string, typeof entregas[number]>();
+    for (const e of entregas) {
+      if (e.order_log_id) {
+        const existing = m.get(e.order_log_id);
+        if (!existing || new Date(e.created_at) > new Date(existing.created_at)) {
+          m.set(e.order_log_id, e);
+        }
+      }
+    }
+    return m;
+  }, [entregas]);
+
   useEffect(() => {
     if (!user) return;
     (async () => {
