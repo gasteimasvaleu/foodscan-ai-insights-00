@@ -31,6 +31,8 @@ import {
   Plus,
   Pencil,
   Music,
+  Upload,
+  X,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { MUSIC_CATEGORIES, getMusicCategory } from "@/data/musicCategories";
