@@ -117,11 +117,11 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
         </Card>
 
         {history.length > 0 && (
-          <Card className="bg-white/70 backdrop-blur-md border-white/40">
-            <CardHeader>
+          <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+            <CardHeader className="pl-5">
               <CardTitle className="text-base font-semibold">Histórico</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pl-5">
               <div className="space-y-2">
                 {history.slice(0, 5).map((h, i) => {
                   const c = colors[h.level];
@@ -153,8 +153,8 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
     const progress = ((currentQuestion + 1) / content.questions.length) * 100;
     return (
       <div className="space-y-4">
-        <Card className="bg-white/70 backdrop-blur-md border-white/40">
-          <CardHeader className="space-y-3">
+        <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+          <CardHeader className="pl-5 space-y-3">
             <div className="flex items-center justify-between">
               <Badge variant="outline">{currentQuestion + 1} / {content.questions.length}</Badge>
               <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
@@ -162,7 +162,7 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
             <Progress value={progress} className="h-2" />
             <CardTitle className="text-base leading-relaxed font-semibold">{q.question}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pl-5">
             <RadioGroup
               value={currentAnswer?.toString() ?? ''}
               onValueChange={(v) => setCurrentAnswer(parseInt(v))}
@@ -248,8 +248,8 @@ export function SelfAssessment({ content, emergencyContent }: SelfAssessmentProp
         </Button>
       </div>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardContent className="pt-6">
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardContent className="pl-5 pt-6">
           <p className="text-xs text-gray-600 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />{content.disclaimer}
           </p>
