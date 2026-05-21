@@ -81,9 +81,6 @@ export default function Financas() {
           onSelectDay={(key) => navigate(`/financas/${key}`)}
         />
 
-        {/* Gráfico */}
-        <FinanceChart month={month} transactions={data} />
-
         {/* Timeline de lançamentos */}
         <div>
           <h2 className="text-base text-foreground mb-2 px-1">Lançamentos do mês</h2>
@@ -97,6 +94,9 @@ export default function Financas() {
             emptyLabel="Nenhum lançamento neste mês."
           />
         </div>
+
+        {/* Gráfico */}
+        <FinanceChart month={month} transactions={data} />
 
         {loading && <p className="text-center text-xs text-muted-foreground">Carregando…</p>}
       </div>
