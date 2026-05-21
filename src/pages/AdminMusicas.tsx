@@ -90,6 +90,34 @@ const AdminMusicas = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadCapa = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Envie uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande", description: "Máximo de 2 MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("musicas-capas")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("musicas-capas").getPublicUrl(path);
+      setForm((f) => ({ ...f, thumbnail_url: data.publicUrl }));
+      toast({ title: "Capa enviada" });
+    } catch (e: any) {
+      toast({ title: "Erro no upload", description: e.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const checkAdmin = async () => {
