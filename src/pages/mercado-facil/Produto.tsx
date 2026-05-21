@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
 import { useMFCart } from "@/hooks/mercado-facil/useMFCart";
 import { toast } from "@/components/ui/use-toast";
