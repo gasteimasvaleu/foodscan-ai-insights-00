@@ -49,7 +49,9 @@ const LojistaPedidos = () => {
   const [openEntrega, setOpenEntrega] = useState<OrderLog | null>(null);
   const [endereco, setEndereco] = useState("");
   const [cidadeEntrega, setCidadeEntrega] = useState("");
+  const [estadoEntrega, setEstadoEntrega] = useState("");
   const [taxaReais, setTaxaReais] = useState("");
+
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
   const [modoEntrega, setModoEntrega] = useState<"app" | "propria">("app");
