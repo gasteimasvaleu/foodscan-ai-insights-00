@@ -130,13 +130,7 @@ const Musicas = () => {
             </Button>
           </div>
 
-          {active && (
-            <YouTubePlayer
-              youtubeId={active.youtube_id}
-              type={active.youtube_type}
-              title={active.titulo}
-            />
-          )}
+          {active && <VinylPlayer playlist={active} />}
         </DialogContent>
       </Dialog>
     </div>
