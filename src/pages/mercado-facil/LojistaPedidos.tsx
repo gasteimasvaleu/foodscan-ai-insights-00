@@ -177,9 +177,10 @@ const LojistaPedidos = () => {
 
               {entrega && (
                 <div className="rounded-2xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-sm text-foreground">
-                      <Truck size={14} className="text-[#FD46A1]" /> Entrega
+                      <Truck size={14} className="text-[#FD46A1]" />
+                      {entrega.tipo === "propria" ? "Entrega pela loja" : "Entrega"}
                     </span>
                     <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#FD46A1] text-white">
                       {ENTREGA_STATUS_LABEL[entrega.status]}
@@ -194,6 +195,40 @@ const LojistaPedidos = () => {
                     <p className="text-xs text-foreground/60">Entrega cancelada.</p>
                   ) : (
                     <MFEntregaProgress status={entrega.status as "aceita" | "coletada" | "entregue"} />
+                  )}
+
+                  {entrega.tipo === "propria" && ["aceita", "coletada"].includes(entrega.status) && (
+                    <div className="flex gap-2 pt-1">
+                      {entrega.status === "aceita" && (
+                        <Button
+                          size="sm"
+                          disabled={updatingEntrega === entrega.id}
+                          className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                          onClick={() => avancarEntrega(entrega.id, "coletada")}
+                        >
+                          {updatingEntrega === entrega.id ? <Loader2 size={14} className="animate-spin" /> : "Saiu para entrega"}
+                        </Button>
+                      )}
+                      {entrega.status === "coletada" && (
+                        <Button
+                          size="sm"
+                          disabled={updatingEntrega === entrega.id}
+                          className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
+                          onClick={() => avancarEntrega(entrega.id, "entregue")}
+                        >
+                          {updatingEntrega === entrega.id ? <Loader2 size={14} className="animate-spin" /> : "Marcar entregue"}
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={updatingEntrega === entrega.id}
+                        className="rounded-2xl"
+                        onClick={() => avancarEntrega(entrega.id, "cancelada")}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
                   )}
                 </div>
               )}
