@@ -303,7 +303,7 @@ const LojistaPedidos = () => {
       </main>
 
       <Dialog open={!!openEntrega} onOpenChange={(o) => !o && setOpenEntrega(null)}>
-        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-md w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Acionar entrega</DialogTitle>
             <DialogDescription>Escolha quem fará a entrega deste pedido.</DialogDescription>
