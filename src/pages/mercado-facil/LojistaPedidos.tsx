@@ -256,8 +256,10 @@ const LojistaPedidos = () => {
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
                       setEndereco(p.cliente_endereco ?? "");
                       setCidadeEntrega(p.cliente_cidade ?? loja.endereco?.cidade ?? "");
+                      setEstadoEntrega(p.cliente_estado ?? "");
                       setTelCliente(p.cliente_telefone ?? "");
                     }}
+
                   >
                     <Truck size={14} className="mr-1" /> Entrega
                   </Button>
