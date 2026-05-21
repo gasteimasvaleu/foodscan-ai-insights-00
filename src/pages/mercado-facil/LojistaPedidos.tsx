@@ -148,6 +148,21 @@ const LojistaPedidos = () => {
     }
   };
 
+  const excluirPedido = async (pedidoId: string) => {
+    setDeletingId(pedidoId);
+    const { error } = await supabase.from("mf_order_log").delete().eq("id", pedidoId);
+    setDeletingId(null);
+    setConfirmDeleteId(null);
+    if (error) {
+      toast({ title: "Erro ao excluir pedido", description: error.message, variant: "destructive" });
+      return;
+    }
+    setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+    toast({ title: "Pedido excluído" });
+  };
+
+
+
 
   if (loading) {
     return (
