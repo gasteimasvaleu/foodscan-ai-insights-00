@@ -33,7 +33,7 @@ const STEPS = [
 export default function VenueChatOnboardingModal({ open, onClose }: Props) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-md bg-white/80 backdrop-blur-md rounded-3xl border-0 shadow-xl">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm mx-auto bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-[#FD46A1] text-xl text-center">
             Como funciona o chat do local
