@@ -1,54 +1,54 @@
-## Anexo de imagem (comprovante) em despesas
+# Scan de Conta com IA (Despesas)
 
-Permitir anexar 1 imagem opcional ao cadastrar/editar uma **despesa**. Receitas seguem sem anexo.
+Aproveitar o upload de imagem que já existe no `TransactionModal` para, ao anexar uma foto de cupom/conta de restaurante, chamar uma IA que extrai os dados e preenche o lançamento automaticamente.
 
-### Banco
+## Fluxo do usuário
 
-Migração:
-- `ALTER TABLE finance_transactions ADD COLUMN receipt_url text`
-- Novo bucket público `finance-receipts` com RLS em `storage.objects`:
-  - SELECT: público (bucket público para exibir direto via URL)
-  - INSERT/UPDATE/DELETE: somente o dono (path `{auth.uid()}/...`)
+1. No modal de despesa, o usuário tira/escolhe a foto da conta (já existe).
+2. Logo abaixo da miniatura aparece um botão **"Preencher com IA"** (rosa, ícone Sparkles).
+3. Ao clicar: overlay de loading ("Lendo sua conta…"), a IA analisa e devolve:
+   - `valor` (R$)
+   - `descrição` (ex: "Restaurante X – Almoço")
+   - `categoria` sugerida (mapeada para as categorias existentes de despesa)
+   - `data` (se legível no cupom; senão mantém a atual)
+4. Campos do formulário são preenchidos automaticamente. Usuário revisa e salva normalmente.
+5. A imagem continua sendo salva como `receipt_url` (comportamento atual).
 
-### Tipos
+Se a IA falhar ou não conseguir ler, mostra toast amigável e mantém os campos como estavam.
 
-Regenerar `types.ts` (automático). Adicionar `receipt_url?: string | null` em `FinanceTx` e `NewTxInput` (`useFinanceTransactions.ts`).
+## Backend
 
-### UI — TransactionModal.tsx
+**Nova edge function `scan-receipt`** (`supabase/functions/scan-receipt/index.ts`):
+- Input: `{ imageUrl: string }` (URL pública do bucket `finance-receipts`) ou `{ imageBase64 }`.
+- Chama Lovable AI Gateway com modelo `google/gemini-3-flash-preview` (multimodal, barato e rápido), usando **tool calling** para devolver JSON estruturado:
+  ```
+  { amount: number, description: string, suggested_category: string,
+    occurred_on: string|null, merchant: string|null, confidence: number }
+  ```
+- Prompt instrui a IA a interpretar cupons fiscais/contas de restaurante em PT-BR, somar total (incluindo taxa de serviço quando presente), e escolher uma categoria entre as opções enviadas no prompt.
+- Trata 429 (rate limit) e 402 (créditos) devolvendo mensagens claras.
+- `verify_jwt = true` (usuário autenticado).
 
-Dentro do bloco, **somente quando `kind === 'despesa'`**, adicionar um campo "Comprovante (opcional)" acima da descrição:
+## Frontend
 
-- Área clicável (dropzone) `rounded-2xl border-2 border-dashed border-[#FD46A1]/40 bg-white/40` com ícone `ImagePlus`, label "Toque para adicionar foto" e hint "JPG/PNG até 5 MB".
-- `<input type="file" accept="image/*" capture="environment" hidden>` — `capture` aciona câmera no mobile e também aceita galeria.
-- Após selecionar: mostra preview (img 100% width, `aspect-video`, `object-cover`, rounded-2xl) com botão "X" rosa para remover (define `receipt_url=null` e remove arquivo do storage se já salvo).
-- Estado local: `receiptFile: File | null`, `receiptUrl: string | null` (já salvo), `uploading: boolean`.
-- No `handleSave`:
-  1. Se há `receiptFile`: upload para `finance-receipts/{user.id}/{uuid}.{ext}` → pega `publicUrl` → seta em `receipt_url`.
-  2. Se removeu (`receiptUrl` foi limpo e havia um anterior): remove do storage antes de salvar.
-  3. Persiste a tx com `receipt_url`.
+**`TransactionModal.tsx`**:
+- Botão "Preencher com IA" só aparece quando `kind === 'despesa'` E existe `previewUrl`/`receiptUrl`.
+- Handler `handleAiScan`:
+  1. Se a imagem ainda não foi enviada (`receiptFile` local), faz upload primeiro para obter URL pública.
+  2. `supabase.functions.invoke('scan-receipt', { body: { imageUrl } })`.
+  3. Preenche `amount`, `description`, `categoryId` (resolvendo nome → id da lista atual de categorias de despesa), e `date` se vier.
+  4. Toast de sucesso com nome do estabelecimento (quando houver).
+- Reusa o `VideoOverlay` existente para o loader.
 
-### UI — FinanceTimeline.tsx
+## Não muda
 
-Quando `tx.receipt_url` existir:
-- Renderiza miniatura 40×40 `rounded-lg object-cover` à esquerda do conteúdo do card (entre o nó e o texto).
-- Não há lightbox aqui — clique no card mantém comportamento atual (abre edição/navega).
+- Schema do banco (continua usando `receipt_url`).
+- RLS, bucket, lógica de salvar/editar despesa.
+- Receitas (ficam sem upload e sem IA).
 
-### UI — FinancasDia.tsx
+## Detalhes técnicos
 
-No modal aberto pelo `openEdit`, o componente já receberá `initial.receipt_url` via prop `initial`.
-
-Quando deletar um lançamento que tinha `receipt_url`, remover também o arquivo do storage (em `useFinanceTransactions.remove`).
-
-### Detalhes técnicos
-
-- Limite 5 MB validado client-side antes do upload (toast de erro).
-- Compressão opcional ignorada nesta versão; upload direto.
-- Não usar edge functions — upload direto via `supabase.storage.from('finance-receipts').upload(...)`.
-- Sem novas dependências.
-
-### Arquivos alterados
-
-- nova migração: bucket + coluna + policies
-- `src/hooks/useFinanceTransactions.ts` — tipos + remoção de arquivo no `remove`
-- `src/components/financas/TransactionModal.tsx` — bloco condicional de upload
-- `src/components/financas/FinanceTimeline.tsx` — miniatura
+- Modelo: `google/gemini-3-flash-preview` via `https://ai.gateway.lovable.dev/v1/chat/completions`.
+- Sem dependências novas.
+- Sem cobrança extra além do uso do Lovable AI Gateway (free tier cobre testes iniciais).
+- Custo estimado por scan: muito baixo (imagem + ~200 tokens de saída).
