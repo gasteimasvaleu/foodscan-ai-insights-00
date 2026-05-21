@@ -153,12 +153,14 @@ const EntregadorCadastro = () => {
             </div>
             <div>
               <Label>UF</Label>
-              <Input
-                value={estado}
-                onChange={(e) => setEstado(e.target.value.toUpperCase())}
-                maxLength={2}
-                className="text-base uppercase"
-              />
+              <Select value={estado} onValueChange={(v) => setEstado(v)}>
+                <SelectTrigger className="text-base uppercase"><SelectValue placeholder="UF" /></SelectTrigger>
+                <SelectContent>
+                  {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
+                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>
