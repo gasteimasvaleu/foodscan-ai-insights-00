@@ -23,6 +23,10 @@ interface OrderLog {
   itens: Array<{ nome: string; quantidade: number; preco_centavos: number }>;
   total_estimado_centavos: number;
   sent_at: string;
+  cliente_nome: string | null;
+  cliente_endereco: string | null;
+  cliente_cidade: string | null;
+  cliente_telefone: string | null;
 }
 
 const LojistaPedidos = () => {
@@ -196,6 +200,9 @@ const LojistaPedidos = () => {
                         loja.aceita_entregador && loja.quem_aciona_entregador !== "cliente";
                       setModoEntrega(lojaUsaApp ? "app" : "propria");
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
+                      setEndereco(p.cliente_endereco ?? "");
+                      setCidadeEntrega(p.cliente_cidade ?? loja.endereco?.cidade ?? "");
+                      setTelCliente(p.cliente_telefone ?? "");
                     }}
                   >
                     <Truck size={14} className="mr-1" /> Entrega
@@ -342,6 +349,11 @@ const LojistaPedidos = () => {
             </p>
 
             <div className="bg-[#FFD1E7]/40 rounded-2xl p-3 space-y-2">
+              {openEntrega?.cliente_nome && (
+                <p className="text-xs text-foreground/70">
+                  Pedido de <span className="font-medium text-foreground">{openEntrega.cliente_nome}</span>
+                </p>
+              )}
               <div>
                 <Label>Endereço completo</Label>
                 <Input

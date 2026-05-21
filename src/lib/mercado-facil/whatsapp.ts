@@ -73,6 +73,9 @@ interface SendArgs {
   clienteId: string;
   clienteNome?: string;
   clienteLocal?: string;
+  endereco?: string;
+  cidade?: string;
+  telefone?: string;
 }
 
 export function buildOrderMessage({ loja, itens, clienteNome, clienteLocal }: SendArgs): string {
@@ -117,6 +120,10 @@ export async function sendOrderToWhatsApp(args: SendArgs): Promise<void> {
         preco_centavos: i.preco_centavos,
       })),
       total_estimado_centavos: total,
+      cliente_nome: args.clienteNome ?? null,
+      cliente_endereco: args.endereco?.trim() || null,
+      cliente_cidade: args.cidade?.trim() || null,
+      cliente_telefone: args.telefone?.trim() || null,
     })
     .then(({ error }) => {
       if (error) console.warn("[mf_order_log] insert error:", error.message);
