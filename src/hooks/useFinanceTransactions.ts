@@ -11,6 +11,7 @@ export interface FinanceTx {
   category: string;
   description: string | null;
   occurred_on: string;
+  receipt_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -21,6 +22,7 @@ export interface NewTxInput {
   category: string;
   description?: string | null;
   occurred_on: string;
+  receipt_url?: string | null;
 }
 
 export function useFinanceTransactions(opts: { startDate?: string; endDate?: string; date?: string }) {
