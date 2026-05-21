@@ -23,10 +23,14 @@ interface Props {
   telefoneCliente?: string;
   itens: MFCartItem[];
   totalCentavos: number;
+  orderLogId?: string;
+  taxaOverrideCentavos?: number;
+  onCalled?: () => void;
 }
 
 export function MFEntregadoresDisponiveis({
   loja, cidade, endereco, clienteId, clienteNome, telefoneCliente, itens, totalCentavos,
+  orderLogId, taxaOverrideCentavos, onCalled,
 }: Props) {
   const [entregadores, setEntregadores] = useState<MFEntregador[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,11 +60,13 @@ export function MFEntregadoresDisponiveis({
       await sendDeliveryRequestToWhatsApp({
         entregador, loja, clienteId, clienteNome, telefoneCliente,
         endereco, cidade, itens, totalCentavos,
+        orderLogId, taxaOverrideCentavos,
       });
       toast({
         title: "WhatsApp aberto",
         description: `Aguarde o retorno de ${entregador.nome_completo}.`,
       });
+      onCalled?.();
     } catch (err) {
       console.error(err);
       toast({ title: "Não foi possível chamar o entregador", variant: "destructive" });

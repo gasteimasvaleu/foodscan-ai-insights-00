@@ -14,12 +14,14 @@ interface DeliveryRequestArgs {
   cidade: string;
   itens: MFCartItem[];
   totalCentavos: number;
+  orderLogId?: string;
+  taxaOverrideCentavos?: number;
 }
 
 export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): Promise<void> {
-  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos } = args;
+  const { entregador, loja, clienteId, clienteNome, telefoneCliente, endereco, cidade, itens, totalCentavos, orderLogId, taxaOverrideCentavos } = args;
   const enderecoLoja = [loja.endereco?.rua, loja.endereco?.bairro, loja.endereco?.cidade].filter(Boolean).join(", ");
-  const taxa = (loja as any).taxa_entrega_padrao_centavos ?? 0;
+  const taxa = taxaOverrideCentavos ?? (loja as any).taxa_entrega_padrao_centavos ?? 0;
 
   // Cria mf_entrega (não bloqueia o WhatsApp se falhar)
   const { error } = await supabase.from("mf_entregas").insert({
@@ -30,8 +32,10 @@ export async function sendDeliveryRequestToWhatsApp(args: DeliveryRequestArgs): 
     cidade: normalizeCidade(cidade),
     taxa_centavos: taxa,
     status: "disponivel",
+    tipo: "app",
     telefone_cliente: telefoneCliente ?? null,
     telefone_lojista: loja.telefone_whatsapp ?? null,
+    ...(orderLogId ? { order_log_id: orderLogId } : {}),
   });
   if (error) console.warn("[mf_entregas] insert:", error.message);
 

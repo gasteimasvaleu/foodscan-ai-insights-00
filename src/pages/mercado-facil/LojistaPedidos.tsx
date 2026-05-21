@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
 import { useMFEntregas } from "@/hooks/mercado-facil/useMFEntregas";
 import { Button } from "@/components/ui/button";
@@ -331,62 +332,85 @@ const LojistaPedidos = () => {
                 Entrega própria
               </button>
             </div>
-            {loja?.quem_aciona_entregador === "cliente" && (
-              <p className="text-xs text-foreground/60 leading-snug">
-                O entregador é chamado pelo cliente no carrinho. Use "Entrega própria" para registrar o status aqui.
-              </p>
-            )}
-            {modoEntrega === "propria" && loja?.quem_aciona_entregador !== "cliente" && (
-              <p className="text-xs text-foreground/60 leading-snug">
-                Você fará a entrega por conta própria (motoboy fixo, terceirizado, retirada etc.). Atualize o status no card do pedido conforme o pedido sai e é entregue.
-              </p>
-            )}
-            <div>
-              <Label>Endereço completo</Label>
-              <Input
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-                placeholder="Rua, nº, bairro"
-                className="text-base"
-              />
-            </div>
-            <div>
-              <Label>Cidade</Label>
-              <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
-            </div>
-            <div>
-              <Label>Taxa (R$)</Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                value={taxaReais}
-                onChange={(e) => setTaxaReais(e.target.value)}
-                placeholder="0,00"
-                className="text-base"
-              />
-            </div>
-            <div>
-              <Label>WhatsApp do cliente (opcional)</Label>
-              <Input
-                value={telCliente}
-                onChange={(e) => setTelCliente(e.target.value)}
-                placeholder="+55 11 99999-9999"
-                className="text-base"
-              />
-            </div>
-            <Button
-              onClick={criarEntrega}
-              disabled={creating}
-              className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12"
-            >
-              {creating ? (
-                <Loader2 className="animate-spin" />
-              ) : modoEntrega === "propria" ? (
-                "Registrar entrega própria"
-              ) : (
-                "Publicar entrega"
+
+            <p className="text-xs text-foreground/60 leading-snug">
+              {loja?.quem_aciona_entregador === "cliente"
+                ? 'O entregador é chamado pelo cliente no carrinho. Use "Entrega própria" para registrar o status aqui.'
+                : modoEntrega === "app"
+                ? "Confirme os dados abaixo e escolha um entregador disponível para enviar via WhatsApp."
+                : "Você fará a entrega por conta própria. Atualize o status no card do pedido conforme avança."}
+            </p>
+
+            <div className="bg-[#FFD1E7]/40 rounded-2xl p-3 space-y-2">
+              <div>
+                <Label>Endereço completo</Label>
+                <Input
+                  value={endereco}
+                  onChange={(e) => setEndereco(e.target.value)}
+                  placeholder="Rua, nº, bairro"
+                  className="text-base"
+                />
+              </div>
+              <div>
+                <Label>Cidade</Label>
+                <Input value={cidadeEntrega} onChange={(e) => setCidadeEntrega(e.target.value)} className="text-base" />
+              </div>
+              <div>
+                <Label>{modoEntrega === "app" ? "Taxa sugerida ao entregador (R$)" : "Taxa cobrada do cliente (R$)"}</Label>
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={taxaReais}
+                  onChange={(e) => setTaxaReais(e.target.value)}
+                  placeholder="0,00"
+                  className="text-base"
+                />
+              </div>
+              {modoEntrega === "app" && (
+                <div>
+                  <Label>WhatsApp do cliente (opcional)</Label>
+                  <Input
+                    value={telCliente}
+                    onChange={(e) => setTelCliente(e.target.value)}
+                    placeholder="+55 11 99999-9999"
+                    className="text-base"
+                  />
+                </div>
               )}
-            </Button>
+            </div>
+
+            {modoEntrega === "app" && loja && openEntrega ? (
+              <div className="space-y-2">
+                <p className="text-xs text-foreground/60 leading-snug">
+                  1. Confirme endereço e taxa acima • 2. Escolha um entregador e toque em <strong>Chamar</strong>.
+                </p>
+                <MFEntregadoresDisponiveis
+                  loja={loja}
+                  cidade={cidadeEntrega}
+                  endereco={endereco}
+                  clienteId={openEntrega.cliente_id}
+                  telefoneCliente={telCliente.trim() || undefined}
+                  itens={openEntrega.itens.map((i) => ({
+                    produto_id: "",
+                    nome: i.nome,
+                    quantidade: i.quantidade,
+                    preco_centavos: i.preco_centavos,
+                  })) as any}
+                  totalCentavos={openEntrega.total_estimado_centavos}
+                  orderLogId={openEntrega.id}
+                  taxaOverrideCentavos={Math.round((Number(taxaReais.replace(",", ".")) || 0) * 100)}
+                  onCalled={() => setOpenEntrega(null)}
+                />
+              </div>
+            ) : (
+              <Button
+                onClick={criarEntrega}
+                disabled={creating}
+                className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12"
+              >
+                {creating ? <Loader2 className="animate-spin" /> : "Registrar entrega própria"}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
