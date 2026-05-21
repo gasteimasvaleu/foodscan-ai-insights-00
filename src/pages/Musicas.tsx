@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Music, X } from "lucide-react";
+import { Music } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import {
@@ -109,25 +109,15 @@ const Musicas = () => {
       {/* Player Modal */}
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-lg w-[calc(100%-1.5rem)] mx-auto rounded-3xl bg-white/80 backdrop-blur-md border-2 border-primary shadow-2xl p-4 sm:p-5 max-h-[90vh] overflow-y-auto">
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div className="flex-1 min-w-0">
-              <DialogTitle className="text-base text-primary leading-tight">
-                {active?.titulo}
-              </DialogTitle>
-              {active?.descricao && (
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                  {active.descricao}
-                </p>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setActive(null)}
-              className="rounded-full bg-primary hover:bg-primary/90 text-white h-8 w-8 shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+          <div className="mb-3 pr-10">
+            <DialogTitle className="text-base text-primary leading-tight">
+              {active?.titulo}
+            </DialogTitle>
+            {active?.descricao && (
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                {active.descricao}
+              </p>
+            )}
           </div>
 
           {active && <VinylPlayer playlist={active} />}
