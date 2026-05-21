@@ -5,11 +5,21 @@ export interface PlaylistMusica {
   titulo: string;
   descricao: string | null;
   categoria: string;
-  youtube_id: string;
-  youtube_type: "playlist" | "video";
+  youtube_id: string | null;
+  youtube_type: "playlist" | "video" | null;
   thumbnail_url: string | null;
   ordem: number;
   is_active: boolean;
+  created_at: string;
+}
+
+export interface MusicaFaixa {
+  id: string;
+  playlist_id: string;
+  titulo: string;
+  audio_url: string;
+  duracao_segundos: number | null;
+  ordem: number;
   created_at: string;
 }
 
@@ -18,17 +28,8 @@ interface PlaylistCardProps {
   onClick: () => void;
 }
 
-export const getYouTubeThumb = (p: PlaylistMusica): string => {
-  if (p.thumbnail_url) return p.thumbnail_url;
-  if (p.youtube_type === "video") {
-    return `https://i.ytimg.com/vi/${p.youtube_id}/hqdefault.jpg`;
-  }
-  // Para playlist, sem id de vídeo conhecido, usamos placeholder estilizado
-  return "";
-};
-
 export const PlaylistCard = ({ playlist, onClick }: PlaylistCardProps) => {
-  const thumb = getYouTubeThumb(playlist);
+  const thumb = playlist.thumbnail_url;
 
   return (
     <button
@@ -49,10 +50,8 @@ export const PlaylistCard = ({ playlist, onClick }: PlaylistCardProps) => {
           </div>
         )}
 
-        {/* Gradient para legibilidade */}
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
-        {/* Faixa preta translúcida */}
         <div className="absolute inset-x-0 bottom-0 bg-black/55 backdrop-blur-sm px-3 py-2">
           <p className="text-sm text-white line-clamp-1 leading-tight">
             {playlist.titulo}
