@@ -51,6 +51,8 @@ import FacaEmCasa from "./pages/FacaEmCasa";
 import Provador from "./pages/Provador";
 import Loja from "./pages/Loja";
 import AdminLoja from "./pages/AdminLoja";
+import Musicas from "./pages/Musicas";
+import AdminMusicas from "./pages/AdminMusicas";
 import AdminAlimentosComunidade from "./pages/AdminAlimentosComunidade";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
@@ -173,6 +175,8 @@ const App = () => (
             <Route path="/treinos" element={<ProRoute feature="treinos"><Treinos /></ProRoute>} />
             <Route path="/nutricionista-que-vende" element={<ProRoute feature="nutricionista-que-vende"><NutricionistaQueVende /></ProRoute>} />
             <Route path="/loja" element={<Loja />} />
+            <Route path="/musicas" element={<Musicas />} />
+            <Route path="/admin/musicas" element={<AdminMusicas />} />
             <Route path="/lista-de-compras" element={<ShoppingList />} />
             <Route path="/lista-de-compras/:id" element={<ShoppingListDetail />} />
             <Route path="/adicionar-refeicao" element={<AdicionarRefeicao />} />
