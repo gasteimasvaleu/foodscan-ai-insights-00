@@ -22,8 +22,9 @@ import { parseBRLToCents } from "@/lib/financas/formatters";
 import type { FinanceTx } from "@/hooks/useFinanceTransactions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { ImagePlus, X, Loader2 } from "lucide-react";
+import { ImagePlus, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { parseISO, format } from "date-fns";
 
 interface Props {
   open: boolean;
