@@ -1,19 +1,18 @@
-Envolver disco + equalizer em um card preto translúcido, com as ondas ocupando toda a largura interna do card.
+Ajustar o card de playlist para usar a thumb em formato 16:9 e mover título + descrição para uma faixa preta translúcida sobreposta na base da imagem.
 
-## Mudanças em `src/components/musicas/VinylPlayer.tsx`
+## Mudanças em `src/components/musicas/PlaylistCard.tsx`
 
-1. **Card wrapper preto translúcido** envolvendo o disco e o equalizer:
-   - `bg-black/70 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl p-6 w-full flex flex-col items-center gap-5`
-   - Adiciona um brilho radial sutil rosa atrás do disco (`radial-gradient` com `#FD46A1` em baixa opacidade) para reforçar o efeito.
+1. **Container da imagem**: trocar `aspect-square` por `aspect-video` (16:9), mantendo `object-cover`.
+2. **Card**: remover o padding inferior com texto separado; a thumb passa a ocupar o card inteiro. Manter `rounded-3xl overflow-hidden` e `bg-[#FFD1E7]` como fallback.
+3. **Faixa preta translúcida sobre a imagem** (absolute bottom):
+   - `absolute inset-x-0 bottom-0 bg-black/55 backdrop-blur-sm px-3 py-2`
+   - Título: `text-sm text-white line-clamp-1 leading-tight`
+   - Descrição (se existir): `text-[11px] text-white/75 line-clamp-1 mt-0.5`
+4. **Gradient sutil opcional** do transparente ao preto acima da faixa, para legibilidade quando a faixa ficar fina (`bg-gradient-to-t from-black/60 to-transparent` em uma camada extra).
+5. Remover a `div` externa de texto (linhas 52-56).
 
-2. **Equalizer ocupando toda a largura**:
-   - Substituir `gap-1 h-8` + 10 barras de `w-1` por: `w-full h-16 flex items-end justify-between gap-[2px]` com ~32-40 barras `flex-1`.
-   - Aumentar amplitude do keyframe `eq-bar` (ex.: `0%, 100% { height: 8%; } 50% { height: 100%; }`) usando porcentagem para escalar com o container.
-   - Cor das barras: `bg-gradient-to-t from-primary via-primary to-primary/40` para dar profundidade.
-   - Delays variados (`${i * 0.05}s`) para um efeito mais orgânico.
+## Impacto no carrossel em `Musicas.tsx`
 
-3. **Track info** (categoria + título) fica **fora** do card preto, abaixo dele, mantendo legibilidade no fundo branco do modal.
+O `basis-[55%] sm:basis-[38%]` continua válido. Como agora os cards são 16:9 (mais largos que altos), os cards ficarão mais baixos — sem ajuste necessário no carousel.
 
-4. **Iframe do YouTube** permanece fora do card, abaixo do track info.
-
-Nenhuma mudança em `Musicas.tsx`, no `Dialog` ou em lógica de play/pause.
+Nenhuma mudança em `Musicas.tsx`, `VinylPlayer` ou banco de dados.
