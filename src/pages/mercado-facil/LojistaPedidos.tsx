@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { openExternalUrl } from "@/lib/openExternal";
 import { MFHeader } from "@/components/mercado-facil/MFHeader";
+import { MFEntregaProgress } from "@/components/mercado-facil/MFEntregaProgress";
+import { useMFEntregas } from "@/hooks/mercado-facil/useMFEntregas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { cleanPhone, formatBRL } from "@/lib/mercado-facil/formatters";
+import { ENTREGA_STATUS_LABEL } from "@/lib/mercado-facil/entregador-types";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
 interface OrderLog {
@@ -32,6 +35,20 @@ const LojistaPedidos = () => {
   const [taxaReais, setTaxaReais] = useState("");
   const [telCliente, setTelCliente] = useState("");
   const [creating, setCreating] = useState(false);
+
+  const { entregas } = useMFEntregas({ scope: "lojista", userId: user?.id });
+  const entregasPorPedido = useMemo(() => {
+    const m = new Map<string, typeof entregas[number]>();
+    for (const e of entregas) {
+      if (e.order_log_id) {
+        const existing = m.get(e.order_log_id);
+        if (!existing || new Date(e.created_at) > new Date(existing.created_at)) {
+          m.set(e.order_log_id, e);
+        }
+      }
+    }
+    return m;
+  }, [entregas]);
 
   useEffect(() => {
     if (!user) return;
@@ -110,7 +127,10 @@ const LojistaPedidos = () => {
             Nenhum pedido registrado ainda.
           </div>
         ) : (
-          pedidos.map((p) => (
+          pedidos.map((p) => {
+            const entrega = entregasPorPedido.get(p.id);
+            const entregaAtiva = entrega && ["disponivel", "aceita", "coletada"].includes(entrega.status);
+            return (
             <div key={p.id} className="bg-white border border-[#FD46A1]/30 rounded-3xl p-4 space-y-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -129,6 +149,30 @@ const LojistaPedidos = () => {
                 ))}
                 {p.itens.length > 3 && <li>+ {p.itens.length - 3} outros itens</li>}
               </ul>
+
+              {entrega && (
+                <div className="rounded-2xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-sm text-foreground">
+                      <Truck size={14} className="text-[#FD46A1]" /> Entrega
+                    </span>
+                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#FD46A1] text-white">
+                      {ENTREGA_STATUS_LABEL[entrega.status]}
+                    </span>
+                  </div>
+                  {entrega.status === "disponivel" ? (
+                    <div className="flex items-center gap-2 text-xs text-foreground/70">
+                      <Loader2 size={12} className="animate-spin text-[#FD46A1]" />
+                      Aguardando entregador aceitar…
+                    </div>
+                  ) : entrega.status === "cancelada" ? (
+                    <p className="text-xs text-foreground/60">Entrega cancelada.</p>
+                  ) : (
+                    <MFEntregaProgress status={entrega.status as "aceita" | "coletada" | "entregue"} />
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-2 pt-1">
                 <Button
                   variant="outline"
@@ -138,7 +182,7 @@ const LojistaPedidos = () => {
                 >
                   <MessageCircle size={14} className="mr-1" /> WhatsApp
                 </Button>
-                {loja.aceita_entregador && (
+                {loja.aceita_entregador && !entregaAtiva && (
                   <Button
                     size="sm"
                     className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
@@ -152,7 +196,8 @@ const LojistaPedidos = () => {
                 )}
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </main>
 
