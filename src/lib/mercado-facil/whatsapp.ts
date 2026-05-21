@@ -131,8 +131,10 @@ export async function sendOrderToWhatsApp(args: SendArgs): Promise<void> {
       cliente_nome: args.clienteNome ?? null,
       cliente_endereco: args.endereco?.trim() || null,
       cliente_cidade: args.cidade?.trim() || null,
+      cliente_estado: args.estado?.trim().toUpperCase() || null,
       cliente_telefone: args.telefone?.trim() || null,
     })
+
     .then(({ error }) => {
       if (error) console.warn("[mf_order_log] insert error:", error.message);
     });
