@@ -73,34 +73,84 @@ export function FertilityCalculator() {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/70 backdrop-blur-md border-white/40">
-        <CardHeader>
+      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+        <CardHeader className="pl-5">
           <CardTitle className="text-base font-semibold">Sua janela estimada</CardTitle>
+          <CardDescription>Baseado no início do último ciclo</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <Row label="Menstruação" value={fmt(result.start)} color="bg-red-100 text-red-700" />
+        <CardContent className="pl-5 space-y-3">
           <Row
+            icon={Droplet}
+            iconColor="text-red-600"
+            iconBg="bg-red-100"
+            label="Menstruação"
+            value={fmt(result.start)}
+          />
+          <Row
+            icon={Heart}
+            iconColor="text-[#FD46A1]"
+            iconBg="bg-[#FFD1E7]/60"
             label="Janela fértil"
             value={`${fmt(result.fertileStart)} – ${fmt(result.fertileEnd)}`}
-            color="bg-pink-100 text-[#FD46A1]"
+            highlight
           />
-          <Row label="Ovulação prevista" value={fmt(result.ovulation)} color="bg-purple-100 text-purple-700" />
-          <Row label="Próxima menstruação" value={fmt(result.next)} color="bg-gray-100 text-gray-700" />
+          <Row
+            icon={Sparkles}
+            iconColor="text-purple-700"
+            iconBg="bg-purple-100"
+            label="Ovulação prevista"
+            value={fmt(result.ovulation)}
+          />
+          <Row
+            icon={CalendarDays}
+            iconColor="text-gray-700"
+            iconBg="bg-gray-100"
+            label="Próxima menstruação"
+            value={fmt(result.next)}
+          />
+
+          <div className="flex gap-2 rounded-lg bg-primary/5 border border-primary/10 p-2">
+            <Info className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Estimativa baseada em ciclo regular de {cycleLength} dias. Não substitui acompanhamento médico.
+            </p>
+          </div>
         </CardContent>
       </Card>
-
-      <p className="text-xs text-gray-500 px-1">
-        Estimativa baseada em ciclo regular de {cycleLength} dias. Não substitui acompanhamento médico.
-      </p>
     </div>
   );
 }
 
-function Row({ label, value, color }: { label: string; value: string; color: string }) {
+function Row({
+  icon: Icon,
+  iconColor,
+  iconBg,
+  label,
+  value,
+  highlight,
+}: {
+  icon: LucideIcon;
+  iconColor: string;
+  iconBg: string;
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-gray-700">{label}</span>
-      <span className={`text-sm px-3 py-1 rounded-lg ${color}`}>{value}</span>
+    <div
+      className={`flex items-center justify-between gap-3 rounded-xl p-3 border ${
+        highlight
+          ? 'bg-[#FFD1E7]/40 border-[#FD46A1]/25'
+          : 'bg-[#FFD1E7]/20 border-[#FD46A1]/15'
+      }`}
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
+          <Icon className={`h-4 w-4 ${iconColor}`} />
+        </div>
+        <span className="text-sm font-medium text-gray-800 truncate">{label}</span>
+      </div>
+      <span className="text-sm font-semibold text-[#FD46A1] shrink-0">{value}</span>
     </div>
   );
 }
