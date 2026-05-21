@@ -242,16 +242,17 @@ const LojistaPedidos = () => {
                 >
                   <MessageCircle size={14} className="mr-1" /> WhatsApp
                 </Button>
-                {loja.aceita_entregador && !entregaAtiva && (
+                {!entregaAtiva && (
                   <Button
                     size="sm"
                     className="flex-1 bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl"
                     onClick={() => {
                       setOpenEntrega(p);
+                      setModoEntrega(loja.aceita_entregador ? "app" : "propria");
                       setTaxaReais(((loja.taxa_entrega_padrao_centavos || 0) / 100).toFixed(2));
                     }}
                   >
-                    <Truck size={14} className="mr-1" /> Entregador
+                    <Truck size={14} className="mr-1" /> Entrega
                   </Button>
                 )}
               </div>
