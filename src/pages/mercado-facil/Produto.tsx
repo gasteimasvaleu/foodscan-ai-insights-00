@@ -39,6 +39,7 @@ const Produto = () => {
   }
 
   const preco = produto.preco_promo_centavos ?? produto.preco_centavos;
+  const hasPromo = produto.preco_promo_centavos != null && produto.preco_promo_centavos < produto.preco_centavos;
 
   const handleAdd = () => {
     add({
@@ -64,18 +65,52 @@ const Produto = () => {
             <div className="w-full h-full flex items-center justify-center text-6xl">🛒</div>
           )}
         </div>
-        <h2 className="text-base font-semibold">{produto.nome}</h2>
-        <p className="text-2xl font-bold text-[#FD46A1]">{formatBRL(preco)}</p>
-        <p className="text-sm text-foreground/60">por {produto.unidade}</p>
-        {produto.descricao && <p className="text-sm text-foreground/80">{produto.descricao}</p>}
-        {loja && (
-          <p className="text-sm">
-            Vendido por <span className="font-semibold">{loja.nome}</span>
-          </p>
-        )}
-        <Button onClick={handleAdd} className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12 text-base">
-          Adicionar ao carrinho
-        </Button>
+
+        <div className="relative overflow-hidden bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-2xl shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#FD46A1] before:to-[#FF7AC0]">
+          <div className="pl-5 pr-4 py-4 space-y-3">
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold leading-snug">{produto.nome}</h2>
+              {(loja || produto.unidade) && (
+                <p className="text-xs text-muted-foreground">
+                  {loja && <>Vendido por <span className="text-foreground/80">{loja.nome}</span></>}
+                  {loja && produto.unidade && <span className="mx-1.5">·</span>}
+                  {produto.unidade && <>por {produto.unidade}</>}
+                </p>
+              )}
+            </div>
+
+            <div className="rounded-xl bg-[#FFD1E7]/30 border border-[#FD46A1]/15 p-4">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-2xl font-bold text-[#FD46A1]">{formatBRL(preco)}</span>
+                {hasPromo && (
+                  <>
+                    <span className="text-sm line-through text-foreground/50">
+                      {formatBRL(produto.preco_centavos)}
+                    </span>
+                    <Badge className="text-[10px] px-1.5 py-0 bg-[#FD46A1] text-white border-0 hover:bg-[#FD46A1]">
+                      Promo
+                    </Badge>
+                  </>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1">por {produto.unidade}</p>
+            </div>
+
+            {produto.descricao && (
+              <div className="flex gap-2 rounded-lg bg-[#FD46A1]/5 border border-[#FD46A1]/15 p-3">
+                <Info className="w-3.5 h-3.5 text-[#FD46A1] mt-0.5 shrink-0" />
+                <p className="text-xs text-foreground/80 leading-relaxed">{produto.descricao}</p>
+              </div>
+            )}
+
+            <Button
+              onClick={handleAdd}
+              className="w-full bg-[#FD46A1] hover:bg-[#FD46A1]/90 rounded-2xl h-12 text-base text-white"
+            >
+              Adicionar ao carrinho
+            </Button>
+          </div>
+        </div>
       </main>
     </div>
   );
