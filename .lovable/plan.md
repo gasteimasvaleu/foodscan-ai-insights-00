@@ -1,19 +1,24 @@
-## Ajustar largura e borda do modal "Acionar entrega"
+## Reorganizar card de entregador disponível
 
-O `DialogContent` em `src/pages/mercado-facil/LojistaPedidos.tsx` (linha 306) está sem a borda rosa e ocupando 100% da largura no mobile. Outros modais do Mercado Fácil (ex.: `LojistaProdutos.tsx` linha 188) seguem o padrão `max-w-md w-[calc(100%-2rem)] border-2 border-[#FD46A1]`.
+O card atual (`MFEntregadoresDisponiveis.tsx`, linhas 103–131) tem foto + nome/veículo/estrela + badge de preço + botão "Chamar" todos numa única linha horizontal — fica espremido no mobile (390px), principalmente o badge da faixa de preço encavalando o botão.
 
-### Mudança
-Trocar a className do `DialogContent`:
+### Nova estrutura (2 linhas dentro do card)
 
-De:
 ```
-bg-white/70 backdrop-blur-md rounded-3xl max-h-[90vh] overflow-y-auto
+┌──────────────────────────────────────────┐
+│  [foto]  Nome do entregador              │
+│          🛵 Moto  •  ⭐ 0.0              │
+│  ────────────────────────────────────────│
+│  [badge faixa de preço]    [  Chamar  ]  │
+└──────────────────────────────────────────┘
 ```
 
-Para:
-```
-bg-white/70 backdrop-blur-md rounded-3xl border-2 border-[#FD46A1] max-w-md w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto
-```
+- Aumentar foto de `w-10 h-10` para `w-12 h-12`.
+- Topo (`flex items-center gap-3`): foto + bloco com nome (text-sm font-medium) e linha secundária com veículo • estrela (text-xs).
+- Divider sutil (`border-t border-white/60`) ou apenas `pt-2 mt-1`.
+- Rodapé (`flex items-center justify-between gap-2`): badge da faixa de preço à esquerda + botão "Chamar" à direita, ambos com mais respiro.
+- Padding do card sobe para `p-3.5` e `space-y-2` interno.
+- Botão "Chamar" mantém verde WhatsApp `#25D366`, `h-9 px-5 rounded-2xl`.
 
 ### Fora de escopo
-Nenhuma outra alteração — apenas largura, margem lateral e borda rosa do modal.
+Apenas o layout do `<li>`. Sem mudanças em dados, props, lógica de chamada ou outros componentes.

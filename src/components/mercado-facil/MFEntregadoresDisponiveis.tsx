@@ -100,34 +100,39 @@ export function MFEntregadoresDisponiveis({
       <p className="text-sm font-medium text-foreground">Entregadores disponíveis em {cidade}</p>
       <ul className="space-y-2">
         {entregadores.map((e) => (
-          <li key={e.id} className="flex items-center gap-3 bg-[#FFD1E7] rounded-2xl p-3">
-            <div className="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center shrink-0">
-              {e.foto_url ? (
-                <img src={e.foto_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <Bike size={18} className="text-[#FD46A1]" />
-              )}
+          <li key={e.id} className="bg-[#FFD1E7] rounded-2xl p-3.5 space-y-2.5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-white overflow-hidden flex items-center justify-center shrink-0">
+                {e.foto_url ? (
+                  <img src={e.foto_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Bike size={20} className="text-[#FD46A1]" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{e.nome_completo}</p>
+                <p className="text-xs text-foreground/60 flex items-center gap-2 mt-0.5">
+                  <span>{VEICULO_LABEL[e.veiculo]}</span>
+                  <span className="text-foreground/30">•</span>
+                  <span className="flex items-center gap-0.5">
+                    <Star size={12} className="fill-[#FD46A1] text-[#FD46A1]" />
+                    {Number(e.avaliacao_media ?? 0).toFixed(1)}
+                  </span>
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-foreground truncate">{e.nome_completo}</p>
-              <p className="text-xs text-foreground/60 flex items-center gap-2">
-                <span>{VEICULO_LABEL[e.veiculo]}</span>
-                <span className="flex items-center gap-0.5">
-                  <Star size={12} className="fill-[#FD46A1] text-[#FD46A1]" />
-                  {Number(e.avaliacao_media ?? 0).toFixed(1)}
-                </span>
-              </p>
-              <span className="inline-block mt-1 bg-[#FD46A1] text-white text-[11px] px-2 py-0.5 rounded-full">
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/60">
+              <span className="bg-[#FD46A1] text-white text-[11px] px-2.5 py-1 rounded-full">
                 {faixaPreco(e.taxa_min_centavos ?? 0, e.taxa_max_centavos ?? 0)}
               </span>
+              <Button
+                onClick={() => handleChamar(e)}
+                disabled={enviando === e.id || !endereco.trim()}
+                className="bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-9 px-5 text-sm text-white"
+              >
+                Chamar
+              </Button>
             </div>
-            <Button
-              onClick={() => handleChamar(e)}
-              disabled={enviando === e.id || !endereco.trim()}
-              className="bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-10 px-4 text-sm text-white"
-            >
-              Chamar
-            </Button>
           </li>
         ))}
       </ul>
