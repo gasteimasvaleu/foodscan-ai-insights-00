@@ -305,42 +305,41 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
                 onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
               />
               {displayedReceipt ? (
-                <div className="relative rounded-2xl overflow-hidden border border-[#FFD1E7] bg-white">
-                  <img
-                    src={displayedReceipt}
-                    alt="Comprovante"
-                    className="w-full aspect-video object-cover"
-                  />
+                <>
+                  <div className="relative rounded-2xl overflow-hidden border border-[#FFD1E7] bg-white">
+                    <img
+                      src={displayedReceipt}
+                      alt="Comprovante"
+                      className="w-full aspect-video object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveReceipt}
+                      className="absolute top-2 right-2 h-8 w-8 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shadow-md hover:bg-[#FD46A1]/90"
+                      aria-label="Remover comprovante"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    onClick={handleRemoveReceipt}
-                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-[#FD46A1] text-white flex items-center justify-center shadow-md hover:bg-[#FD46A1]/90"
-                    aria-label="Remover comprovante"
+                    onClick={handleAiScan}
+                    disabled={scanning || saving}
+                    className="w-full mt-2 h-11 rounded-xl bg-gradient-to-r from-[#FD46A1] to-[#FF6FB5] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-95 disabled:opacity-60"
                   >
-                    <X className="h-4 w-4" />
+                    {scanning ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Lendo sua conta...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        Preencher com IA
+                      </>
+                    )}
                   </button>
-                </div>
-              )}
-              {displayedReceipt && (
-                <button
-                  type="button"
-                  onClick={handleAiScan}
-                  disabled={scanning || saving}
-                  className="w-full mt-2 h-11 rounded-xl bg-gradient-to-r from-[#FD46A1] to-[#FF6FB5] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-95 disabled:opacity-60"
-                >
-                  {scanning ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Lendo sua conta...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-4 w-4" />
-                      Preencher com IA
-                    </>
-                  )}
-                </button>
-              )}
+                </>
               ) : (
                 <button
                   type="button"
