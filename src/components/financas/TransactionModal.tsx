@@ -56,6 +56,7 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
   const [category, setCategory] = useState("Outros");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   // Receipt state
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null); // já salvo
