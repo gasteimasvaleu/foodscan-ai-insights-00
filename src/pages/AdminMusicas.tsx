@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,18 +30,20 @@ import {
   Music,
   Upload,
   X,
+  ListMusic,
+  ChevronUp,
+  ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { MUSIC_CATEGORIES, getMusicCategory } from "@/data/musicCategories";
-import { PlaylistMusica, getYouTubeThumb } from "@/components/musicas/PlaylistCard";
+import { MUSIC_CATEGORIES } from "@/data/musicCategories";
+import { PlaylistMusica, MusicaFaixa } from "@/components/musicas/PlaylistCard";
 
 interface FormState {
   id?: string;
   titulo: string;
   descricao: string;
   categoria: string;
-  youtube_id: string;
-  youtube_type: "playlist" | "video";
   thumbnail_url: string;
   ordem: string;
   is_active: boolean;
@@ -54,31 +53,20 @@ const emptyForm: FormState = {
   titulo: "",
   descricao: "",
   categoria: "",
-  youtube_id: "",
-  youtube_type: "playlist",
   thumbnail_url: "",
   ordem: "0",
   is_active: true,
 };
 
-// Extrai ID de URLs do YouTube
-const extractYouTubeId = (input: string, type: "playlist" | "video"): string => {
-  const trimmed = input.trim();
-  if (!trimmed) return "";
-  if (type === "playlist") {
-    const m = trimmed.match(/[?&]list=([^&]+)/);
-    if (m) return m[1];
-    return trimmed;
-  }
-  // video
-  const m1 = trimmed.match(/[?&]v=([^&]+)/);
-  if (m1) return m1[1];
-  const m2 = trimmed.match(/youtu\.be\/([^?&]+)/);
-  if (m2) return m2[1];
-  const m3 = trimmed.match(/youtube\.com\/embed\/([^?&]+)/);
-  if (m3) return m3[1];
-  return trimmed;
+const formatTime = (s: number | null) => {
+  if (s == null || !isFinite(s)) return "—";
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2, "0")}`;
 };
+
+const sanitizeName = (name: string) =>
+  name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
 
 const AdminMusicas = () => {
   const { user, loading } = useAuth();
@@ -86,18 +74,26 @@ const AdminMusicas = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
   const [items, setItems] = useState<PlaylistMusica[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loadingItems, setLoadingItems] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingCapa, setUploadingCapa] = useState(false);
+
+  // Faixas dialog
+  const [tracksDialog, setTracksDialog] = useState<PlaylistMusica | null>(null);
+  const [tracks, setTracks] = useState<MusicaFaixa[]>([]);
+  const [loadingTracks, setLoadingTracks] = useState(false);
+  const [uploadingTracks, setUploadingTracks] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
 
   const handleUploadCapa = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast({ title: "Arquivo inválido", description: "Envie uma imagem.", variant: "destructive" });
       return;
     }
-    setUploading(true);
+    setUploadingCapa(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -111,7 +107,7 @@ const AdminMusicas = () => {
     } catch (e: any) {
       toast({ title: "Erro no upload", description: e.message, variant: "destructive" });
     } finally {
-      setUploading(false);
+      setUploadingCapa(false);
     }
   };
 
@@ -126,11 +122,8 @@ const AdminMusicas = () => {
       setCheckingRole(false);
     };
     if (!loading) {
-      if (!user) {
-        navigate("/auth");
-      } else {
-        checkAdmin();
-      }
+      if (!user) navigate("/auth");
+      else checkAdmin();
     }
   }, [user, loading, navigate]);
 
@@ -140,13 +133,26 @@ const AdminMusicas = () => {
 
   const fetchItems = async () => {
     setLoadingItems(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("playlists_musicas")
       .select("*")
       .order("categoria", { ascending: true })
       .order("ordem", { ascending: true })
       .order("created_at", { ascending: false });
-    if (!error && data) setItems(data as PlaylistMusica[]);
+    const list = (data as PlaylistMusica[]) || [];
+    setItems(list);
+
+    // Contagem de faixas por playlist
+    if (list.length > 0) {
+      const { data: faixas } = await supabase
+        .from("musicas_faixas")
+        .select("playlist_id");
+      const map: Record<string, number> = {};
+      (faixas || []).forEach((f: any) => {
+        map[f.playlist_id] = (map[f.playlist_id] || 0) + 1;
+      });
+      setCounts(map);
+    }
     setLoadingItems(false);
   };
 
@@ -161,8 +167,6 @@ const AdminMusicas = () => {
       titulo: p.titulo,
       descricao: p.descricao ?? "",
       categoria: p.categoria,
-      youtube_id: p.youtube_id,
-      youtube_type: p.youtube_type,
       thumbnail_url: p.thumbnail_url ?? "",
       ordem: String(p.ordem ?? 0),
       is_active: p.is_active,
@@ -171,30 +175,28 @@ const AdminMusicas = () => {
   };
 
   const handleSave = async () => {
-    if (!form.titulo.trim() || !form.categoria || !form.youtube_id.trim()) {
+    if (!form.titulo.trim() || !form.categoria) {
       toast({
         title: "Preencha os campos obrigatórios",
-        description: "Título, categoria e ID/URL do YouTube são obrigatórios.",
+        description: "Título e categoria são obrigatórios.",
         variant: "destructive",
       });
       return;
     }
-    const yid = extractYouTubeId(form.youtube_id, form.youtube_type);
-    if (!yid) {
-      toast({ title: "ID do YouTube inválido", variant: "destructive" });
-      return;
-    }
     setSaving(true);
-    const payload = {
+    const payload: any = {
       titulo: form.titulo.trim(),
       descricao: form.descricao.trim() || null,
       categoria: form.categoria,
-      youtube_id: yid,
-      youtube_type: form.youtube_type,
       thumbnail_url: form.thumbnail_url.trim() || null,
       ordem: parseInt(form.ordem, 10) || 0,
       is_active: form.is_active,
     };
+    // youtube_id é NOT NULL no schema legado — preencher com placeholder
+    if (!form.id) {
+      payload.youtube_id = "";
+      payload.youtube_type = "playlist";
+    }
 
     const { error } = form.id
       ? await supabase.from("playlists_musicas").update(payload).eq("id", form.id)
@@ -211,7 +213,7 @@ const AdminMusicas = () => {
   };
 
   const handleDelete = async (p: PlaylistMusica) => {
-    if (!confirm(`Apagar "${p.titulo}"?`)) return;
+    if (!confirm(`Apagar "${p.titulo}" e todas suas faixas?`)) return;
     const { error } = await supabase.from("playlists_musicas").delete().eq("id", p.id);
     if (error) {
       toast({ title: "Erro ao apagar", description: error.message, variant: "destructive" });
@@ -219,6 +221,139 @@ const AdminMusicas = () => {
     }
     toast({ title: "Playlist apagada" });
     fetchItems();
+  };
+
+  // ----- TRACKS -----
+  const openTracks = async (p: PlaylistMusica) => {
+    setTracksDialog(p);
+    setLoadingTracks(true);
+    const { data } = await supabase
+      .from("musicas_faixas")
+      .select("*")
+      .eq("playlist_id", p.id)
+      .order("ordem", { ascending: true })
+      .order("created_at", { ascending: true });
+    setTracks((data as MusicaFaixa[]) || []);
+    setLoadingTracks(false);
+  };
+
+  const probeDuration = (file: File): Promise<number | null> =>
+    new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const audio = new Audio();
+      audio.preload = "metadata";
+      audio.onloadedmetadata = () => {
+        const d = isFinite(audio.duration) ? Math.round(audio.duration) : null;
+        URL.revokeObjectURL(url);
+        resolve(d);
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      audio.src = url;
+    });
+
+  const handleUploadTracks = async (files: FileList | null) => {
+    if (!files || !tracksDialog) return;
+    const fileArr = Array.from(files).filter((f) =>
+      f.type.startsWith("audio/") || /\.(mp3|m4a|aac|wav|ogg)$/i.test(f.name)
+    );
+    if (fileArr.length === 0) {
+      toast({ title: "Nenhum áudio válido", variant: "destructive" });
+      return;
+    }
+    setUploadingTracks(true);
+    setUploadProgress({ done: 0, total: fileArr.length });
+
+    const baseOrdem = tracks.length > 0 ? Math.max(...tracks.map((t) => t.ordem)) + 1 : 0;
+
+    for (let i = 0; i < fileArr.length; i++) {
+      const file = fileArr[i];
+      try {
+        const duracao = await probeDuration(file);
+        const ext = file.name.split(".").pop() || "mp3";
+        const path = `${tracksDialog.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("musicas-audio")
+          .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type || "audio/mpeg",
+          });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("musicas-audio").getPublicUrl(path);
+
+        const { error: insErr } = await supabase.from("musicas_faixas").insert({
+          playlist_id: tracksDialog.id,
+          titulo: sanitizeName(file.name),
+          audio_url: pub.publicUrl,
+          duracao_segundos: duracao,
+          ordem: baseOrdem + i,
+        });
+        if (insErr) throw insErr;
+      } catch (e: any) {
+        toast({
+          title: `Erro em ${file.name}`,
+          description: e.message,
+          variant: "destructive",
+        });
+      } finally {
+        setUploadProgress((p) => ({ ...p, done: p.done + 1 }));
+      }
+    }
+
+    setUploadingTracks(false);
+    await openTracks(tracksDialog);
+    fetchItems();
+    toast({ title: `${fileArr.length} faixa(s) enviada(s)` });
+  };
+
+  const renameTrack = async (id: string, titulo: string) => {
+    const { error } = await supabase
+      .from("musicas_faixas")
+      .update({ titulo })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao renomear", description: error.message, variant: "destructive" });
+      return;
+    }
+    setTracks((arr) => arr.map((t) => (t.id === id ? { ...t, titulo } : t)));
+  };
+
+  const deleteTrack = async (t: MusicaFaixa) => {
+    if (!confirm(`Apagar faixa "${t.titulo}"?`)) return;
+    // remove do storage também
+    try {
+      const url = new URL(t.audio_url);
+      const idx = url.pathname.indexOf("/musicas-audio/");
+      if (idx >= 0) {
+        const path = url.pathname.slice(idx + "/musicas-audio/".length);
+        await supabase.storage.from("musicas-audio").remove([decodeURIComponent(path)]);
+      }
+    } catch {}
+    const { error } = await supabase.from("musicas_faixas").delete().eq("id", t.id);
+    if (error) {
+      toast({ title: "Erro ao apagar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setTracks((arr) => arr.filter((x) => x.id !== t.id));
+    fetchItems();
+  };
+
+  const moveTrack = async (index: number, dir: -1 | 1) => {
+    const newIndex = index + dir;
+    if (newIndex < 0 || newIndex >= tracks.length) return;
+    const a = tracks[index];
+    const b = tracks[newIndex];
+    const swapped = [...tracks];
+    swapped[index] = { ...b, ordem: a.ordem };
+    swapped[newIndex] = { ...a, ordem: b.ordem };
+    setTracks(swapped);
+    await Promise.all([
+      supabase.from("musicas_faixas").update({ ordem: b.ordem }).eq("id", a.id),
+      supabase.from("musicas_faixas").update({ ordem: a.ordem }).eq("id", b.id),
+    ]);
   };
 
   if (loading || checkingRole) {
@@ -254,7 +389,7 @@ const AdminMusicas = () => {
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Músicas</h1>
             <p className="text-sm text-muted-foreground">
-              Gerencie as playlists do YouTube
+              Gerencie playlists e faixas MP3
             </p>
           </div>
           <Button onClick={openNew} className="gap-2">
@@ -284,7 +419,8 @@ const AdminMusicas = () => {
                   </h2>
                   <div className="space-y-2">
                     {list.map((p) => {
-                      const thumb = getYouTubeThumb(p);
+                      const thumb = p.thumbnail_url;
+                      const total = counts[p.id] || 0;
                       return (
                         <Card key={p.id}>
                           <div className="flex items-center gap-3 p-3">
@@ -302,11 +438,20 @@ const AdminMusicas = () => {
                                 {p.titulo}
                               </p>
                               <p className="text-xs text-muted-foreground mt-0.5">
-                                {p.youtube_type === "playlist" ? "Playlist" : "Vídeo"} · ordem {p.ordem}
+                                {total} faixa{total === 1 ? "" : "s"} · ordem {p.ordem}
                                 {!p.is_active && " · inativa"}
                               </p>
                             </div>
                             <div className="flex flex-col gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openTracks(p)}
+                                className="h-8 w-8"
+                                title="Gerenciar faixas"
+                              >
+                                <ListMusic className="h-4 w-4" />
+                              </Button>
                               <Button variant="ghost" size="icon" onClick={() => openEdit(p)} className="h-8 w-8">
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -331,13 +476,11 @@ const AdminMusicas = () => {
         )}
       </div>
 
-      {/* Dialog */}
+      {/* Dialog playlist */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-3xl">
           <DialogHeader>
-            <DialogTitle>
-              {form.id ? "Editar playlist" : "Nova playlist"}
-            </DialogTitle>
+            <DialogTitle>{form.id ? "Editar playlist" : "Nova playlist"}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -384,45 +527,7 @@ const AdminMusicas = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Tipo *</Label>
-              <Select
-                value={form.youtube_type}
-                onValueChange={(v: "playlist" | "video") =>
-                  setForm({ ...form, youtube_type: v })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="playlist">Playlist</SelectItem>
-                  <SelectItem value="video">Vídeo único</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="youtube_id">
-                {form.youtube_type === "playlist" ? "ID ou URL da playlist *" : "ID ou URL do vídeo *"}
-              </Label>
-              <Input
-                id="youtube_id"
-                value={form.youtube_id}
-                onChange={(e) => setForm({ ...form, youtube_id: e.target.value })}
-                placeholder={
-                  form.youtube_type === "playlist"
-                    ? "Ex: PLrAl6rYAS4... ou cole a URL completa"
-                    : "Ex: dQw4w9WgXcQ ou cole a URL"
-                }
-                className="text-base"
-              />
-              <p className="text-xs text-muted-foreground">
-                Aceita ID puro ou URL completa do YouTube — o ID é extraído automaticamente.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Capa custom</Label>
+              <Label>Capa</Label>
               {form.thumbnail_url ? (
                 <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-muted">
                   <img src={form.thumbnail_url} alt="Capa" className="w-full h-full object-cover" />
@@ -439,14 +544,14 @@ const AdminMusicas = () => {
                 <label className="flex flex-col items-center justify-center w-full aspect-video rounded-xl border-2 border-dashed border-muted-foreground/30 cursor-pointer hover:border-[#FD46A1] transition-colors bg-muted/40">
                   <Upload className="w-6 h-6 text-muted-foreground mb-2" />
                   <span className="text-sm text-muted-foreground">
-                    {uploading ? "Enviando..." : "Enviar imagem"}
+                    {uploadingCapa ? "Enviando..." : "Enviar imagem"}
                   </span>
                   <span className="text-xs text-muted-foreground/70 mt-1">PNG/JPG</span>
                   <input
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    disabled={uploading}
+                    disabled={uploadingCapa}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleUploadCapa(file);
@@ -455,23 +560,7 @@ const AdminMusicas = () => {
                   />
                 </label>
               )}
-              <details className="text-xs">
-                <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                  Ou usar URL externa
-                </summary>
-                <Input
-                  id="thumbnail_url"
-                  value={form.thumbnail_url}
-                  onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })}
-                  placeholder="https://..."
-                  className="text-base mt-2"
-                />
-              </details>
-              <p className="text-xs text-muted-foreground">
-                Opcional — usa thumb do YouTube se vazio.
-              </p>
             </div>
-
 
             <div className="space-y-2">
               <Label htmlFor="ordem">Ordem</Label>
@@ -494,9 +583,108 @@ const AdminMusicas = () => {
               />
             </div>
 
-            <Button onClick={handleSave} disabled={saving || uploading} className="w-full">
+            <Button onClick={handleSave} disabled={saving || uploadingCapa} className="w-full">
               {saving ? "Salvando..." : form.id ? "Salvar alterações" : "Criar playlist"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog faixas */}
+      <Dialog open={!!tracksDialog} onOpenChange={(o) => !o && setTracksDialog(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="pr-8">
+              Faixas — {tracksDialog?.titulo}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <label className="flex flex-col items-center justify-center w-full py-6 rounded-xl border-2 border-dashed border-muted-foreground/30 cursor-pointer hover:border-[#FD46A1] transition-colors bg-muted/40">
+              {uploadingTracks ? (
+                <>
+                  <Loader2 className="w-6 h-6 text-primary mb-2 animate-spin" />
+                  <span className="text-sm text-muted-foreground">
+                    Enviando {uploadProgress.done}/{uploadProgress.total}...
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-6 h-6 text-muted-foreground mb-2" />
+                  <span className="text-sm text-muted-foreground">
+                    Adicionar faixas MP3
+                  </span>
+                  <span className="text-xs text-muted-foreground/70 mt-1">
+                    Selecione um ou vários arquivos
+                  </span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg"
+                multiple
+                className="hidden"
+                disabled={uploadingTracks}
+                onChange={(e) => {
+                  handleUploadTracks(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+
+            {loadingTracks ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+              </div>
+            ) : tracks.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                Nenhuma faixa ainda.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {tracks.map((t, i) => (
+                  <div key={t.id} className="flex items-center gap-2 bg-muted/40 rounded-xl p-2">
+                    <span className="text-xs font-mono text-muted-foreground w-6 text-center">
+                      {i + 1}
+                    </span>
+                    <Input
+                      defaultValue={t.titulo}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim();
+                        if (v && v !== t.titulo) renameTrack(t.id, v);
+                      }}
+                      className="text-sm flex-1 h-8"
+                    />
+                    <span className="text-[11px] font-mono text-muted-foreground w-10 text-right">
+                      {formatTime(t.duracao_segundos)}
+                    </span>
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => moveTrack(i, -1)}
+                        disabled={i === 0}
+                        className="text-muted-foreground hover:text-foreground disabled:opacity-30 p-0.5"
+                      >
+                        <ChevronUp className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => moveTrack(i, 1)}
+                        disabled={i === tracks.length - 1}
+                        className="text-muted-foreground hover:text-foreground disabled:opacity-30 p-0.5"
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => deleteTrack(t)}
+                      className="text-destructive hover:opacity-80 p-1"
+                      aria-label="Apagar"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
