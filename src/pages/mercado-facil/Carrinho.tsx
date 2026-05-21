@@ -11,6 +11,7 @@ import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
+import { MFAddressConfirmDialog } from "@/components/mercado-facil/MFAddressConfirmDialog";
 import { ProfileHeaderCard } from "@/components/profile/ProfileHeaderCard";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
@@ -39,6 +40,7 @@ const Carrinho = () => {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [endereco, setEndereco] = useState("");
+  const [confirmLojaId, setConfirmLojaId] = useState<string | null>(null);
 
   const profileName = profile?.name;
   const profilePhone = profile?.phone ?? undefined;
@@ -239,7 +241,7 @@ const Carrinho = () => {
                   <span className="text-base font-bold text-[#FD46A1]">{formatBRL(total)}</span>
                 </div>
                 <Button
-                  onClick={() => handleSend(lojaId)}
+                  onClick={() => setConfirmLojaId(lojaId)}
                   disabled={!loja}
                   className="w-full bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-12 text-base text-white"
                 >
@@ -253,6 +255,7 @@ const Carrinho = () => {
                     <MFEntregadoresDisponiveis
                       loja={loja}
                       cidade={cidade}
+                      estado={estado}
                       endereco={endereco}
                       clienteId={user.id}
                       clienteNome={profileName}
@@ -274,6 +277,17 @@ const Carrinho = () => {
         )}
       </main>
 
+      <MFAddressConfirmDialog
+        open={!!confirmLojaId}
+        onOpenChange={(o) => { if (!o) setConfirmLojaId(null); }}
+        cidade={cidade}
+        estado={estado}
+        endereco={endereco}
+        telefone={profilePhone}
+        contextLabel={confirmLojaId ? lojas[confirmLojaId]?.nome : undefined}
+        confirmLabel="Confirmar e enviar"
+        onConfirm={() => { if (confirmLojaId) handleSend(confirmLojaId); }}
+      />
     </div>
   );
 };

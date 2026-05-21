@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast";
 import { VEICULO_LABEL, type MFEntregador } from "@/lib/mercado-facil/entregador-types";
 import { sendDeliveryRequestToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { formatBRL } from "@/lib/mercado-facil/formatters";
+import { MFAddressConfirmDialog } from "@/components/mercado-facil/MFAddressConfirmDialog";
 import type { MFCartItem, MFLoja } from "@/lib/mercado-facil/types";
 
 function faixaPreco(min: number, max: number): string {
@@ -17,6 +18,7 @@ function faixaPreco(min: number, max: number): string {
 interface Props {
   loja: MFLoja;
   cidade: string;
+  estado?: string;
   endereco: string;
   clienteId: string;
   clienteNome?: string;
@@ -29,12 +31,13 @@ interface Props {
 }
 
 export function MFEntregadoresDisponiveis({
-  loja, cidade, endereco, clienteId, clienteNome, telefoneCliente, itens, totalCentavos,
+  loja, cidade, estado = "", endereco, clienteId, clienteNome, telefoneCliente, itens, totalCentavos,
   orderLogId, taxaOverrideCentavos, onCalled,
 }: Props) {
   const [entregadores, setEntregadores] = useState<MFEntregador[]>([]);
   const [loading, setLoading] = useState(false);
   const [enviando, setEnviando] = useState<string | null>(null);
+  const [confirmEntregador, setConfirmEntregador] = useState<MFEntregador | null>(null);
 
   useEffect(() => {
     if (!cidade.trim()) {
@@ -126,7 +129,7 @@ export function MFEntregadoresDisponiveis({
                 {faixaPreco(e.taxa_min_centavos ?? 0, e.taxa_max_centavos ?? 0)}
               </span>
               <Button
-                onClick={() => handleChamar(e)}
+                onClick={() => setConfirmEntregador(e)}
                 disabled={enviando === e.id || !endereco.trim()}
                 className="bg-[#25D366] hover:bg-[#25D366]/90 rounded-2xl h-9 px-5 text-sm text-white"
               >
@@ -136,6 +139,18 @@ export function MFEntregadoresDisponiveis({
           </li>
         ))}
       </ul>
+
+      <MFAddressConfirmDialog
+        open={!!confirmEntregador}
+        onOpenChange={(o) => { if (!o) setConfirmEntregador(null); }}
+        cidade={cidade}
+        estado={estado}
+        endereco={endereco}
+        telefone={telefoneCliente}
+        contextLabel={confirmEntregador ? `${confirmEntregador.nome_completo} — ${VEICULO_LABEL[confirmEntregador.veiculo]}` : undefined}
+        confirmLabel="Confirmar e chamar"
+        onConfirm={() => { if (confirmEntregador) handleChamar(confirmEntregador); }}
+      />
     </div>
   );
 }
