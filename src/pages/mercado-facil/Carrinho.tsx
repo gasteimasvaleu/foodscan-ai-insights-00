@@ -255,6 +255,7 @@ const Carrinho = () => {
                     <MFEntregadoresDisponiveis
                       loja={loja}
                       cidade={cidade}
+                      estado={estado}
                       endereco={endereco}
                       clienteId={user.id}
                       clienteNome={profileName}
