@@ -14,18 +14,27 @@ import {
 import { WheelPicker } from "@/components/ui/wheel-picker";
 import { useVenues, VENUE_CATEGORIES, type VenueCategory } from "@/hooks/useVenues";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState as useStateReact } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ALL_VALUE = "__all__";
 
 const ToAqui = () => {
   const navigate = useNavigate();
-  const { subscriptionStatus } = useAuth();
+  const { user, subscriptionStatus } = useAuth();
   const isPro = subscriptionStatus?.subscribed;
+  const [isAdmin, setIsAdmin] = useStateReact(false);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
+  const canManage = isPro || isAdmin;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<VenueCategory | null>(null);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [pendingCategory, setPendingCategory] = useState<string>(ALL_VALUE);
   const { data: venues = [], isLoading } = useVenues({ search, category });
+
 
   const currentCat = VENUE_CATEGORIES.find((c) => c.value === category);
   const currentLabel = currentCat ? `${currentCat.emoji} ${currentCat.label}` : "Todas as categorias";
