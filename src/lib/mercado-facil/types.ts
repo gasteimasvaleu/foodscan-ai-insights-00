@@ -20,6 +20,7 @@ export interface MFLoja {
   horario_funcionamento: Record<string, string> | null;
   ativa: boolean;
   aceita_entregador?: boolean;
+  quem_aciona_entregador?: "loja" | "cliente";
   taxa_entrega_padrao_centavos?: number;
   created_at: string;
   updated_at: string;
