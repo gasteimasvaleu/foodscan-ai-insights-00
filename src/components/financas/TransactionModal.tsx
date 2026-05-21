@@ -24,7 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ImagePlus, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { parseISO, format } from "date-fns";
+
 
 interface Props {
   open: boolean;
