@@ -11,6 +11,7 @@ import { sendOrderToWhatsApp } from "@/lib/mercado-facil/whatsapp";
 import { toast } from "@/components/ui/use-toast";
 import { MFEntregadoresDisponiveis } from "@/components/mercado-facil/MFEntregadoresDisponiveis";
 import { MFClientePedidosStatus } from "@/components/mercado-facil/MFClientePedidosStatus";
+import { MFAddressConfirmDialog } from "@/components/mercado-facil/MFAddressConfirmDialog";
 import { ProfileHeaderCard } from "@/components/profile/ProfileHeaderCard";
 import type { MFLoja } from "@/lib/mercado-facil/types";
 
