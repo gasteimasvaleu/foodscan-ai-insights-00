@@ -14,7 +14,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { PlaylistCard, PlaylistMusica } from "@/components/musicas/PlaylistCard";
-import { YouTubePlayer } from "@/components/musicas/YouTubePlayer";
+import { VinylPlayer } from "@/components/musicas/VinylPlayer";
 import { MUSIC_CATEGORIES } from "@/data/musicCategories";
 
 const Musicas = () => {
