@@ -1,73 +1,52 @@
-## Mudança em `src/pages/mercado-facil/LojistaPedidos.tsx`
+## Reorganizar modal "Acionar entrega" do lojista
 
-Apenas UI. Trocar o bloco de status atualmente sempre visível (linhas 178-234) por um acordeon controlado por um novo botão full-width, replicando o visual de `MFClientePedidosStatus`.
+### Problema
+No modal atual (`LojistaPedidos.tsx`, Dialog ~linha 264):
+- Ao escolher "Entregador do app", **não aparece a lista de entregadores disponíveis** — o lojista preenche endereço/taxa e clica em "Publicar entrega", sem ver quem vai aceitar.
+- Os campos (endereço, cidade, taxa, telefone) e o botão único "Publicar entrega" / "Registrar entrega própria" servem para dois fluxos muito diferentes, ficando confuso qual campo é obrigatório em cada caso.
+- O componente `MFEntregadoresDisponiveis` já existe (usado no Carrinho do cliente) e mostra cards de entregadores com botão "Chamar" — mas não está sendo usado aqui.
 
-### Estado
+### Solução proposta (apenas UI deste modal)
 
-Adicionar `const [openStatusId, setOpenStatusId] = useState<string | null>(null);` para controlar qual card está expandido (um por vez).
+Reestruturar o `DialogContent` em **3 blocos claros** com base no modo selecionado:
 
-### Botão acionador
+**1. Cabeçalho com seletor de modo (mantém)**
+- Toggle "Entregador do app" / "Entrega própria" já existe — manter visual.
+- Adicionar abaixo do toggle uma frase curta explicando o que vai acontecer em cada modo (1 linha cada), substituindo as duas notas atuais espalhadas.
 
-Abaixo da linha de botões "WhatsApp" + "Entrega" (linha 236-260), adicionar um botão full-width com o mesmo visual do trigger do `MFClientePedidosStatus`:
+**2. Dados da entrega (sempre visível)**
+Agrupar num card `bg-[#FFD1E7]/40 rounded-2xl p-3`:
+- Endereço completo *(obrigatório)*
+- Cidade *(obrigatório)*
+- WhatsApp do cliente *(opcional, só relevante no modo "app" — exibir hint condicional)*
+- Taxa (R$) — mostrar label "Taxa sugerida ao entregador" no modo app e "Taxa cobrada do cliente" no modo própria
 
-```tsx
-<button
-  type="button"
-  onClick={() => setOpenStatusId(openStatusId === p.id ? null : p.id)}
-  aria-expanded={openStatusId === p.id}
-  className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border border-[#FD46A1]/30 bg-white text-left"
->
-  <span className="flex items-center gap-2 text-base text-foreground">
-    <Package size={16} className="text-[#FD46A1]" />
-    Ver status do pedido
-    {entrega && (
-      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FFD1E7] text-[#FD46A1]">
-        {ENTREGA_STATUS_LABEL[entrega.status]}
-      </span>
-    )}
-  </span>
-  <ChevronDown
-    size={18}
-    className={`text-[#FD46A1] transition-transform duration-300 ${openStatusId === p.id ? "rotate-180" : ""}`}
-  />
-</button>
-```
+**3. Bloco final que muda conforme o modo**
 
-Imports adicionais: `ChevronDown`, `Package` de `lucide-react`.
+- **Modo "Entregador do app":**
+  - Renderizar `<MFEntregadoresDisponiveis ... />` passando `loja`, `cidade`, `endereco`, `clienteId = openEntrega.cliente_id`, `itens`, `totalCentavos`.
+  - Acima dele, um pequeno passo guiado: "1. Confirme endereço e taxa acima  •  2. Escolha um entregador abaixo e toque em **Chamar**".
+  - **Remover** o botão "Publicar entrega" neste modo — o disparo passa a ser feito pelo botão "Chamar" de cada card de entregador (já implementado no componente: abre WhatsApp do entregador). Ainda criar o registro em `mf_entregas` com `status: 'disponivel'` **antes** de abrir o WhatsApp, para que o card de status do pedido reflita "Aguardando entregador". Isso pode ser feito envolvendo a chamada do `MFEntregadoresDisponiveis` num wrapper local que primeiro cria a entrega e depois chama o handler original — ou passando um callback novo. Detalhe técnico na seção abaixo.
+  - Se a lista vier vazia, o próprio componente já mostra "Nenhum entregador disponível agora em {cidade}".
 
-### Conteúdo do acordeon
+- **Modo "Entrega própria":**
+  - Esconder o bloco de entregadores.
+  - Manter o botão único "Registrar entrega própria" no rodapé do modal.
 
-Wrapper com mesma transição usada no componente do cliente:
+**4. Rodapé**
+- Modo app → nenhum botão de submit (a ação é o "Chamar" da lista).
+- Modo própria → botão "Registrar entrega própria" full-width.
 
-```tsx
-<div className={`transition-all duration-300 ease-out overflow-hidden ${openStatusId === p.id ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}>
-  <div className="pt-3">
-    {/* bloco atual de status, com layout do cliente */}
-  </div>
-</div>
-```
+### Detalhes técnicos
 
-Dentro do wrapper, renderizar bloco com o mesmo visual do `MFClientePedidosStatus` (caixa `bg-[#FFD1E7]/40 rounded-2xl p-3 space-y-2`):
+- O `MFEntregadoresDisponiveis` atual chama `sendDeliveryRequestToWhatsApp` direto, sem criar `mf_entregas`. Para que o status apareça no card do pedido logo após chamar, precisamos garantir que uma linha em `mf_entregas` (status `disponivel`) seja criada nesse momento. Opções:
+  - **(A) Mais simples:** No `LojistaPedidos`, antes de renderizar a lista, criar a entrega "draft" assim que o usuário entrar no modo "app" e preencher endereço+cidade+taxa (com debounce ou ao clicar em "Chamar" via callback). Isso exige expor um `onBeforeChamar` no componente, ou duplicar o fluxo no wrapper local.
+  - **(B) Recomendado:** adicionar uma prop opcional `onBeforeCall?: (entregador) => Promise<void>` em `MFEntregadoresDisponiveis`, chamada antes de `sendDeliveryRequestToWhatsApp`. No `LojistaPedidos`, esse callback faz o `insert` em `mf_entregas` com `status: 'disponivel'` e fecha o modal em caso de sucesso.
+- Validar endereço/cidade no callback para evitar enviar mensagem sem dados.
+- Manter `criarEntrega` apenas para o caminho "própria".
+- Não mexer em RLS, schema, edge functions nem no fluxo do cliente.
 
-- Linha com `MapPin` + `endereco_entrega` + valor da taxa à direita
-- `tipo === "propria"` → "Entrega feita pela loja"
-- `status === "disponivel"` → spinner + "Buscando entregador…"
-- `status === "cancelada"` → "Entrega cancelada."
-- demais → `<MFEntregaProgress status={...} />`
-
-Sem o bloco de avaliação por estrelas (é exclusivo do cliente).
-
-Se `!entrega`, mostrar dentro do acordeon: `<p className="text-sm text-foreground/60">Nenhuma entrega registrada ainda. Use o botão "Entrega" acima para registrar.</p>`
-
-### Botões de ação do lojista (avançar/cancelar entrega própria)
-
-Mantidos, mas movidos para dentro do acordeon, logo abaixo do `MFEntregaProgress`, exatamente como hoje (linhas 200-232). Só são exibidos quando `entrega.tipo === "propria" && ["aceita","coletada"].includes(entrega.status)`.
-
-### Limpeza
-
-Remover o bloco antigo `{entrega && (...)}` (linhas 178-234) — todo o conteúdo passa a viver dentro do acordeon.
-
-## Fora de escopo
-
-- Sem mudanças em backend, hooks, tipos ou outros arquivos.
-- Sem alteração no fluxo de criação/avanço de entrega.
+### Fora de escopo
+- Nenhuma alteração de backend, tipos, hooks, ou no componente do cliente (`Carrinho.tsx`).
+- Nenhuma mudança no card de status do pedido (já refeito no turno anterior).
+- Não muda lógica de `quem_aciona_entregador` — apenas respeita: se a loja tem `quem_aciona_entregador === 'cliente'`, o botão "Entregador do app" continua desabilitado como já está.
