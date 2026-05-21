@@ -40,6 +40,7 @@ const Carrinho = () => {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [endereco, setEndereco] = useState("");
+  const [confirmLojaId, setConfirmLojaId] = useState<string | null>(null);
 
   const profileName = profile?.name;
   const profilePhone = profile?.phone ?? undefined;
