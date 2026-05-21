@@ -4,6 +4,7 @@ import { Wallet, TrendingDown, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { FinanceCalendar } from "@/components/financas/FinanceCalendar";
 import { FinanceChart } from "@/components/financas/FinanceChart";
+import { FinanceTimeline } from "@/components/financas/FinanceTimeline";
 import { useAuth } from "@/hooks/useAuth";
 import { useFinanceTransactions } from "@/hooks/useFinanceTransactions";
 import { formatBRL, toDateKey } from "@/lib/financas/formatters";
