@@ -1,16 +1,14 @@
-
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-app-platform, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,17 +16,16 @@ serve(async (req) => {
   try {
     const { favoriteIngredients, specificRequirements, maxCalories } = await req.json();
 
-    if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY não está configurada');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY não está configurada');
     }
 
-    // Distribui as calorias entre as refeições
     const calorieDistribution = {
-      breakfast: 0.25,      // 25%
-      morningSnack: 0.10,   // 10%
-      lunch: 0.35,          // 35%
-      afternoonSnack: 0.10, // 10%
-      dinner: 0.20          // 20%
+      breakfast: 0.25,
+      morningSnack: 0.10,
+      lunch: 0.35,
+      afternoonSnack: 0.10,
+      dinner: 0.20,
     };
 
     const prompt = `Você é um chef especialista em nutrição. Crie um cardápio completo para 1 dia com 5 refeições baseado nas seguintes informações:
@@ -70,35 +67,41 @@ RESPONDA APENAS com um JSON VÁLIDO no formato:
 
 NÃO adicione \`\`\`json ou \`\`\` na resposta, apenas o JSON puro.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000
+        model: 'google/gemini-2.5-flash',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Muitas requisições. Aguarde alguns segundos e tente novamente.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'Créditos de IA esgotados. Adicione créditos no workspace.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      const errText = await response.text();
+      console.error('AI gateway error:', response.status, errText);
+      throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
-    let content = data.choices[0].message.content;
-    
-    // Limpar markdown se houver
+    let content: string = data.choices?.[0]?.message?.content ?? '';
     content = content.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
-    
-    console.log('Resposta da IA:', content);
-    
-    // Parse do JSON retornado pela IA
+
     const menuPlan = JSON.parse(content);
 
     return new Response(JSON.stringify(menuPlan), {
@@ -106,9 +109,7 @@ NÃO adicione \`\`\`json ou \`\`\` na resposta, apenas o JSON puro.`;
     });
   } catch (error) {
     console.error('Erro na geração do cardápio:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message 
-    }), {
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
