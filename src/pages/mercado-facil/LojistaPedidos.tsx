@@ -85,6 +85,7 @@ const LojistaPedidos = () => {
     }
     setCreating(true);
     const taxa = Math.round((Number(taxaReais.replace(",", ".")) || 0) * 100);
+    const ehPropria = modoEntrega === "propria";
     const { error } = await supabase.from("mf_entregas").insert({
       order_log_id: openEntrega.id,
       loja_id: loja.id,
@@ -95,18 +96,40 @@ const LojistaPedidos = () => {
       taxa_centavos: taxa,
       telefone_cliente: telCliente.trim() || null,
       telefone_lojista: loja.telefone_whatsapp,
+      tipo: ehPropria ? "propria" : "app",
+      status: ehPropria ? "aceita" : "disponivel",
+      aceita_em: ehPropria ? new Date().toISOString() : null,
     });
     setCreating(false);
     if (error) {
       toast({ title: "Erro ao criar entrega", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Entrega criada", description: "Entregadores próximos foram notificados." });
+    toast({
+      title: ehPropria ? "Entrega registrada" : "Entrega criada",
+      description: ehPropria
+        ? "Agora atualize o status conforme a entrega avança."
+        : "Entregadores próximos foram notificados.",
+    });
     setOpenEntrega(null);
     setEndereco("");
     setTelCliente("");
     setTaxaReais("");
+    setModoEntrega("app");
   };
+
+  const avancarEntrega = async (entregaId: string, novoStatus: "coletada" | "entregue" | "cancelada") => {
+    setUpdatingEntrega(entregaId);
+    const patch: Record<string, unknown> = { status: novoStatus };
+    if (novoStatus === "coletada") patch.coletada_em = new Date().toISOString();
+    if (novoStatus === "entregue") patch.entregue_em = new Date().toISOString();
+    const { error } = await supabase.from("mf_entregas").update(patch).eq("id", entregaId);
+    setUpdatingEntrega(null);
+    if (error) {
+      toast({ title: "Erro ao atualizar status", description: error.message, variant: "destructive" });
+    }
+  };
+
 
   if (loading) {
     return (
