@@ -51,6 +51,8 @@ import FacaEmCasa from "./pages/FacaEmCasa";
 import Provador from "./pages/Provador";
 import Loja from "./pages/Loja";
 import AdminLoja from "./pages/AdminLoja";
+import Musicas from "./pages/Musicas";
+import AdminMusicas from "./pages/AdminMusicas";
 import AdminAlimentosComunidade from "./pages/AdminAlimentosComunidade";
 import ShoppingList from "./pages/ShoppingList";
 import ShoppingListDetail from "./pages/ShoppingListDetail";
