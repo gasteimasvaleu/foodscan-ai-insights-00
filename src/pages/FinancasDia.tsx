@@ -117,30 +117,18 @@ export default function FinancasDia() {
           Adicionar lançamento
         </Button>
 
-        {/* Lista */}
+        {/* Timeline */}
         {loading ? (
           <p className="text-center text-xs text-muted-foreground py-4">Carregando…</p>
-        ) : data.length === 0 ? (
-          <div className="rounded-3xl bg-[#FFD1E7]/30 border border-[#FFD1E7] p-8 text-center">
-            <p className="text-sm text-muted-foreground">Nenhum lançamento neste dia.</p>
-          </div>
         ) : (
-          <div className="space-y-4">
-            {receitas.length > 0 && (
-              <Section title="Receitas">
-                {receitas.map((t) => (
-                  <TxRow key={t.id} tx={t} onEdit={() => openEdit(t)} onDelete={() => setConfirmDelete(t)} />
-                ))}
-              </Section>
-            )}
-            {despesas.length > 0 && (
-              <Section title="Despesas">
-                {despesas.map((t) => (
-                  <TxRow key={t.id} tx={t} onEdit={() => openEdit(t)} onDelete={() => setConfirmDelete(t)} />
-                ))}
-              </Section>
-            )}
-          </div>
+          <FinanceTimeline
+            items={data}
+            showDate={false}
+            onItemClick={(tx) => openEdit(tx)}
+            onEdit={(tx) => openEdit(tx)}
+            onDelete={(tx) => setConfirmDelete(tx)}
+            emptyLabel="Nenhum lançamento neste dia."
+          />
         )}
       </div>
 
