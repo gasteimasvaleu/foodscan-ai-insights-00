@@ -119,6 +119,59 @@ export function TransactionModal({ open, onOpenChange, dateKey, initial, onSave 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleAiScan = async () => {
+    if (!user) {
+      toast.error("Faça login para usar a IA");
+      return;
+    }
+    setScanning(true);
+    try {
+      let imageUrl = receiptUrl;
+      // Se ainda é arquivo local, faz upload primeiro
+      if (receiptFile && !imageUrl) {
+        const ext = (receiptFile.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("finance-receipts")
+          .upload(path, receiptFile, { upsert: false, contentType: receiptFile.type });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("finance-receipts").getPublicUrl(path);
+        imageUrl = pub.publicUrl;
+        setReceiptUrl(imageUrl);
+        setReceiptFile(null);
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      if (!imageUrl) {
+        toast.error("Adicione uma foto primeiro");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("scan-receipt", {
+        body: { imageUrl },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const list = categoriesForKind("despesa");
+      if (typeof data.amount === "number" && data.amount > 0) {
+        setAmount(data.amount.toFixed(2).replace(".", ","));
+      }
+      if (data.description) setDescription(data.description);
+      if (data.suggested_category && list.includes(data.suggested_category)) {
+        setCategory(data.suggested_category);
+      }
+
+      const merchant = data.merchant ? ` — ${data.merchant}` : "";
+      toast.success(`Conta lida com sucesso${merchant}`);
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e?.message || "Não foi possível ler a conta");
+    } finally {
+      setScanning(false);
+    }
+  };
+
   const handleSave = async () => {
     const cents = parseBRLToCents(amount);
     if (!cents) {
