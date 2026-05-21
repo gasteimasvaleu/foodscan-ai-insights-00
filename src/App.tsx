@@ -87,6 +87,8 @@ import MFEntregadorDashboard from "./pages/mercado-facil/EntregadorDashboard";
 import MFEntregadorEntregas from "./pages/mercado-facil/EntregadorEntregas";
 import AdminMercadoFacil from "./pages/admin/AdminMercadoFacil";
 import AdminEntregadores from "./pages/admin/AdminEntregadores";
+import Financas from "./pages/Financas";
+import FinancasDia from "./pages/FinancasDia";
 
 import { useBadgeNotifications } from "@/hooks/useBadgeNotifications";
 import { useStreakMilestones } from "@/hooks/useStreakMilestones";
@@ -216,6 +218,10 @@ const App = () => (
             <Route path="/mercado-facil/entregador/entregas" element={<MFEntregadorEntregas />} />
             <Route path="/admin/mercado-facil" element={<AdminMercadoFacil />} />
             <Route path="/admin/entregadores" element={<AdminEntregadores />} />
+
+            <Route path="/financas" element={<Financas />} />
+            <Route path="/financas/:date" element={<FinancasDia />} />
+
 
 
 
