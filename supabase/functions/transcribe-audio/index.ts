@@ -28,7 +28,6 @@ Deno.serve(async (req) => {
     apiForm.append("file", file, filename);
     apiForm.append("model_id", "scribe_v2");
     apiForm.append("language_code", "por");
-    apiForm.append("language_code", "por");
 
     const resp = await fetch("https://api.elevenlabs.io/v1/speech-to-text", {
       method: "POST",
