@@ -134,19 +134,45 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
         cancelRecordingRef.current = false;
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
-        const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-          ? "audio/webm;codecs=opus"
-          : MediaRecorder.isTypeSupported("audio/webm")
-            ? "audio/webm"
-            : "";
-        const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+
+        const isSupported = (type: string) => {
+          try {
+            return typeof (MediaRecorder as any)?.isTypeSupported === "function"
+              ? MediaRecorder.isTypeSupported(type)
+              : false;
+          } catch {
+            return false;
+          }
+        };
+        // iOS Safari/WKWebView only supports audio/mp4 (aac). Try iOS-friendly first.
+        const candidates = [
+          "audio/mp4",
+          "audio/mp4;codecs=mp4a.40.2",
+          "audio/aac",
+          "audio/webm;codecs=opus",
+          "audio/webm",
+        ];
+        const mime = candidates.find(isSupported) || "";
+
+        let rec: MediaRecorder;
+        try {
+          rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        } catch (e) {
+          cleanupRecording();
+          toast({
+            title: "Gravação indisponível",
+            description: "Seu dispositivo não suporta gravação de áudio aqui.",
+            variant: "destructive",
+          });
+          return;
+        }
         mediaRecorderRef.current = rec;
         chunksRef.current = [];
         rec.ondataavailable = (ev) => {
           if (ev.data.size > 0) chunksRef.current.push(ev.data);
         };
         rec.onstop = async () => {
-          const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+          const blob = new Blob(chunksRef.current, { type: rec.mimeType || mime || "audio/webm" });
           cleanupRecording();
           setIsRecording(false);
           if (cancelRecordingRef.current || blob.size < 1000) return;
@@ -179,7 +205,11 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
       setIsTranscribing(true);
       try {
         const form = new FormData();
-        form.append("file", blob, "audio.webm");
+        const type = blob.type || "audio/webm";
+        const filename = type.includes("mp4") || type.includes("aac") || type.includes("mpeg")
+          ? "audio.m4a"
+          : "audio.webm";
+        form.append("file", blob, filename);
         const { data, error } = await supabase.functions.invoke("transcribe-audio", {
           body: form,
         });

@@ -24,7 +24,8 @@ Deno.serve(async (req) => {
     }
 
     const apiForm = new FormData();
-    apiForm.append("file", file, "audio.webm");
+    const filename = (file as File).name || "audio.webm";
+    apiForm.append("file", file, filename);
     apiForm.append("model_id", "scribe_v2");
     apiForm.append("language_code", "por");
 

@@ -30,6 +30,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>O FoodScan precisa acessar sua câmera para fotografar alimentos e fazer análise nutricional</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O We Diet usa o microfone para você gravar áudios no chat da comunidade, DMs e Tô Aqui.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
