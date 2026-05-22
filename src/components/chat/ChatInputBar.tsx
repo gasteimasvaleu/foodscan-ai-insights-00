@@ -205,7 +205,11 @@ export const ChatInputBar = React.forwardRef<HTMLDivElement, ChatInputBarProps>(
       setIsTranscribing(true);
       try {
         const form = new FormData();
-        form.append("file", blob, "audio.webm");
+        const type = blob.type || "audio/webm";
+        const filename = type.includes("mp4") || type.includes("aac") || type.includes("mpeg")
+          ? "audio.m4a"
+          : "audio.webm";
+        form.append("file", blob, filename);
         const { data, error } = await supabase.functions.invoke("transcribe-audio", {
           body: form,
         });
