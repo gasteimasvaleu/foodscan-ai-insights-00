@@ -1,9 +1,12 @@
-// v2.1 - 2026-03-27 - Valores por 100g para múltiplos elementos
+// v3.0 - 2026-07-02 - Migrado para Lovable AI Gateway (google/gemini-3-flash-preview)
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const AI_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+const AI_MODEL = 'google/gemini-3-flash-preview';
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -115,14 +118,14 @@ serve(async (req) => {
     if (base64Image) {
       console.log("Analyzing image first...");
       
-      const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      const imageAnalysisResponse = await fetch(AI_URL, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: AI_MODEL,
           messages: [
             {
               role: 'user',
@@ -153,12 +156,25 @@ IMPORTANTE: Retorne APENAS o texto descritivo, sem JSON ou outras estruturas.`
               ]
             }
           ],
-          max_tokens: 2050
         })
       });
 
       if (!imageAnalysisResponse.ok) {
-        throw new Error('Failed to analyze image');
+        const errorBody = await imageAnalysisResponse.text();
+        console.error(`AI Gateway (image) error ${imageAnalysisResponse.status}: ${errorBody}`);
+        if (imageAnalysisResponse.status === 429) {
+          return new Response(JSON.stringify({ error: 'rate_limit', message: 'Muitas requisições. Tente novamente em instantes.' }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        if (imageAnalysisResponse.status === 402) {
+          return new Response(JSON.stringify({ error: 'payment_required', message: 'Créditos de IA esgotados. Adicione créditos no workspace Lovable.' }), {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        throw new Error(`AI Gateway image analysis failed: ${imageAnalysisResponse.status} - ${errorBody.slice(0, 200)}`);
       }
 
       const imageData = await imageAnalysisResponse.json();
@@ -170,6 +186,7 @@ IMPORTANTE: Retorne APENAS o texto descritivo, sem JSON ou outras estruturas.`
       
       console.log("Image description generated:", finalDescription);
     }
+
     
     console.log('Analyzing nutrition for description:', finalDescription);
 
@@ -228,14 +245,14 @@ IMPORTANTE:
 - Se não houver estimativa na descrição, estime o peso baseado em porções típicas brasileiras.
 - O campo "estimated_weight" representa quanto daquele alimento está no prato (em gramas).`;
 
-    const nutritionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const nutritionResponse = await fetch(AI_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: AI_MODEL,
         messages: [
           { 
             role: 'system', 
@@ -243,15 +260,28 @@ IMPORTANTE:
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
-        max_tokens: 2050,
         response_format: { type: 'json_object' },
       }),
     });
 
     if (!nutritionResponse.ok) {
-      throw new Error(`OpenAI API error: ${nutritionResponse.status}`);
+      const errorBody = await nutritionResponse.text();
+      console.error(`AI Gateway (nutrition) error ${nutritionResponse.status}: ${errorBody}`);
+      if (nutritionResponse.status === 429) {
+        return new Response(JSON.stringify({ error: 'rate_limit', message: 'Muitas requisições. Tente novamente em instantes.' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (nutritionResponse.status === 402) {
+        return new Response(JSON.stringify({ error: 'payment_required', message: 'Créditos de IA esgotados.' }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      throw new Error(`AI Gateway nutrition failed: ${nutritionResponse.status} - ${errorBody.slice(0, 200)}`);
     }
+
 
     const data = await nutritionResponse.json();
     const nutritionAnalysis = data.choices[0].message.content;
