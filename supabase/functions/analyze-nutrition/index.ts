@@ -118,14 +118,14 @@ serve(async (req) => {
     if (base64Image) {
       console.log("Analyzing image first...");
       
-      const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      const imageAnalysisResponse = await fetch(AI_URL, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: AI_MODEL,
           messages: [
             {
               role: 'user',
@@ -156,12 +156,25 @@ IMPORTANTE: Retorne APENAS o texto descritivo, sem JSON ou outras estruturas.`
               ]
             }
           ],
-          max_tokens: 2050
         })
       });
 
       if (!imageAnalysisResponse.ok) {
-        throw new Error('Failed to analyze image');
+        const errorBody = await imageAnalysisResponse.text();
+        console.error(`AI Gateway (image) error ${imageAnalysisResponse.status}: ${errorBody}`);
+        if (imageAnalysisResponse.status === 429) {
+          return new Response(JSON.stringify({ error: 'rate_limit', message: 'Muitas requisições. Tente novamente em instantes.' }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        if (imageAnalysisResponse.status === 402) {
+          return new Response(JSON.stringify({ error: 'payment_required', message: 'Créditos de IA esgotados. Adicione créditos no workspace Lovable.' }), {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        throw new Error(`AI Gateway image analysis failed: ${imageAnalysisResponse.status} - ${errorBody.slice(0, 200)}`);
       }
 
       const imageData = await imageAnalysisResponse.json();
@@ -173,6 +186,7 @@ IMPORTANTE: Retorne APENAS o texto descritivo, sem JSON ou outras estruturas.`
       
       console.log("Image description generated:", finalDescription);
     }
+
     
     console.log('Analyzing nutrition for description:', finalDescription);
 
