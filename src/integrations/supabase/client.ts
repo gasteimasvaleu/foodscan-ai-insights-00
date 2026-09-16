@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
 import type { Database } from './types';
+import { brokeredPreviewStorage } from './previewAuthStorage';
 
 const SUPABASE_URL = "https://zyhmwcsfifdepqnnrguo.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5aG13Y3NmaWZkZXBxbm5yZ3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwODUwMjUsImV4cCI6MjA2MzY2MTAyNX0.TKFtW8ZUf9Jl8SN0c5EE0nomYVU8B65g6GMj4PGD1X0";
@@ -22,7 +23,7 @@ const appPlatform =
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: brokeredPreviewStorage(),
     persistSession: true,
     autoRefreshToken: true,
   },
