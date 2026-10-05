@@ -16,12 +16,14 @@ const Produto = () => {
   const { add } = useMFCart();
   const [produto, setProduto] = useState<MFProduto | null>(null);
   const [loja, setLoja] = useState<MFLoja | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
       const { data: p } = await supabase.from("mf_produtos").select("*").eq("id", id).maybeSingle();
       setProduto((p as MFProduto) ?? null);
+      if (!p) setNotFound(true);
       if (p) {
         const { data: l } = await supabase.from("mf_lojas").select("*").eq("id", (p as MFProduto).loja_id).maybeSingle();
         setLoja((l as MFLoja) ?? null);
@@ -33,7 +35,21 @@ const Produto = () => {
     return (
       <div className="min-h-screen bg-gradient-primary">
         <MFHeader title="Produto" />
-        <main className="pt-[calc(env(safe-area-inset-top)+4rem)] px-4">Carregando...</main>
+        <main className="pt-[calc(env(safe-area-inset-top)+4rem)] px-4 text-center space-y-4">
+          {notFound ? (
+            <>
+              <p className="text-base pt-8">Produto indisponível</p>
+              <button
+                onClick={() => navigate("/mercado-facil")}
+                className="px-5 py-2 rounded-full bg-[#FD46A1] text-white"
+              >
+                Voltar
+              </button>
+            </>
+          ) : (
+            "Carregando..."
+          )}
+        </main>
       </div>
     );
   }
