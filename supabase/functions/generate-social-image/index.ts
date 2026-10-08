@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-app-platform",
+    "authorization, x-client-info, apikey, content-type, x-app-platform, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -56,16 +56,17 @@ REGRA ABSOLUTA: a imagem NÃO PODE conter NENHUM texto, letras, palavras, númer
 
 Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: imagePrompt }],
-        modalities: ["image", "text"],
+        model: "openai/gpt-image-2.5-sunburst",
+        prompt: imagePrompt,
+        size: isVertical ? "1024x1536" : "1024x1024",
+        quality: "medium",
       }),
     });
 
@@ -82,7 +83,8 @@ Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
     }
 
     const aiData = await aiResp.json();
-    const dataUrl: string | undefined = aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const b64Out: string | undefined = aiData?.data?.[0]?.b64_json;
+    const dataUrl: string | undefined = b64Out ? `data:image/png;base64,${b64Out}` : aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     if (!dataUrl || !dataUrl.startsWith("data:")) {
       console.error("no image returned", JSON.stringify(aiData).slice(0, 400));
       return new Response(JSON.stringify({ error: "no_image" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
