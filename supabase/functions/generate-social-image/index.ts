@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { decodeBase64 } from "jsr:@std/encoding@1/base64";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
   try {
+    console.log("generate-social-image: request received");
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -31,6 +33,7 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: userErr } = await userClient.auth.getUser(token);
     if (userErr || !userData?.user) {
+      console.error("generate-social-image: auth failed", userErr?.message);
       return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const userId = userData.user.id;
@@ -67,6 +70,7 @@ Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
         prompt: imagePrompt,
         size: isVertical ? "1024x1536" : "1024x1024",
         quality: "medium",
+        output_format: "jpeg",
       }),
     });
 
@@ -78,27 +82,20 @@ Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
     }
     if (!aiResp.ok) {
       const txt = await aiResp.text();
-      console.error("image AI error", aiResp.status, txt);
+      console.error("image AI error", aiResp.status, txt.slice(0, 500));
       return new Response(JSON.stringify({ error: "ai_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const aiData = await aiResp.json();
+    console.log("generate-social-image: AI responded", aiResp.status);
     const b64Out: string | undefined = aiData?.data?.[0]?.b64_json;
-    const dataUrl: string | undefined = b64Out ? `data:image/png;base64,${b64Out}` : aiData?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!dataUrl || !dataUrl.startsWith("data:")) {
+    if (!b64Out) {
       console.error("no image returned", JSON.stringify(aiData).slice(0, 400));
       return new Response(JSON.stringify({ error: "no_image" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-
-    // data:image/png;base64,xxx
-    const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.*)$/);
-    if (!match) {
-      return new Response(JSON.stringify({ error: "bad_image" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-    const mime = match[1];
-    const ext = mime.split("/")[1].replace("jpeg", "jpg");
-    const b64 = match[2];
-    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    const mime = "image/jpeg";
+    const ext = "jpg";
+    const bytes = decodeBase64(b64Out.replace(/\s/g, ""));
 
     const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const fileName = `${userId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
@@ -109,6 +106,7 @@ Alta qualidade, paleta harmônica, sem texto, sem letras, sem watermark.`;
       console.error("storage upload error", upErr);
       return new Response(JSON.stringify({ error: "upload_failed" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    console.log("generate-social-image: uploaded", fileName, bytes.length);
     const { data: pub } = adminClient.storage.from("social-posts").getPublicUrl(fileName);
 
     return new Response(JSON.stringify({ image_url: pub.publicUrl, path: fileName }), {
