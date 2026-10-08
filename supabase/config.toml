@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.generate-menu]
 verify_jwt = true
+
+[functions.scan-receipt]
+verify_jwt = false
