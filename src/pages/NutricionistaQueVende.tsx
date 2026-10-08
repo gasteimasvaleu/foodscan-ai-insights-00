@@ -52,9 +52,14 @@ export default function NutricionistaQueVende() {
       });
       if (error) throw error;
       return String(data?.image_url || "");
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast({ title: "Erro ao gerar imagem", description: "Tente novamente em instantes.", variant: "destructive" });
+      const status = e?.context?.status;
+      const description =
+        status === 429 ? "Muitos pedidos agora. Aguarde um minuto e tente de novo."
+        : status === 402 ? "Os créditos de IA acabaram. Adicione créditos para continuar."
+        : "Tente novamente em instantes.";
+      toast({ title: "Erro ao gerar imagem", description, variant: "destructive" });
       return null;
     } finally {
       setLoadingImage(false);
