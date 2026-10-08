@@ -55,10 +55,20 @@ export default function NutricionistaQueVende() {
     } catch (e: any) {
       console.error(e);
       const status = e?.context?.status;
+      let code = "";
+      try { code = (await e?.context?.json?.())?.error || ""; } catch { /* ignore */ }
+      console.error("generate-social-image failed", status, code);
+      const messages: Record<string, string> = {
+        unauthorized: "Sua sessão expirou. Saia e entre de novo no app.",
+        rate_limit: "Muitos pedidos agora. Aguarde um minuto e tente de novo.",
+        no_credits: "Os créditos de IA acabaram. Adicione créditos para continuar.",
+        ai_error: "A IA não conseguiu criar a imagem. Tente outro tema.",
+        no_image: "A IA não devolveu uma imagem. Tente de novo.",
+        upload_failed: "Não foi possível salvar a imagem. Tente de novo.",
+      };
       const description =
-        status === 429 ? "Muitos pedidos agora. Aguarde um minuto e tente de novo."
-        : status === 402 ? "Os créditos de IA acabaram. Adicione créditos para continuar."
-        : "Tente novamente em instantes.";
+        messages[code] ||
+        (status === 429 ? messages.rate_limit : status === 402 ? messages.no_credits : status === 401 ? messages.unauthorized : `Tente novamente em instantes.${status ? ` (código ${status})` : ""}`);
       toast({ title: "Erro ao gerar imagem", description, variant: "destructive" });
       return null;
     } finally {
