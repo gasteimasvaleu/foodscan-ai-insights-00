@@ -5,40 +5,37 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-app-platform, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-async function translateText(text: string, from: string, to: string, openaiKey: string): Promise<string> {
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+async function callAI(system: string, user: string, key: string): Promise<string | null> {
+  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${openaiKey}`, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      temperature: 0.1,
+      model: 'openai/gpt-6-astra',
+      reasoning_effort: 'low',
       messages: [
-        { role: 'system', content: `Translate the following text from ${from} to ${to}. Return ONLY the translation, nothing else.` },
-        { role: 'user', content: text },
+        { role: 'system', content: system },
+        { role: 'user', content: user },
       ],
     }),
   });
+  if (!res.ok) {
+    console.error('translation AI error', res.status, (await res.text()).slice(0, 300));
+    return null;
+  }
   const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() || text;
+  return data.choices?.[0]?.message?.content?.trim() || null;
 }
 
-async function translateBatch(items: string[], from: string, to: string, openaiKey: string): Promise<string[]> {
+async function translateText(text: string, from: string, to: string, key: string): Promise<string> {
+  const out = await callAI(`Translate the following text from ${from} to ${to}. Return ONLY the translation, nothing else.`, text, key);
+  return out || text;
+}
+
+async function translateBatch(items: string[], from: string, to: string, key: string): Promise<string[]> {
   if (!items.length) return [];
   const numbered = items.map((t, i) => `${i + 1}. ${t}`).join('\n');
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${openaiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      temperature: 0.1,
-      messages: [
-        { role: 'system', content: `Translate each numbered line from ${from} to ${to}. Keep the same numbered format. Return ONLY the translations.` },
-        { role: 'user', content: numbered },
-      ],
-    }),
-  });
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content?.trim() || '';
+  const text = await callAI(`Translate each numbered line from ${from} to ${to}. Keep the same numbered format, one per line. Return ONLY the translations.`, numbered, key);
+  if (!text) return items;
   const lines = text.split('\n').map((l: string) => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
   return lines.length === items.length ? lines : items;
 }
@@ -50,7 +47,7 @@ serve(async (req) => {
 
   try {
     const apiKey = Deno.env.get('SPOONACULAR_API_KEY');
-    const openaiKey = Deno.env.get('OPENAI_API_KEY');
+    const openaiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'SPOONACULAR_API_KEY not configured' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
