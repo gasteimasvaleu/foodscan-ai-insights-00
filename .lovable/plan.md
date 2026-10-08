@@ -1,12 +1,14 @@
-# Fix Appflow Live Update build (EALLOWREMOTE)
+# Corrigir o build de Live Update no Appflow
 
-## Cause
-The package list file (package-lock.json) has 81 packages pointing to a Lovable-internal download address instead of the public npm registry. Appflow's npm refuses those addresses, so `npm install` stops. Because install failed, TypeScript was never installed, which triggers the second error ("Could not find installation of TypeScript").
+## Por que está falhando
+O arquivo que lista os pacotes do app (package-lock.json) tem 81 pacotes apontando para um endereço de download interno do Lovable, e não para o endereço público oficial (npm). O Appflow não aceita esse endereço interno, então a instalação para no meio.
 
-## Fix
-1. In `package-lock.json`, replace every `https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/` URL with `https://registry.npmjs.org/` (same package paths, `/-/name-x.y.z.tgz` format matches).
-2. Verify no `sandbox-npm-cache` references remain and the JSON is valid.
-3. No other code changes; TypeScript is already in package.json and will install once npm install succeeds.
+Como a instalação falhou, o TypeScript também não foi instalado. Por isso aparece o segundo erro ("Could not find installation of TypeScript"). É só consequência do primeiro problema.
 
-## After
-Run the Live Update build in Appflow again. If future dependency changes reintroduce these URLs, the same replacement is needed (will record this in AGENTS.md).
+## O que vou fazer
+1. Trocar, nesse arquivo, todos os endereços internos pelo endereço público oficial (registry.npmjs.org). Os pacotes e as versões continuam exatamente os mesmos.
+2. Conferir que não ficou nenhum endereço interno e que o arquivo continua válido.
+3. Não mexo em mais nada do app.
+
+## Depois
+Você roda o build de Live Update no Appflow de novo. Se no futuro adicionarmos pacotes novos e o erro voltar, é só pedir que eu faço a mesma troca.
