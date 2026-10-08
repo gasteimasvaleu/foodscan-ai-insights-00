@@ -74,3 +74,6 @@ verify_jwt = true
 
 [functions.scan-receipt]
 verify_jwt = false
+
+[functions.virtual-tryon]
+verify_jwt = false
