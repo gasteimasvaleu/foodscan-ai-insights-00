@@ -73,37 +73,9 @@ export const useDailyLimit = (
 
   const increment = useCallback(async () => {
     if (!isGated || !user) return;
-    const today = todayISO();
-    try {
-      // Upsert com count = count + 1 via RPC simples: lê → soma → upsert
-      const { data: existing } = await supabase
-        .from('daily_usage_limits')
-        .select('id, count')
-        .eq('user_id', user.id)
-        .eq('feature', feature)
-        .eq('usage_date', today)
-        .maybeSingle();
-
-      const newCount = (existing?.count ?? 0) + 1;
-
-      if (existing) {
-        await supabase
-          .from('daily_usage_limits')
-          .update({ count: newCount })
-          .eq('id', existing.id);
-      } else {
-        await supabase.from('daily_usage_limits').insert({
-          user_id: user.id,
-          feature,
-          usage_date: today,
-          count: newCount,
-        });
-      }
-      setCount(newCount);
-    } catch (err) {
-      console.warn('[useDailyLimit] increment error', err);
-    }
-  }, [isGated, user, feature]);
+    // O servidor soma o uso ao analisar; aqui só relemos o contador.
+    await refresh();
+  }, [isGated, user, refresh]);
 
   const remaining = isGated ? Math.max(0, dailyLimit - count) : dailyLimit;
   const canUse = !isGated || count < dailyLimit;

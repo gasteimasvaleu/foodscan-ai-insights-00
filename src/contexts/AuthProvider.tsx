@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           currentUserIdRef.current = newSession.user.id;
 
           // RevenueCat sync on native iOS (non-blocking)
-          if (isNativeIOS && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          if (isNativeIOS && event === 'SIGNED_IN') {
             setTimeout(async () => {
               try {
                 const { identifyUser, syncSubscriptionAfterLogin } = await import('@/lib/revenuecat');

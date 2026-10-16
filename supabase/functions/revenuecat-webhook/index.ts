@@ -69,6 +69,21 @@ Deno.serve(async (req) => {
     let subscribed = true;
     let subscriptionStatus = "active";
 
+    // TRANSFER: subscription moved between app users -> deactivate old owners
+    if (eventType === "TRANSFER") {
+      const from: string[] = (event.transferred_from || []).filter(isValidUUID);
+      for (const uid of from) {
+        await supabaseClient.from("subscribers").update({
+          subscribed: false, subscription_status: "transferred", transaction_id: null,
+          updated_at: new Date().toISOString(),
+        }).eq("user_id", uid).eq("payment_provider", "apple");
+      }
+      log("Transfer processed", { from, to: event.transferred_to });
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     switch (eventType) {
       case "INITIAL_PURCHASE":
       case "RENEWAL":
@@ -124,11 +139,13 @@ Deno.serve(async (req) => {
 
       const { data: existing } = await supabaseClient
         .from("subscribers")
-        .select("id")
+        .select("id, payment_provider, product_source")
         .eq("user_id", appUserId)
         .maybeSingle();
 
-      if (existing) {
+      if (existing && (existing.payment_provider === "manual" || existing.product_source === "lifetime")) {
+        log("Skipping manual/lifetime record", { appUserId });
+      } else if (existing) {
         const { error } = await supabaseClient
           .from("subscribers")
           .update(updateData)
