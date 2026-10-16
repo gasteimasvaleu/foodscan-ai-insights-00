@@ -25,6 +25,12 @@
 6. Fechar as regras do banco: usuário só lê a própria assinatura; criar/alterar só pelo servidor. No contador de limite grátis, o usuário só lê; o aumento do contador passa a ser feito pelo servidor.
 7. Restaurar o Pro vitalício de admin@wediet.app (até 2099).
 
+## O que você faz no painel do RevenueCat
+
+1. Project Settings → General → "Restore Behavior": trocar para **"Keep with original App User ID"**. Assim, quando alguém tocar em Restaurar em outra conta, a assinatura não sai da conta que pagou.
+2. Project Settings → API Keys → criar uma **Secret API key** e me enviar (vou pedir num campo seguro). É com ela que o servidor confere se a assinatura é mesmo daquele usuário.
+3. Conferir que o Webhook continua apontando para a nossa função e com o mesmo segredo de autorização (nada muda ali).
+
 ## Detalhes técnicos
 
 - `src/lib/revenuecat.ts`: remover `restorePurchases` de `syncSubscriptionAfterLogin`; trocar upserts diretos por `supabase.functions.invoke('rc-sync')`.
