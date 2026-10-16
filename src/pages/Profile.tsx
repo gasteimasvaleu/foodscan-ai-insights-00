@@ -1,3 +1,4 @@
+import { APP_VERSION, APP_BUILD_LABEL } from '@/config/version';
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -472,6 +473,9 @@ export default function Profile() {
               </AlertDialog>
             </CardContent>
           </Card>
+          <p className="text-center text-xs text-muted-foreground pt-2 pb-4">
+            Versão {APP_VERSION} · web {APP_BUILD_LABEL}
+          </p>
         </div>
       </div>
     </>

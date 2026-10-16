@@ -123,10 +123,10 @@ export const logOutRevenueCat = async (): Promise<void> => {
 };
 
 
-const invokeServerSync = async (): Promise<{ success: boolean; error?: string }> => {
+const invokeServerSync = async (): Promise<{ success: boolean; error?: string; subscription_end?: string | null }> => {
   const { data, error } = await supabase.functions.invoke('rc-sync');
   if (error) return { success: false, error: error.message };
-  return { success: !!data?.subscribed, error: data?.subscribed ? undefined : 'No active subscription' };
+  return { success: !!data?.subscribed, subscription_end: data?.subscription_end ?? null, error: data?.subscribed ? undefined : 'No active subscription' };
 };
 
 /**
@@ -137,7 +137,7 @@ export const upsertSubscriptionFromCustomerInfo = async (
   _userId: string,
   _email: string,
   _customerInfo: any,
-): Promise<{ success: boolean; error?: string }> => invokeServerSync();
+): Promise<{ success: boolean; error?: string; subscription_end?: string | null }> => invokeServerSync();
 
 /**
  * Called after login. Never calls restorePurchases (only the "Restaurar Compras" button does).

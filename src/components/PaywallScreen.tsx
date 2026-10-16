@@ -59,19 +59,13 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
 
       const customerInfo = await rcPurchaseMonthly();
       if (customerInfo) {
-        toast({ title: '✅ Assinatura realizada!', description: 'Bem-vindo ao We Diet Pro!' });
-
-        const premiumEntitlement =
-          customerInfo.entitlements?.active?.['Premium'] ||
-          customerInfo.entitlements?.active?.['premium'];
-        const expirationDate = premiumEntitlement?.expirationDate || null;
-
-        console.log('[PaywallScreen] Purchase success, forcing subscription active. Expiration:', expirationDate);
-        forceSubscriptionActive(expirationDate);
-
-        upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch((err) => {
-          console.warn('[PaywallScreen] Upsert after purchase error:', err);
-        });
+        const res = await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo);
+        if (res.success) {
+          toast({ title: '✅ Assinatura realizada!', description: 'Bem-vindo ao We Diet Pro!' });
+          forceSubscriptionActive(res.subscription_end ?? null);
+        } else {
+          toast({ title: 'Confirmando assinatura...', description: 'Ainda não recebemos a confirmação. Tente "Restaurar Compras" em instantes.' });
+        }
       }
     } catch (err: any) {
       console.error('[PaywallScreen] Purchase error:', JSON.stringify(err));
@@ -99,16 +93,12 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
           customerInfo.entitlements?.active?.['Premium'] ||
           customerInfo.entitlements?.active?.['premium'];
 
-        if (premiumEntitlement) {
+        const res = premiumEntitlement
+          ? await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo)
+          : { success: false };
+        if (res.success) {
           toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
-
-          const expirationDate = premiumEntitlement.expirationDate || null;
-          console.log('[PaywallScreen] Restore success, forcing subscription active. Expiration:', expirationDate);
-          forceSubscriptionActive(expirationDate);
-
-          upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch((err) => {
-            console.warn('[PaywallScreen] Upsert after restore error:', err);
-          });
+          forceSubscriptionActive((res as any).subscription_end ?? null);
         } else {
           toast({
             title: 'Nenhuma assinatura encontrada',
