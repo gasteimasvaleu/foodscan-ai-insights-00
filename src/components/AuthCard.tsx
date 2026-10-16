@@ -123,17 +123,12 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
         customerInfo?.entitlements?.active?.['Premium'] ||
         customerInfo?.entitlements?.active?.['premium'];
 
-      if (customerInfo && premiumEntitlement) {
+      const res = customerInfo && premiumEntitlement && user?.id
+        ? await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo)
+        : { success: false, subscription_end: null };
+      if (res.success) {
         toast({ title: '✅ Compra restaurada!', description: 'Sua assinatura está ativa.' });
-
-        const expirationDate = premiumEntitlement.expirationDate || null;
-        forceSubscriptionActive(expirationDate);
-
-        if (user?.id) {
-          upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo).catch((err) => {
-            console.warn('[AuthCard] Upsert after restore error:', err);
-          });
-        }
+        forceSubscriptionActive(res.subscription_end ?? null);
       } else {
         toast({
           title: 'Nenhuma assinatura encontrada',

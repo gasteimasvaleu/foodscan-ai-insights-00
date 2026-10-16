@@ -48,9 +48,13 @@ export const SubscriptionRequired: React.FC<SubscriptionRequiredProps> = ({ chil
       try {
         const customerInfo = await rcPurchaseMonthly();
         if (customerInfo && user.id && user.email) {
-          await syncSubscriptionAfterLogin(user.id, user.email);
-          toast({ title: '✅ Assinatura realizada!' });
-          window.location.reload();
+          const res = await syncSubscriptionAfterLogin(user.id, user.email);
+          if (res.success) {
+            toast({ title: '✅ Assinatura realizada!' });
+            await subscription.checkSubscription?.();
+          } else {
+            toast({ title: 'Confirmando assinatura...', description: 'Tente "Restaurar Compras" em instantes.' });
+          }
         }
       } catch (err: any) {
         console.error('[SubscriptionRequired] Purchase error:', JSON.stringify(err));

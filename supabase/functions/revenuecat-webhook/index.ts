@@ -186,50 +186,8 @@ Deno.serve(async (req) => {
 
       log(`Successfully processed ${eventType} for ${appUserId}`);
     } else if (isAnonymous) {
-      // ─── Anonymous user → create/update orphan record ───
-      const orphanEmail = originalTransactionId
-        ? `anonymous+${originalTransactionId}@revenuecat.local`
-        : `anonymous+${appUserId.replace('$RCAnonymousID:', '')}@revenuecat.local`;
-
-      log(`Creating/updating orphan for anonymous user`, { orphanEmail, txn: originalTransactionId });
-
-      // Try to find existing orphan by transaction_id first
-      let existingOrphan = null;
-      if (originalTransactionId) {
-        const { data } = await supabaseClient
-          .from("subscribers")
-          .select("id")
-          .eq("transaction_id", originalTransactionId)
-          .maybeSingle();
-        existingOrphan = data;
-      }
-
-      // Fallback: find by orphan email
-      if (!existingOrphan) {
-        const { data } = await supabaseClient
-          .from("subscribers")
-          .select("id")
-          .eq("email", orphanEmail)
-          .maybeSingle();
-        existingOrphan = data;
-      }
-
-      if (existingOrphan) {
-        const { error } = await supabaseClient
-          .from("subscribers")
-          .update(updateData)
-          .eq("id", existingOrphan.id);
-        if (error) log("Orphan update error", error);
-        else log("Orphan updated successfully");
-      } else {
-        const { error } = await supabaseClient.from("subscribers").insert({
-          email: orphanEmail,
-          user_id: null,
-          ...updateData,
-        });
-        if (error) log("Orphan insert error", error);
-        else log("Orphan created successfully");
-      }
+      // Never store ownerless subscriptions: only the signed-in user's server sync can claim it.
+      log("Anonymous purchase ignored (no orphan record)", { txn: originalTransactionId });
     } else {
       log(`Unknown app_user_id format, skipping: ${appUserId}`);
     }
