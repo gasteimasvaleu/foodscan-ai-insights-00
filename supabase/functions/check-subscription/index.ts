@@ -48,29 +48,6 @@ serve(async (req) => {
       log("Found by user_id");
     }
 
-    // ─── Step 2: Fallback — check by email ───
-    if (!subscription) {
-      const { data: byEmail } = await supabaseClient
-        .from("subscribers")
-        .select("*")
-        .eq("email", user.email)
-        .maybeSingle();
-
-      if (byEmail) {
-        subscription = byEmail;
-        log("Found by email", { hasUserId: !!byEmail.user_id });
-
-        // Claim orphan: if record has no user_id, bind it now
-        if (!byEmail.user_id) {
-          log("Claiming orphan record by email");
-          await supabaseClient
-            .from("subscribers")
-            .update({ user_id: user.id, updated_at: new Date().toISOString() })
-            .eq("id", byEmail.id);
-        }
-      }
-    }
-
     if (!subscription) {
       log("No subscription record found");
       return new Response(JSON.stringify({ subscribed: false }), {
