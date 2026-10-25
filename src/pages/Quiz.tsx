@@ -117,7 +117,7 @@ export default function Quiz() {
                 Toda semana
               </p>
               <p className="text-sm font-semibold text-foreground leading-tight">
-                Prêmio de R$ 500 no Pix <span className="text-muted-foreground font-medium">para o 1º colocado do ranking semanal</span>
+                Prêmio de R$ 100 no Pix <span className="text-muted-foreground font-medium">para o 1º colocado do ranking semanal</span>
               </p>
             </div>
           </div>
