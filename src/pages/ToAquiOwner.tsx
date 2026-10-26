@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Plus, ArrowLeft, Clock, CheckCircle2, XCircle, Store } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,14 @@ const ToAquiOwner = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: venues = [], isLoading } = useMyVenues(user?.id);
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase.rpc("has_role", { _user_id: user!.id, _role: "admin" });
+      return !!data;
+    },
+  });
 
   if (!user) {
     return (
@@ -53,10 +63,10 @@ const ToAquiOwner = () => {
         </div>
 
         <div className="text-center text-xs text-gray-600">
-          {venues.length}/3 venues cadastrados
+          {isAdmin ? `${venues.length} venues cadastrados` : `${venues.length}/3 venues cadastrados`}
         </div>
 
-        {venues.length >= 3 ? (
+        {!isAdmin && venues.length >= 3 ? (
           <Button disabled className="w-full rounded-full mb-6">
             Limite de 3 venues atingido
           </Button>
