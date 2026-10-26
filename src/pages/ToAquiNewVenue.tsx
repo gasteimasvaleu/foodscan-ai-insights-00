@@ -43,7 +43,8 @@ const ToAquiNewVenue = () => {
       .from("venues")
       .select("id", { count: "exact", head: true })
       .eq("owner_id", user.id);
-    if (typeof count === "number" && count >= 3) {
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
+    if (!isAdmin && typeof count === "number" && count >= 3) {
       setSubmitting(false);
       toast({
         title: "Limite atingido",
