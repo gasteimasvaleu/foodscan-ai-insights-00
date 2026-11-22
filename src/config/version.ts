@@ -1,5 +1,5 @@
 /** Native version shown in Profile. Keep in sync with MARKETING_VERSION (CURRENT_PROJECT_VERSION). */
-export const APP_VERSION = '1.1.0 (24)';
+export const APP_VERSION = '1.1.1 (25)';
 
 /** Web bundle build time; changes on every Live Update. */
 export const APP_BUILD_LABEL = (() => {
