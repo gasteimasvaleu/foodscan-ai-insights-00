@@ -64,6 +64,18 @@ export default function ChartsProgress() {
       .eq("id", user?.id)
       .single();
     setEditBMR(data?.basal_metabolic_rate || 0);
+    const [{ data: pa }, { data: ex }] = await Promise.all([
+      supabase.from("physical_assessments").select("weight, height").eq("user_id", user?.id)
+        .order("assessment_date", { ascending: false }).limit(1).maybeSingle(),
+      supabase.from("exercise_records").select("weight, age").eq("user_id", user?.id)
+        .order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    setBmrForm((prev) => ({
+      ...prev,
+      weight: Number(pa?.weight || ex?.weight || prev.weight),
+      height: Number(pa?.height || prev.height),
+      age: Number(ex?.age || prev.age),
+    }));
   };
 
   const loadStats = async () => {
@@ -92,26 +104,36 @@ export default function ChartsProgress() {
 
   const loadWeeklyData = async () => {
     try {
-      const { data, error } = await supabase
-        .from("weekly_summaries")
-        .select("*")
-        .eq("user_id", user?.id)
-        .order("date", { ascending: true })
-        .limit(4);
-      if (error) throw error;
-      const { data: goalsData } = await supabase
-        .from("daily_goals")
-        .select("calories")
-        .eq("user_id", user?.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-      const goalCalories = goalsData?.calories || 2000;
-      const chartData = data?.map((week, index) => ({
-        week: `Sem ${index + 1}`,
-        calories: week.calories,
-        goal: goalCalories * 7,
-      })) || [];
+      const today = new Date();
+      const monday = new Date(today);
+      monday.setHours(0, 0, 0, 0);
+      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+      const start = new Date(monday);
+      start.setDate(start.getDate() - 21);
+      const [{ data: meals }, { data: hyd }, { data: goalsData }] = await Promise.all([
+        supabase.from("meal_records").select("calories, created_at").eq("user_id", user?.id).gte("created_at", start.toISOString()),
+        supabase.from("hydration_records").select("calories, consumed_at").eq("user_id", user?.id).gte("consumed_at", start.toISOString()),
+        supabase.from("daily_goals").select("calories").eq("user_id", user?.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      const goalCalories = Number(goalsData?.calories) || 2000;
+      const totals = [0, 0, 0, 0];
+      const add = (iso: string, cal: unknown) => {
+        const idx = Math.floor((new Date(iso).getTime() - start.getTime()) / (7 * 86400000));
+        if (idx >= 0 && idx < 4) totals[idx] += Number(cal) || 0;
+      };
+      meals?.forEach((m) => add(m.created_at, m.calories));
+      hyd?.forEach((h) => add(h.consumed_at, h.calories));
+      const chartData = totals.map((total, i) => {
+        const wStart = new Date(start);
+        wStart.setDate(wStart.getDate() + i * 7);
+        let days = 7;
+        if (i === 3) days = ((today.getDay() + 6) % 7) + 1;
+        return {
+          week: wStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+          calories: Math.round(total / days),
+          goal: goalCalories,
+        };
+      });
       setWeeklyData(chartData);
     } catch (error) {
       console.error("Erro ao carregar dados semanais:", error);
@@ -240,6 +262,8 @@ export default function ChartsProgress() {
     const calculatedBMR = calculateBMR();
     setEditBMR(calculatedBMR);
     setShowBMRCalculator(false);
+    supabase.from("profiles").update({ basal_metabolic_rate: calculatedBMR }).eq("id", user?.id)
+      .then(() => loadCalorieBalance());
     toast({ title: `TMB calculada: ${calculatedBMR} kcal/dia` });
   };
 
@@ -352,6 +376,9 @@ export default function ChartsProgress() {
                 <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5">
                     <p className="text-sm text-muted-foreground mb-2">TMB Diária</p>
+                    {!editBMR && (
+                      <p className="text-xs font-medium text-primary mb-2">Defina sua TMB pela calculadora</p>
+                    )}
                     <div className="space-y-2">
                       <Input
                         type="number"
@@ -366,7 +393,7 @@ export default function ChartsProgress() {
                         </Button>
                         <Dialog open={showBMRCalculator} onOpenChange={setShowBMRCalculator}>
                           <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" className="h-7 px-2">
+                            <Button size="sm" variant={editBMR ? "outline" : "default"} className="h-7 px-2">
                               <Calculator className="w-3 h-3" />
                             </Button>
                           </DialogTrigger>
@@ -425,7 +452,11 @@ export default function ChartsProgress() {
                       {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0).toLocaleString()} kcal
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {calorieBalanceData.reduce((sum, day) => sum + day.balance, 0) < 0 ? 'Déficit' : 'Superávit'}
+                      {(() => {
+                        if (!editBMR) return 'Defina sua TMB para ver o saldo real';
+                        const t = calorieBalanceData.reduce((sum, day) => sum + day.balance, 0);
+                        return t < 0 ? 'Déficit' : t > 0 ? 'Superávit' : 'Equilibrado';
+                      })()}
                     </p>
                   </div>
                 </div>
@@ -441,7 +472,7 @@ export default function ChartsProgress() {
             <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50 shadow-xl">
               <CardHeader>
                 <CardTitle className="text-center text-2xl font-semibold">Gráfico de Progresso</CardTitle>
-                <CardDescription className="text-center">Evolução das últimas 4 semanas</CardDescription>
+                <CardDescription className="text-center">Média de calorias por dia nas últimas 4 semanas</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
