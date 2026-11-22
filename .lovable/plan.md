@@ -1,15 +1,17 @@
-# Retirar a mensagem motivacional
+# Retirar a mensagem motivacional e o resumo de domingo
 
-Já feito: o envio automático das 06h foi desligado (a rotina diária foi removida). Ninguém recebe mais a mensagem.
+Já feito: o envio automático da motivacional das 06h foi desligado.
 
-Falta tirar a opção das telas, para ninguém ativar algo que não chega:
-- Perfil (preferências do WhatsApp): remover "Mensagem motivacional diária".
-- Configuração do WhatsApp: remover o mesmo item.
+O que falta:
+- Desligar também o envio automático do resumo semanal (domingo 22h).
+- Perfil (preferências do WhatsApp): remover "Mensagem motivacional diária" e "Resumo semanal de objetivos".
+- Configuração do WhatsApp: remover os mesmos dois itens.
 - Página do Sono: remover o cartão "Mensagem Motivacional" com as categorias.
 
-Os outros envios (lembretes, alerta de jejum, resumo semanal) e a análise de foto pelo Twilio não mudam.
+Continuam iguais: lembretes, alerta de jejum e a análise de foto pelo Twilio.
 
 ## Detalhes técnicos
-- src/pages/Profile.tsx e src/components/WhatsAppSetup.tsx: remover o item `key: "motivational"`.
+- `cron.unschedule('weekly-objectives-whatsapp')`.
+- src/pages/Profile.tsx e src/components/WhatsAppSetup.tsx: remover itens `motivational` e `weekly_objectives`.
 - src/pages/Sleep.tsx: remover o bloco do card motivacional.
-- A função whatsapp-motivational continua no servidor, sem agendamento.
+- As funções whatsapp-motivational e whatsapp-weekly-objectives ficam no servidor, sem agendamento.
