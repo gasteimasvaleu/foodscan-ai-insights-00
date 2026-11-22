@@ -11,8 +11,6 @@ import { MessageCircle, CheckCircle, XCircle, Bell, Moon, Target, Sparkles } fro
 const PREF_ITEMS = [
   { key: "reminders", label: "Lembretes agendados", desc: "Refeições, sono, exercício, etc.", icon: Bell },
   { key: "fasting_notification", label: "Alerta de jejum completo", desc: "Aviso quando a meta de jejum é atingida", icon: Moon },
-  { key: "weekly_objectives", label: "Resumo semanal de objetivos", desc: "Enviado aos domingos às 22h", icon: Target },
-  { key: "motivational", label: "Mensagem motivacional diária", desc: "Enviada às 6h com IA", icon: Sparkles },
 ] as const;
 
 type PrefKey = typeof PREF_ITEMS[number]["key"];

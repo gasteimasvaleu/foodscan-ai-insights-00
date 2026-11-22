@@ -355,8 +355,6 @@ export default function Profile() {
                 {[
                   { key: "reminders", icon: Bell, title: "Lembretes agendados", desc: "Refeições, sono, exercício, etc." },
                   { key: "fasting_notification", icon: Timer, title: "Alerta de jejum completo", desc: "Aviso quando a meta de jejum é atingida" },
-                  { key: "weekly_objectives", icon: BarChart3, title: "Resumo semanal de objetivos", desc: "Enviado aos domingos às 22h" },
-                  { key: "motivational", icon: Sparkles, title: "Mensagem motivacional diária", desc: "Enviada às 6h com IA" },
                 ].map(({ key, icon: Icon, title, desc }) => (
                   <div key={key} className="bg-[#F9FAFB] rounded-2xl flex items-center gap-4 py-4 px-5">
                     <Icon className="h-7 w-7 text-pink-500 shrink-0" />
