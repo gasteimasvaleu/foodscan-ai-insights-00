@@ -1,3 +1,4 @@
+import { toast } from "@/hooks/use-toast";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +22,9 @@ const PROTOCOLS = [
   { label: '14:10', hours: 14 },
 ];
 
+const MAX_FAST_SECONDS = 72 * 3600;
+const HEALTH_WARNING = 'Jejuns acima de 24 h só devem ser feitos com acompanhamento médico ou nutricional. Se sentir tontura, fraqueza ou mal-estar, interrompa o jejum.';
+
 const IntermittentFasting = () => {
   const { user } = useAuth();
   const [selectedProtocol, setSelectedProtocol] = useState(PROTOCOLS[0]);
@@ -33,7 +37,7 @@ const IntermittentFasting = () => {
   const [loading, setLoading] = useState(true);
   const notificationSentRef = useRef<string | null>(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (): Promise<void> => {
     if (!user?.id) return;
 
     // Fetch active fast (no ended_at)
@@ -44,6 +48,13 @@ const IntermittentFasting = () => {
       .is('ended_at', null)
       .order('started_at', { ascending: false })
       .limit(1);
+
+    if (active && active.length > 0 && differenceInSeconds(new Date(), new Date(active[0].started_at)) > MAX_FAST_SECONDS) {
+      const capped = new Date(new Date(active[0].started_at).getTime() + MAX_FAST_SECONDS * 1000).toISOString();
+      await supabase.from('fasting_records').update({ ended_at: capped }).eq('id', active[0].id);
+      toast({ title: 'Encerramos seu jejum em 72 h', description: 'O timer ficou ligado.' });
+      return fetchData();
+    }
 
     if (active && active.length > 0) {
       setActiveFast(active[0]);
@@ -77,9 +88,9 @@ const IntermittentFasting = () => {
       const durations = allCompleted.map(r => {
         const diff = differenceInSeconds(new Date(r.ended_at), new Date(r.started_at));
         return diff / 3600;
-      });
-      const longest = Math.max(...durations);
-      const avg = durations.reduce((a, b) => a + b, 0) / durations.length;
+      }).filter(h => h >= 1 && h <= 72);
+      const longest = durations.length ? Math.max(...durations) : 0;
+      const avg = durations.length ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
 
       // Calculate streak (consecutive days with a completed fast)
       let streak = 0;
@@ -110,7 +121,7 @@ const IntermittentFasting = () => {
       setElapsedSeconds(0);
       return;
     }
-    const calc = () => differenceInSeconds(new Date(), new Date(activeFast.started_at));
+    const calc = () => Math.min(differenceInSeconds(new Date(), new Date(activeFast.started_at)), MAX_FAST_SECONDS);
     setElapsedSeconds(calc());
     const interval = setInterval(() => setElapsedSeconds(calc()), 1000);
     return () => clearInterval(interval);
@@ -323,6 +334,12 @@ const IntermittentFasting = () => {
           </CardContent>
         </Card>
 
+        {activeFast && elapsedSeconds >= 24 * 3600 && (
+          <div role="alert" className="rounded-3xl border-2 border-primary bg-primary/10 p-4 text-sm font-medium text-foreground">
+            {HEALTH_WARNING}
+          </div>
+        )}
+
         {/* Stats Card */}
         <Card className="rounded-3xl border-primary/20 bg-primary/10 shadow-xl">
           <CardHeader className="pb-2">
@@ -350,6 +367,7 @@ const IntermittentFasting = () => {
             </div>
           </CardContent>
         </Card>
+        <p className="text-xs text-muted-foreground text-center px-2">{HEALTH_WARNING}</p>
       </div>
       {/* Protocol Drawer */}
       <Drawer open={isProtocolDrawerOpen} onOpenChange={setIsProtocolDrawerOpen}>
