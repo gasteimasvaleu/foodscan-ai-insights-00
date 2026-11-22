@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 
 import { AuthCard } from '@/components/AuthCard';
@@ -59,6 +60,7 @@ const MasterCheFIT = () => {
   const [savedMenuPlans, setSavedMenuPlans] = useState<SavedMenuPlan[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [loadingPreferences, setLoadingPreferences] = useState(true);
+  const [hasDailyGoal, setHasDailyGoal] = useState(false);
 
   // Load user preferences and menu history on component mount
   useEffect(() => {
@@ -72,6 +74,17 @@ const MasterCheFIT = () => {
 
   const loadUserPreferences = async () => {
     try {
+      const { data: goalsData } = await supabase
+        .from('daily_goals')
+        .select('calories')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const goalCalories = goalsData?.calories ? Number(goalsData.calories) : null;
+      setHasDailyGoal(!!goalCalories);
+      setPreferences(prev => ({ ...prev, maxCalories: goalCalories || 2000 }));
+
       const { data, error } = await supabase
         .from('user_menu_preferences')
         .select('*')
@@ -86,7 +99,7 @@ const MasterCheFIT = () => {
         setPreferences({
           favoriteIngredients: data.favorite_ingredients,
           specificRequirements: data.specific_requirements || '',
-          maxCalories: data.max_calories
+          maxCalories: goalCalories || 2000
         });
         setIsEditing(false);
       }
@@ -458,15 +471,18 @@ const MasterCheFIT = () => {
                       <Label htmlFor="calories" className="mb-2 block group-hover:text-primary transition-colors">
                         Máximo de Calorias do Cardápio Completo
                       </Label>
-                      <Input
+<Input
                         id="calories"
                         type="number"
-                        min="1000"
-                        max="4000"
                         value={preferences.maxCalories}
-                        onChange={(e) => setPreferences(prev => ({ ...prev, maxCalories: parseInt(e.target.value) || 2000 }))}
-                        className="bg-white backdrop-blur border-white/20 hover:border-primary/50 focus:border-primary transition-all duration-300 w-48"
+                        readOnly
+                        className="bg-white backdrop-blur border-white/20 w-48 text-base"
                       />
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {hasDailyGoal ? 'Meta do Controle Diário' : (
+                          <>Você ainda não tem meta. <Link to="/controle-diario" className="text-primary underline">Criar meta no Controle Diário</Link></>
+                        )}
+                      </p>
                     </div>
                   </>
                 ) : (
