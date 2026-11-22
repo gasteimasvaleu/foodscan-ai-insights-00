@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeHeightCm } from "@/lib/height";
 import { Plus, Trash2, Edit, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -77,6 +78,10 @@ export default function PhysicalAssessment() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.height && !normalizeHeightCm(formData.height)) {
+      toast.error("Informe sua altura em cm, ex.: 170");
+      return;
+    }
 
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -99,7 +104,7 @@ export default function PhysicalAssessment() {
         user_id: user.user.id,
         assessment_date: formData.assessment_date,
         weight: parseFloat(formData.weight) || null,
-        height: parseFloat(formData.height) || null,
+        height: normalizeHeightCm(formData.height),
         waist: parseFloat(formData.waist) || null,
         neck: parseFloat(formData.neck) || null,
         body_fat_percentage: parseFloat(formData.body_fat_percentage) || null,

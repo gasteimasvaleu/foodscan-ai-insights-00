@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { normalizeHeightCm } from '@/lib/height';
 import { Scale, ArrowDown, ArrowUp, Minus, Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -101,9 +102,10 @@ export const DailyAssessmentSummaryCard = () => {
   const latest = history[0] ?? null;
   const previous = history[1] ?? null;
   const weight = latest?.weight ? Number(latest.weight) : null;
-  const height = latest?.height ? Number(latest.height) : null;
+  const height = normalizeHeightCm(latest?.height);
   const bodyFat = latest?.body_fat_percentage ? Number(latest.body_fat_percentage) : null;
-  const bmi = weight && height ? weight / Math.pow(height / 100, 2) : null;
+  const rawBmi = weight && height ? weight / Math.pow(height / 100, 2) : null;
+  const bmi = rawBmi && rawBmi >= 10 && rawBmi <= 80 ? rawBmi : null;
   const prevWeight = previous?.weight ? Number(previous.weight) : null;
   const delta = weight && prevWeight ? +(weight - prevWeight).toFixed(1) : null;
   const bfPct = bodyFat ? Math.min(Math.max(bodyFat, 0), 100) : 0;
@@ -209,7 +211,12 @@ export const DailyAssessmentSummaryCard = () => {
                 </div>
               </div>
             ) : (
-              <span className="text-white/30 text-[10px]">—</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate('/profile/assessment'); }}
+                className="rounded-2xl bg-white/85 px-2.5 py-2 text-[10px] font-bold text-primary leading-tight"
+              >
+                Informar altura
+              </button>
             )}
           </div>
 

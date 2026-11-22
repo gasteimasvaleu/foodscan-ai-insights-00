@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { normalizeHeightCm } from "@/lib/height";
 import { useAuth } from "@/hooks/useAuth";
 import { useHealthKit } from "@/hooks/useHealthKit";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,7 +74,7 @@ export default function ChartsProgress() {
     setBmrForm((prev) => ({
       ...prev,
       weight: Number(pa?.weight || ex?.weight || prev.weight),
-      height: Number(pa?.height || prev.height),
+      height: normalizeHeightCm(pa?.height) || prev.height,
       age: Number(ex?.age || prev.age),
     }));
   };
