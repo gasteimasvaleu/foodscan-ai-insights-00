@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -44,6 +44,33 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
     durationMinutes: '',
     intensity: ''
   });
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const [{ data: lastEx }, { data: lastPa }] = await Promise.all([
+        supabase.from('exercise_records').select('weight, age, created_at')
+          .eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('physical_assessments').select('weight, assessment_date')
+          .eq('user_id', user.id).not('weight', 'is', null)
+          .order('assessment_date', { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      if (cancelled) return;
+      let weight: number | null = lastEx?.weight ?? null;
+      if (lastPa?.weight && (!lastEx || new Date(lastPa.assessment_date) > new Date(lastEx.created_at))) {
+        weight = Number(lastPa.weight);
+      }
+      const fmtWeight = weight ? (Math.round(weight * 2) / 2).toFixed(1) : '';
+      const age = lastEx?.age ? String(lastEx.age) : '';
+      setFormData((prev) => ({
+        ...prev,
+        weight: prev.weight || (WEIGHT_OPTIONS.includes(fmtWeight) ? fmtWeight : ''),
+        age: prev.age || (AGE_OPTIONS.includes(age) ? age : ''),
+      }));
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,13 +151,13 @@ export function ExerciseForm({ onExerciseAdded }: ExerciseFormProps) {
       });
 
       // Reset form
-      setFormData({
+      setFormData((prev) => ({
         activityType: '',
-        weight: '',
-        age: '',
+        weight: prev.weight,
+        age: prev.age,
         durationMinutes: '',
         intensity: ''
-      });
+      }));
 
       onExerciseAdded();
     } catch (error) {
