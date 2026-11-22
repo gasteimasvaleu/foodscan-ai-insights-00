@@ -180,7 +180,7 @@ export const MyRecipesTab = () => {
               disabled={logging === r.id}
             >
               <Repeat className="w-4 h-4 mr-1" />
-              Logar 1 porção
+              Adicionar 1 porção
             </Button>
           </Card>
         ))

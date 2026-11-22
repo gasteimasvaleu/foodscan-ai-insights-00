@@ -162,7 +162,7 @@ const AdicionarRefeicao = () => {
           disabled={logging === m.id}
         >
           <Plus className="w-4 h-4 mr-1" />
-          Logar
+          Adicionar
         </Button>
       </Card>
     );
