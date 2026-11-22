@@ -23,7 +23,6 @@ interface PaywallScreenProps {
 }
 
 const APP_STORE_URL = 'https://apps.apple.com/app/we-diet/id6761124021';
-const PLAY_STORE_URL = 'https://play.google.com/store/search?q=we%20diet&c=apps';
 
 const formatBRL = (v: number, currency = 'BRL') =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(v);
@@ -229,14 +228,9 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
             {!isNative ? (
               <div className="text-center space-y-3 pt-1">
                 <p className="text-base text-gray-800">Assine pelo app</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button asChild className="bg-[#FD46A1] hover:opacity-95 text-white rounded-2xl">
-                    <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">App Store</a>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-2xl border-[#FD46A1] text-[#FD46A1]">
-                    <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">Google Play</a>
-                  </Button>
-                </div>
+                <Button asChild className="w-full bg-[#FD46A1] hover:opacity-95 text-white rounded-2xl">
+                  <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">App Store</a>
+                </Button>
               </div>
             ) : loadingPlans ? (
               <div className="grid gap-3 md:grid-cols-2 pt-2">
