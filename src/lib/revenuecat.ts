@@ -152,3 +152,37 @@ export const syncSubscriptionAfterLogin = async (
     return { success: false, error: err?.message || 'Unknown error' };
   }
 };
+
+/** Entitlement names accepted as Pro (single source of truth). */
+export const PRO_ENTITLEMENTS = ['wediet Pro', 'Premium', 'premium'];
+
+export const hasProEntitlement = (customerInfo: any): boolean => {
+  const active = customerInfo?.entitlements?.active || {};
+  return PRO_ENTITLEMENTS.some((k) => !!active[k]);
+};
+
+/** Loads annual + monthly packages from the current offering. */
+export const getPlans = async (): Promise<{ annual: any | null; monthly: any | null }> => {
+  await initRevenueCat();
+  const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  const offerings = await Purchases.getOfferings();
+  return {
+    annual: offerings.current?.annual ?? null,
+    monthly: offerings.current?.monthly ?? null,
+  };
+};
+
+/** Purchases a package. Returns { cancelled: true } if the user closed the store sheet. */
+export const purchasePackage = async (aPackage: any): Promise<{ customerInfo: any | null; cancelled: boolean }> => {
+  await initRevenueCat();
+  const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  try {
+    const { customerInfo } = await Purchases.purchasePackage({ aPackage });
+    return { customerInfo, cancelled: false };
+  } catch (err: any) {
+    if (err?.userCancelled || err?.code === '1' || err?.code === 1 || /cancel/i.test(err?.message || '')) {
+      return { customerInfo: null, cancelled: true };
+    }
+    throw err;
+  }
+};

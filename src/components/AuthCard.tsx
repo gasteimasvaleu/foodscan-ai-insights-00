@@ -16,6 +16,7 @@ import {
   restorePurchases as rcRestorePurchases,
   identifyUser,
   upsertSubscriptionFromCustomerInfo,
+  hasProEntitlement,
 } from '@/lib/revenuecat';
 
 import { AppleSignInButton } from './AppleSignInButton';
@@ -119,9 +120,7 @@ export const AuthCard = ({ mode = 'login' }: AuthCardProps) => {
       }
 
       const customerInfo = await rcRestorePurchases();
-      const premiumEntitlement =
-        customerInfo?.entitlements?.active?.['Premium'] ||
-        customerInfo?.entitlements?.active?.['premium'];
+      const premiumEntitlement = hasProEntitlement(customerInfo);
 
       const res = customerInfo && premiumEntitlement && user?.id
         ? await upsertSubscriptionFromCustomerInfo(user.id, user.email || '', customerInfo)

@@ -226,6 +226,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user, authReady, checkSubscription]);
 
+  // Refresh Pro status when the app returns to foreground (native)
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform() || !user) return;
+    let handle: { remove: () => void } | null = null;
+    import('@capacitor/app').then(({ App }) => {
+      App.addListener('appStateChange', ({ isActive }) => {
+        if (isActive && !purchaseInProgressRef.current) checkSubscription();
+      }).then((h) => { handle = h; });
+    });
+    return () => { handle?.remove(); };
+  }, [user, checkSubscription]);
+
   // ─── Actions ───
   const signUp = async (email: string, password: string, name: string) => {
     const redirectUrl = `${window.location.origin}/`;
