@@ -22,8 +22,6 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
   const [preferences, setPreferences] = useState<Record<PrefKey, boolean>>({
     reminders: true,
     fasting_notification: true,
-    weekly_objectives: true,
-    motivational: true,
   });
 
   useEffect(() => {
@@ -42,8 +40,6 @@ export const WhatsAppSetup = ({ userId }: { userId: string }) => {
           setPreferences({
             reminders: p.reminders !== false,
             fasting_notification: p.fasting_notification !== false,
-            weekly_objectives: p.weekly_objectives !== false,
-            motivational: p.motivational !== false,
           });
         }
       }
