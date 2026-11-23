@@ -328,7 +328,7 @@ const DailyControl = () => {
     return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
               <p className="mt-4 text-gray-600">Carregando...</p>
@@ -341,7 +341,7 @@ const DailyControl = () => {
     return <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
@@ -362,7 +362,7 @@ const DailyControl = () => {
       <VideoOverlay isVisible={isAnalyzing} message="Analisando seu dia..." subMessage="Calculando seus resultados nutricionais" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8">
           
           
           <div className="max-w-4xl mx-auto space-y-8">

@@ -43,7 +43,7 @@ const ToAquiOwner = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-5">
+      <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-5">
         <div className="animate-fade-in mb-4">
           <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
             <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">

@@ -57,7 +57,7 @@ const Loja = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={loja?.nome ?? "Loja"} backTo="/mercado-facil" />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-4">
         {loading ? (
           <p className="text-sm text-foreground/60">Carregando...</p>
         ) : !loja ? (

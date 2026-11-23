@@ -57,7 +57,7 @@ const EntregadorDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Painel do Entregador" backTo="/mercado-facil" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-4">
         <div className="bg-white border border-[#FD46A1]/30 rounded-3xl overflow-hidden shadow-sm">
           <div className="relative h-28 bg-gradient-to-r from-[#FD46A1] to-[#FF8FC4] overflow-hidden">
             {entregador.foto_url && (

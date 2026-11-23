@@ -144,7 +144,7 @@ export default function QuizPlay() {
     return (
       <div className="min-h-screen bg-background pb-32">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] text-center text-muted-foreground">
+        <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+4rem)] text-center text-muted-foreground">
           Quiz vazio.
         </div>
       </div>
@@ -157,7 +157,7 @@ export default function QuizPlay() {
   return (
     <div className="min-h-screen bg-background pb-32">
       <Navbar />
-      <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] space-y-4">
+      <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+4rem)] space-y-4">
         {/* Header card */}
         <div className="w-full bg-[#FFD1E7] rounded-[32px] p-1 shadow-[0_20px_50px_rgba(253,70,161,0.15)]">
           <div className="bg-white/40 rounded-[28px] p-5 flex flex-col gap-3 border border-white/50 backdrop-blur-sm">

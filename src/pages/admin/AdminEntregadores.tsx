@@ -114,7 +114,7 @@ const AdminEntregadores = () => {
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
       <MFHeader title="Admin · Entregadores" backTo="/admin" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-3">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-3">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {STATUS_TABS.map((t) => (
             <button

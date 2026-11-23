@@ -75,7 +75,7 @@ export default function QuizResult() {
     return (
       <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)]">
         <Navbar />
-        <div className="max-w-md mx-auto px-4 space-y-4">
+        <div className="max-w-4xl mx-auto px-[13px] space-y-4">
           <div className="h-64 rounded-3xl bg-[#FFD1E7] animate-pulse" />
           <div className="h-20 rounded-3xl bg-[#FFD1E7]/60 animate-pulse" />
         </div>
@@ -87,7 +87,7 @@ export default function QuizResult() {
     return (
       <div className="min-h-screen bg-[#F7FAFB] pt-[calc(env(safe-area-inset-top)+4rem)]">
         <Navbar />
-        <div className="max-w-md mx-auto px-4 text-center text-muted-foreground">
+        <div className="max-w-4xl mx-auto px-[13px] text-center text-muted-foreground">
           Sem tentativa registrada.
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function QuizResult() {
   return (
     <div className="min-h-screen bg-[#F7FAFB] pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]">
       <Navbar />
-      <div className="max-w-md mx-auto px-4 space-y-4 animate-fade-in">
+      <div className="max-w-4xl mx-auto px-[13px] space-y-4 animate-fade-in">
         {/* Hero card */}
         <div className="relative overflow-hidden rounded-[32px] bg-white border border-[#FFD1E7] shadow-xl shadow-pink-100 p-6">
           {/* Background glows */}

@@ -82,7 +82,7 @@ const FoodScan = () => {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary font-inter pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
@@ -625,7 +625,7 @@ const FoodScan = () => {
       />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary font-inter pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8">
           {/* Header Card */}
           <div className="mb-6 animate-fade-in">
             <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center justify-between gap-3">

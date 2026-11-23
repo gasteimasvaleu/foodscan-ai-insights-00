@@ -248,7 +248,7 @@ export default function AdminTreinos() {
     return (
       <div className="min-h-screen bg-background pb-28">
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+        <main className="container max-w-4xl mx-auto px-[13px] py-8">
           <Card className="text-center py-12">
             <CardContent>
               <h1 className="text-2xl font-bold text-foreground mb-4">Acesso Negado</h1>
@@ -266,7 +266,7 @@ export default function AdminTreinos() {
     <div className="min-h-screen bg-background pb-28">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container max-w-4xl mx-auto px-[13px] py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-foreground mb-2">Admin - Treinos</h1>

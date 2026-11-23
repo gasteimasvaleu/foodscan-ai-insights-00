@@ -183,7 +183,7 @@ const LojistaPedidos = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Pedidos" backTo="/mercado-facil/lojista" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-3">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-3">
         {!loja ? (
           <div className="bg-[#FFD1E7] rounded-3xl p-6 text-center text-sm">
             Cadastre sua loja primeiro para começar a receber pedidos.

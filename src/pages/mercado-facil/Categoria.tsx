@@ -82,7 +82,7 @@ const Categoria = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={cat?.name ?? "Categoria"} backTo="/mercado-facil" />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto">
         {cat && <MFCategoryHero slug={cat.slug} name={cat.name} emoji={cat.icon_emoji} />}
         <div className="space-y-2 mb-3">
           <div className="relative">

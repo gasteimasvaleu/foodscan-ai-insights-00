@@ -353,7 +353,7 @@ const MasterCheFIT = () => {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
@@ -372,8 +372,8 @@ const MasterCheFIT = () => {
       <VideoOverlay isVisible={isGenerating} message="Criando seu cardápio..." subMessage="Preparando receitas personalizadas para você" />
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-6xl mx-auto">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8">
+          <div className="max-w-4xl mx-auto">
             
             {/* Header */}
             <div className="mb-6 animate-fade-in">

@@ -207,7 +207,7 @@ export default function Profile() {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
-          <div className="container mx-auto px-4">
+          <div className="container max-w-4xl mx-auto px-[13px]">
             <div className="max-w-md mx-auto text-center space-y-6">
               <h1 className="text-3xl font-bold text-gray-800">Acesso Restrito</h1>
               <p className="text-gray-600">
@@ -237,7 +237,7 @@ export default function Profile() {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-28 pt-[calc(env(safe-area-inset-top)+3.5rem)]">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-[13px] py-8 max-w-4xl">
         {/* Header do Perfil */}
         {profile && (
           <ProfileHeaderCard

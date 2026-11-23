@@ -249,7 +249,7 @@ export default function AppleHealth() {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-64 bg-muted rounded" />
             <div className="h-96 bg-muted rounded" />
@@ -263,7 +263,7 @@ export default function AppleHealth() {
     return (
       <div className="min-h-screen bg-gradient-primary pb-28">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
           <div className="max-w-md mx-auto space-y-8">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-800 mb-4">Acesso Restrito</h1>
@@ -279,7 +279,7 @@ export default function AppleHealth() {
   return (
     <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-lg">
+      <div className="container mx-auto px-[13px] py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-4 animate-fade-in">
           <div className="bg-gradient-to-r from-red-500/20 via-pink-500/20 to-primary/20 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center justify-between">

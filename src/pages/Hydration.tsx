@@ -230,7 +230,7 @@ export default function Hydration() {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <p className="text-center text-muted-foreground">Carregando hidratação...</p>
           </div>
         </div>
@@ -243,7 +243,7 @@ export default function Hydration() {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-28">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container max-w-4xl mx-auto px-[13px] py-8">
             <div className="max-w-md mx-auto space-y-8">
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-foreground mb-4">Acesso Restrito</h1>
@@ -261,7 +261,7 @@ export default function Hydration() {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-primary pt-[calc(env(safe-area-inset-top)+2.5rem)] pb-40">
-        <div className="container mx-auto px-4 py-8 space-y-4">
+        <div className="container max-w-4xl mx-auto px-[13px] py-8 space-y-4">
           <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-background/60 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
             <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">
               <Droplets className="w-6 h-6 text-primary-foreground" />

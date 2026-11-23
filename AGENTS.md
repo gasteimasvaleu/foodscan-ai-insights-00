@@ -1,0 +1,1 @@
+- Page wrappers use the Home layout: `max-w-4xl mx-auto px-[13px]` (full-screen chats, modals and paywall excepted) — keeps widths and side margins consistent on desktop/iPad.

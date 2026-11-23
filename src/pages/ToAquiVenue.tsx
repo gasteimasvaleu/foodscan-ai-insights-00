@@ -64,7 +64,7 @@ const ToAquiVenue = () => {
     <div className={PAGE_BG}>
       <Navbar />
       <div className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28">
-        <div className="px-4 max-w-2xl mx-auto space-y-4">
+        <div className="px-[13px] max-w-4xl mx-auto space-y-4">
           <div className="relative bg-white/90 backdrop-blur-sm border border-[#FD46A1]/30 rounded-3xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(253,70,161,0.25)]">
             <div className="relative h-32 bg-gradient-to-br from-[#FD46A1] to-[#FFD1E7]">
               {venue.photo_url && (

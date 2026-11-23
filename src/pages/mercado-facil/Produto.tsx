@@ -73,7 +73,7 @@ const Produto = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title={produto.nome} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-4">
         <div className="aspect-square bg-[#FFD1E7] rounded-3xl overflow-hidden">
           {produto.foto_url ? (
             <img src={produto.foto_url} alt={produto.nome} className="w-full h-full object-cover" />

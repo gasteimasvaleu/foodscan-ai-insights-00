@@ -111,7 +111,7 @@ export default function Comunidade() {
     <>
       <Navbar />
       <div className="min-h-screen bg-background pb-44 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
-        <div className="max-w-lg mx-auto px-3 pt-4 space-y-3">
+        <div className="max-w-4xl mx-auto px-[13px] pt-4 space-y-3">
           {/* Header */}
           <CommunityHeaderCard
             userId={user.id}

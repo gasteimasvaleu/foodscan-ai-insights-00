@@ -193,7 +193,7 @@ export default function AdminQuiz() {
   if (editing) {
     return (
       <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+1rem)]">
-        <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div className="max-w-4xl mx-auto p-4 space-y-4">
           <div className="flex items-center justify-between">
             <Button variant="ghost" size="icon" onClick={() => setEditing(null)}>
               <ArrowLeft className="h-5 w-5" />
@@ -278,7 +278,7 @@ export default function AdminQuiz() {
 
   return (
     <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+1rem)]">
-      <div className="max-w-2xl mx-auto p-4 space-y-4">
+      <div className="max-w-4xl mx-auto p-4 space-y-4">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => navigate("/admin")}>
             <ArrowLeft className="h-5 w-5" />

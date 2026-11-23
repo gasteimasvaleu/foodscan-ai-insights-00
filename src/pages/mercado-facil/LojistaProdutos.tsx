@@ -124,7 +124,7 @@ const LojistaProdutos = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Meus produtos" backTo="/mercado-facil/lojista" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-3">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-3">
         {loading ? (
           <p className="text-sm text-foreground/60">Carregando...</p>
         ) : !loja ? (

@@ -47,7 +47,7 @@ const EntregadorEntregas = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Minhas Entregas" backTo="/mercado-facil/entregador" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-4">
         <section>
           <div className="bg-[#FFD1E7] rounded-2xl px-3 py-2 mb-2">
             <h3 className="text-base text-[#FD46A1]">Em andamento</h3>

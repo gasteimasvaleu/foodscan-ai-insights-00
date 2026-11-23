@@ -162,7 +162,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+5rem)] text-center text-muted-foreground">
+        <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+5rem)] text-center text-muted-foreground">
           Carregando...
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
+        <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -303,7 +303,7 @@ export default function Desafio14Dias() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
+        <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+4rem)] pb-32">
           <DayView
             day={selectedDay}
             userId={user!.id}
@@ -325,7 +325,7 @@ export default function Desafio14Dias() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
+      <div className="container max-w-4xl mx-auto px-[13px] pt-[calc(env(safe-area-inset-top)+4rem)] pb-32 space-y-4">
         {/* Header */}
         <Card className="bg-[#FFD1E7] rounded-3xl p-6 border-0 shadow-none">
           <div className="flex items-center justify-between mb-3">

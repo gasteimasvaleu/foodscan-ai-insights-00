@@ -139,7 +139,7 @@ const Carrinho = () => {
   return (
     <div className="min-h-screen bg-gradient-primary">
       <MFHeader title="Carrinho" showCart={false} backTo="/mercado-facil" />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-4">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-4">
         <MFClientePedidosStatus />
         {user && profile && (
           <div className="[&>div]:mb-0">

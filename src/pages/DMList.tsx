@@ -114,7 +114,7 @@ export default function DMList() {
     <>
       <Navbar />
       <div className="min-h-screen bg-background pb-28 pt-[calc(env(safe-area-inset-top)+2.5rem)]">
-        <div className="max-w-lg mx-auto px-3 pt-4">
+        <div className="max-w-4xl mx-auto px-[13px] pt-4">
           <div className="mb-4 animate-fade-in">
             <div className="bg-gradient-to-r from-primary/20 via-primary/25 to-primary/30 backdrop-blur-xl border border-white/30 shadow-lg rounded-2xl px-5 py-3 flex items-center gap-3">
               <div className="bg-gradient-to-br from-primary to-accent p-2.5 rounded-xl shadow-lg">

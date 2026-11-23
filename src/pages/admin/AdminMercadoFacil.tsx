@@ -24,7 +24,7 @@ const AdminMercadoFacil = () => {
   return (
     <div className="min-h-screen bg-[#F7FAFB]">
       <MFHeader title="Admin · Mercado Fácil" backTo="/admin" showCart={false} />
-      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-4 max-w-2xl mx-auto space-y-3">
+      <main className="pt-[calc(env(safe-area-inset-top)+4rem)] pb-28 px-[13px] max-w-4xl mx-auto space-y-3">
         <h2 className="text-base font-semibold">Lojas</h2>
         {lojas.length === 0 ? (
           <p className="text-sm text-foreground/60">Nenhuma loja cadastrada.</p>
