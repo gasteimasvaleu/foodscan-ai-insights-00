@@ -169,20 +169,20 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
             {active && <Check className="w-3 h-3 text-white" />}
           </div>
           <div className="flex-1 min-w-0 space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-800">{isAnnual ? 'Anual' : 'Mensal'}</span>
-              {hasFreeTrial(pkg) && <TrialBadge />}
-              {isAnnual && savings > 0 && (
-                <span className="text-[10px] font-semibold text-emerald-600">Economize {savings}%</span>
-              )}
-            </div>
-            {isAnnual ? (
-              <>
-                <p className="text-xl font-bold text-[#FD46A1]">{formatBRL(pkg.product.price / 12, currency)}/mês</p>
-                <p className="text-[11px] text-muted-foreground">cobrado {pkg.product.priceString} por ano</p>
-              </>
-            ) : (
-              <p className="text-base font-semibold text-gray-700">{pkg.product.priceString}/mês</p>
+            <span className="block text-sm text-gray-800">{isAnnual ? 'Anual' : 'Mensal'}</span>
+            <p className="text-xl font-bold text-gray-900 leading-tight">
+              {pkg.product.priceString}/{isAnnual ? 'ano' : 'mês'}
+            </p>
+            {isAnnual && (
+              <p className="text-xs text-gray-600">equivale a {formatBRL(pkg.product.price / 12, currency)}/mês</p>
+            )}
+            {(hasFreeTrial(pkg) || (isAnnual && savings > 0)) && (
+              <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                {hasFreeTrial(pkg) && <TrialBadge />}
+                {isAnnual && savings > 0 && (
+                  <span className="text-[10px] font-semibold text-emerald-700">Economize {savings}%</span>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -195,7 +195,7 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
     : 'A assinatura renova automaticamente, a menos que seja cancelada pelo menos 24 horas antes do fim do período atual. O pagamento é cobrado na sua Conta Apple. Gerencie ou cancele em Ajustes > Assinaturas.';
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)] md:pt-[calc(env(safe-area-inset-top)+1.5rem)] md:pb-[calc(env(safe-area-inset-bottom)+5rem)]">
       <div className="w-full max-w-md md:max-w-2xl space-y-3 relative">
         <div aria-hidden className="absolute inset-0 -z-10 bg-[#FD46A1]/30 blur-3xl rounded-full" />
         {contextBadge}
@@ -257,17 +257,15 @@ const PaywallScreen = ({ user, onSubscribed, contextBadge }: PaywallScreenProps)
                     disabled={busy || !selectedPkg}
                     className="w-full bg-gradient-to-r from-[#FD46A1] to-[#FF6FB5] hover:opacity-95 text-white text-base py-6 rounded-2xl shadow-lg shadow-[#FD46A1]/40"
                   >
-                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : selectedTrial ? 'Começar 7 dias grátis' : 'Assinar agora'}
+                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Continuar'}
                   </Button>
                   {selectedPkg && (
-                    <p className="text-[11px] text-muted-foreground text-center">
-                      {selected === 'annual'
-                        ? selectedTrial
-                          ? `Grátis por 7 dias, depois ${selectedPkg.product.priceString} por ano. Cancele quando quiser.`
-                          : `${selectedPkg.product.priceString} por ano. Cancele quando quiser.`
-                        : selectedTrial
-                          ? `Grátis por 7 dias, depois ${selectedPkg.product.priceString} por mês. Cancele quando quiser.`
-                          : `${selectedPkg.product.priceString} por mês. Cancele quando quiser.`}
+                    <p className="text-xs text-gray-700 text-center">
+                      {(() => {
+                        const per = selected === 'annual' ? 'ano' : 'mês';
+                        const base = `${selectedPkg.product.priceString} por ${per}. Renova automaticamente. Cancele quando quiser.`;
+                        return selectedTrial ? `7 dias grátis, depois ${base}` : base;
+                      })()}
                     </p>
                   )}
                 </div>
