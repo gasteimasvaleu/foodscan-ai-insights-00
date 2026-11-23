@@ -55,6 +55,23 @@ const moreSheetItems: Array<{
   { name: "Nutricionista que Vende", description: "Crie posts para Instagram com IA — imagem, legenda e hashtags", url: "/nutricionista-que-vende", icon: Instagram, isPro: true, isExtra: true },
 ]
 
+const SHEET_GROUPS = [
+  { id: "dieta", title: "Dieta" },
+  { id: "treino", title: "Treino" },
+  { id: "vida", title: "Vida" },
+  { id: "comunidade", title: "Comunidade" },
+] as const
+
+const GROUP_BY_URL: Record<string, string> = {
+  "/adicionar-refeicao": "dieta", "/nutri-coach": "dieta", "/masterchef": "dieta", "/receitas": "dieta",
+  "/faca-em-casa": "dieta", "/hidratacao": "dieta", "/jejum": "dieta", "/lista-de-compras": "dieta",
+  "/desafio-14-dias": "dieta", "/servinutri": "dieta", "/nutricionista-que-vende": "dieta",
+  "/treinos": "treino", "/objetivos": "treino", "/graficos-progresso": "treino", "/apple-health": "treino",
+  "/sono": "vida", "/maternidade": "vida", "/financas": "vida", "/musicas": "vida",
+  "/provador": "vida", "/mercado-facil": "vida", "/loja": "vida",
+  "/comunidade": "comunidade", "/to-aqui": "comunidade", "/quiz": "comunidade", "/conquistas": "comunidade",
+}
+
 export function TubelightNavbar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name)
   const [isMobile, setIsMobile] = useState(false)
@@ -64,9 +81,6 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
   const { subscriptionStatus } = useAuthContext()
   const isPro = !!subscriptionStatus?.subscribed
 
-  const extrasItems = moreSheetItems.filter((i) => i.isExtra)
-  const freeItems = moreSheetItems.filter((i) => !i.isPro && !i.isExtra)
-  const proItems = moreSheetItems.filter((i) => i.isPro && !i.isExtra)
 
   useEffect(() => {
     const handleResize = () => {
@@ -205,120 +219,49 @@ export function TubelightNavbar({ items, className }: NavBarProps) {
           </div>
 
           <div className="px-4 pb-6 pt-2 space-y-4">
-            {/* Recursos Extras (azul) */}
-            <section className="space-y-3">
-              <div className="flex items-center gap-2 px-1">
-                <Sparkles size={18} className="text-[#2563EB]" />
-                <h3 className="text-lg font-bold text-[#2563EB]">Recursos Extras</h3>
-              </div>
-              {extrasItems.map((sheetItem) => {
-                const SheetIcon = sheetItem.icon
-                const locked = sheetItem.isPro && !isPro
-                return (
-                  <button
-                    key={sheetItem.url}
-                    onClick={() => handleSheetNavigate(sheetItem.url)}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-left"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-                      <SheetIcon size={24} className="text-blue-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-foreground">{sheetItem.name}</p>
-                        {sheetItem.isPro && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">
-                            Pro
-                          </span>
+            {SHEET_GROUPS.map((group) => {
+              const groupItems = moreSheetItems.filter((i) => GROUP_BY_URL[i.url] === group.id)
+              if (!groupItems.length) return null
+              return (
+                <section key={group.id} className="space-y-3 pt-2 first:pt-0">
+                  <h3 className="text-base font-normal text-[#FD46A1] px-1">{group.title}</h3>
+                  {groupItems.map((sheetItem) => {
+                    const SheetIcon = sheetItem.icon
+                    const locked = sheetItem.isPro && !isPro
+                    return (
+                      <button
+                        key={sheetItem.url}
+                        onClick={() => handleSheetNavigate(sheetItem.url)}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-2xl border transition-colors text-left",
+                          locked
+                            ? "bg-white/60 border-[#FD46A1]/25 hover:bg-white/80"
+                            : "bg-[#FFD1E7]/40 border-[#FA1690]/10 hover:bg-[#FFD1E7]/60"
                         )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
-                    </div>
-                    {locked ? (
-                      <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
-                    ) : (
-                      <ChevronRight size={20} className="text-blue-600 flex-shrink-0" />
-                    )}
-                  </button>
-                )
-              })}
-            </section>
-
-            {/* Free section */}
-            <section className="space-y-3 pt-2">
-              <h3 className="text-lg font-bold text-foreground px-1">Mais opções</h3>
-              {freeItems.map((sheetItem) => {
-                const SheetIcon = sheetItem.icon
-                return (
-                  <button
-                    key={sheetItem.url}
-                    onClick={() => handleSheetNavigate(sheetItem.url)}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FFD1E7]/40 border border-[#FA1690]/10 hover:bg-[#FFD1E7]/60 transition-colors text-left"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-[#FD46A1]/15 flex items-center justify-center flex-shrink-0">
-                      <SheetIcon size={24} className="text-[#FD46A1]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-foreground">{sheetItem.name}</p>
-                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
-                    </div>
-                    <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
-                  </button>
-                )
-              })}
-            </section>
-
-            {/* Premium section */}
-            <section className="space-y-3 pt-2">
-              <div className="flex items-center gap-2 px-1">
-                <Crown size={18} className="text-[#FD46A1]" />
-                <h3 className="text-lg font-bold text-foreground">Premium</h3>
-                {!isPro && (
-                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-[#FD46A1] bg-[#FD46A1]/10 px-2 py-0.5 rounded-full">
-                    Bloqueado
-                  </span>
-                )}
-              </div>
-              {proItems.map((sheetItem) => {
-                const SheetIcon = sheetItem.icon
-                const locked = !isPro
-                return (
-                  <button
-                    key={sheetItem.url}
-                    onClick={() => handleSheetNavigate(sheetItem.url)}
-                    className={cn(
-                      "w-full flex items-center gap-4 p-4 rounded-2xl border transition-colors text-left",
-                      locked
-                        ? "bg-white/60 border-[#FD46A1]/25 hover:bg-white/80"
-                        : "bg-[#FFD1E7]/40 border-[#FA1690]/10 hover:bg-[#FFD1E7]/60"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 relative",
-                      locked ? "bg-[#FD46A1]/10" : "bg-[#FD46A1]/15"
-                    )}>
-                      <SheetIcon size={24} className={cn(locked ? "text-[#FD46A1]/70" : "text-[#FD46A1]")} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className={cn("font-bold", locked ? "text-foreground/80" : "text-foreground")}>
-                          {sheetItem.name}
-                        </p>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">
-                          Pro
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
-                    </div>
-                    {locked ? (
-                      <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
-                    ) : (
-                      <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
-                    )}
-                  </button>
-                )
-              })}
-            </section>
+                      >
+                        <div className={cn("w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0", locked ? "bg-[#FD46A1]/10" : "bg-[#FD46A1]/15")}>
+                          <SheetIcon size={24} className={cn(locked ? "text-[#FD46A1]/70" : "text-[#FD46A1]")} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className={cn("font-bold", locked ? "text-foreground/80" : "text-foreground")}>{sheetItem.name}</p>
+                            {sheetItem.isPro && (
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#FD46A1] px-1.5 py-0.5 rounded">Pro</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{sheetItem.description}</p>
+                        </div>
+                        {locked ? (
+                          <Lock size={18} className="text-[#FD46A1] flex-shrink-0" />
+                        ) : (
+                          <ChevronRight size={20} className="text-muted-foreground flex-shrink-0" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </section>
+              )
+            })}
           </div>
         </SheetContent>
       </Sheet>
