@@ -113,12 +113,12 @@ const Index = () => {
           <div className="max-w-4xl mx-auto space-y-6">
             <StreakBadge />
             <AuthCard />
-            <ToAquiPromoCard />
-            <NoveltyCard />
+            {/* TEMP revisão Apple: <ToAquiPromoCard /> */}
+            {/* TEMP revisão Apple: <NoveltyCard /> */}
             <HeroDeckRow />
             <SecondaryDeckRow />
             <TertiaryDeckRow />
-            <MercadoFacilPromoCard />
+            {/* TEMP revisão Apple: <MercadoFacilPromoCard /> */}
             <QuickActions />
           </div>
         </div>

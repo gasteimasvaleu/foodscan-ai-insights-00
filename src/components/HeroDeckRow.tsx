@@ -39,33 +39,22 @@ export const HeroDeckRow: React.FC = () => {
 
   return (
     <div className="grid grid-cols-[1.6fr_1fr] gap-3 items-stretch">
-      {/* Card esquerdo: último vídeo */}
+      {/* TEMP revisão Apple: card Mercado Fácil no lugar do "Último treino" (original em git ad3705cd) */}
       <button
-        onClick={() => navigate('/treinos')}
+        onClick={() => navigate('/mercado-facil')}
         className="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all text-left"
       >
-        {workout?.thumbnail_url ? (
-          <img
-            src={workout.thumbnail_url}
-            alt={workout.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FA1690] to-[#E24989] flex items-center justify-center">
-            <Dumbbell className="w-10 h-10 text-white/80" />
-          </div>
-        )}
-        {/* placeholder para dar altura caso a thumb absoluta não preencha */}
+        <img
+          src="https://zyhmwcsfifdepqnnrguo.supabase.co/storage/v1/object/public/criativos/02177928163662711300f35b2a874e35aceb4d35afb57b85ac48c_0.jpeg"
+          alt="Mercado Fácil"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
         <div className="invisible aspect-[5/4]" />
         <div className="absolute bottom-0 inset-x-0 bg-black/55 backdrop-blur-sm px-3 py-2.5 flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wide text-white/70">
-              Último treino
-            </p>
-            <p className="text-base text-white truncate">
-              {workout?.title ?? 'Ver treinos'}
-            </p>
+            <p className="text-[10px] uppercase tracking-wide text-white/70">Mercado Fácil</p>
+            <p className="text-base text-white truncate">Compre das lojas da sua cidade</p>
           </div>
           <ChevronRight className="w-5 h-5 text-white flex-shrink-0" />
         </div>
