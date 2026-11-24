@@ -1,19 +1,16 @@
-# Corrigir recusa da Apple - Guideline 1.1 (Conteudo ofensivo)
+# Ajustes temporarios na Home para a revisao da Apple
 
-A Apple nao disse qual tela incomodou. Pelo que existe no app, o mais provavel e o **To Aqui**: paquera, oferecer drink, "pagar a conta", adivinhar quem e e match com estranhos em bares. Para um app de dieta revisado no iPad, isso parece app de encontros com bebida alcoolica. A forma mais segura de aprovar e esconder isso **so no app do iPhone/iPad**. No site continua tudo igual.
+Mudancas so de esconder/trocar, faceis de desfazer depois da aprovacao.
 
-## O que muda no app da Apple
-1. **To Aqui escondido**: sai do menu Mais, da Home e dos banners; as paginas /to-aqui redirecionam para a Home (como ja fazemos com as paginas de pagamento).
-2. **Bebida alcoolica**: tirar do catalogo de hidratacao e das categorias do Mercado Facil (cerveja, drinks, destilados), so no app.
-3. **Provador Virtual**: revisar o pedido enviado a IA para recusar fotos com pouca roupa ou de menores, e bloquear o resultado se a IA marcar como improprio.
-4. **Comunidade, chat e DMs** (conteudo dos usuarios): conferir se tem botao de denunciar e bloquear usuario em posts, comentarios e mensagens; adicionar onde faltar.
-5. Subir o build para **1.1.1 (27)**.
+1. **Esconder o banner do To Aqui** na Home.
+2. **Esconder o banner do Quiz (premio de R$100)** na Home.
+3. **Trocar o card "Ultimo treino"** (no primeiro bloco de cards) pelo card do **Mercado Facil**: mesma imagem do banner do Mercado Facil, levando para a pagina do Mercado Facil. O banner do Mercado Facil mais abaixo sai, para nao repetir.
+4. Subir o build para **1.1.1 (27)**.
+5. Te passar um texto em ingles para responder a Apple.
 
-## Resposta para a Apple
-Vou te passar um texto em ingles para responder no App Store Connect, explicando o que foi removido e pedindo, se ainda houver problema, que indiquem a tela exata.
+Nada e apagado: as telas do To Aqui e do Quiz continuam existindo no menu Mais. Para liberar de novo, basta me pedir.
 
 ## Detalhes tecnicos
-- Usar `Capacitor.isNativePlatform()` (mesmo padrao da protecao de rotas iOS) para filtrar itens do menu Mais, cards da Home e rotas /to-aqui*.
-- Filtrar itens alcoolicos em `src/data/hydrationCatalog.ts` e `src/lib/mercado-facil/categoryCopy.ts` no nativo.
-- Ajustar prompt/validacao na funcao virtual-tryon.
-- Bump CURRENT_PROJECT_VERSION 26 -> 27 em project.pbxproj e src/config/version.ts.
+- `src/pages/Index.tsx`: comentar `<ToAquiPromoCard />`, `<NoveltyCard />` e `<MercadoFacilPromoCard />` (imports mantidos).
+- `src/components/HeroDeckRow.tsx`: substituir o bloco "Ultimo treino" por card com a imagem do MercadoFacilPromoCard e navigate para a rota do Mercado Facil; codigo antigo comentado.
+- Bump CURRENT_PROJECT_VERSION 26 -> 27 (project.pbxproj e src/config/version.ts).
